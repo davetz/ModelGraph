@@ -108,5 +108,20 @@ namespace ModelGraphLibrary
         internal string GetDescriptionKey(Trait trait) => $"{(int)(trait & Trait.KeyMask):X3}V";
         #endregion
 
+        #region Property/Methods ==============================================
+        internal bool IsInvalid => Owner == null || IsDeleted;
+        internal bool IsValid => !IsInvalid;
+        internal Store Store => Owner as Store;
+
+        /// <summary>
+        /// Walk up item tree hierachy to find the parent DataChef
+        /// </summary>
+        internal Chef GetChef()
+        {
+            var item = this;
+            while (item != null) { if (item.IsDataChef) return item as Chef; item = item.Owner; }
+            throw new Exception("Corrupted item hierarchy"); // I seriously hope this never happens
+        }
+        #endregion
     }
 }

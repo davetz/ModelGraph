@@ -108,9 +108,11 @@
   <ItemGroup>
     <Compile Include="Chef\Chef.cs" />
     <Compile Include="Item\Item.cs" />
-    <Compile Include="Item\QueryType.cs" />
+    <Compile Include="Item\Query.cs" />
+    <Compile Include="Enum\QueryType.cs" />
     <Compile Include="Item\State.cs" />
-    <Compile Include="Item\Trait.cs" />
+    <Compile Include="Enum\Store.cs" />
+    <Compile Include="Enum\Trait.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\ModelGraphLibrary.rd.xml" />
   </ItemGroup>
