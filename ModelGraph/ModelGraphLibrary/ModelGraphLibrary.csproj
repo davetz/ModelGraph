@@ -106,8 +106,9 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Chef\Chef.cs" />
     <Compile Include="Item\Item.cs" />
-    <Compile Include="Item\QueryKind.cs" />
+    <Compile Include="Item\QueryType.cs" />
     <Compile Include="Item\State.cs" />
     <Compile Include="Item\Trait.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -119,7 +120,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Chef\" />
     <Folder Include="Graph\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

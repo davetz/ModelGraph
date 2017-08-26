@@ -1,6 +1,7 @@
 ﻿
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ModelGraphLibrary;
 
 namespace ModelGraphUnitTest
 {
@@ -10,6 +11,7 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void TestMethod1()
         {
+            var c = new Chef();   
         }
     }
 }
