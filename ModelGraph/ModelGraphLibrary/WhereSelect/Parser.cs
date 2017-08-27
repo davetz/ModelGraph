@@ -16,7 +16,8 @@ namespace ModelGraphLibrary
         public int Index1;
         public int Index2;
 
-        public ParseError Error;
+        public ParseError ParseError;
+        public ParseType ParseType;
 
         #region Constructor  ==================================================
         public Parser(string text)
@@ -25,7 +26,7 @@ namespace ModelGraphLibrary
             if (string.IsNullOrWhiteSpace(text))
             {
                 Text = string.Empty;
-                Error = ParseError.InvalidText;
+                ParseError = ParseError.InvalidText;
                 return;
             }
             if (HasInvalidString()) return;
@@ -36,12 +37,14 @@ namespace ModelGraphLibrary
         {
             Parent = parent;
             Text = text;
+            ParseType = parseType;
+
             switch (parseType)
             {
-                case ParseType.Unknown:
+                case ParseType.None:
                     if (!TryParse()) return;
                     break;
-                case ParseType.Token:
+                case ParseType.Index:
                     break;
                 case ParseType.String:
                     break;
@@ -49,7 +52,9 @@ namespace ModelGraphLibrary
                     break;
                 case ParseType.Integer:
                     break;
-                case ParseType.Operator:
+                case ParseType.Property:
+                    break;
+                default:
                     break;
             }
         }
@@ -59,7 +64,7 @@ namespace ModelGraphLibrary
         public bool IsValid => GetIsValid();
         private bool GetIsValid()
         {
-            if (Error != ParseError.None) return false;
+            if (ParseError != ParseError.None) return false;
             foreach (var child in Children)
             {
                 if (!child.IsValid) return false;
@@ -86,7 +91,7 @@ namespace ModelGraphLibrary
 
             Index1 = last;
             Index2 = Text.Length;
-            Error = ParseError.InvalidString;
+            ParseError = ParseError.InvalidString;
             return true;
         }
         #endregion
@@ -118,12 +123,31 @@ namespace ModelGraphLibrary
 
             if (first >= 0) Index1 = first;
             Index2 = Text.Length;
-            Error = ParseError.InvalidParens;
+            ParseError = ParseError.InvalidParens;
             return true;
         }
         #endregion
 
         #region TryParse  =====================================================
+        static Dictionary<string, ParseType> operatorParseType = new Dictionary<string, ParseType>
+        {
+            ["|"] = ParseType.OrOperator,
+            ["||"] = ParseType.OrOperator,
+            ["&"] = ParseType.AndOperator,
+            ["&&"] = ParseType.AndOperator,
+            ["!"] = ParseType.NotOperator,
+            ["+"] = ParseType.PlusOperator,
+            ["-"] = ParseType.MinusOperator,
+            ["~"] = ParseType.NegateOperator,
+            ["="] = ParseType.EqualsOperator,
+            ["=="] = ParseType.EqualsOperator,
+            ["/"] = ParseType.DivideOperator,
+            ["*"] = ParseType.MultiplyOpartor,
+            ["<"] = ParseType.LessThanOperator,
+            [">"] = ParseType.GreaterThanOperator,
+            [">="] = ParseType.NotLessThanOperator,
+            ["<="] = ParseType.NotGreaterThanOperator,
+        };
         bool TryParse()
         {
             while (Index1 < Text.Length)
@@ -150,7 +174,7 @@ namespace ModelGraphLibrary
                         Index2++;
                     }
                     Index2--;
-                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), ParseType.Unknown));
+                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), ParseType.None));
                     Index1 = Index2 + 1;
                 }
                 else if ("0123456789".Contains(c))
@@ -168,6 +192,27 @@ namespace ModelGraphLibrary
                     var parseType = (isDouble) ? ParseType.Double : ParseType.Integer;
                     Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), parseType));
                     Index1 = Index2;
+                }
+                else if ("!~|&+-/*<>=".Contains(c))
+                {
+                    Index2 = (Index1 + 1);
+                    while (Index2 < Text.Length)
+                    {
+                        var t = Text[Index2];
+                        if (!"~|&+-/*<>=".Contains(t)) break;
+                        Index2++;
+                    }
+                    var key = Text.Substring(Index1, Index2 - Index1);
+                    if (operatorParseType.TryGetValue(key, out ParseType parseType))
+                    {
+                        Children.Add(new Parser(this, key, parseType));
+                        Index1 = Index2;
+                    }
+                    else
+                    {
+                        ParseError = ParseError.InvalidText;
+                        return false;
+                    }
                 }
                 else
                 {
