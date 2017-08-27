@@ -61,7 +61,7 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void ParserString()
         {
-            RunTest("s\"should work\"", true, 1, ParseType.String, "should work");
+            RunTest("\"should work\"", true, 1, ParseType.String, "should work");
             RunTest("   \"0.4-+=/*&|\" ", true, 1, ParseType.String, "0.4-+=/*&|");
 
             void RunTest(string inText, bool isValid, int childCount, ParseType childType, string childText)
@@ -151,6 +151,9 @@ namespace ModelGraphUnitTest
             RunTest(">", true, 1, ParseType.GreaterThanOperator);
             RunTest(">=", true, 1, ParseType.NotLessThanOperator);
             RunTest("<=", true, 1, ParseType.NotGreaterThanOperator);
+            RunTest("Has", true, 1, ParseType.HasOperator);
+            RunTest("Ends", true, 1, ParseType.EndsOperator);
+            RunTest("Starts", true, 1, ParseType.StartsOperator);
             RunTest(" | ", true, 1, ParseType.OrOperator);
             RunTest(" || ", true, 1, ParseType.OrOperator);
             RunTest(" & ", true, 1, ParseType.AndOperator);
@@ -167,6 +170,9 @@ namespace ModelGraphUnitTest
             RunTest(" > ", true, 1, ParseType.GreaterThanOperator);
             RunTest(" >= ", true, 1, ParseType.NotLessThanOperator);
             RunTest(" <= ", true, 1, ParseType.NotGreaterThanOperator);
+            RunTest(" Has ", true, 1, ParseType.HasOperator);
+            RunTest(" Ends ", true, 1, ParseType.EndsOperator);
+            RunTest(" Starts ", true, 1, ParseType.StartsOperator);
 
             void RunTest(string inText, bool isValid, int childCount, ParseType childType)
             {

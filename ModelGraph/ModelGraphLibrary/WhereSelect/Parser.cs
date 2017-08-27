@@ -32,6 +32,7 @@ namespace ModelGraphLibrary
             if (HasInvalidString()) return;
             if (HasInvalidParens()) return;
             if (!TryParse()) return;
+            if (!TryCompose()) return;
         }
         public Parser(Parser parent, string text, ParseType parseType)
         {
@@ -148,11 +149,21 @@ namespace ModelGraphLibrary
             [">="] = ParseType.NotLessThanOperator,
             ["<="] = ParseType.NotGreaterThanOperator,
         };
+        static Dictionary<string, ParseType> functionParseType = new Dictionary<string, ParseType>
+        {
+            ["has"] = ParseType.HasOperator,
+            ["ends"] = ParseType.EndsOperator,
+            ["starts"] = ParseType.StartsOperator,
+        };
+        static string numberString = "0123456789";
+        static string alphaString = "abcdefghijklmnopqrstuvwxyz";
+        static string operatorString = "!~|&+-/*<>=";
+
         bool TryParse()
         {
             while (Index1 < Text.Length)
             {
-                var c = Text[Index1];
+                var c = char.ToLower(Text[Index1]);
                 if (c == '"')
                 {
                     Index1 = Index2 = (Index1 + 1);
@@ -177,7 +188,7 @@ namespace ModelGraphLibrary
                     Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), ParseType.None));
                     Index1 = Index2 + 1;
                 }
-                else if ("0123456789".Contains(c))
+                else if (numberString.Contains(c))
                 {
                     Index2 = (Index1 + 1);
                     bool isDouble = false;
@@ -185,7 +196,7 @@ namespace ModelGraphLibrary
                     {
                         var t = Text[Index2];
                         if (t == '.') isDouble = true;
-                        else if (!"0123456789".Contains(t)) break;
+                        else if (!numberString.Contains(t)) break;
                         Index2++;
                     }
 
@@ -193,17 +204,38 @@ namespace ModelGraphLibrary
                     Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), parseType));
                     Index1 = Index2;
                 }
-                else if ("!~|&+-/*<>=".Contains(c))
+                else if (operatorString.Contains(c))
                 {
                     Index2 = (Index1 + 1);
                     while (Index2 < Text.Length)
                     {
                         var t = Text[Index2];
-                        if (!"~|&+-/*<>=".Contains(t)) break;
+                        if (!operatorString.Contains(t)) break;
                         Index2++;
                     }
                     var key = Text.Substring(Index1, Index2 - Index1);
                     if (operatorParseType.TryGetValue(key, out ParseType parseType))
+                    {
+                        Children.Add(new Parser(this, key, parseType));
+                        Index1 = Index2;
+                    }
+                    else
+                    {
+                        ParseError = ParseError.InvalidText;
+                        return false;
+                    }
+                }
+                else if (alphaString.Contains(c))
+                {
+                    Index2 = (Index1 + 1);
+                    while (Index2 < Text.Length)
+                    {
+                        var t = char.ToLower(Text[Index2]);
+                        if (!alphaString.Contains(t)) break;
+                        Index2++;
+                    }
+                    var key = Text.Substring(Index1, Index2 - Index1).ToLower();
+                    if (functionParseType.TryGetValue(key, out ParseType parseType))
                     {
                         Children.Add(new Parser(this, key, parseType));
                         Index1 = Index2;
@@ -220,6 +252,13 @@ namespace ModelGraphLibrary
                 }
             }
             return IsValid;
+        }
+        #endregion
+
+        #region TryCompose  ===================================================
+        bool TryCompose()
+        {
+            return true;
         }
         #endregion
     }

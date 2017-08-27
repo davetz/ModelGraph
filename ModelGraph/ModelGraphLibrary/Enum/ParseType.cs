@@ -27,5 +27,8 @@ namespace ModelGraphLibrary
         GreaterThanOperator = 20,
         NotLessThanOperator = 21,
         NotGreaterThanOperator = 22,
+        HasOperator = 30,
+        EndsOperator = 31,
+        StartsOperator = 32,
     }
 }
