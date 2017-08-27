@@ -1,2 +1,3 @@
 # ModelGraph
-Universal Windows Relational Data Modeler Desktop Application
+UWP Relational Data Modeler Desktop Application
+Provides a flexible graphical interface for sparce relational data models
