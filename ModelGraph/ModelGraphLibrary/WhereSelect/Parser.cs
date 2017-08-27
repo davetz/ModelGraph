@@ -158,6 +158,7 @@ namespace ModelGraphLibrary
         static string numberString = "0123456789";
         static string alphaString = "abcdefghijklmnopqrstuvwxyz";
         static string operatorString = "!~|&+-/*<>=";
+        static string newLineString = Environment.NewLine;
 
         bool TryParse()
         {
@@ -217,6 +218,27 @@ namespace ModelGraphLibrary
                     if (operatorParseType.TryGetValue(key, out ParseType parseType))
                     {
                         Children.Add(new Parser(this, key, parseType));
+                        Index1 = Index2;
+                    }
+                    else
+                    {
+                        ParseError = ParseError.InvalidText;
+                        return false;
+                    }
+                }
+                else if (newLineString.Contains(c))
+                {
+                    Index2 = (Index1 + 1);
+                    while (Index2 < Text.Length)
+                    {
+                        var t = Text[Index2];
+                        if (!newLineString.Contains(t)) break;
+                        Index2++;
+                    }
+                    var key = Text.Substring(Index1, Index2 - Index1);
+                    if (key == newLineString)
+                    {
+                        Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), ParseType.NewLine));
                         Index1 = Index2;
                     }
                     else

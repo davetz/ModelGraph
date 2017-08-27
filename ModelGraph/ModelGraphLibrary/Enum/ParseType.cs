@@ -13,7 +13,9 @@ namespace ModelGraphLibrary
         String = 2,
         Double = 3,
         Integer = 4,
-        Property = 5,
+        NewLine = 5,
+        Property = 6,
+
         OrOperator = 10,
         AndOperator = 11,
         NotOperator = 12,
@@ -27,6 +29,7 @@ namespace ModelGraphLibrary
         GreaterThanOperator = 20,
         NotLessThanOperator = 21,
         NotGreaterThanOperator = 22,
+
         HasOperator = 30,
         EndsOperator = 31,
         StartsOperator = 32,
