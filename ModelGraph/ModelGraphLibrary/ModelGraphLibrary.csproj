@@ -107,6 +107,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Chef\Chef.cs" />
+    <Compile Include="Enum\NativeType.cs" />
+    <Compile Include="Enum\ParseError.cs" />
+    <Compile Include="Enum\ParseType.cs" />
+    <Compile Include="Enum\StepFlags.cs" />
     <Compile Include="Item\Item.cs" />
     <Compile Include="Item\Query.cs" />
     <Compile Include="Enum\QueryType.cs" />
@@ -114,6 +118,8 @@
     <Compile Include="Enum\Store.cs" />
     <Compile Include="Enum\Trait.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WhereSelect\Parser.cs" />
+    <Compile Include="WhereSelect\Step\Step.cs" />
     <EmbeddedResource Include="Properties\ModelGraphLibrary.rd.xml" />
   </ItemGroup>
   <ItemGroup>
