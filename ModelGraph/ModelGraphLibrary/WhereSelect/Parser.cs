@@ -153,17 +153,18 @@ namespace ModelGraphLibrary
                     Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), ParseType.Unknown));
                     Index1 = Index2 + 1;
                 }
-                else if ("0123456789.".Contains(c))
+                else if ("0123456789".Contains(c))
                 {
-                    Index1 = Index2 = (Index1 + 1);
+                    Index2 = (Index1 + 1);
                     bool isDouble = false;
                     while (Index2 < Text.Length)
                     {
                         var t = Text[Index2];
                         if (t == '.') isDouble = true;
-                        if (!"0123456789.".Contains(c)) break;
+                        else if (!"0123456789".Contains(t)) break;
                         Index2++;
                     }
+
                     var parseType = (isDouble) ? ParseType.Double : ParseType.Integer;
                     Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), parseType));
                     Index1 = Index2;
