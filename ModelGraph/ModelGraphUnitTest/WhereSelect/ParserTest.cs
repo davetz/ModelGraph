@@ -64,21 +64,21 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void ParserString1()
         {
-            var text = "0\"2\"";
+            var text = "s\"s\"";
             var p = new Parser(text);
             Assert.IsTrue(p.IsValid);
             Assert.IsTrue(p.Children.Count == 1);
-            Assert.IsTrue(p.Children[0].Text == "2");
+            Assert.IsTrue(p.Children[0].Text == "s");
         }
         [TestMethod]
         public void ParserParams1()
         {
-            var text = "0(\"2\")";
+            var text = "a(\"s\")";
             var p = new Parser(text);
             Assert.IsTrue(p.IsValid);
             Assert.IsTrue(p.Children.Count == 1);
             Assert.IsTrue(p.Children[0].Children.Count == 1);
-            Assert.IsTrue(p.Children[0].Children[0].Text == "2");
+            Assert.IsTrue(p.Children[0].Children[0].Text == "s");
         }
     }
 }
