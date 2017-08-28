@@ -3,7 +3,13 @@ using System.Text;
 
 namespace ModelGraphLibrary
 {/*
-    
+    Value is the abstract base class for ValuesOf<T>.
+    The enum ValueType list all possible types of T. The actual values
+    of each type are maintained in a specialized instance, for example,
+    ValuesOfBool or ValuesOfDouble. Each table column references exactly
+    one dedicated instance of ValuesOf<T>. When a user changes a columns 
+    valueType a new instance of that type is created and (if posisible) it 
+    is populated with converted values from the previous ValueOf<T> instance.    
  */
     public abstract class Value
     {

@@ -1,7 +1,8 @@
 ﻿namespace ModelGraphLibrary
 {/*
-    Expression trees are used in query where and select clauses.
-    They compute values and they qualify specific relational paths.
+    Step is an expression tree node. The expression tree is used in a query's
+    where and select clause. They compute values and can also qualify specific 
+    relational paths.
  */
     /// <summary>
     /// Expression tree step

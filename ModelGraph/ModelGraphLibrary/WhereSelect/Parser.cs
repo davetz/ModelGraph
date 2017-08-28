@@ -3,24 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace ModelGraphLibrary
-{
-    /* 
-        Parse an expression string (or substring) and recursivly build a 
-        tree of elemental steps. From this and depending on the context of 
-        neighboring parse steps, a computable expression tree is built.
-        The final stage simplifies that tree so that all constant elements
-        are rolled-up into the simplest form.
+{/* 
+    Parse an expression string (or substring) and recursivly build a 
+    tree of elemental steps. From this and depending on the context of 
+    neighboring parse steps, build a computation expression tree.
+    The final stage simplifies that tree so that all constant elements
+    are rolled-up into the simplest form.
 
-        If the input expression string is invalid the parser aborts and the
-        incomplete parse tree is kept arround for error reporting. However,  
-        if there were no errors the parser tree and original expression string
-        is destroyed. Whenever needed a properly formatted expression string
-        can be created from the simplified computable expression tree. The 
-        benifit of this is standard expressing string format and also it
-        solves the problem of someone renaming a property (the expression
-        tree references the property object, not its name)
-    */
-
+    If the input expression string is invalid the parser aborts and the
+    incomplete parse tree is kept arround for error reporting. However,  
+    if there were no errors the parser tree and original expression string
+    are destroyed. Whenever needed a properly formatted expression string
+    can be created from the expression tree. The benifit of this is it 
+    produces a standard expressing string format and also it solves the 
+    problem of what happens when someone renames column not knowing that
+    it was hardcoded in the expression string.
+    (the expression tree references the property object, not it's name)
+ */
     /// <summary>
     /// Parse a string and create an expession tree
     /// </summary>
