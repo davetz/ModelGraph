@@ -2,14 +2,15 @@
 
 namespace ModelGraphLibrary
 {
+    /*  
+        Expression tree step flags.
+    */
     [Flags]
-    public enum StepFlags : byte
+    public enum StepFlag : ushort
     {
         None = 0,
-        IsBinary = 0x01,
-        IsFlexable = 0x02, //allow coerced inputs
-        IsVariable = 0x04, //references a property
-        HasParens = 0x08,
-        HasNewLine = 0x10,
+        IsWierd = 0x1, // the actual input data type does not match the expected type, ok, but wierd
+        HasParens = 0x2, // enclose generated subexpression in parens (...)
+        HasNewLine = 0x4, // start generated subexpression with a newLine
     }
 }

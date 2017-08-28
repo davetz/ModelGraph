@@ -61,27 +61,27 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void ParserString()
         {
-            RunTest("\"should work\"", true, 1, ParseType.String, "should work");
-            RunTest("   \"0.4-+=/*&|\" ", true, 1, ParseType.String, "0.4-+=/*&|");
+            RunTest("\"should work\"", true, 1, StepType.String, "should work");
+            RunTest("   \"0.4-+=/*&|\" ", true, 1, StepType.String, "0.4-+=/*&|");
 
-            void RunTest(string inText, bool isValid, int childCount, ParseType childType, string childText)
+            void RunTest(string inText, bool isValid, int childCount, StepType childType, string childText)
             {
                 var p = new Parser(inText);
                 Assert.IsTrue(p.IsValid == isValid);
                 Assert.IsTrue(p.Children.Count == childCount);
                 var q = p.Children[0];
-                Assert.IsTrue(q.ParseType == childType);
+                Assert.IsTrue(q.StepType == childType);
                 Assert.IsTrue(q.Text == childText);
             }
         }
         [TestMethod]
         public void ParserParams()
         {
-            RunTest("(\"should work\")", true, 1, 1, ParseType.String, "should work");
-            RunTest(" (  \"should work\"  ) ", true, 1, 1, ParseType.String, "should work");
-            RunTest(" (  \"should work\") ", true, 1, 1, ParseType.String, "should work");
+            RunTest("(\"should work\")", true, 1, 1, StepType.String, "should work");
+            RunTest(" (  \"should work\"  ) ", true, 1, 1, StepType.String, "should work");
+            RunTest(" (  \"should work\") ", true, 1, 1, StepType.String, "should work");
 
-            void RunTest(string inText, bool isValid, int childCount, int grandChildCount, ParseType grandChildType, string grandChildText)
+            void RunTest(string inText, bool isValid, int childCount, int grandChildCount, StepType grandChildType, string grandChildText)
             {
                 var p = new Parser(inText);
                 Assert.IsTrue(p.IsValid == isValid);
@@ -91,26 +91,26 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(q.Children.Count == grandChildCount);
 
                 var r = q.Children[0];
-                Assert.IsTrue(r.ParseType == grandChildType);
+                Assert.IsTrue(r.StepType == grandChildType);
                 Assert.IsTrue(r.Text == grandChildText);
             }
         }
         [TestMethod]
         public void ParserNumber()
         {
-            RunTest("13", true, 1, ParseType.Integer, "13");
-            RunTest("0.45", true, 1, ParseType.Double, "0.45");
-            RunTest(" 16 ", true, 1, ParseType.Integer, "16");
-            RunTest(" 0.55 ", true, 1, ParseType.Double, "0.55");
+            RunTest("13", true, 1, StepType.Integer, "13");
+            RunTest("0.45", true, 1, StepType.Double, "0.45");
+            RunTest(" 16 ", true, 1, StepType.Integer, "16");
+            RunTest(" 0.55 ", true, 1, StepType.Double, "0.55");
 
-            void RunTest(string inText, bool isValid, int childCount, ParseType childType, string childText)
+            void RunTest(string inText, bool isValid, int childCount, StepType childType, string childText)
             {
                 var p = new Parser(inText);
                 Assert.IsTrue(p.IsValid == isValid);
                 Assert.IsTrue(p.Children.Count == childCount);
 
                 var q = p.Children[0];
-                Assert.IsTrue(q.ParseType == childType);
+                Assert.IsTrue(q.StepType == childType);
                 Assert.IsTrue(q.Text == childText);
             }
 
@@ -135,46 +135,46 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void ParserOperator()
         {
-            RunTest("|", true, 1, ParseType.OrOperator);
-            RunTest("||", true, 1, ParseType.OrOperator);
-            RunTest("&", true, 1, ParseType.AndOperator);
-            RunTest("&&", true, 1, ParseType.AndOperator);
-            RunTest("!", true, 1, ParseType.NotOperator);
-            RunTest("+", true, 1, ParseType.PlusOperator);
-            RunTest("-", true, 1, ParseType.MinusOperator);
-            RunTest("=", true, 1, ParseType.EqualsOperator);
-            RunTest("==", true, 1, ParseType.EqualsOperator);
-            RunTest("~", true, 1, ParseType.NegateOperator);
-            RunTest("/", true, 1, ParseType.DivideOperator);
-            RunTest("*", true, 1, ParseType.MultiplyOpartor);
-            RunTest("<", true, 1, ParseType.LessThanOperator);
-            RunTest(">", true, 1, ParseType.GreaterThanOperator);
-            RunTest(">=", true, 1, ParseType.NotLessThanOperator);
-            RunTest("<=", true, 1, ParseType.NotGreaterThanOperator);
-            RunTest("Has", true, 1, ParseType.HasOperator);
-            RunTest("Ends", true, 1, ParseType.EndsOperator);
-            RunTest("Starts", true, 1, ParseType.StartsOperator);
-            RunTest(" | ", true, 1, ParseType.OrOperator);
-            RunTest(" || ", true, 1, ParseType.OrOperator);
-            RunTest(" & ", true, 1, ParseType.AndOperator);
-            RunTest(" && ", true, 1, ParseType.AndOperator);
-            RunTest(" ! ", true, 1, ParseType.NotOperator);
-            RunTest(" + ", true, 1, ParseType.PlusOperator);
-            RunTest(" - ", true, 1, ParseType.MinusOperator);
-            RunTest(" = ", true, 1, ParseType.EqualsOperator);
-            RunTest(" == ", true, 1, ParseType.EqualsOperator);
-            RunTest(" ~ ", true, 1, ParseType.NegateOperator);
-            RunTest(" / ", true, 1, ParseType.DivideOperator);
-            RunTest(" * ", true, 1, ParseType.MultiplyOpartor);
-            RunTest(" < ", true, 1, ParseType.LessThanOperator);
-            RunTest(" > ", true, 1, ParseType.GreaterThanOperator);
-            RunTest(" >= ", true, 1, ParseType.NotLessThanOperator);
-            RunTest(" <= ", true, 1, ParseType.NotGreaterThanOperator);
-            RunTest(" Has ", true, 1, ParseType.HasOperator);
-            RunTest(" Ends ", true, 1, ParseType.EndsOperator);
-            RunTest(" Starts ", true, 1, ParseType.StartsOperator);
+            RunTest("|", true, 1, StepType.Or);
+            RunTest("||", true, 1, StepType.Or);
+            RunTest("&", true, 1, StepType.And);
+            RunTest("&&", true, 1, StepType.And);
+            RunTest("!", true, 1, StepType.Not);
+            RunTest("+", true, 1, StepType.Plus);
+            RunTest("-", true, 1, StepType.Minus);
+            RunTest("=", true, 1, StepType.Equals);
+            RunTest("==", true, 1, StepType.Equals);
+            RunTest("~", true, 1, StepType.Negate);
+            RunTest("/", true, 1, StepType.Divide);
+            RunTest("*", true, 1, StepType.Multiply);
+            RunTest("<", true, 1, StepType.LessThan);
+            RunTest(">", true, 1, StepType.GreaterThan);
+            RunTest(">=", true, 1, StepType.NotLessThan);
+            RunTest("<=", true, 1, StepType.NotGreaterThan);
+            RunTest("Has", true, 1, StepType.Has);
+            RunTest("Ends", true, 1, StepType.Ends);
+            RunTest("Starts", true, 1, StepType.Starts);
+            RunTest(" | ", true, 1, StepType.Or);
+            RunTest(" || ", true, 1, StepType.Or);
+            RunTest(" & ", true, 1, StepType.And);
+            RunTest(" && ", true, 1, StepType.And);
+            RunTest(" ! ", true, 1, StepType.Not);
+            RunTest(" + ", true, 1, StepType.Plus);
+            RunTest(" - ", true, 1, StepType.Minus);
+            RunTest(" = ", true, 1, StepType.Equals);
+            RunTest(" == ", true, 1, StepType.Equals);
+            RunTest(" ~ ", true, 1, StepType.Negate);
+            RunTest(" / ", true, 1, StepType.Divide);
+            RunTest(" * ", true, 1, StepType.Multiply);
+            RunTest(" < ", true, 1, StepType.LessThan);
+            RunTest(" > ", true, 1, StepType.GreaterThan);
+            RunTest(" >= ", true, 1, StepType.NotLessThan);
+            RunTest(" <= ", true, 1, StepType.NotGreaterThan);
+            RunTest(" Has ", true, 1, StepType.Has);
+            RunTest(" Ends ", true, 1, StepType.Ends);
+            RunTest(" Starts ", true, 1, StepType.Starts);
 
-            void RunTest(string inText, bool isValid, int childCount, ParseType childType)
+            void RunTest(string inText, bool isValid, int childCount, StepType childType)
             {
                 var p = new Parser(inText);
                 Assert.IsTrue(p.IsValid == isValid);
@@ -183,7 +183,7 @@ namespace ModelGraphUnitTest
                     Assert.IsTrue(p.Children.Count == childCount);
 
                     var q = p.Children[0];
-                    Assert.IsTrue(q.ParseType == childType);
+                    Assert.IsTrue(q.StepType == childType);
                 }
             }
         }

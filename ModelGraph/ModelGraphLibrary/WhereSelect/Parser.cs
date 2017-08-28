@@ -1,11 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModelGraphLibrary
 {
+    /* 
+        Parse an expression string (or substring) and recursivly build a 
+        tree of elemental steps. From this and depending on the context of 
+        neighboring parse steps, a computable expression tree is built.
+        The final stage simplifies that tree so that all constant elements
+        are rolled-up into the simplest form.
+
+        If the input expression string is invalid the parser aborts and the
+        incomplete parse tree is kept arround for error reporting. However,  
+        if there were no errors the parser tree and original expression string
+        is destroyed. Whenever needed a properly formatted expression string
+        can be created from the simplified computable expression tree. The 
+        benifit of this is standard expressing string format and also it
+        solves the problem of someone renaming a property (the expression
+        tree references the property object, not its name)
+    */
+
+    /// <summary>
+    /// Parse a string and create an expession tree
+    /// </summary>
     public class Parser
     {
         public Step Step;
@@ -17,7 +35,7 @@ namespace ModelGraphLibrary
         public int Index2;
 
         public ParseError ParseError;
-        public ParseType ParseType;
+        public StepType StepType;
 
         #region Constructor  ==================================================
         public Parser(string text)
@@ -34,26 +52,26 @@ namespace ModelGraphLibrary
             if (!TryParse()) return;
             if (!TryCompose()) return;
         }
-        public Parser(Parser parent, string text, ParseType parseType)
+        public Parser(Parser parent, string text, StepType parseType)
         {
             Parent = parent;
             Text = text;
-            ParseType = parseType;
+            StepType = parseType;
 
             switch (parseType)
             {
-                case ParseType.None:
+                case StepType.None:
                     if (!TryParse()) return;
                     break;
-                case ParseType.Index:
+                case StepType.Index:
                     break;
-                case ParseType.String:
+                case StepType.String:
                     break;
-                case ParseType.Double:
+                case StepType.Double:
                     break;
-                case ParseType.Integer:
+                case StepType.Integer:
                     break;
-                case ParseType.Property:
+                case StepType.Property:
                     break;
                 default:
                     break;
@@ -130,30 +148,34 @@ namespace ModelGraphLibrary
         #endregion
 
         #region TryParse  =====================================================
-        static Dictionary<string, ParseType> operatorParseType = new Dictionary<string, ParseType>
+        /* 
+            Parse an expression string (or substring) and recursivly build a 
+            tree of elemental parse steps.
+        */
+        static Dictionary<string, StepType> operatorParseType = new Dictionary<string, StepType>
         {
-            ["|"] = ParseType.OrOperator,
-            ["||"] = ParseType.OrOperator,
-            ["&"] = ParseType.AndOperator,
-            ["&&"] = ParseType.AndOperator,
-            ["!"] = ParseType.NotOperator,
-            ["+"] = ParseType.PlusOperator,
-            ["-"] = ParseType.MinusOperator,
-            ["~"] = ParseType.NegateOperator,
-            ["="] = ParseType.EqualsOperator,
-            ["=="] = ParseType.EqualsOperator,
-            ["/"] = ParseType.DivideOperator,
-            ["*"] = ParseType.MultiplyOpartor,
-            ["<"] = ParseType.LessThanOperator,
-            [">"] = ParseType.GreaterThanOperator,
-            [">="] = ParseType.NotLessThanOperator,
-            ["<="] = ParseType.NotGreaterThanOperator,
+            ["||"] = StepType.Or,
+            ["|"] = StepType.BitOr,
+            ["&&"] = StepType.And,
+            ["&"] = StepType.BitAnd,
+            ["!"] = StepType.Not,
+            ["+"] = StepType.Plus,
+            ["-"] = StepType.Minus,
+            ["~"] = StepType.Negate,
+            ["="] = StepType.Equals,
+            ["=="] = StepType.Equals,
+            ["/"] = StepType.Divide,
+            ["*"] = StepType.Multiply,
+            ["<"] = StepType.LessThan,
+            [">"] = StepType.GreaterThan,
+            [">="] = StepType.NotLessThan,
+            ["<="] = StepType.NotGreaterThan,
         };
-        static Dictionary<string, ParseType> functionParseType = new Dictionary<string, ParseType>
+        static Dictionary<string, StepType> functionParseType = new Dictionary<string, StepType>
         {
-            ["has"] = ParseType.HasOperator,
-            ["ends"] = ParseType.EndsOperator,
-            ["starts"] = ParseType.StartsOperator,
+            ["has"] = StepType.Has,
+            ["ends"] = StepType.Ends,
+            ["starts"] = StepType.Starts,
         };
         static string numberString = "0123456789";
         static string alphaString = "abcdefghijklmnopqrstuvwxyz";
@@ -169,7 +191,7 @@ namespace ModelGraphLibrary
                 {
                     Index1 = Index2 = (Index1 + 1);
                     while (Text[Index2] != '"') { Index2++; }
-                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), ParseType.String));
+                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.String));
                     Index1 = (Index2 + 1);
                 }
                 else if (c == '(')
@@ -186,7 +208,7 @@ namespace ModelGraphLibrary
                         Index2++;
                     }
                     Index2--;
-                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), ParseType.None));
+                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.None));
                     Index1 = Index2 + 1;
                 }
                 else if (numberString.Contains(c))
@@ -201,7 +223,7 @@ namespace ModelGraphLibrary
                         Index2++;
                     }
 
-                    var parseType = (isDouble) ? ParseType.Double : ParseType.Integer;
+                    var parseType = (isDouble) ? StepType.Double : StepType.Integer;
                     Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), parseType));
                     Index1 = Index2;
                 }
@@ -215,7 +237,7 @@ namespace ModelGraphLibrary
                         Index2++;
                     }
                     var key = Text.Substring(Index1, Index2 - Index1);
-                    if (operatorParseType.TryGetValue(key, out ParseType parseType))
+                    if (operatorParseType.TryGetValue(key, out StepType parseType))
                     {
                         Children.Add(new Parser(this, key, parseType));
                         Index1 = Index2;
@@ -238,7 +260,7 @@ namespace ModelGraphLibrary
                     var key = Text.Substring(Index1, Index2 - Index1);
                     if (key == newLineString)
                     {
-                        Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), ParseType.NewLine));
+                        Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.NewLine));
                         Index1 = Index2;
                     }
                     else
@@ -257,7 +279,7 @@ namespace ModelGraphLibrary
                         Index2++;
                     }
                     var key = Text.Substring(Index1, Index2 - Index1).ToLower();
-                    if (functionParseType.TryGetValue(key, out ParseType parseType))
+                    if (functionParseType.TryGetValue(key, out StepType parseType))
                     {
                         Children.Add(new Parser(this, key, parseType));
                         Index1 = Index2;
@@ -278,6 +300,46 @@ namespace ModelGraphLibrary
         #endregion
 
         #region TryCompose  ===================================================
+        /* 
+           Use the parse tree and depending on the context of neighboring parse
+           tree steps, compose a computable expression tree.
+        */
+        enum ValType : byte //the step's normal inut/output value type
+        {
+            None, // properties and literal constants have input ValType.None 
+            Bool,
+            Number, //could be (byte, short, int, long, or double)
+            String,
+            Flexible, //it depends on context involving nieboring steps
+            Property, // determined by the property's NativeType 
+        }
+        struct StepParam
+        {
+            internal byte MinArgs;
+            internal byte MaxArgs;
+            internal ValType InType;
+            internal ValType OutType;
+
+            internal StepParam(ValType inType, byte minArgs, byte maxArgs, ValType outType)
+            {
+                InType = inType;
+                MinArgs = minArgs;
+                MaxArgs = maxArgs;
+                OutType = outType;
+            }
+        }
+        static Dictionary<StepType, StepParam> stepParams = new Dictionary<StepType, StepParam>
+        {
+            [StepType.Double] = new StepParam(ValType.None, 0, 0, ValType.Number),
+            [StepType.Integer] = new StepParam(ValType.None, 0, 0, ValType.Number),
+            [StepType.Property] = new StepParam(ValType.None, 0, 0, ValType.Property),
+
+            [StepType.BitOr] = new StepParam(ValType.Flexible, 2, 255, ValType.Flexible),
+            [StepType.BitAnd] = new StepParam(ValType.Flexible, 2, 255, ValType.Flexible),
+
+            [StepType.Or] = new StepParam(ValType.Bool, 2, 255, ValType.Bool),
+            [StepType.And] = new StepParam(ValType.Bool, 2, 255, ValType.Bool),
+        };
         bool TryCompose()
         {
             return true;
