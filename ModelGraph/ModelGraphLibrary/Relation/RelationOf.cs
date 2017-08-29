@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 
 namespace ModelGraphLibrary
-{
+{/*
+    RelationOf
+
+    It maintains two maps (parent -> child) and (child -> parent). 
+    This allows for a bidirectional traversal.
+ */
     public class RelationOf<T1, T2> : Relation where T1 : Item where T2 : Item
     {
         static ArgumentException _invalidPairingException = new ArgumentException("Invalid Pairing");
@@ -447,7 +452,7 @@ namespace ModelGraphLibrary
 
         #region HasKey<1,2>  ==================================================
         /// <summary>
-        /// Dose the key item have atleast one child item?
+        /// Dose the key item have at least one child item?
         /// </summary>
         internal override bool HasKey1(Item key)
         {
@@ -456,8 +461,9 @@ namespace ModelGraphLibrary
 
             return false;
         }
+
         /// <summary>
-        /// Dose the key item have atleast one parent item?
+        /// Dose the key item have at least one parent item?
         /// </summary>
         internal override bool HasKey2(Item key)
         {
@@ -466,6 +472,7 @@ namespace ModelGraphLibrary
 
             return false;
         }
+
         /// <summary>
         /// Does the relation contain this link?
         /// </summary>

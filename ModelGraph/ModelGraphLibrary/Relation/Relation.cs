@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 
 namespace ModelGraphLibrary
-{
+{/*
+    Relation is the abstract base class for RelationOf<T1, T2>   
+ */
     public abstract class Relation : Item // used by undo/redo changes and StoreOf<Relation> _relationStore
     {
         internal Guid Guid;

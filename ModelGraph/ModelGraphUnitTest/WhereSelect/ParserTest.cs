@@ -1,6 +1,4 @@
-﻿
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ModelGraphLibrary;
 
 namespace ModelGraphUnitTest
@@ -135,9 +133,9 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void ParserOperator()
         {
-            RunTest("|", true, 1, StepType.Or);
+            RunTest("|", true, 1, StepType.BitOr);
             RunTest("||", true, 1, StepType.Or);
-            RunTest("&", true, 1, StepType.And);
+            RunTest("&", true, 1, StepType.BitAnd);
             RunTest("&&", true, 1, StepType.And);
             RunTest("!", true, 1, StepType.Not);
             RunTest("+", true, 1, StepType.Plus);
@@ -154,9 +152,9 @@ namespace ModelGraphUnitTest
             RunTest("Has", true, 1, StepType.Has);
             RunTest("Ends", true, 1, StepType.Ends);
             RunTest("Starts", true, 1, StepType.Starts);
-            RunTest(" | ", true, 1, StepType.Or);
+            RunTest(" | ", true, 1, StepType.BitOr);
             RunTest(" || ", true, 1, StepType.Or);
-            RunTest(" & ", true, 1, StepType.And);
+            RunTest(" & ", true, 1, StepType.BitAnd);
             RunTest(" && ", true, 1, StepType.And);
             RunTest(" ! ", true, 1, StepType.Not);
             RunTest(" + ", true, 1, StepType.Plus);

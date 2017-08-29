@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModelGraphLibrary
-{
+{/*
+ */
     public abstract class Item
     {
         internal Item Owner;
@@ -64,6 +61,7 @@ namespace ModelGraphLibrary
         internal bool IsSegue => (QueryKind == QueryType.Segue);
         internal bool IsValue => (QueryKind == QueryType.Value);
         internal bool IsReversed { get { return GetFlag(State.IsReversed); } set { SetFlag(State.IsReversed, value); } }
+        internal bool IsRadial { get { return GetFlag(State.IsRadial); } set { SetFlag(State.IsRadial, value); } }
 
         internal bool IsBreakPoint { get { return GetFlag(State.IsBreakPoint); } set { SetFlag(State.IsBreakPoint, value); } }
         internal bool IsPersistent { get { return GetFlag(State.IsPersistent); } set { SetFlag(State.IsPersistent, value); } }
