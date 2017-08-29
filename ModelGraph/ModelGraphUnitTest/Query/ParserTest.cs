@@ -73,7 +73,7 @@ namespace ModelGraphUnitTest
             }
         }
         [TestMethod]
-        public void ParserParams()
+        public void ParserParens()
         {
             RunTest("(\"should work\")", true, 1, 1, StepType.String, "should work");
             RunTest(" (  \"should work\"  ) ", true, 1, 1, StepType.String, "should work");
