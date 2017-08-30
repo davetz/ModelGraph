@@ -106,17 +106,17 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Change\ChangeRoot.cs" />
-    <Compile Include="Change\ChangeSet.cs" />
-    <Compile Include="Change\ItemChange.cs" />
-    <Compile Include="Change\ItemChildMoved.cs" />
-    <Compile Include="Change\ItemCreated.cs" />
-    <Compile Include="Change\ItemLinked.cs" />
-    <Compile Include="Change\ItemMoved.cs" />
-    <Compile Include="Change\ItemParentMoved.cs" />
-    <Compile Include="Change\ItemRemoved.cs" />
-    <Compile Include="Change\ItemUnlinked.cs" />
-    <Compile Include="Change\ItemUpdated.cs" />
+    <Compile Include="Modified\ChangeRoot.cs" />
+    <Compile Include="Modified\ChangeSet.cs" />
+    <Compile Include="Modified\ItemChange.cs" />
+    <Compile Include="Modified\ItemChildMoved.cs" />
+    <Compile Include="Modified\ItemCreated.cs" />
+    <Compile Include="Modified\ItemLinked.cs" />
+    <Compile Include="Modified\ItemMoved.cs" />
+    <Compile Include="Modified\ItemParentMoved.cs" />
+    <Compile Include="Modified\ItemRemoved.cs" />
+    <Compile Include="Modified\ItemUnlinked.cs" />
+    <Compile Include="Modified\ItemUpdated.cs" />
     <Compile Include="Chef\Chef.cs" />
     <Compile Include="Chef\ChefChange.cs" />
     <Compile Include="Chef\ChefColumn.cs" />

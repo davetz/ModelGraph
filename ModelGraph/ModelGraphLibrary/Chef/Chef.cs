@@ -5,7 +5,8 @@ using Windows.Storage;
 
 namespace ModelGraphLibrary
 {/*
-
+    Chef is the all-knowing coordinator of this application.
+    It is the root owner of all the data and orchastrates all the changes.
  */
     public partial class Chef : StoreOf<Store>
     {

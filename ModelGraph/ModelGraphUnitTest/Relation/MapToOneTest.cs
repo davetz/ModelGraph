@@ -1,13 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ModelGraphLibrary;
 
-namespace ModelGraphUnitTest.Relation
+namespace ModelGraphUnitTest
 {
     [TestClass]
     public class MapToOneTest
     {
         [TestMethod]
-        public void MapToOneWriteReadTest()
+        public void MapToOneBaseTest()
         {
             RunTest(2, 1);
             RunTest(8, 3);
@@ -21,8 +21,8 @@ namespace ModelGraphUnitTest.Relation
 
                 var tbls = ts.Items;
 
-                var N = tblCount / 2;
-                for (int i = 0; i < N; i += 2)
+                var N = tblCount - 1;
+                for (int i = 0; i < N; i++)
                 {
                     var tb1 = tbls[i];
                     var tb2 = tbls[i + 1];
@@ -37,6 +37,17 @@ namespace ModelGraphUnitTest.Relation
             }
         }
 
+        /*
+         *  SetupTestData
+         *  
+         *  Creates prescribed number of tables and equal number of rows for each table.
+         *  It then maps the rows from table[i] to table[i+1].
+         *  
+         *  table[i]        table[i+]       table[i+2]     ...
+         *      row[j] -------> row[j] -------> row[j]     ...
+         *      row[j+1] -----> row[j+1] -----> row[j+1]   ...
+         *       :               :               :          :
+        */
         (StoreOf<TableX>, MapToOne<RowX>) SetupTestData(int tblCount, int rowCount)
         {
             var ts = new StoreOf<TableX>(null, Trait.TableXStore, System.Guid.Empty, tblCount);
@@ -51,8 +62,8 @@ namespace ModelGraphUnitTest.Relation
             var tbls = ts.Items;
             var mp = new MapToOne<RowX>(tblCount * rowCount);
 
-            var N = tblCount / 2;
-            for (int i = 0; i < N; i += 2)
+            var N = tblCount - 1;
+            for (int i = 0; i < N; i++)
             {
                 var tb1 = tbls[i];
                 var tb2 = tbls[i + 1];
