@@ -7,17 +7,17 @@ namespace ModelGraphLibrary
     public class SymbolX : Item
     {
         internal Guid Guid;
-        internal string Name;
-        internal string Summary;
-        internal string Description;
-        internal byte[] Data;
-        internal Contact TopContact;
-        internal Contact LeftContact;
-        internal Contact RightContact;
-        internal Contact BottomContact;
+        public string Name;
+        public string Summary;
+        public string Description;
+        public byte[] Data;
+        public Contact TopContact;
+        public Contact LeftContact;
+        public Contact RightContact;
+        public Contact BottomContact;
 
         #region Constructors  =================================================
-        internal SymbolX(Store owner)
+        public SymbolX(Store owner)
         {
             Guid = Guid.NewGuid();
             Trait = Trait.SymbolX;
@@ -26,7 +26,7 @@ namespace ModelGraphLibrary
 
             owner.Add(this);
         }
-        internal SymbolX(Store owner, Guid guid)
+        public SymbolX(Store owner, Guid guid)
         {
             Guid = guid;
             Trait = Trait.SymbolX;
@@ -40,11 +40,11 @@ namespace ModelGraphLibrary
         private static int minData = 15; //{ w, h, A, R, G, B, SC, EC, DC, DS, PC, x1, y1, x2, y2,..}
         private static byte minSize = 10; // nominal size when there is no symbol data
 
-        internal bool NoData { get { return (Data == null || Data.Length < minData); } }
-        internal byte Width { get { return NoData ? minSize : Data[0]; } }
-        internal byte Height { get { return NoData ? minSize : Data[1]; } }
+        public bool NoData { get { return (Data == null || Data.Length < minData); } }
+        public byte Width { get { return NoData ? minSize : Data[0]; } }
+        public byte Height { get { return NoData ? minSize : Data[1]; } }
 
-        internal byte[] GetOptions()
+        public byte[] GetOptions()
         {
             var options = new byte[4];
             options[0] = (byte)TopContact;

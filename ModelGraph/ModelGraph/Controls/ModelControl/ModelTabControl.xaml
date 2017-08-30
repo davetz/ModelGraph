@@ -1,0 +1,68 @@
+﻿<UserControl
+    x:Class="ModelGraph.ModelTabControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ModelGraph.ModelTabControl"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="32"
+    d:DesignWidth="100">
+
+    <UserControl.Resources>
+        <x:Double x:Key="MaxTabWidth">100</x:Double>
+        <SolidColorBrush x:Key="CloseBrush">#FFEE0000</SolidColorBrush>
+        <SolidColorBrush x:Key="HoverBrush">#FFE6E6E6</SolidColorBrush>
+        <SolidColorBrush x:Key="SelectBrush">#CCFFF29D</SolidColorBrush>
+        <SolidColorBrush x:Key="SelectBrushx">Bisque</SolidColorBrush>
+        <SolidColorBrush x:Key="NormalBrush">Bisque</SolidColorBrush>
+
+
+        <Style x:Key="IconStyle" TargetType="TextBlock">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        </Style>
+
+        <Style x:Key="NameStyle" TargetType="TextBlock">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Margin" Value="16,0,0,0" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+
+        <Style x:Key="CloseStyle" TargetType="TextBlock">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Margin" Value="0,4,0,0" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Canvas.ZIndex" Value="99" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        </Style>
+
+        <Style x:Key="TabCanvasStyle" TargetType="Canvas">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+
+        <Style x:Key="CloseGridStyle" TargetType="Grid">
+            <Setter Property="Canvas.ZIndex" Value="98" />
+            <Setter Property="Background" Value="{StaticResource HoverBrush}" />
+            <Setter Property="Visibility" Value="Collapsed" />
+        </Style>
+    </UserControl.Resources>
+
+    <Canvas x:Name="TabCanvas" Style="{StaticResource TabCanvasStyle}" PointerMoved="TabCanvas_PointerMoved" PointerExited="TabCanvas_PointerExited" PointerPressed="TabCanvas_PointerPressed" >
+        <Grid x:Name="CloseGrid" Style="{StaticResource CloseGridStyle}" PointerPressed="CloseGrid_PointerPressed" PointerEntered="CloseGrid_PointerEntered" PointerExited="CloseGrid_PointerExited">
+            <TextBlock x:Name="CloseBlock" Style="{StaticResource CloseStyle}" />
+        </Grid>
+    </Canvas>
+</UserControl>

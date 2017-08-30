@@ -4,39 +4,39 @@ namespace ModelGraphLibrary
 {/*
 
  */
-    internal struct NodeX
+    public struct NodeX
     {
-        internal int X;
-        internal int Y;
-        internal byte DX;
-        internal byte DY;
-        internal byte Symbol;
-        internal Labeling Labeling;
-        internal Resizing Resizing;
-        internal BarWidth BarWidth;
-        internal FlipRotate FlipRotate;
-        internal Orientation Orientation;
+        public int X;
+        public int Y;
+        public byte DX;
+        public byte DY;
+        public byte Symbol;
+        public Labeling Labeling;
+        public Resizing Resizing;
+        public BarWidth BarWidth;
+        public FlipRotate FlipRotate;
+        public Orientation Orientation;
 
-        internal XYPoint Center => new XYPoint(X, Y);
-        internal Extent Extent => new Extent(X - DX, Y - DY, X + DX, Y + DY);
-        internal Rect Rect => new Rect(X - DX, Y - DY, DX * 2, DY * 2);
-        internal int Radius => (DX + DY) / 2;
+        public XYPoint Center => new XYPoint(X, Y);
+        public Extent Extent => new Extent(X - DX, Y - DY, X + DX, Y + DY);
+        public Rect Rect => new Rect(X - DX, Y - DY, DX * 2, DY * 2);
+        public int Radius => (DX + DY) / 2;
 
         #region Booleans  =====================================================
-        internal bool IsVertical { get { return Orientation == Orientation.Vertical; } }
-        internal bool IsHorizontal { get { return Orientation == Orientation.Horizontal; } }
+        public bool IsVertical { get { return Orientation == Orientation.Vertical; } }
+        public bool IsHorizontal { get { return Orientation == Orientation.Horizontal; } }
 
-        internal bool IsNode { get { return Symbol == 0; } }
-        internal bool IsEgress { get { return Symbol == 1; } }
-        internal bool IsSymbol { get { return Symbol > 1; } }
-        internal bool IsMasked { get { return (IsNode && Orientation != Orientation.Central && Resizing == Resizing.Manual); } }
+        public bool IsNode { get { return Symbol == 0; } }
+        public bool IsEgress { get { return Symbol == 1; } }
+        public bool IsSymbol { get { return Symbol > 1; } }
+        public bool IsMasked { get { return (IsNode && Orientation != Orientation.Central && Resizing == Resizing.Manual); } }
 
-        internal bool IsPointNode { get { return IsNode && Orientation == Orientation.Point; } }
-        internal bool IsAutoSizing { get { return (Resizing == Resizing.Auto && Orientation != Orientation.Point); } }
-        internal bool IsFixedSizing { get { return (Resizing == Resizing.Fixed && Orientation != Orientation.Point); } }
-        internal bool IsManualSizing { get { return (IsNode && Resizing == Resizing.Manual && Orientation != Orientation.Point); } }
-        internal bool IsVerticalSizing { get { return (Resizing == Resizing.Auto && (Orientation == Orientation.Vertical || Orientation == Orientation.Central)); } }
-        internal bool IsHorizontalSizing { get { return (Resizing == Resizing.Auto && (Orientation == Orientation.Horizontal || Orientation == Orientation.Central)); } }
+        public bool IsPointNode { get { return IsNode && Orientation == Orientation.Point; } }
+        public bool IsAutoSizing { get { return (Resizing == Resizing.Auto && Orientation != Orientation.Point); } }
+        public bool IsFixedSizing { get { return (Resizing == Resizing.Fixed && Orientation != Orientation.Point); } }
+        public bool IsManualSizing { get { return (IsNode && Resizing == Resizing.Manual && Orientation != Orientation.Point); } }
+        public bool IsVerticalSizing { get { return (Resizing == Resizing.Auto && (Orientation == Orientation.Vertical || Orientation == Orientation.Central)); } }
+        public bool IsHorizontalSizing { get { return (Resizing == Resizing.Auto && (Orientation == Orientation.Horizontal || Orientation == Orientation.Central)); } }
         #endregion
 
         #region Tryinitialize  ================================================
@@ -227,7 +227,7 @@ namespace ModelGraphLibrary
         static int _ds = GraphParm.HitMargin;
         static int _ds2 = GraphParm.HitMarginSquared;
 
-        internal void Minimize(ref Extent e)
+        public void Minimize(ref Extent e)
         {
             var t = e;
             var p = Center;
@@ -237,7 +237,7 @@ namespace ModelGraphLibrary
 
 
         // quickly eliminate nodes that don't qaulify
-        internal bool HitTest(XYPoint p)
+        public bool HitTest(XYPoint p)
         {
             var x = p.X + 1;
             if (x < (X - DX - _ds)) return false;
@@ -249,7 +249,7 @@ namespace ModelGraphLibrary
             return true;
         }
 
-        internal (HitLocation hit, XYPoint pnt) RefinedHit(XYPoint p)
+        public (HitLocation hit, XYPoint pnt) RefinedHit(XYPoint p)
         {
             int ds;
             int x = p.X + 1;
@@ -291,7 +291,7 @@ namespace ModelGraphLibrary
             return (hit, pnt);
         }
 
-        internal void RefineHitTest(XYPoint p, ref HitLocation hit, ref XYPoint hitPoint)
+        public void RefineHitTest(XYPoint p, ref HitLocation hit, ref XYPoint hitPoint)
         {
             hit |= HitLocation.Node;
             hitPoint = new XYPoint(X, Y);

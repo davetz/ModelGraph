@@ -4,18 +4,18 @@ namespace ModelGraphLibrary
 {/*
 
  */
-    internal class ModelCommand
+    public class ModelCommand
     {
-        internal Chef Chef;
-        internal ItemModel Model;
-        internal Action<ItemModel> Action;
-        internal Action<ItemModel, Object> Action1;
-        internal Object Parameter1;
-        internal string Name;
-        internal string Summary;
+        public Chef Chef;
+        public ItemModel Model;
+        public Action<ItemModel> Action;
+        public Action<ItemModel, Object> Action1;
+        public Object Parameter1;
+        public string Name;
+        public string Summary;
         internal Trait Trait;
 
-        internal ModelCommand(Chef chef, ItemModel model, Trait trait, Action<ItemModel> action)
+        public ModelCommand(Chef chef, ItemModel model, Trait trait, Action<ItemModel> action)
         {
             Chef = chef;
             Model = model;
@@ -24,7 +24,7 @@ namespace ModelGraphLibrary
             Name = chef.GetName(trait);
             Summary = chef.GetSummary(trait); ;
         }
-        internal ModelCommand(Chef chef, ItemModel model, Trait trait, Action<ItemModel, Object> action)
+        public ModelCommand(Chef chef, ItemModel model, Trait trait, Action<ItemModel, Object> action)
         {
             Chef = chef;
             Model = model;
@@ -34,7 +34,7 @@ namespace ModelGraphLibrary
             Summary = chef.GetSummary(trait); ;
         }
 
-        internal void Execute()
+        public void Execute()
         {
             if (Model == null || Model.IsInvalid) return;
 
@@ -43,10 +43,10 @@ namespace ModelGraphLibrary
         }
 
         #region Trait  ========================================================
-        internal bool IsStorageFileParameter1 => (Trait & Trait.GetStorageFile) != 0;
-        internal bool IsSaveAsCommand => (Trait & Trait.KeyMask) == (Trait.SaveAsCommand & Trait.KeyMask);
-        internal bool IsInsertCommand => (Trait == Trait.InsertCommand);
-        internal bool IsRemoveCommand => (Trait == Trait.RemoveCommand);
+        public bool IsStorageFileParameter1 => (Trait & Trait.GetStorageFile) != 0;
+        public bool IsSaveAsCommand => (Trait & Trait.KeyMask) == (Trait.SaveAsCommand & Trait.KeyMask);
+        public bool IsInsertCommand => (Trait == Trait.InsertCommand);
+        public bool IsRemoveCommand => (Trait == Trait.RemoveCommand);
         #endregion
     }
 }

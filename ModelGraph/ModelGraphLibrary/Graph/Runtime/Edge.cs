@@ -10,17 +10,17 @@ namespace ModelGraphLibrary
     {
 
         private Item _key;
-        internal Node Node1;
-        internal Node Node2;
+        public Node Node1;
+        public Node Node2;
 
-        internal XYPoint[] Points;
-        internal Extent Extent; // all points are withing this extent
-        internal short Tm1; // index of terminal point 1
-        internal short Bp1; // index of closes bend point after Tm1 (to the right) 
-        internal short Bp2; // index of closes bend point after Tm2 (to the left)
-        internal short Tm2; // index of terminal point 2
+        public XYPoint[] Points;
+        public Extent Extent; // all points are withing this extent
+        public short Tm1; // index of terminal point 1
+        public short Bp1; // index of closes bend point after Tm1 (to the right) 
+        public short Bp2; // index of closes bend point after Tm2 (to the left)
+        public short Tm2; // index of terminal point 2
 
-        internal EdgeX Core;
+        public EdgeX Core;
 
 
         #region Constructors  =================================================

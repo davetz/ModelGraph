@@ -9,19 +9,19 @@ namespace ModelGraphLibrary
         private double _closingLength;   // length of segment that would close the polygon
         private double _perimeterLength; // polygon's perimeter length;
 
-        internal HashSet<Node> Nodes = new HashSet<Node>();   // nodes inside the region
-        internal List<XYPoint> Points; // region's boundry
-        internal Extent Delta;
-        internal Extent Extent;
-        internal Extent Normal;
-        internal Extent Closing;
+        public HashSet<Node> Nodes = new HashSet<Node>();   // nodes inside the region
+        public List<XYPoint> Points; // region's boundry
+        public Extent Delta;
+        public Extent Extent;
+        public Extent Normal;
+        public Extent Closing;
 
-        internal bool AnyHits { get { return (Nodes.Count > 0); } }
-        internal bool IsPolygon { get { return (Points.Count > 2 && _closingLength < .15 * _perimeterLength); } }
-        internal bool IsViable { get { return (Points.Count > 1 && Extent.HasArea); } }
+        public bool AnyHits { get { return (Nodes.Count > 0); } }
+        public bool IsPolygon { get { return (Points.Count > 2 && _closingLength < .15 * _perimeterLength); } }
+        public bool IsViable { get { return (Points.Count > 1 && Extent.HasArea); } }
 
         #region Constructor  ==================================================
-        internal Region(XYPoint p, int minSpacing = -1)
+        public Region(XYPoint p, int minSpacing = -1)
         {
             _ds = (minSpacing < 0) ? GraphParm.PolygonPointSpacing : minSpacing;
 
@@ -37,7 +37,7 @@ namespace ModelGraphLibrary
 
         #region Add, Close  ===================================================
         // try to add another point to the region
-        internal bool Add(XYPoint p)
+        public bool Add(XYPoint p)
         {
             if (_ds == 0)
             {
@@ -71,7 +71,7 @@ namespace ModelGraphLibrary
         }
 
         // enter the last point and close the region
-        internal void Close(XYPoint p)
+        public void Close(XYPoint p)
         {
             Add(p);
             if (IsPolygon) return;
@@ -84,7 +84,7 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Move  =========================================================
-        internal void Move(XYPoint delta)
+        public void Move(XYPoint delta)
         {
             for (int i = 0; i < Points.Count; i++)
             {
@@ -97,7 +97,7 @@ namespace ModelGraphLibrary
 
         #region HitTest  ======================================================
         // hit test the point
-        internal bool HitTest(XYPoint p)
+        public bool HitTest(XYPoint p)
         {
             if (IsPolygon)
             {
@@ -137,7 +137,7 @@ namespace ModelGraphLibrary
             else return Normal.Contains(p);
         }
 
-        internal bool HitTest(Edge edge, out int index1, out int index2, out bool isInterior)
+        public bool HitTest(Edge edge, out int index1, out int index2, out bool isInterior)
         {
             isInterior = false;
             index1 = index2 = -1;

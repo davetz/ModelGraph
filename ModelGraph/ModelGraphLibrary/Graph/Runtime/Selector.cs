@@ -5,64 +5,64 @@ namespace ModelGraphLibrary
 {
     public class Selector
     {
-        internal Graph Graph;   // reference the graphs Node and Edge lists
+        public Graph Graph;   // reference the graphs Node and Edge lists
 
-        internal List<Region> Regions = new List<Region>();
+        public List<Region> Regions = new List<Region>();
 
-        internal Node PrevNode;
-        internal Edge PrevEdge;
-        internal HitLocation PrevLocation;
+        public Node PrevNode;
+        public Edge PrevEdge;
+        public HitLocation PrevLocation;
 
-        internal Node HitNode; // index of node
-        internal Edge HitEdge; // index of edge
-        internal int HitBend;  // index of bend point (relative to edge.Core.bends)
-        internal int HitIndex; // index of start of the hit segment (relative to edge.point)
-        internal XYPoint HitPoint; // the refined hit point location
-        internal Region HitRegion; // hit this specific region
-        internal HitLocation HitLocation; // nuanced hit location details
+        public Node HitNode; // index of node
+        public Edge HitEdge; // index of edge
+        public int HitBend;  // index of bend point (relative to edge.Core.bends)
+        public int HitIndex; // index of start of the hit segment (relative to edge.point)
+        public XYPoint HitPoint; // the refined hit point location
+        public Region HitRegion; // hit this specific region
+        public HitLocation HitLocation; // nuanced hit location details
 
-        internal Edge BendEdge;     // when bending an edge, remember which edge it is
-        internal int BendIndex;     // when moving an bend point, remember which point it is
+        public Edge BendEdge;     // when bending an edge, remember which edge it is
+        public int BendIndex;     // when moving an bend point, remember which point it is
 
-        internal EdgeCut[] HitNodeEdgeCuts;  // edges cut by region(s)
+        public EdgeCut[] HitNodeEdgeCuts;  // edges cut by region(s)
 
         private bool _enableSnapShot;
 
         #region Constructor  ==================================================
-        internal Selector(Graph graph)
+        public Selector(Graph graph)
         {
             Graph = graph;
         }
         #endregion
 
         #region Properties  ===================================================
-        internal bool IsVoidHit { get { return (HitLocation == HitLocation.Void); } }
-        internal bool IsNodeHit { get { return ((HitLocation & HitLocation.Node) != 0); } }
-        internal bool IsEdgeHit { get { return ((HitLocation & HitLocation.Edge) != 0); } }
-        internal bool IsRegionHit { get { return ((HitLocation & HitLocation.Region) != 0); } }
+        public bool IsVoidHit { get { return (HitLocation == HitLocation.Void); } }
+        public bool IsNodeHit { get { return ((HitLocation & HitLocation.Node) != 0); } }
+        public bool IsEdgeHit { get { return ((HitLocation & HitLocation.Edge) != 0); } }
+        public bool IsRegionHit { get { return ((HitLocation & HitLocation.Region) != 0); } }
 
-        internal bool IsChanged { get { return PrevNode != HitNode || PrevEdge != HitEdge || PrevLocation != HitLocation; } }
+        public bool IsChanged { get { return PrevNode != HitNode || PrevEdge != HitEdge || PrevLocation != HitLocation; } }
 
-        internal bool HitTop { get { return ((HitLocation & HitLocation.Top) != 0); } }
-        internal bool HitLeft { get { return ((HitLocation & HitLocation.Left) != 0); } }
-        internal bool HitRignt { get { return ((HitLocation & HitLocation.Right) != 0); } }
-        internal bool HitBottom { get { return ((HitLocation & HitLocation.Bottom) != 0); } }
-        internal bool HitCenter { get { return ((HitLocation & HitLocation.Center) != 0); } }
-        internal bool HitSideOf { get { return ((HitLocation & HitLocation.SideOf) != 0); } }
+        public bool HitTop { get { return ((HitLocation & HitLocation.Top) != 0); } }
+        public bool HitLeft { get { return ((HitLocation & HitLocation.Left) != 0); } }
+        public bool HitRignt { get { return ((HitLocation & HitLocation.Right) != 0); } }
+        public bool HitBottom { get { return ((HitLocation & HitLocation.Bottom) != 0); } }
+        public bool HitCenter { get { return ((HitLocation & HitLocation.Center) != 0); } }
+        public bool HitSideOf { get { return ((HitLocation & HitLocation.SideOf) != 0); } }
 
-        internal bool HitNearEnd1 { get { return ((HitLocation & HitLocation.End1) != 0); } }
-        internal bool HitNearEnd2 { get { return ((HitLocation & HitLocation.End2) != 0); } }
-        internal bool HitBendPoint { get { return ((HitLocation & HitLocation.Bend) != 0); } }
+        public bool HitNearEnd1 { get { return ((HitLocation & HitLocation.End1) != 0); } }
+        public bool HitNearEnd2 { get { return ((HitLocation & HitLocation.End2) != 0); } }
+        public bool HitBendPoint { get { return ((HitLocation & HitLocation.Bend) != 0); } }
 
         // Cached results of GetUnion for efficient repeated access 
-        internal HashSet<Node> Nodes = new HashSet<Node>();     // nodes inside the union of regions
-        internal HashSet<Edge> Edges = new HashSet<Edge>();     // edges completely inside the union of regions
-        internal HashSet<Edge> Chops = new HashSet<Edge>();     // edges with only one end inside the union of regions
-        internal List<EdgeCut> EdgeCuts = new List<EdgeCut>();  // cut edge points inside the union of regions
+        public HashSet<Node> Nodes = new HashSet<Node>();     // nodes inside the union of regions
+        public HashSet<Edge> Edges = new HashSet<Edge>();     // edges completely inside the union of regions
+        public HashSet<Edge> Chops = new HashSet<Edge>();     // edges with only one end inside the union of regions
+        public List<EdgeCut> EdgeCuts = new List<EdgeCut>();  // cut edge points inside the union of regions
         #endregion
 
         #region TryAddRegion  =================================================
-        internal void TryAddRegion(Region region)
+        public void TryAddRegion(Region region)
         {
             if (region.IsViable)
             {
@@ -131,7 +131,7 @@ namespace ModelGraphLibrary
         #endregion
 
         #region GetChangedItems  ==============================================
-        internal Item[] GetChangedItems()
+        public Item[] GetChangedItems()
         {
             Item[] items = null;
             if ((HitLocation & HitLocation.Region) != 0)
@@ -173,7 +173,7 @@ namespace ModelGraphLibrary
         #endregion
 
         #region HitTest  ======================================================
-        internal void HitTest(XYPoint p)
+        public void HitTest(XYPoint p)
         {
             PrevNode = HitNode;
             PrevEdge = HitEdge;
@@ -270,7 +270,7 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Clear  ========================================================
-        internal void Clear()
+        public void Clear()
         {
             Nodes.Clear();
             Edges.Clear();
@@ -281,7 +281,7 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Move  =========================================================
-        internal void Move(XYPoint delta)
+        public void Move(XYPoint delta)
         {
             if (_enableSnapShot) TakeSnapShot();
 
@@ -300,7 +300,7 @@ namespace ModelGraphLibrary
             }
         }
 
-        internal void AdjustGraph()
+        public void AdjustGraph()
         {
             Graph.AdjustGraph(this);
             _enableSnapShot = true;
@@ -308,7 +308,7 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Align  ========================================================
-        internal void AlignVertical()
+        public void AlignVertical()
         {
             if (HitNode != null)
             {
@@ -320,7 +320,7 @@ namespace ModelGraphLibrary
                 }
             }
         }
-        internal void AlignHorizontal()
+        public void AlignHorizontal()
         {
             if (HitNode != null)
             {
@@ -335,7 +335,7 @@ namespace ModelGraphLibrary
         #endregion
 
         #region TakeSnapShot  =================================================
-        internal void TakeSnapShot()
+        public void TakeSnapShot()
         {
             _enableSnapShot = false;
 

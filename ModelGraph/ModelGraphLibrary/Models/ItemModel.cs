@@ -6,16 +6,16 @@ namespace ModelGraphLibrary
  */
     public class ItemModel
     {
-        internal Item Item1;
-        internal Item Item2;
-        internal Item Item3;
-        internal ItemModel ParentModel;   // allows bidirectional tree taversal
-        internal ItemModel[] ChildModels; // hierarchal subtree of models 
+        public Item Item1;
+        public Item Item2;
+        public Item Item3;
+        public ItemModel ParentModel;   // allows bidirectional tree taversal
+        public ItemModel[] ChildModels; // hierarchal subtree of models 
         protected Action<ItemModel, RootModel> _getData;
         internal Trait Trait;
         private State1 _flags1;
         private State2 _flags2;
-        internal byte Level;
+        public byte Level;
 
         #region Constructor  ==================================================
         internal ItemModel(ItemModel parent, Trait trait = Trait.Empty, byte level = 0, Item item1 = null, Item item2 = null, Item item3 = null,
@@ -78,28 +78,28 @@ namespace ModelGraphLibrary
         private bool GetFlag2(State2 state) => (_flags2 & state) != 0;
         private void SetFlag2(State2 state, bool value) { if (value) _flags2 |= state; else _flags2 &= ~state; }
 
-        internal bool CanDrag { get { return GetFlag2(State2.CanDrag); } set { SetFlag2(State2.CanDrag, value); } }
-        internal bool CanSort { get { return GetFlag2(State2.CanSort); } set { SetFlag2(State2.CanSort, value); } }
-        internal bool CanFilter { get { return GetFlag2(State2.CanFilter); } set { SetFlag2(State2.CanFilter, value); } }
-        internal bool CanMultiline { get { return GetFlag2(State2.CanMultiline); } set { SetFlag2(State2.CanMultiline, value); } }
-        internal bool CanExpandLeft { get { return GetFlag2(State2.CanExpandLeft); } set { SetFlag2(State2.CanExpandLeft, value); } }
-        internal bool CanExpandRight { get { return GetFlag2(State2.CanExpandRight); } set { SetFlag2(State2.CanExpandRight, value); } }
-        internal bool CanFilterUsage { get { return GetFlag2(State2.CanFilterUsage); } set { SetFlag2(State2.CanFilterUsage, value); } }
+        public bool CanDrag { get { return GetFlag2(State2.CanDrag); } set { SetFlag2(State2.CanDrag, value); } }
+        public bool CanSort { get { return GetFlag2(State2.CanSort); } set { SetFlag2(State2.CanSort, value); } }
+        public bool CanFilter { get { return GetFlag2(State2.CanFilter); } set { SetFlag2(State2.CanFilter, value); } }
+        public bool CanMultiline { get { return GetFlag2(State2.CanMultiline); } set { SetFlag2(State2.CanMultiline, value); } }
+        public bool CanExpandLeft { get { return GetFlag2(State2.CanExpandLeft); } set { SetFlag2(State2.CanExpandLeft, value); } }
+        public bool CanExpandRight { get { return GetFlag2(State2.CanExpandRight); } set { SetFlag2(State2.CanExpandRight, value); } }
+        public bool CanFilterUsage { get { return GetFlag2(State2.CanFilterUsage); } set { SetFlag2(State2.CanFilterUsage, value); } }
 
-        internal bool IsChanged { get { return !GetFlag1(State1.IsChanged); } set { SetFlag1(State1.IsChanged, !value); } }
-        internal bool IsReadOnly { get { return GetFlag1(State1.IsReadOnly); } set { SetFlag1(State1.IsReadOnly, !value); } }
-        internal bool IsMultiline { get { return GetFlag1(State1.IsMultiline); } set { SetFlag1(State1.IsMultiline, !value); } }
-        internal bool IsExpandedLeft { get { return GetFlag1(State1.IsExpandLeft); } set { var prev = GetFlag1(State1.IsExpandLeft); SetFlag1(State1.IsExpandLeft, value); if (prev != value) IsChanged = true; if (!value) IsExpandedRight = false; } }
-        internal bool IsExpandedRight { get { return GetFlag1(State1.IsExpandRight); } set { var prev = GetFlag1(State1.IsExpandRight); SetFlag1(State1.IsExpandRight, value); if (prev != value) IsChanged = true; } }
-        internal bool IsFilterFocus { get { return GetFlag1(State1.SetFilterFocus); } set { SetFlag1(State1.SetFilterFocus, value); } }
+        public bool IsChanged { get { return !GetFlag1(State1.IsChanged); } set { SetFlag1(State1.IsChanged, !value); } }
+        public bool IsReadOnly { get { return GetFlag1(State1.IsReadOnly); } set { SetFlag1(State1.IsReadOnly, !value); } }
+        public bool IsMultiline { get { return GetFlag1(State1.IsMultiline); } set { SetFlag1(State1.IsMultiline, !value); } }
+        public bool IsExpandedLeft { get { return GetFlag1(State1.IsExpandLeft); } set { var prev = GetFlag1(State1.IsExpandLeft); SetFlag1(State1.IsExpandLeft, value); if (prev != value) IsChanged = true; if (!value) IsExpandedRight = false; } }
+        public bool IsExpandedRight { get { return GetFlag1(State1.IsExpandRight); } set { var prev = GetFlag1(State1.IsExpandRight); SetFlag1(State1.IsExpandRight, value); if (prev != value) IsChanged = true; } }
+        public bool IsFilterFocus { get { return GetFlag1(State1.SetFilterFocus); } set { SetFlag1(State1.SetFilterFocus, value); } }
 
-        internal bool IsExpandedFilter { get { return GetFlag1(State1.IsExpandFilter); } set { var prev = GetFlag1(State1.IsExpandFilter); SetExpandedFilter(value);
+        public bool IsExpandedFilter { get { return GetFlag1(State1.IsExpandFilter); } set { var prev = GetFlag1(State1.IsExpandFilter); SetExpandedFilter(value);
                 if (prev != value)
                 {
                     IsChanged = true;
                     if (value) IsFilterFocus = true;
                 } } }
-        internal void SetExpandedFilter(bool value)
+        public void SetExpandedFilter(bool value)
         {
             SetFlag1(State1.IsExpandFilter, value);
 
@@ -109,45 +109,45 @@ namespace ModelGraphLibrary
                 root.ViewFilter.Remove(this);
             }
         }
-        internal bool IsSortAscending { get { return GetFlag1(State1.IsAscendingSort); } set { var prev = GetFlag1(State1.IsAscendingSort); SetFlag1(State1.IsAscendingSort, value); if (prev != value) IsChanged = true; } }
-        internal bool IsSortDescending { get { return GetFlag1(State1.IsDescendingSort); } set { var prev = GetFlag1(State1.IsDescendingSort); SetFlag1(State1.IsDescendingSort, value); if (prev != value) IsChanged = true; } }
-        internal bool IsUsedFilter { get { return GetFlag1(State1.IsUsedFilter); } set { var prev = GetFlag1(State1.IsUsedFilter); SetFlag1(State1.IsUsedFilter, value); if (prev != value) IsChanged = true; } }
-        internal bool IsNotUsedFilter { get { return GetFlag1(State1.IsNotUsedFilter); } set { var prev = GetFlag1(State1.IsNotUsedFilter); SetFlag1(State1.IsNotUsedFilter, value); if (prev != value) IsChanged = true; } }
+        public bool IsSortAscending { get { return GetFlag1(State1.IsAscendingSort); } set { var prev = GetFlag1(State1.IsAscendingSort); SetFlag1(State1.IsAscendingSort, value); if (prev != value) IsChanged = true; } }
+        public bool IsSortDescending { get { return GetFlag1(State1.IsDescendingSort); } set { var prev = GetFlag1(State1.IsDescendingSort); SetFlag1(State1.IsDescendingSort, value); if (prev != value) IsChanged = true; } }
+        public bool IsUsedFilter { get { return GetFlag1(State1.IsUsedFilter); } set { var prev = GetFlag1(State1.IsUsedFilter); SetFlag1(State1.IsUsedFilter, value); if (prev != value) IsChanged = true; } }
+        public bool IsNotUsedFilter { get { return GetFlag1(State1.IsNotUsedFilter); } set { var prev = GetFlag1(State1.IsNotUsedFilter); SetFlag1(State1.IsNotUsedFilter, value); if (prev != value) IsChanged = true; } }
         #endregion
 
         #region Trait  ========================================================
-        internal bool IsProperty => (IsTextProperty || IsComboProperty || IsCheckProperty);
-        internal bool IsTextProperty => Trait == Trait.TextProperty_M;
-        internal bool IsComboProperty => Trait == Trait.ComboProperty_M;
-        internal bool IsCheckProperty => Trait == Trait.CheckProperty_M;
+        public bool IsProperty => (IsTextProperty || IsComboProperty || IsCheckProperty);
+        public bool IsTextProperty => Trait == Trait.TextProperty_M;
+        public bool IsComboProperty => Trait == Trait.ComboProperty_M;
+        public bool IsCheckProperty => Trait == Trait.CheckProperty_M;
 
-        internal bool IsRowChildRelationModel => Trait == Trait.RowChildRelation_M;
-        internal bool IsRowParentRelationModel => Trait == Trait.RowParentRelation_M;
+        public bool IsRowChildRelationModel => Trait == Trait.RowChildRelation_M;
+        public bool IsRowParentRelationModel => Trait == Trait.RowParentRelation_M;
         #endregion
 
         #region Properties/Methods  ===========================================
-       internal ViewRequest BuildViewRequest(ControlType controlType)
+        public ViewRequest BuildViewRequest(ControlType controlType)
         {
             return new ViewRequest(controlType, Trait, Item1.GetChef(), Item1, Item2, Item3, _getData, true);
         }
-        internal ViewRequest BuildViewRequest(ControlType controlType, Trait trait, Action<ItemModel, RootModel> getData)
+        public ViewRequest BuildViewRequest(ControlType controlType, Trait trait, Action<ItemModel, RootModel> getData)
         {
             return new ViewRequest(controlType, trait, Item1.GetChef(), Item1, Item2, Item3, getData, true);
         }
-        internal int FilterCount { get { return (ChildModels == null) ? 0 : ChildModels.Length; } }
-        internal bool HasError { get { return false; } }
-        internal bool IsModified { get { return false; } }
-        internal string ModelIdentity => GetModelIdentity();
-        internal Action<ItemModel, RootModel> ModelGetData => _getData;
+        public int FilterCount { get { return (ChildModels == null) ? 0 : ChildModels.Length; } }
+        public bool HasError { get { return false; } }
+        public bool IsModified { get { return false; } }
+        public string ModelIdentity => GetModelIdentity();
+        public Action<ItemModel, RootModel> ModelGetData => _getData;
 
-        internal bool IsExpanded => (IsExpandedLeft || IsExpandedRight);
-        internal bool IsSorted => (IsSortAscending || IsSortDescending);
+        public bool IsExpanded => (IsExpandedLeft || IsExpandedRight);
+        public bool IsSorted => (IsSortAscending || IsSortDescending);
 
-        internal bool IsInvalid => (Item1 == null || Item1.IsInvalid);
-        internal void Validate() { _getData?.Invoke(this, null); }
-        internal void GetData(RootModel root) { _getData?.Invoke(this, root); }
+        public bool IsInvalid => (Item1 == null || Item1.IsInvalid);
+        public void Validate() { _getData?.Invoke(this, null); }
+        public void GetData(RootModel root) { _getData?.Invoke(this, root); }
 
-        internal int GetChildlIndex(ItemModel child)
+        public int GetChildlIndex(ItemModel child)
         {
             if (ChildModels != null)
             {
@@ -173,11 +173,11 @@ namespace ModelGraphLibrary
                 return $"{Trait.ToString()}  ({code.ToString("X3")})";
             }
         }
-        internal Graph Graph { get { return Item1 as Graph; } }
-        internal Relation Relation { get { return Item2 as Relation; } }
-        internal Query Query { get { return Item2 as Query; } }
+        public Graph Graph { get { return Item1 as Graph; } }
+        public Relation Relation { get { return Item2 as Relation; } }
+        public Query Query { get { return Item2 as Query; } }
 
-        internal bool IsChildModel(ItemModel model)
+        public bool IsChildModel(ItemModel model)
         {
             if (ChildModels == null) return false;
             foreach (var child in ChildModels)
@@ -186,12 +186,12 @@ namespace ModelGraphLibrary
             }
             return false;
         }
-        internal bool IsSiblingModel(ItemModel model)
+        public bool IsSiblingModel(ItemModel model)
         {
             return (ParentModel == model.ParentModel);
         }
 
-        internal RootModel GetRootModel()
+        public RootModel GetRootModel()
         {
             var mdl = this;
             while (mdl.ParentModel != null) { mdl = mdl.ParentModel; }

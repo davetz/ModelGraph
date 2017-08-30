@@ -5,31 +5,31 @@ namespace ModelGraphLibrary
  */
     public partial class Graph : Item
     {
-        internal Item RootItem;    // specified root of graph (if any)
-        internal Query[] Forest;   // roots of the query forest
-        internal SymbolX[] Symbols; // referenced by (byte)Node.NodeCore.Symbol
+        public Item RootItem;    // specified root of graph (if any)
+        public Query[] Forest;   // roots of the query forest
+        public SymbolX[] Symbols; // referenced by (byte)Node.NodeCore.Symbol
 
-        internal List<Node> Nodes = new List<Node>();
-        internal List<Edge> Edges = new List<Edge>();
-        internal List<Path> Paths = new List<Path>();
-        internal List<Level> Levels = new List<Level>();
+        public List<Node> Nodes = new List<Node>();
+        public List<Edge> Edges = new List<Edge>();
+        public List<Path> Paths = new List<Path>();
+        public List<Level> Levels = new List<Level>();
         internal List<QueryPair> PathQuerys = new List<QueryPair>();  // completed path query sequences
         internal List<QueryPair> OpenQuerys = new List<QueryPair>();  // incomplete path query sequences
         internal List<QueryPair> GroupQuerys = new List<QueryPair>(); // completed group query sequences
         internal List<QueryPair> SegueQuerys = new List<QueryPair>(); // completed segue query sequences
 
-        internal HashSet<Item> NodeItems = new HashSet<Item>(); // hash of Node.Item for all nodes
-        internal Dictionary<Node, List<Edge>> Node_Edges = new Dictionary<Node, List<Edge>>(); // list of edges for each node
-        internal Dictionary<Item, Node> Item_Node = new Dictionary<Item, Node>();              // look up item -> node
+        public HashSet<Item> NodeItems = new HashSet<Item>(); // hash of Node.Item for all nodes
+        public Dictionary<Node, List<Edge>> Node_Edges = new Dictionary<Node, List<Edge>>(); // list of edges for each node
+        public Dictionary<Item, Node> Item_Node = new Dictionary<Item, Node>();              // look up item -> node
 
-        internal GroupColor[] GroupColors;
-        internal Dictionary<Item, int> Item_ColorIndex;
-        internal Dictionary<Item, int> Group_ColorIndex;
+        public GroupColor[] GroupColors;
+        public Dictionary<Item, int> Item_ColorIndex;
+        public Dictionary<Item, int> Group_ColorIndex;
 
-        internal int MinorDelta = 1; // incremented each time am item property changes
-        internal int MajorDelta = 1; // incremented each time an item collection changes
+        public int MinorDelta = 1; // incremented each time am item property changes
+        public int MajorDelta = 1; // incremented each time an item collection changes
 
-        internal Extent Extent;  // current x,y extent of this graph
+        public Extent Extent;  // current x,y extent of this graph
 
         #region Constructor  ==================================================
         internal Graph(GraphX owner, Query[] querys, Item rootItem = null)
@@ -44,12 +44,12 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Properties/Methods  ===========================================
-        internal void Add(Path path) { Paths.Add(path); }
-        internal void Add(Level level) { Levels.Add(level); }
+        public void Add(Path path) { Paths.Add(path); }
+        public void Add(Level level) { Levels.Add(level); }
 
-        internal GraphX GraphX { get { return Owner as GraphX; } }
-        internal int QueryCount { get { return (Forest == null) ? 0 : Forest.Length; } }
-        internal int OpenPathCount(int index)
+        public GraphX GraphX { get { return Owner as GraphX; } }
+        public int QueryCount { get { return (Forest == null) ? 0 : Forest.Length; } }
+        public int OpenPathCount(int index)
         {
             if (index < 0 || index > OpenQuerys.Count) return 0;
             var head = OpenQuerys[index].Query1.Item;
@@ -61,17 +61,17 @@ namespace ModelGraphLibrary
             }
             return count;
         }
-        internal int Count => Levels.Count;
+        public int Count => Levels.Count;
 
-        internal bool TryGetTopLevel(out Level lvl) { lvl = null; if (Count == 0) return false; lvl = Levels[Count - 1] as Level; return true; }
+        public bool TryGetTopLevel(out Level lvl) { lvl = null; if (Count == 0) return false; lvl = Levels[Count - 1] as Level; return true; }
 
-        internal string Name => GraphX.Name;
+        public string Name => GraphX.Name;
 
-        internal int NodeCount { get { return (Nodes == null) ? 0 : Nodes.Count; } }
-        internal int EdgeCount { get { return (Edges == null) ? 0 : Edges.Count; } }
-        internal int SymbolCount { get { return (Symbols == null) ? 0 : Symbols.Length; } }
+        public int NodeCount { get { return (Nodes == null) ? 0 : Nodes.Count; } }
+        public int EdgeCount { get { return (Edges == null) ? 0 : Edges.Count; } }
+        public int SymbolCount { get { return (Symbols == null) ? 0 : Symbols.Length; } }
 
-        internal void Reset()
+        public void Reset()
         {
             Forest = null;
             Symbols = null;
@@ -112,7 +112,7 @@ namespace ModelGraphLibrary
                 GraphX.Remove(this);
             }
         }
-        internal void RefreshGraphPoints()
+        public void RefreshGraphPoints()
         {
             SetExtent();
             foreach (var edge in Edges) { edge.Refresh(); }
@@ -126,13 +126,13 @@ namespace ModelGraphLibrary
     }
 
     #region RelatedStructures  ================================================
-    internal struct GroupColor
+    public struct GroupColor
     {
-        internal byte A;
-        internal byte R;
-        internal byte G;
-        internal byte B;
-        internal GroupColor(byte a, byte r, byte g, byte b)
+        public byte A;
+        public byte R;
+        public byte G;
+        public byte B;
+        public GroupColor(byte a, byte r, byte g, byte b)
         {
             A = a;
             R = r;
@@ -140,11 +140,11 @@ namespace ModelGraphLibrary
             B = b;
         }
     }
-    internal struct QueryPair
+    public struct QueryPair
     {
-        internal Query Query1;
-        internal Query Query2;
-        internal QueryPair(Query query1, Query query2)
+        public Query Query1;
+        public Query Query2;
+        public QueryPair(Query query1, Query query2)
         {
             Query1 = query1;
             Query2 = query2;

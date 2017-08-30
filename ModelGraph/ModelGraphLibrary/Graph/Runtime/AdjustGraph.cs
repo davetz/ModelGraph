@@ -14,7 +14,7 @@ namespace ModelGraphLibrary
             SetExtent();
             MinorDelta += 1;
         }
-        internal void AdjustGraph(Selector selector)
+        public void AdjustGraph(Selector selector)
         {
             var nodes = new HashSet<Node>();
             var edges = new HashSet<Edge>();

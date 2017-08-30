@@ -5,9 +5,9 @@ namespace ModelGraphLibrary
 {
     public class Node : Item
     {
-        internal Item Item;
-        internal NodeX Core;
-        internal int OpenPathIndex = -1;
+        public Item Item;
+        public NodeX Core;
+        public int OpenPathIndex = -1;
 
         #region Constructor  ==================================================
         internal Node(int cp = 0)

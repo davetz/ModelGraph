@@ -32,7 +32,7 @@ namespace ModelGraphLibrary
         }
         // Model refresh runs after each execution. We only
         // need to invoke an execution on the background thread.
-        internal void PostModelRefresh(ItemModel model)
+        public void PostModelRefresh(ItemModel model)
         {
             if (model == null || model.IsInvalid) return;
 

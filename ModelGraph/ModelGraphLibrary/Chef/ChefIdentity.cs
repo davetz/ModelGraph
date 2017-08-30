@@ -11,7 +11,7 @@ namespace ModelGraphLibrary
         private Dictionary<Trait, Func<Item, IdentityStyle, string>> _itemIdentity;
 
         #region GetIdentity  ==================================================
-        internal string GetIdentity(Item item, IdentityStyle style)
+        public string GetIdentity(Item item, IdentityStyle style)
         {
             if (item != null && _itemIdentity.TryGetValue(item.Trait, out Func<Item, IdentityStyle, string> id))
                 return id(item, style);
@@ -692,7 +692,7 @@ namespace ModelGraphLibrary
     }
 
     #region IdentityStyle  ====================================================
-    internal enum IdentityStyle
+    public enum IdentityStyle
     {
         Kind,
         Single,

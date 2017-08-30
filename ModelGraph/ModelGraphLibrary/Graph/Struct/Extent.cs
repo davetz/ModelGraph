@@ -7,30 +7,30 @@ namespace ModelGraphLibrary
 {
     public struct Extent
     {
-        internal int X1;
-        internal int Y1;
-        internal int X2;
-        internal int Y2;
+        public int X1;
+        public int Y1;
+        public int X2;
+        public int Y2;
 
         #region Constructor  ==================================================
-        internal Extent(int s)
+        public Extent(int s)
         {
             X1 = X2 = Y1 = Y2 = s;
         }
 
-        internal Extent(XYPoint p)
+        public Extent(XYPoint p)
         {
             X1 = X2 = p.X;
             Y1 = Y2 = p.Y;
         }
 
-        internal Extent(int x, int y)
+        public Extent(int x, int y)
         {
             X1 = X2 = x;
             Y1 = Y2 = y;
         }
 
-        internal Extent(int x1, int y1, int x2, int y2)
+        public Extent(int x1, int y1, int x2, int y2)
         {
             X1 = x1;
             Y1 = y1;
@@ -38,7 +38,7 @@ namespace ModelGraphLibrary
             Y2 = y2;
         }
 
-        internal Extent(XYPoint p, int ds)
+        public Extent(XYPoint p, int ds)
         {
             X1 = p.X + 1 - ds;
             X2 = p.X + 1 + ds;
@@ -46,7 +46,7 @@ namespace ModelGraphLibrary
             Y2 = p.Y + 1 + ds;
         }
 
-        internal Extent(XYPoint p, Vector2 ds)
+        public Extent(XYPoint p, Vector2 ds)
         {
             X1 = p.X - (int)ds.X;
             X2 = p.X + (int)ds.X;
@@ -54,7 +54,7 @@ namespace ModelGraphLibrary
             Y2 = p.Y + (int)ds.Y;
         }
 
-        internal Extent(XYPoint p1, XYPoint p2)
+        public Extent(XYPoint p1, XYPoint p2)
         {
             if (p1.X < p2.X)
             {
@@ -80,7 +80,7 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Move  =========================================================
-        internal void Move(XYPoint delta)
+        public void Move(XYPoint delta)
         {
             X1 += delta.X;
             X2 += delta.X;
@@ -90,33 +90,33 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Shape  ========================================================
-        internal bool IsTall { get { return DY > DX; } }
-        internal bool IsWide { get { return DX > DY; } }
-        internal bool IsEmpty { get { return (IsVertical || IsHorizontal); } }
-        internal bool HasArea { get { return (X1 != X2 && Y1 != Y2); } }
-        internal bool IsVertical { get { return (X1 == X2); } }
-        internal bool IsHorizontal { get { return (Y1 == Y2); } }
+        public bool IsTall { get { return DY > DX; } }
+        public bool IsWide { get { return DX > DY; } }
+        public bool IsEmpty { get { return (IsVertical || IsHorizontal); } }
+        public bool HasArea { get { return (X1 != X2 && Y1 != Y2); } }
+        public bool IsVertical { get { return (X1 == X2); } }
+        public bool IsHorizontal { get { return (Y1 == Y2); } }
         #endregion
 
         #region Center  =======================================================
-        internal int CenterX { get { return (X2 + X1) / 2; } }
-        internal int CenterY { get { return (Y2 + Y1) / 2; } }
-        internal XYPoint Center { get { return new XYPoint(CenterX, CenterY); } }
+        public int CenterX { get { return (X2 + X1) / 2; } }
+        public int CenterY { get { return (Y2 + Y1) / 2; } }
+        public XYPoint Center { get { return new XYPoint(CenterX, CenterY); } }
         #endregion
 
         #region Points  =======================================================
-        internal void Points(XYPoint p1, XYPoint p2) { Point1 = p1; Point2 = p2; }
-        internal XYPoint Point1 { get { return new XYPoint(X1, Y1); } set { X1 = value.X; Y1 = value.Y; } }
-        internal XYPoint Point2 { get { return new XYPoint(X2, Y2); } set { X2 = value.X; Y2 = value.Y; } }
-        internal void Record(XYPoint p) { Point1 = Point2; Point2 = p; }
+        public void Points(XYPoint p1, XYPoint p2) { Point1 = p1; Point2 = p2; }
+        public XYPoint Point1 { get { return new XYPoint(X1, Y1); } set { X1 = value.X; Y1 = value.Y; } }
+        public XYPoint Point2 { get { return new XYPoint(X2, Y2); } set { X2 = value.X; Y2 = value.Y; } }
+        public void Record(XYPoint p) { Point1 = Point2; Point2 = p; }
 
-        internal void Record(XYPoint p, float scale) { Point1 = Point2; SetPoint2(p, scale); }
-        internal void SetPoint1(XYPoint p, float scale) { X1 = (int)(p.X * scale); Y1 = (int)(p.Y * scale); }
-        internal void SetPoint2(XYPoint p, float scale) { X2 = (int)(p.X * scale); Y2 = (int)(p.Y * scale); }
+        public void Record(XYPoint p, float scale) { Point1 = Point2; SetPoint2(p, scale); }
+        public void SetPoint1(XYPoint p, float scale) { X1 = (int)(p.X * scale); Y1 = (int)(p.Y * scale); }
+        public void SetPoint2(XYPoint p, float scale) { X2 = (int)(p.X * scale); Y2 = (int)(p.Y * scale); }
         #endregion
 
         #region Expand  =======================================================
-        internal void Expand(int margin)
+        public void Expand(int margin)
         {
             X1 -= margin;
             Y1 -= margin;
@@ -124,14 +124,14 @@ namespace ModelGraphLibrary
             Y2 += margin;
         }
 
-        internal void Expand(int x, int y)
+        public void Expand(int x, int y)
         {
             if (x < X1) X1 = x;
             if (y < Y1) Y1 = y;
             if (x > X2) X2 = x;
             if (y > Y2) Y2 = y;
         }
-        internal void Expand(XYPoint p)
+        public void Expand(XYPoint p)
         {
             if (p.X < X1) X1 = p.X;
             if (p.Y < Y1) Y1 = p.Y;
@@ -141,15 +141,15 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Diagonal  =====================================================
-        internal int DX { get { return X2 - X1; } }
-        internal int DY { get { return Y2 - Y1; } }
-        internal int Length { get { return (int)Math.Sqrt(Diagonal); } }
-        internal int Diagonal { get { return Delta.Diagonal; } }
-        internal float Slope { get { return Delta.Slope; } }
-        internal int Quad { get { return Delta.Quad; } }
-        internal XYPoint Delta { get { return new XYPoint(DX, DY); } }
+        public int DX { get { return X2 - X1; } }
+        public int DY { get { return Y2 - Y1; } }
+        public int Length { get { return (int)Math.Sqrt(Diagonal); } }
+        public int Diagonal { get { return Delta.Diagonal; } }
+        public float Slope { get { return Delta.Slope; } }
+        public int Quad { get { return Delta.Quad; } }
+        public XYPoint Delta { get { return new XYPoint(DX, DY); } }
 
-        internal bool TryGetDelta(out XYPoint delta)
+        public bool TryGetDelta(out XYPoint delta)
         {
             delta = Delta;
             if (X2 == X1 && Y2 == Y1)
@@ -164,12 +164,12 @@ namespace ModelGraphLibrary
         #region Normalize  ====================================================
         // enforce  (X1 < X2) and  (Y1 < Y2)
 
-        internal void Normalize()
+        public void Normalize()
         {
             Normalize(Point1, Point2);
         }
 
-        internal void Normalize(XYPoint p1, XYPoint p2)
+        public void Normalize(XYPoint p1, XYPoint p2)
         {
             if (p2.X < p1.X)
             {
@@ -197,7 +197,7 @@ namespace ModelGraphLibrary
 
         #region SetExtent  ====================================================
         // enforce  (X1 < X2) and  (Y1 < Y2)
-        internal Extent SetExtent(List<Node> nodes, int margin)
+        public Extent SetExtent(List<Node> nodes, int margin)
         {
             if (nodes.Count > 0)
             {
@@ -219,7 +219,7 @@ namespace ModelGraphLibrary
             return this;
         }
 
-        internal Extent SetExtent(XYPoint[] points, int margin)
+        public Extent SetExtent(XYPoint[] points, int margin)
         {
             var len = (points == null) ? 0 : points.Length;
             if (len == 0)
@@ -248,52 +248,52 @@ namespace ModelGraphLibrary
 
         #region Rectangle  ====================================================
         // independant of order (x1,y1), (x2,y2)
-        internal int Xmin { get { return (X1 < X2) ? X1 : X2; } }
-        internal int Ymin { get { return (Y1 < Y2) ? Y1 : Y2; } }
-        internal int Xmax { get { return (X2 > X1) ? X2 : X1; } }
-        internal int Ymax { get { return (Y2 > Y1) ? Y2 : Y1; } }
+        public int Xmin { get { return (X1 < X2) ? X1 : X2; } }
+        public int Ymin { get { return (Y1 < Y2) ? Y1 : Y2; } }
+        public int Xmax { get { return (X2 > X1) ? X2 : X1; } }
+        public int Ymax { get { return (Y2 > Y1) ? Y2 : Y1; } }
 
-        internal int Width { get { return (Xmax - Xmin); } }
-        internal int Hieght { get { return (Ymax - Ymin); } }
-        internal Rect Rect { get { return new Rect(Xmin, Ymin, Width, Hieght); } }
-        internal Rect GetRect(int x, int y, float z)
+        public int Width { get { return (Xmax - Xmin); } }
+        public int Hieght { get { return (Ymax - Ymin); } }
+        public Rect Rect { get { return new Rect(Xmin, Ymin, Width, Hieght); } }
+        public Rect GetRect(int x, int y, float z)
         {
             var r = Rect;
             return new Rect(z * (r.X - x), z * (r.Y - y), z * r.Width, z * r.Height);
         }
 
-        internal Vector2 UpperLeft { get { return new Vector2(Xmin, Ymin); } }
-        internal Vector2 LowerRight { get { return new Vector2(Xmax, Xmax); } }
-        internal XYPoint TopLeft { get { return new XYPoint(Xmin, Ymin); } }
-        internal XYPoint TopRight { get { return new XYPoint(Xmax, Ymin); } }
-        internal XYPoint BottomLeft { get { return new XYPoint(Xmin, Ymax); } }
-        internal XYPoint BottomRight { get { return new XYPoint(Xmax, Ymax); } }
+        public Vector2 UpperLeft { get { return new Vector2(Xmin, Ymin); } }
+        public Vector2 LowerRight { get { return new Vector2(Xmax, Xmax); } }
+        public XYPoint TopLeft { get { return new XYPoint(Xmin, Ymin); } }
+        public XYPoint TopRight { get { return new XYPoint(Xmax, Ymin); } }
+        public XYPoint BottomLeft { get { return new XYPoint(Xmin, Ymax); } }
+        public XYPoint BottomRight { get { return new XYPoint(Xmax, Ymax); } }
 
-        internal void ScrollVertical(int ds) { Y1 += ds; Y2 += ds; }
-        internal void ScrollHorizontal(int ds) { X1 += ds; X2 += ds; }
+        public void ScrollVertical(int ds) { Y1 += ds; Y2 += ds; }
+        public void ScrollHorizontal(int ds) { X1 += ds; X2 += ds; }
         #endregion
 
         #region Comparison  ===================================================
-        internal bool IsLessThan(ref Extent e) { return Diagonal < (e.Diagonal); }
-        internal bool IsGreaterThan(ref Extent e) { return Diagonal > (e.Diagonal); }
+        public bool IsLessThan(ref Extent e) { return Diagonal < (e.Diagonal); }
+        public bool IsGreaterThan(ref Extent e) { return Diagonal > (e.Diagonal); }
         #endregion
 
         #region Contains  =====================================================
-        internal bool ContainsX(int X)
+        public bool ContainsX(int X)
         {
             if (X < X1) return false;
             if (X > X2) return false;
             return true;
         }
 
-        internal bool ContainsY(int Y)
+        public bool ContainsY(int Y)
         {
             if (Y < Y1) return false;
             if (Y > Y2) return false;
             return true;
         }
 
-        internal bool Contains(XYPoint p)
+        public bool Contains(XYPoint p)
         {
             if (p.X < X1) return false;
             if (p.Y < Y1) return false;
@@ -301,7 +301,7 @@ namespace ModelGraphLibrary
             if (p.Y > Y2) return false;
             return true;
         }
-        internal bool Contains(Vector2 p)
+        public bool Contains(Vector2 p)
         {
             if (p.X < X1) return false;
             if (p.Y < Y1) return false;
@@ -310,7 +310,7 @@ namespace ModelGraphLibrary
             return true;
         }
 
-        internal bool Contains(ref Extent e)
+        public bool Contains(ref Extent e)
         {
             if (e.X1 < X1) return false;
             if (e.Y1 < Y1) return false;
@@ -335,7 +335,7 @@ namespace ModelGraphLibrary
         //                     :      \:
         //                     - - - - o my Point2
         //
-        internal bool HitTest(ref XYPoint p, ref Extent E)
+        public bool HitTest(ref XYPoint p, ref Extent E)
         {
             if (Intersects(ref E))  // my extent intersects with E
             {
@@ -386,7 +386,7 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Intersection  =================================================
-        internal bool Intersects(ref Extent e)
+        public bool Intersects(ref Extent e)
         {
             if (IsVertical)
             {

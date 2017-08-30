@@ -2,12 +2,12 @@
 {
     public struct EdgeX
     {
-        internal XYPoint[] Bends;
-        internal Face Face1;
-        internal Face Face2;
-        internal FacetOf Facet1;
-        internal FacetOf Facet2;
+        public XYPoint[] Bends;
+        public Face Face1;
+        public Face Face2;
+        public FacetOf Facet1;
+        public FacetOf Facet2;
 
-        internal bool HasBends => (Bends != null && Bends.Length > 0);
+        public bool HasBends => (Bends != null && Bends.Length > 0);
     }
 }

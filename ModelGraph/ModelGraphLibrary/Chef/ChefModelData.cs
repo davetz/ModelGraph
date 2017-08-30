@@ -673,7 +673,7 @@ namespace ModelGraphLibrary
 
             root.ViewRequest = new ViewRequest(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_M);
         }
-        internal void AppRootOpenModel(ItemModel model, Object parm1)
+        public void AppRootOpenModel(ItemModel model, Object parm1)
         {
             var file = parm1 as StorageFile;
             var root = model as RootModel;

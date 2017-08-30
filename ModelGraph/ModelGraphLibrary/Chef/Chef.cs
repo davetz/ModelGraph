@@ -98,7 +98,7 @@ namespace ModelGraphLibrary
 
         #region StorageFile  ==================================================
         private StorageFile _modelingFile;
-        internal StorageFile ModelingFile => _modelingFile;
+        public StorageFile ModelingFile => _modelingFile;
         private void SaveStorageFile()
         {
             if (_modelingFile != null)

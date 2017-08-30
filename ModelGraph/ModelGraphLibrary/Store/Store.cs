@@ -12,7 +12,7 @@ namespace ModelGraphLibrary
         internal abstract void Insert(Item item, int index);
         internal abstract void Append(Item item);
         internal abstract int IndexOf(Item item);
-        internal abstract void Remove(Item item);
+        public abstract void Remove(Item item);
         internal abstract void Move(Item item, int index);
         internal abstract void Add(Item item);
         internal abstract Item[] GetItems();

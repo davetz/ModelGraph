@@ -95,6 +95,17 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\GraphControl\ModelGraphControl.xaml.cs" />
+    <Compile Include="Controls\GraphControl\ModelGraphControlDrawing.cs" />
+    <Compile Include="Controls\GraphControl\ModelGraphControlEventActions.cs" />
+    <Compile Include="Controls\GraphControl\ModelGraphControlInputEvents.cs" />
+    <Compile Include="Controls\GraphControl\ModelGraphControlMoveItems.cs" />
+    <Compile Include="Controls\GraphControl\ModelGraphControlVisualAids.cs" />
+    <Compile Include="Controls\GridControl\ModelGridControl.xaml.cs" />
+    <Compile Include="Controls\ModelControl\ModelTabControl.xaml.cs" />
+    <Compile Include="Controls\SymbolControl\SymbolEditControl.xaml.cs" />
+    <Compile Include="Controls\TreeControl\ModelTreeControl.xaml.cs" />
+    <Compile Include="Controls\TreeControl\ModelTreeUICache.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -121,6 +132,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\GraphControl\ModelGraphControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\GridControl\ModelGridControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ModelControl\ModelTabControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\SymbolControl\SymbolEditControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\TreeControl\ModelTreeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -133,12 +164,21 @@
     <PackageReference Include="System.ValueTuple">
       <Version>4.4.0</Version>
     </PackageReference>
+    <PackageReference Include="Win2D.uwp">
+      <Version>1.21.0</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ModelGraphLibrary\ModelGraphLibrary.csproj">
       <Project>{3a78e855-1541-49f7-ac5f-da08973218c5}</Project>
       <Name>ModelGraphLibrary</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <SDKReference Include="WindowsDesktop, Version=10.0.15063.0">
+      <Name>Windows Desktop Extensions for the UWP</Name>
+    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

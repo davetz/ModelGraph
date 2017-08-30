@@ -1,54 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
-interface IPage { }
+
 namespace ModelGraphLibrary
 {/*
+    Data flow between ModelGraphLibrary <--> ModelGraph App
 
+    Give the UI controls access to the ItemModels and also where it
+    is necessary (within the ModelGraphControl) allow the control to
+    directly interact with actual Item objects (Selector, Graph, Node, Edge,..)
+
+    I want the ModelGraphLibrary to know as little as posible about the UI controls,
+    however, it really simplifies things to allow one way access UI --> graph object.
+   
+    ModelGraphUnitTest can thoroughly test ModelGraphLibrary independant of any UI control.    
  */
     public class RootModel : ItemModel
     {
-        internal Chef Chef;
-        internal IPage Page;
+        public Chef Chef;
+        public IPageControl Page;
 
-        internal int ModelCount;
-        internal int ValueIndex;
-        internal int MinorDelta;
-        internal int MajorDelta;
+        public int ModelCount;
+        public int ValueIndex;
+        public int MinorDelta;
+        public int MajorDelta;
 
-        internal string ModelKind;
-        internal string ModelName;
-        internal string ModelInfo;
-        internal string ModelValue;
-        internal string ModelSummary;
-        internal string ModelDescription;
-        internal string[] ModelValueList;
+        public string ModelKind;
+        public string ModelName;
+        public string ModelInfo;
+        public string ModelValue;
+        public string ModelSummary;
+        public string ModelDescription;
+        public string[] ModelValueList;
 
-        internal List<ModelCommand> MenuCommands = new List<ModelCommand>();
-        internal List<ModelCommand> ButtonCommands = new List<ModelCommand>();
-        internal List<ModelCommand> AppButtonCommands = new List<ModelCommand>();
+        public List<ModelCommand> MenuCommands = new List<ModelCommand>();
+        public List<ModelCommand> ButtonCommands = new List<ModelCommand>();
+        public List<ModelCommand> AppButtonCommands = new List<ModelCommand>();
 
-        internal Func<ItemModel, ItemModel, bool, DropAction> ModelDrop;
-        internal Func<ItemModel, ItemModel, bool, DropAction> ReorderItems;
+        public Func<ItemModel, ItemModel, bool, DropAction> ModelDrop;
+        public Func<ItemModel, ItemModel, bool, DropAction> ReorderItems;
 
-        internal int ViewIndex1; //index of first visible model
-        internal int ViewIndex2; //index one beyond the last visible model
-        internal int ViewCapacity; //max number of visible models
-        internal ItemModel ViewSelectModel; //currently selected model
-        internal ItemModel[] ViewModels; //flattend list of itemModel tree
-        internal Dictionary<object, string> ViewFilter = new Dictionary<object, string>();
+        public int ViewIndex1; //index of first visible model
+        public int ViewIndex2; //index one beyond the last visible model
+        public int ViewCapacity; //max number of visible models
+        public ItemModel ViewSelectModel; //currently selected model
+        public ItemModel[] ViewModels; //flattend list of itemModel tree
+        public Dictionary<object, string> ViewFilter = new Dictionary<object, string>();
 
 
-        //internal IModelControl ModelControl;
-        internal ControlType ControlType;
-        internal ModelAction ModelAction;
+        public IModelControl ModelControl;
+        public ControlType ControlType;
+        public ModelAction ModelAction;
 
-        internal bool CloseModel;
-        internal bool ReloadModel;
-        internal bool ModelIsChecked;
+        public bool CloseModel;
+        public bool ReloadModel;
+        public bool ModelIsChecked;
 
         #region Constructors  =================================================
         // AppRootChef: Created by App.xaml
-        internal RootModel(IPage page)
+        public RootModel(IPageControl page)
             : base(null, Trait.RootChef_M, 0, new Chef())
         {
             Chef = Item1 as Chef;
@@ -63,7 +72,7 @@ namespace ModelGraphLibrary
         }
 
         // (Primary & Secondary) RootModels: Created by PrimaryRoot
-        internal RootModel(IPage page, ViewRequest rq)
+        public RootModel(IPageControl page, ViewRequest rq)
             : base(null, rq.Trait, 0, rq.Item1, rq.Item2, rq.Item3, rq.GetData)
         {
             Page = page;
@@ -83,19 +92,19 @@ namespace ModelGraphLibrary
             IsExpandedLeft = true;
         }
 
-        internal ViewRequest BuildViewRequest() { return new ViewRequest(ControlType, Trait, Chef, Item1, Item2, Item3, _getData); }
+        public ViewRequest BuildViewRequest() { return new ViewRequest(ControlType, Trait, Chef, Item1, Item2, Item3, _getData); }
 
         // Created by dataChef used for GetModelData
-        internal RootModel(Chef owner) : base(null, Trait.MockChef_M, 0, owner) { Chef = owner; }
+        public RootModel(Chef owner) : base(null, Trait.MockChef_M, 0, owner) { Chef = owner; }
         #endregion
 
         #region Properties/Methods  ===========================================
-        internal bool IsAppRootChef => (ControlType == ControlType.AppRootChef);
-        internal string TabName => Chef.GetAppTabName(this);
-        internal string TitleName => Chef.GetAppTitleName(this);
-        internal string TabSummary => Chef.GetAppTabSummary(this);
-        internal string TitleSummary => Chef.GetAppTitleSummary(this);
-        internal void Close()
+        public bool IsAppRootChef => (ControlType == ControlType.AppRootChef);
+        public string TabName => Chef.GetAppTabName(this);
+        public string TitleName => Chef.GetAppTitleName(this);
+        public string TabSummary => Chef.GetAppTabSummary(this);
+        public string TitleSummary => Chef.GetAppTitleSummary(this);
+        public void Close()
         {
             Chef.RemoveRootModel(this);
         }
@@ -104,7 +113,7 @@ namespace ModelGraphLibrary
         #region ModelData  ====================================================
 
         // ModelAction.DragOver  ==============================================
-        internal void GetDragOverData(ItemModel model)
+        public void GetDragOverData(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -115,7 +124,7 @@ namespace ModelGraphLibrary
         }
 
         // ModelAction.PointerOver  ===========================================
-        internal void GetPointerOverData(ItemModel model)
+        public void GetPointerOverData(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -129,7 +138,7 @@ namespace ModelGraphLibrary
         }
 
         // ModelAction.ModelSelect  ===========================================
-        internal void GetModelSelectData(ItemModel model)
+        public void GetModelSelectData(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -145,7 +154,7 @@ namespace ModelGraphLibrary
         }
 
         // ModelAction.ModelRefresh  ==========================================
-        internal void GetModelItemData(ItemModel model)
+        public void GetModelItemData(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -166,7 +175,7 @@ namespace ModelGraphLibrary
             if (string.IsNullOrEmpty(ModelName)) ModelName = "???";
         }
 
-        internal void PostModelDrop(ItemModel model)
+        public void PostModelDrop(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -178,14 +187,14 @@ namespace ModelGraphLibrary
             else
                 Chef.PostDataAction(this, () => { ModelDrop?.Invoke(model, drop, true); });
         }
-        internal void SetDragDropSource(ItemModel model)
+        public void SetDragDropSource(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
             Chef.DragDropSource = model;
         }
 
-        internal DropAction CanModelAcceptDrop(ItemModel model)
+        public DropAction CanModelAcceptDrop(ItemModel model)
         {
             if (model == null | model.IsInvalid) return DropAction.None;
 
@@ -202,13 +211,13 @@ namespace ModelGraphLibrary
         #endregion
 
         #region SymbolEditor  =================================================
-        internal async void SaveSymbol()
+        public async void SaveSymbol()
         {
             //var editor = ModelControl as SymbolEditControl;
             //if (editor == null) return;
             //await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => { editor.Save(); });
         }
-        internal async void ReloadSymbol()
+        public async void ReloadSymbol()
         {
             //var editor = ModelControl as SymbolEditControl;
             //if (editor == null) return;
@@ -217,13 +226,13 @@ namespace ModelGraphLibrary
         #endregion
 
         #region PageDispatch  =================================================
-        internal ViewRequest ViewRequest { get { return _viewRequest; } set { if (_viewRequest == null) _viewRequest = value; } }
+        public ViewRequest ViewRequest { get { return _viewRequest; } set { if (_viewRequest == null) _viewRequest = value; } }
         private ViewRequest _viewRequest;
-        internal ItemModel[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
+        public ItemModel[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
         private ItemModel[] _modelList;
-        internal int Capacity = 100;
+        public int Capacity = 100;
 
-        internal async void PageDispatch()
+        public async void PageDispatch()
         {
             if (Page != null)
             {
@@ -253,9 +262,9 @@ namespace ModelGraphLibrary
         #endregion
 
         #region PageRefresh  ==================================================
-        internal void PageRefresh()
+        public void PageRefresh()
         {
-            //if (ModelControl == null) return;
+            if (ModelControl == null) return;
             if (MajorDelta == Chef.MajorDelta && MinorDelta == Chef.MinorDelta) return;
             switch (ControlType)
             {
@@ -272,7 +281,7 @@ namespace ModelGraphLibrary
                     break;
             }
         }
-        internal async void ModelTreeRefreshAsync(ChangeType change)
+        public async void ModelTreeRefreshAsync(ChangeType change)
         {
             //await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
             //{
@@ -280,14 +289,14 @@ namespace ModelGraphLibrary
             //        ModelControl.Refresh();
             //});
         }
-        internal async void ModelGraphRefreshAsync()
+        public async void ModelGraphRefreshAsync()
         {
             //await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
             //{
             //    ModelControl.Refresh();
             //});
         }
-        internal async void SymbolEditorRefreshAsync()
+        public async void SymbolEditorRefreshAsync()
         {
             //await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
             //{
@@ -321,50 +330,4 @@ namespace ModelGraphLibrary
         }
         #endregion
     }
-
-    #region RelatedEnums  =====================================================
-    // only return the data that is needed for the occasion
-    internal enum ChangeType
-    {
-        NoChange,
-
-        ToggleLeft,
-        ExpandLeft,
-        CollapseLeft,
-        ExpandLeftAll,
-
-        ToggleRight,
-        ExpandRight,
-        CollapseRight,
-
-        ToggleFilter,
-        ExpandFilter,
-        CollapseFilter,
-
-        FilterSortChanged,
-    }
-    internal enum ModelAction
-    {
-        DragOver,
-        PointerOver,
-        ModelSelect,
-        ModelRefresh,
-    }
-    internal enum DropAction
-    {
-        None,
-        Move,
-        Copy,
-        Link,
-        Unlink,
-    }
-    internal enum ControlType
-    {
-        AppRootChef,
-        PrimaryTree,
-        PartialTree,
-        SymbolEditor,
-        GraphDisplay,
-    }
-    #endregion
 }

@@ -62,7 +62,7 @@ namespace ModelGraphLibrary
         }
 
         // Remove  ==========================================================
-        internal override void Remove(Item item)
+        public override void Remove(Item item)
         {
             var child = item as T;
             Remove(child);

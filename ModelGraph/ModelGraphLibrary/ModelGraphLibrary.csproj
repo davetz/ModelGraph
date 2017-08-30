@@ -106,17 +106,23 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Modified\ChangeRoot.cs" />
-    <Compile Include="Modified\ChangeSet.cs" />
-    <Compile Include="Modified\ItemChange.cs" />
-    <Compile Include="Modified\ItemChildMoved.cs" />
-    <Compile Include="Modified\ItemCreated.cs" />
-    <Compile Include="Modified\ItemLinked.cs" />
-    <Compile Include="Modified\ItemMoved.cs" />
-    <Compile Include="Modified\ItemParentMoved.cs" />
-    <Compile Include="Modified\ItemRemoved.cs" />
-    <Compile Include="Modified\ItemUnlinked.cs" />
-    <Compile Include="Modified\ItemUpdated.cs" />
+    <Compile Include="Models\Enum\ChangeType.cs" />
+    <Compile Include="Models\Enum\ControlType.cs" />
+    <Compile Include="Models\Enum\DropAction.cs" />
+    <Compile Include="Models\Interface\IModelControl.cs" />
+    <Compile Include="Models\Enum\ModelAction.cs" />
+    <Compile Include="Models\Interface\IPageControl.cs" />
+    <Compile Include="Updates\ChangeRoot.cs" />
+    <Compile Include="Updates\ChangeSet.cs" />
+    <Compile Include="Updates\ItemChange.cs" />
+    <Compile Include="Updates\ItemChildMoved.cs" />
+    <Compile Include="Updates\ItemCreated.cs" />
+    <Compile Include="Updates\ItemLinked.cs" />
+    <Compile Include="Updates\ItemMoved.cs" />
+    <Compile Include="Updates\ItemParentMoved.cs" />
+    <Compile Include="Updates\ItemRemoved.cs" />
+    <Compile Include="Updates\ItemUnlinked.cs" />
+    <Compile Include="Updates\ItemUpdated.cs" />
     <Compile Include="Chef\Chef.cs" />
     <Compile Include="Chef\ChefChange.cs" />
     <Compile Include="Chef\ChefColumn.cs" />

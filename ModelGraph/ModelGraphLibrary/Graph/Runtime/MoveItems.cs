@@ -5,11 +5,11 @@ namespace ModelGraphLibrary
     public partial class Graph
     {
         #region Undo, Redo  ===================================================
-        internal void TryUndo()
+        public void TryUndo()
         {
             if (CanUndo) Undo();
         }
-        internal void TryRedo()
+        public void TryRedo()
         {
             if (CanRedo) Redo();
         }
