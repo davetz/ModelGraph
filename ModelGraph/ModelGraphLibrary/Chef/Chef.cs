@@ -5,7 +5,7 @@ using Windows.Storage;
 
 namespace ModelGraphLibrary
 {/*
-    Chef is the all-knowing coordinator of this application.
+    Chef is the data coordinator of this application.
     It is the root owner of all the data and orchastrates all the changes.
  */
     public partial class Chef : StoreOf<Store>
@@ -19,7 +19,7 @@ namespace ModelGraphLibrary
         #region RootChef  =====================================================
         internal Chef() : base(null, Trait.RootChef, Guid.Empty, 10)
         {
-            _resourceLoader = ResourceLoader.GetForCurrentView();
+            _resourceLoader = ResourceLoader.GetForViewIndependentUse("ModelGraphLibrary/Resources"); //GetForCurrentView("ModelGraphLibrary/Resources");
             Owner = this;
         }
         internal ResourceLoader GetLoader => _resourceLoader;

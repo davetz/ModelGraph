@@ -3,16 +3,17 @@ using System.Collections.Generic;
 
 namespace ModelGraphLibrary
 {/*
-    Data flow between ModelGraphLibrary <--> ModelGraph App
+    Data flow and control between ModelGraphLibrary <--> ModelGraph App
 
-    Give the UI controls access to the ItemModels and also where it
-    is necessary (within the ModelGraphControl) allow the control to
-    directly interact with actual Item objects (Selector, Graph, Node, Edge,..)
+    The ModelGraphLibrary has no direct knowledge of the UI controls, however, it does 
+    initiates UI action through the interfaces IPageControl and IModelControl.
 
-    I want the ModelGraphLibrary to know as little as posible about the UI controls,
-    however, it really simplifies things to allow one way access UI --> graph object.
-   
-    ModelGraphUnitTest can thoroughly test ModelGraphLibrary independant of any UI control.    
+    The UI controls, on the other hand, do have direct access to the public methods and
+    properties of ModelGraphLibrary objects. This is especially important for the case
+    of the ModelGraphControl.
+    
+    The ModelGraphUnitTest tests the ModelGraphLibrary's essential function
+    independant of the UI controls.    
  */
     public class RootModel : ItemModel
     {
