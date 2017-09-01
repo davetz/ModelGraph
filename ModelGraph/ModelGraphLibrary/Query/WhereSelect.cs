@@ -10,29 +10,40 @@ namespace ModelGraphLibrary
     {
         private Item _item;
         private Store _store;
-        private char[] _input;
 
         private Step _root;
+        private Parser _parser;
+
         internal NativeType NativeType;
 
-        internal WhereSelect(string value) { }
+        internal WhereSelect(string text)
+        {
+            _parser = new Parser(text);
+        }
 
         internal bool IsValid => true;
         internal bool IsInvalid { get { return !IsValid; } }
         internal string InputString => GetInputString();
         private string GetInputString()
         {
-            if (_input == null) return null;
-
-            var N = _input.Length;
-            var sb = new StringBuilder(N);
-            for (int i = 0; i < N; i++) { sb.Append(_input[i]); }
-            return sb.ToString();
+            if (_parser != null)
+            {
+                return _parser.Text;
+            }
+            else if (_root != null)
+            {
+                return null;
+            }
+            else
+            {
+                return null;
+            }
         }
-        internal void Validate(Store sto, string input)
+        internal void Validate(Store sto, string text)
         {
             _store = sto;
-            _input = input.ToCharArray();
+            _root = null;
+            _parser = new Parser(text);
         }
         internal void Validate(Store sto)
         {

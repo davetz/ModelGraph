@@ -15,5 +15,6 @@ namespace ModelGraphLibrary
         InvalidText,
         InvalidString,
         InvalidParens,
+        UnknownProperty,
     }
 }

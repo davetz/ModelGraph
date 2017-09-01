@@ -6,7 +6,7 @@ namespace ModelGraphLibrary
 {/* 
     Parse an expression string (or substring) and recursivly build a 
     tree of elemental steps. From this and depending on the context of 
-    neighboring parse steps, build a computation expression tree.
+    neighboring parse steps, compose a computation expression tree.
     The final stage simplifies that tree so that all constant elements
     are rolled-up into the simplest form.
 
@@ -75,6 +75,13 @@ namespace ModelGraphLibrary
                 default:
                     break;
             }
+        }
+        #endregion
+
+        #region Validate  =====================================================
+        internal bool Validate(Store store)
+        {
+            return false;
         }
         #endregion
 
