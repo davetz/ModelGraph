@@ -109,9 +109,10 @@
     <Compile Include="Models\Enum\ChangeType.cs" />
     <Compile Include="Models\Enum\ControlType.cs" />
     <Compile Include="Models\Enum\DropAction.cs" />
-    <Compile Include="Models\Interface\IModelControl.cs" />
     <Compile Include="Models\Enum\ModelAction.cs" />
-    <Compile Include="Models\Interface\IPageControl.cs" />
+    <Compile Include="Models\UIRequest\IPageControl.cs" />
+    <Compile Include="Models\UIRequest\IViewControl.cs" />
+    <Compile Include="Models\UIRequest\UIRequest.cs" />
     <Compile Include="Updates\ChangeRoot.cs" />
     <Compile Include="Updates\ChangeSet.cs" />
     <Compile Include="Updates\ItemChange.cs" />
@@ -211,7 +212,6 @@
     <Compile Include="Models\ItemModel.cs" />
     <Compile Include="Models\ModelCommand.cs" />
     <Compile Include="Models\RootModel.cs" />
-    <Compile Include="Models\ViewRequest.cs" />
     <Compile Include="Property\ColumnX.cs" />
     <Compile Include="Property\Property.cs" />
     <Compile Include="Property\PropertyOf.cs" />

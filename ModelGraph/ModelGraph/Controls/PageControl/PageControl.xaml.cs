@@ -1,5 +1,4 @@
-﻿using ModelGraphLibrary;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.ApplicationModel.Core;
@@ -12,26 +11,26 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using ModelGraphLibrary;
 
 namespace ModelGraph
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    sealed partial class MainPage : Page, IPageControl
+    sealed partial class PageControl : Page, IPageControl
     {
         private List<RootModel> _modelList = new List<RootModel>();
         private RootModel _currentModel;
-        private ViewRequest _viewRequest;
+        private UIRequest _uiRequest;
         public static int _newCount = 0;
         public int ModelCount => _modelList.Count;
         public RootModel[] GetModels() => (_modelList == null) ? null : _modelList.ToArray();
 
         public int ViewId { get; set; }
-        CoreDispatcher IPageControl.Dispatcher => Dispatcher;
 
         #region Constructor  ==================================================
-        public MainPage()
+        public PageControl()
         {
             InitializeComponent();
 
@@ -40,13 +39,13 @@ namespace ModelGraph
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
 
-            Loaded += MainPage_Loaded;
+            Loaded += PageControl_Loaded;
             Window.Current.SizeChanged += Current_SizeChanged;
 
             if (((App)Application.Current).RootModel == null)
             {
-                var page = this;
-                var root = new RootModel(page);
+                var root = new RootModel(this);
+                root.ViewControl = new ModelTreeControl(root, ControlType.PrimaryTree);
                 _modelList.Add(root);
 
                 ((App)Application.Current).RootModel = root;
@@ -61,7 +60,7 @@ namespace ModelGraph
             if (model == null) return;
             if (model.IsInvalid) return;
 
-            var page = model.Page;
+            var page = model.PageControl;
             var chef = model.Chef;
 
             var app = ((App)Application.Current);
@@ -91,7 +90,7 @@ namespace ModelGraph
             if (model == null) return;
             if (model.IsInvalid) return;
 
-            var page = model.Page;
+            var page = model.PageControl;
             var chef = model.Chef;
             var file = chef.ModelingFile;
             if (file == null) return;
@@ -106,10 +105,10 @@ namespace ModelGraph
         #region CloseModelView  ===============================================
         public async void CloseModelView(RootModel model)
         {
-            var page = model.Page;
+            var page = model.PageControl as PageControl;
             if (model == _currentModel)
             {
-                var prev = _currentModel.ModelControl as UIElement;
+                var prev = _currentModel.ViewControl as UIElement;
                 ControlGrid.Children.Remove(prev);
                 _currentModel = null;
                 var inx = _modelList.IndexOf(model);
@@ -154,7 +153,7 @@ namespace ModelGraph
             if (model.IsInvalid) return;
             if (model == _currentModel) return;
 
-            var ctrl = model.ModelControl as UIElement;
+            var ctrl = model.ViewControl as UIElement;
             if (ctrl == null) return;
 
             if (!_modelList.Contains(model))
@@ -162,7 +161,7 @@ namespace ModelGraph
 
             if (_currentModel != null)
             {
-                var prev = _currentModel.ModelControl as UIElement;
+                var prev = _currentModel.ViewControl as UIElement;
                 ControlGrid.Children.Remove(prev);
             }
 
@@ -191,9 +190,9 @@ namespace ModelGraph
             ModelTitle.Text = model.TitleName;
 
             var height = ActualHeight - TabGrid.ActualHeight - ButtonGrid.ActualHeight;
-            model.ModelControl.SetSize(ActualWidth, height);
+            (model.ViewControl as IModelControl).SetSize(ActualWidth, height);
             model.MajorDelta = -1;
-            model.PageRefresh();
+            Dispatch(UIRequest.Refresh(model));
             TabPanel.Refresh(_currentModel, maxTabPanelWidth);
         }
         #endregion
@@ -205,7 +204,7 @@ namespace ModelGraph
             if (model == null) return;
             if (model.IsInvalid) return;
 
-            var ctrl = model.ModelControl as UIElement;
+            var ctrl = model.ViewControl as UIElement;
             if (ctrl == null) return;
 
             if (!_modelList.Contains(model))
@@ -213,7 +212,7 @@ namespace ModelGraph
 
             if (_currentModel != null)
             {
-                var prev = _currentModel.ModelControl as UIElement;
+                var prev = _currentModel.ViewControl as UIElement;
                 ControlGrid.Children.Remove(prev);
             }
 
@@ -242,17 +241,17 @@ namespace ModelGraph
             ModelTitle.Text = model.TitleName;
 
             var height = ActualHeight - TabGrid.ActualHeight - ButtonGrid.ActualHeight;
-            model.ModelControl.SetSize(ActualWidth, height);
+            (model.ViewControl as IModelControl).SetSize(ActualWidth, height);
             model.MajorDelta = -1;
-            model.PageRefresh();
+            Dispatch(UIRequest.Refresh(model));
             TabPanel.Refresh(_currentModel, maxTabPanelWidth);
         }
         #endregion
 
         #region ViewControl  ==================================================
-        async void IPageControl.CreateView(ViewRequest viewRequest)
+        async void CreateView(UIRequest rq)
         {
-            if (viewRequest.OpenInNewPage)
+            if (rq.DoCreateNewPage)
             {
                 var thisViewId = ApplicationView.GetForCurrentView().Id;
                 CoreApplicationView newView = CoreApplication.CreateNewView();
@@ -260,19 +259,39 @@ namespace ModelGraph
                 await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     var frame = new Frame();
-                    frame.Navigate(typeof(MainPage), viewRequest);
+                    frame.Navigate(typeof(PageControl), rq);
                     Window.Current.Content = frame;
                     Window.Current.Activate();
                     newViewId = ApplicationView.GetForCurrentView().Id;
                 });
-                bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId, ViewSizePreference.UseMinimum, thisViewId, ViewSizePreference.UseMinimum);
+                await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId, ViewSizePreference.UseMinimum, thisViewId, ViewSizePreference.UseMinimum);
             }
             else
             {
-                var root = new RootModel(this, viewRequest);
+                var root = new RootModel(this, rq);
+                root.ViewControl = CreateControl(root, rq.Type);
                 LoadModelView(root);
             }
+        }
 
+        IViewControl CreateControl(RootModel root, ControlType type)
+        {
+            switch (type)
+            {
+                case ControlType.PrimaryTree:
+                case ControlType.PartialTree:
+                case ControlType.AppRootChef:
+                    return new ModelTreeControl(root, type);
+
+                case ControlType.SymbolEditor:
+                    return new SymbolEditControl(root);
+
+                case ControlType.GraphDisplay:
+                    return new ModelGraphControl(root);
+
+                default:
+                    throw new ArgumentException("Unknown ControlType");
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -283,11 +302,11 @@ namespace ModelGraph
             var view = ApplicationView.GetForCurrentView();
             view.TryResizeView(new Size(320, 320));
 
-            if (!CoreApplication.GetCurrentView().IsMain && (e.Parameter is ViewRequest))
+            if (!CoreApplication.GetCurrentView().IsMain && (e.Parameter is UIRequest uiRequest))
             {
-                if (_viewRequest == null)
+                if (_uiRequest == null)
                 {
-                    _viewRequest = e.Parameter as ViewRequest;
+                    _uiRequest = uiRequest;
                 }
             }
         }
@@ -304,7 +323,7 @@ namespace ModelGraph
         private double maxTabPanelWidth = 0.0;
         private CoreApplicationViewTitleBar mainCoreTitleBar;
 
-        private void MainPage_Loaded(object sender, RoutedEventArgs e)
+        private void PageControl_Loaded(object sender, RoutedEventArgs e)
         {
             mainCoreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             mainCoreTitleBar.ExtendViewIntoTitleBar = true;
@@ -319,10 +338,10 @@ namespace ModelGraph
                 var root = ((App)Application.Current).RootModel;
                 LoadModelView(root);
             }
-            else if (_viewRequest != null)
+            else if (_uiRequest != null)
             {
-                var rq = _viewRequest;
-                _viewRequest = null;
+                var rq = _uiRequest;
+                _uiRequest = null;
                 var model = new RootModel(this, rq);
                 LoadModelView(model);
                 model.PostModelRefresh();
@@ -355,7 +374,7 @@ namespace ModelGraph
             TabPanel.Refresh(_currentModel, maxTabPanelWidth);
 
             var height = ActualHeight - TabGrid.ActualHeight - ButtonGrid.ActualHeight;
-            _currentModel.ModelControl?.SetSize(ActualWidth, height);
+            (_currentModel.ViewControl as IModelControl).SetSize(ActualWidth, height);
         }
 
         private async void Current_SizeChanged(object sender, WindowSizeChangedEventArgs e)
@@ -368,7 +387,7 @@ namespace ModelGraph
                 TabPanel.Refresh(_currentModel, maxTabPanelWidth);
 
                 var height = ActualHeight - TabGrid.ActualHeight - ButtonGrid.ActualHeight;
-                _currentModel.ModelControl?.SetSize(ActualWidth, height);
+                (_currentModel.ViewControl as IModelControl).SetSize(ActualWidth, height);
             });
         }
         #endregion
@@ -377,7 +396,7 @@ namespace ModelGraph
         private void ButtonGrid_DragOver(object sender, DragEventArgs e)
         {
             var model = ((App)Application.Current).DragSource;
-            if (model != null && model.Page.ModelCount > 1 && model.Page == this)
+            if (model != null && (model.PageControl as PageControl).ModelCount > 1 && model.PageControl == this)
             {
                 e.AcceptedOperation = DataPackageOperation.Move;
                 e.DragUIOverride.IsCaptionVisible = true;
@@ -394,22 +413,18 @@ namespace ModelGraph
         {
             var g = sender as Grid;
             if (g == null) return;
-            var local = g.Tag as IPageControl;
+            var local = g.Tag as PageControl;
             if (local == null) return;
 
             if (((App)Application.Current).TryGetDragSource(out RootModel model))
             {
-                var rq = model.BuildViewRequest();
-                rq.OpenInNewPage = true;
-                var page = model.Page;
-                await page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { page.CloseModelView(model); });
-                local.CreateView(rq);
+                model.PageControl.Dispatch(model.BuildViewRequest());
             }
         }
         #endregion
 
         #region TabItem_DragDrop  =============================================
-        void IPageControl.TabItem_DragOver(RootModel target, DragEventArgs e)
+        public void TabItem_DragOver(RootModel target, DragEventArgs e)
         {
             if (((App)Application.Current).DragSource != null)
             {
@@ -423,25 +438,25 @@ namespace ModelGraph
                 e.AcceptedOperation = DataPackageOperation.None;
             }
         }
-        async void IPageControl.TabItem_DragDrop(RootModel target, DragEventArgs e)
+        public async void TabItem_DragDrop(RootModel target, DragEventArgs e)
         {
             RootModel model;
             if (((App)Application.Current).TryGetDragSource(out model))
             {
                 var rq = model.BuildViewRequest();
-                var page = model.Page;
+                var page = model.PageControl as PageControl;
                 await page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { page.CloseModelView(model); });
                 LoadModelView(new RootModel(this, rq));
             }
         }
-        void IPageControl.TabItem_DragStarting(RootModel model)
+        public void TabItem_DragStarting(RootModel model)
         {
             ((App)Application.Current).DragSource = model;
         }
 
         #endregion
 
-        #region AppButton_Click  =================================================
+        #region AppButton_Click  ==============================================
         private async void AppButton_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
@@ -479,6 +494,49 @@ namespace ModelGraph
             else
             {
                 cmd.Execute();
+            }
+        }
+        #endregion
+
+        #region IPageControl  =================================================
+        public async void Dispatch(UIRequest rq)
+        {
+            if (rq.DoRefresh)
+            {
+                var ctrl = rq.RootModel.ViewControl as IModelControl;
+                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+                {
+                    if (!(ctrl is ModelTreeControl) || rq.RootModel.Chef.ValidateModelTree(rq.RootModel))
+                        ctrl.Refresh();
+                });
+            }
+            else if (rq.DoSaveModel)
+            {
+                if (rq.RootModel.ViewControl.ControlType == ControlType.SymbolEditor)
+                {
+                    var editor = rq.RootModel.ViewControl as SymbolEditControl;
+                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => { editor.Save(); });
+                }
+            }
+            else if (rq.DoCloseModel)
+            {
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => { CloseModel(rq.RootModel); });
+            }
+            else if (rq.DoReloadModel)
+            {
+                if (rq.RootModel.ViewControl.ControlType == ControlType.SymbolEditor)
+                {
+                    var editor = rq.RootModel.ViewControl as SymbolEditControl;
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => { editor.Save(); });
+                }
+                else
+                {
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => { ReloadModel(rq.RootModel); });
+                }
+            }
+            else if (rq.DoCreateNewView)
+            {
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => { CreateView(rq); });
             }
         }
         #endregion

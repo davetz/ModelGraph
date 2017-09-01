@@ -105,7 +105,7 @@ namespace ModelGraphLibrary
         #endregion
 
         #region ValidateModelTree =============================================
-        internal bool ValidateModelTree(RootModel root, ChangeType change = ChangeType.NoChange)
+        public bool ValidateModelTree(RootModel root, ChangeType change = ChangeType.NoChange)
         {
             var oldModels = root.ViewModels;
             var oldLen = (oldModels == null) ? 0 : oldModels.Length;
@@ -527,7 +527,7 @@ namespace ModelGraphLibrary
         #region GetAppTabName  ================================================
         internal string GetAppTabName(RootModel root)
         {
-            switch (root.ControlType)
+            switch (root.ViewControl.ControlType)
             {
                 case ControlType.AppRootChef:
                     return GetName(Trait.AppRootModelTab);
@@ -545,7 +545,7 @@ namespace ModelGraphLibrary
         #region GetAppTabSummary  =============================================
         internal string GetAppTabSummary(RootModel root)
         {
-            switch (root.ControlType)
+            switch (root.ViewControl.ControlType)
             {
                 case ControlType.AppRootChef:
                     return null;
@@ -575,7 +575,7 @@ namespace ModelGraphLibrary
         #region GetAppTitleName  ==============================================
         internal string GetAppTitleName(RootModel root)
         {
-            switch (root.ControlType)
+            switch (root.ViewControl.ControlType)
             {
                 case ControlType.AppRootChef:
                     return $"{GetName(Trait.ModelGraphTitle)} - {GetName(Trait.AppRootModelTab)}";
@@ -605,7 +605,7 @@ namespace ModelGraphLibrary
         #region GetAppTitleSummary  ===========================================
         internal string GetAppTitleSummary(RootModel root)
         {
-            switch (root.ControlType)
+            switch (root.ViewControl.ControlType)
             {
                 case ControlType.AppRootChef:
                     return null;
@@ -635,7 +635,7 @@ namespace ModelGraphLibrary
         #region GetAppCommands  ===============================================
         internal void GetAppCommands(RootModel root)
         {
-            switch (root.ControlType)
+            switch (root.ViewControl.ControlType)
             {
                 case ControlType.AppRootChef:
                     root.AppButtonCommands.Add(new ModelCommand(this, root, Trait.NewCommand, AppRootNewModel));
@@ -671,7 +671,7 @@ namespace ModelGraphLibrary
             var rootChef = root.Chef;
             var dataChef = new Chef(rootChef, null);
 
-            root.ViewRequest = new ViewRequest(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_M);
+            root.UIRequest = UIRequest.CreateNewView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_M);
         }
         public void AppRootOpenModel(ItemModel model, Object parm1)
         {
@@ -680,7 +680,7 @@ namespace ModelGraphLibrary
             var rootChef = root.Chef;
             var dataChef = new Chef(rootChef, file);
 
-            root.ViewRequest = new ViewRequest(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_M);
+            root.UIRequest = UIRequest.CreateNewView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_M);
         }
         internal void AppRootSaveAsModel(ItemModel model, Object parm1)
         {
@@ -702,22 +702,22 @@ namespace ModelGraphLibrary
         private void AppRootCloseModel(ItemModel model)
         {
             var root = model as RootModel;
-            root.CloseModel = true;
+            root.UIRequest = UIRequest.CloseModel(root);
         }
         private void AppRootReloadModel(ItemModel model)
         {
             var root = model as RootModel;
-            root.ReloadModel = true;
+            root.UIRequest = UIRequest.ReloadModel(root);
         }
         private void AppSaveSymbol(ItemModel model)
         {
             var root = model as RootModel;
-            root.SaveSymbol();
+            root.UIRequest = UIRequest.SaveModel(root);
         }
         private void AppReloadSymbol(ItemModel model)
         {
             var root = model as RootModel;
-            root.ReloadSymbol();
+            root.UIRequest = UIRequest.ReloadModel(root);
         }
         #endregion
 
@@ -863,7 +863,7 @@ namespace ModelGraphLibrary
         {
             var chef = model.Item1 as Chef;
             var root = model.GetRootModel();
-            root.ViewRequest = new ViewRequest(ControlType.PrimaryTree, Trait.DataChef_M, chef, chef, null, null, chef.DataChef_M);
+            root.UIRequest = UIRequest.CreateNewView(ControlType.PrimaryTree, Trait.DataChef_M, chef, chef, null, null, chef.DataChef_M);
         }
         #endregion
 
@@ -1390,7 +1390,7 @@ namespace ModelGraphLibrary
         private void CreateSecondaryMetadataTree(ItemModel model)
         {
             var root = model.GetRootModel();
-            root.ViewRequest = model.BuildViewRequest(ControlType.PartialTree);
+            root.UIRequest = model.BuildViewRequest(ControlType.PartialTree);
         }
         #endregion
 
@@ -1460,7 +1460,7 @@ namespace ModelGraphLibrary
         private void CreateSecondaryModelingTree(ItemModel model)
         {
             var root = model.GetRootModel();
-            root.ViewRequest = model.BuildViewRequest(ControlType.PartialTree);
+            root.UIRequest = model.BuildViewRequest(ControlType.PartialTree);
         }
         #endregion
 
@@ -3313,7 +3313,7 @@ namespace ModelGraphLibrary
         private void CreateSecondarySymbolEdit(ItemModel model)
         {
             var root = model.GetRootModel();
-            root.ViewRequest = model.BuildViewRequest(ControlType.SymbolEditor);
+            root.UIRequest = model.BuildViewRequest(ControlType.SymbolEditor);
         }
         #endregion
 
@@ -5942,7 +5942,7 @@ namespace ModelGraphLibrary
         private void CreateSecondaryModelGraph(ItemModel model)
         {
             var root = model.GetRootModel();
-            root.ViewRequest = model.BuildViewRequest(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X);
+            root.UIRequest = model.BuildViewRequest(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X);
         }
         #endregion
 
@@ -7562,7 +7562,7 @@ namespace ModelGraphLibrary
             MajorDelta += 1;
 
             var root = model.GetRootModel();
-            root.ViewRequest = new ViewRequest(ControlType.GraphDisplay, Trait.GraphRef_M, this, g, null, null, GraphRef_X, true);
+            root.UIRequest = UIRequest.CreateNewView(ControlType.GraphDisplay, Trait.GraphRef_M, this, g, null, null, GraphRef_X, true);
         }
         private DropAction GraphXModDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
@@ -7592,7 +7592,7 @@ namespace ModelGraphLibrary
                 MajorDelta += 1;
 
                 var root = model.GetRootModel();
-                root.ViewRequest = new ViewRequest(ControlType.GraphDisplay, Trait.GraphRef_M, this, g, null, null, GraphRef_X, true);
+                root.UIRequest = UIRequest.CreateNewView(ControlType.GraphDisplay, Trait.GraphRef_M, this, g, null, null, GraphRef_X, true);
             }
             return DropAction.Copy;
         }

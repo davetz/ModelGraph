@@ -12,11 +12,12 @@ using System.Linq;
 
 namespace ModelGraph
 {
-    public sealed partial class SymbolEditControl : UserControl, IModelControl
+    public sealed partial class SymbolEditControl : UserControl, IViewControl, IModelControl
     {
         private Chef _chef;
         private RootModel _rootModel;
         private SymbolX _symbol;
+        public ControlType ControlType => ControlType.SymbolEditor;
 
         #region Constructor  ==================================================
         public SymbolEditControl(RootModel root)

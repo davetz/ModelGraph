@@ -9,11 +9,12 @@ using Windows.Foundation;
 
 namespace ModelGraph
 {
-    public sealed partial class ModelGraphControl : UserControl, IModelControl
+    public sealed partial class ModelGraphControl : UserControl, IViewControl, IModelControl
     {
         private Chef _chef;
         private Graph _graph;
         private RootModel _rootModel;
+        public ControlType ControlType => ControlType.GraphDisplay;
 
         public ModelGraphControl(RootModel root)
         {

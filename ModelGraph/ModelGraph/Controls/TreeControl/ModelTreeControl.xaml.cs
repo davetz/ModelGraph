@@ -8,14 +8,19 @@ using Windows.UI.ViewManagement;
 using Windows.Foundation;
 using Windows.UI.Xaml.Input;
 using ModelGraphLibrary;
+using System.Threading.Tasks;
 
 namespace ModelGraph
 {
-    public sealed partial class ModelTreeControl : UserControl, IModelControl
+    public sealed partial class ModelTreeControl : UserControl, IViewControl, IModelControl
     {
-        public ModelTreeControl(RootModel root)
+        private ControlType _controlType;
+        public ControlType ControlType => _controlType;
+
+        public ModelTreeControl(RootModel root, ControlType controlType)
         {
             _root = root;
+            _controlType = ControlType;
             InitializeComponent();
 
             ApplicationView.GetForCurrentView().TryResizeView(new Size(320, 320));
@@ -152,7 +157,7 @@ namespace ModelGraph
             _modelIdentityStyle = Resources["ModelIdentityStyle"] as Style;
             _propertyBorderStyle = Resources["PropertyBorderStyle"] as Style;
 
-            _resourceLoader = Windows.ApplicationModel.Resources.ResourceLoader.GetForCurrentView();
+            _resourceLoader = ResourceLoader.GetForViewIndependentUse("ModelGraphLibrary/Resources");
             _sortModeTip = _resourceLoader.GetString("005S");
             _usageModeTip = _resourceLoader.GetString("00ES");///
             _leftExpandTip = _resourceLoader.GetString("006S");
@@ -280,11 +285,11 @@ namespace ModelGraph
             else if (e.Key == Windows.System.VirtualKey.Left)
             {
                 if (_isCtrlDown && mdl.ParentModel != null && mdl.ParentModel != _root) mdl = _root.ViewSelectModel = mdl.ParentModel;
-                if (CanToggleLeft(mdl)) _root.ModelTreeRefreshAsync(ChangeType.ToggleLeft);
+                if (CanToggleLeft(mdl)) RefreshTree(ChangeType.ToggleLeft);
             }
             else if (e.Key == Windows.System.VirtualKey.Right)
             {
-                if (mdl.CanExpandRight) _root.ModelTreeRefreshAsync(ChangeType.ToggleRight);
+                if (mdl.CanExpandRight) RefreshTree(ChangeType.ToggleRight);
             }
             else if (e.Key == Windows.System.VirtualKey.Insert)
             {
@@ -778,7 +783,7 @@ namespace ModelGraph
             {
                 var obj = sender as TextBlock;
                 _root.ViewSelectModel = obj.DataContext as ItemModel;
-                _root.ModelTreeRefreshAsync(ChangeType.ToggleLeft);
+                RefreshTree(ChangeType.ToggleLeft);
             }
         }
         #endregion
@@ -790,7 +795,7 @@ namespace ModelGraph
             {
                 var obj = sender as TextBlock;
                 _root.ViewSelectModel = obj.DataContext as ItemModel;
-                _root.ModelTreeRefreshAsync(ChangeType.ToggleRight);
+                RefreshTree(ChangeType.ToggleRight);
             }
         }
         #endregion
@@ -834,7 +839,7 @@ namespace ModelGraph
                 mdl.IsSortAscending = true;
                 obj.Text = _sortAscending;
             }
-            _root.ModelTreeRefreshAsync(ChangeType.FilterSortChanged);
+            RefreshTree(ChangeType.FilterSortChanged);
         }
         #endregion
 
@@ -869,7 +874,7 @@ namespace ModelGraph
                 mdl.IsUsedFilter = true;
                 obj.Text = _usageIsUsed;
             }
-            _root.ModelTreeRefreshAsync(ChangeType.FilterSortChanged);
+            RefreshTree(ChangeType.FilterSortChanged);
         }
         #endregion
 
@@ -888,7 +893,7 @@ namespace ModelGraph
             if (obj == null) return;
             var mdl = obj.DataContext as ItemModel;
 
-            _root.ModelTreeRefreshAsync(ChangeType.ToggleFilter);
+            RefreshTree(ChangeType.ToggleFilter);
         }
         #endregion
 
@@ -909,14 +914,14 @@ namespace ModelGraph
                     mdl.IsExpandedLeft = true;
                 }
 
-                _root.ModelTreeRefreshAsync(ChangeType.FilterSortChanged);
+                RefreshTree(ChangeType.FilterSortChanged);
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
                 _root.ViewFilter.Remove(mdl);
                 mdl.IsExpandedFilter = false;
 
-                _root.ModelTreeRefreshAsync(ChangeType.FilterSortChanged);
+                RefreshTree(ChangeType.FilterSortChanged);
             }
         }
         #endregion
@@ -995,5 +1000,13 @@ namespace ModelGraph
             _itemIdentityTip.DataContext = obj.DataContext as ItemModel;
         }
         #endregion
+
+        async Task RefreshTree(ChangeType change)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+            {
+                if (_root.Chef.ValidateModelTree(_root, change)) Refresh();
+            });
+        }
     }
 }

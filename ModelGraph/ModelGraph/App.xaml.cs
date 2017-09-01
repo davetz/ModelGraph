@@ -16,7 +16,7 @@ namespace ModelGraph
     {
         internal RootModel RootModel;
         internal RootModel DragSource;
-        internal IList<IPageControl> PageList = new List<IPageControl>();
+        internal IList<PageControl> PageList = new List<PageControl>();
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -69,7 +69,7 @@ namespace ModelGraph
                     // When the navigation stack isn't restored navigate to the first page,
                     // configuring the new page by passing required information as a navigation
                     // parameter
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    rootFrame.Navigate(typeof(PageControl), e.Arguments);
                 }
                 // Ensure the current window is active
                 Window.Current.Activate();

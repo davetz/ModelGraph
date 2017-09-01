@@ -12,7 +12,7 @@ namespace ModelGraph
 {
     public sealed partial class ModelTabControl : UserControl
     {
-        private IPageControl _page;
+        private PageControl _pageControl;
         private List<Grid> _tabList;
         private List<RootModel> _modelList;
         private RootModel _selectModel;
@@ -48,13 +48,13 @@ namespace ModelGraph
         private const string _graphIcon = "\uEBD2";//
         private const string _treeIcon = "\u7E1D";//
 
-        private bool IsInvalid => (_page == null || Width == Double.NaN || Width == 0);
+        private bool IsInvalid => (_pageControl == null || Width == Double.NaN || Width == 0);
         #endregion
 
         #region Initialize  ===================================================
-        internal void Initialize(IPageControl page, List<RootModel> modelList)
+        internal void Initialize(PageControl pageControl, List<RootModel> modelList)
         {
-            _page = page;
+            _pageControl = pageControl;
             _modelList = modelList;
             _tabList = new List<Grid>();
             CloseBlock.Text = _closeIcon;
@@ -103,7 +103,7 @@ namespace ModelGraph
 
                 Canvas.SetLeft(g, tabWidth * i);
 
-                switch(m.ControlType)
+                switch(m.ViewControl.ControlType)
                 {
                     case ControlType.AppRootChef:
                         g.CanDrag = false;
@@ -170,14 +170,14 @@ namespace ModelGraph
         {
             RootModel m;
             if (TryGetModel(sender, out m))
-                m.Page.TabItem_DragOver(m, e);
+                (m.PageControl as PageControl).TabItem_DragOver(m, e);
         }
 
         private void TabItem_DragDrop(object sender, DragEventArgs e)
         {
             RootModel m;
             if (TryGetModel(sender, out m))
-                m.Page.TabItem_DragDrop(m, e);
+                (m.PageControl as PageControl).TabItem_DragDrop(m, e);
         }
 
         private void TabItem_DragStarting(UIElement sender, DragStartingEventArgs args)
@@ -185,7 +185,7 @@ namespace ModelGraph
             args.AllowedOperations = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
             RootModel m;
             if (TryGetModel(sender, out m))
-                m.Page.TabItem_DragStarting(m);
+                (m.PageControl as PageControl).TabItem_DragStarting(m);
         }
         static private bool TryGetModel(object sender, out RootModel model)
         {
@@ -229,7 +229,7 @@ namespace ModelGraph
                 else
                 {
                     _hoverModel = _modelList[i];
-                    if(_hoverModel.ControlType != ControlType.AppRootChef)
+                    if(_hoverModel.ViewControl.ControlType != ControlType.AppRootChef)
                     {
                         var xl = x2 - CloseBlock.Width;
                         Canvas.SetLeft(CloseGrid, xl);
@@ -258,7 +258,7 @@ namespace ModelGraph
 
         private void TabCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            _page.LoadModelView(_hoverModel);
+            _pageControl.LoadModelView(_hoverModel);
         }
         private void CloseGrid_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
@@ -272,7 +272,7 @@ namespace ModelGraph
             CloseGrid.Background = _hoverBrush;
             CloseGrid.Visibility = Visibility.Collapsed;
 
-           _page.CloseModelView(m);
+           _pageControl.CloseModelView(m);
         }
         private void CloseGrid_PointerEntered(object sender, PointerRoutedEventArgs e)
         {

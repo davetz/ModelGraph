@@ -126,13 +126,13 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Properties/Methods  ===========================================
-        public ViewRequest BuildViewRequest(ControlType controlType)
+        public UIRequest BuildViewRequest(ControlType controlType)
         {
-            return new ViewRequest(controlType, Trait, Item1.GetChef(), Item1, Item2, Item3, _getData, true);
+            return UIRequest.CreateNewView(controlType, Trait, Item1.GetChef(), Item1, Item2, Item3, _getData, true);
         }
-        public ViewRequest BuildViewRequest(ControlType controlType, Trait trait, Action<ItemModel, RootModel> getData)
+        public UIRequest BuildViewRequest(ControlType controlType, Trait trait, Action<ItemModel, RootModel> getData)
         {
-            return new ViewRequest(controlType, trait, Item1.GetChef(), Item1, Item2, Item3, getData, true);
+            return UIRequest.CreateNewView(controlType, trait, Item1.GetChef(), Item1, Item2, Item3, getData, true);
         }
         public int FilterCount { get { return (ChildModels == null) ? 0 : ChildModels.Length; } }
         public bool HasError { get { return false; } }

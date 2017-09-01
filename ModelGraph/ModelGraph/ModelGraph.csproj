@@ -102,12 +102,13 @@
     <Compile Include="Controls\GraphControl\ModelGraphControlMoveItems.cs" />
     <Compile Include="Controls\GraphControl\ModelGraphControlVisualAids.cs" />
     <Compile Include="Controls\GridControl\ModelGridControl.xaml.cs" />
+    <Compile Include="Controls\ModelControl\IModelControl.cs" />
     <Compile Include="Controls\ModelControl\ModelTabControl.xaml.cs" />
     <Compile Include="Controls\SymbolControl\SymbolEditControl.xaml.cs" />
     <Compile Include="Controls\TreeControl\ModelTreeControl.xaml.cs" />
     <Compile Include="Controls\TreeControl\ModelTreeUICache.cs" />
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="Controls\PageControl\PageControl.xaml.cs">
+      <DependentUpon>PageControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\ExtraAssemblyInfo.cs" />
@@ -153,7 +154,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MainPage.xaml">
+    <Page Include="Controls\PageControl\PageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

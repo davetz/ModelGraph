@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Windows.UI.Xaml;
 
 namespace ModelGraphLibrary
 {/*
@@ -18,7 +19,8 @@ namespace ModelGraphLibrary
     public class RootModel : ItemModel
     {
         public Chef Chef;
-        public IPageControl Page;
+        public IPageControl PageControl { get; set; } // reference the UI PageControl
+        public IViewControl ViewControl { get; set; } // created and used exclusively by PageControl
 
         public int ModelCount;
         public int ValueIndex;
@@ -47,60 +49,47 @@ namespace ModelGraphLibrary
         public ItemModel[] ViewModels; //flattend list of itemModel tree
         public Dictionary<object, string> ViewFilter = new Dictionary<object, string>();
 
-
-        public IModelControl ModelControl;
-        public ControlType ControlType;
         public ModelAction ModelAction;
 
-        public bool CloseModel;
-        public bool ReloadModel;
+        private ItemModel[] _modelList;
+        public ItemModel[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
+        public int Capacity { get; set; } = 100;
+
         public bool ModelIsChecked;
 
         #region Constructors  =================================================
         // AppRootChef: Created by App.xaml
-        public RootModel(IPageControl page)
+        public RootModel(IPageControl pageControl)
             : base(null, Trait.RootChef_M, 0, new Chef())
         {
+            PageControl = pageControl;
+
             Chef = Item1 as Chef;
-            Page = page;
             Chef.AddRootModel(this);
 
-            ControlType = ControlType.AppRootChef;
-            //ModelControl = new ModelTreeControl(this);
             _getData = Chef.RootChef_M;
 
             IsExpandedLeft = true;
         }
 
         // (Primary & Secondary) RootModels: Created by PrimaryRoot
-        public RootModel(IPageControl page, ViewRequest rq)
+        public RootModel(IPageControl pageControl, UIRequest rq)
             : base(null, rq.Trait, 0, rq.Item1, rq.Item2, rq.Item3, rq.GetData)
         {
-            Page = page;
+            PageControl = pageControl;
+
             Chef = rq.Chef;
             Chef.AddRootModel(this);
 
-            ControlType = rq.Type;
-            //if (ControlType == ControlType.PrimaryTree)
-            //    ModelControl = new ModelTreeControl(this);
-            //else if (ControlType == ControlType.PartialTree)
-            //    ModelControl = new ModelTreeControl(this);
-            //else if (ControlType == ControlType.GraphDisplay)
-            //    ModelControl = new ModelGraphControl(this);
-            //else if (ControlType == ControlType.SymbolEditor)
-            //    ModelControl = new SymbolEditControl(this);
-
             IsExpandedLeft = true;
         }
-
-        public ViewRequest BuildViewRequest() { return new ViewRequest(ControlType, Trait, Chef, Item1, Item2, Item3, _getData); }
 
         // Created by dataChef used for GetModelData
         public RootModel(Chef owner) : base(null, Trait.MockChef_M, 0, owner) { Chef = owner; }
         #endregion
 
         #region Properties/Methods  ===========================================
-        public bool IsAppRootChef => (ControlType == ControlType.AppRootChef);
+        public bool IsAppRootChef => (ViewControl.ControlType == ControlType.AppRootChef);
         public string TabName => Chef.GetAppTabName(this);
         public string TitleName => Chef.GetAppTitleName(this);
         public string TabSummary => Chef.GetAppTabSummary(this);
@@ -211,103 +200,23 @@ namespace ModelGraphLibrary
         }
         #endregion
 
-        #region SymbolEditor  =================================================
-        public async void SaveSymbol()
-        {
-            //var editor = ModelControl as SymbolEditControl;
-            //if (editor == null) return;
-            //await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => { editor.Save(); });
-        }
-        public async void ReloadSymbol()
-        {
-            //var editor = ModelControl as SymbolEditControl;
-            //if (editor == null) return;
-            //await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => { editor.Reload(); });
-        }
-        #endregion
-
         #region PageDispatch  =================================================
-        public ViewRequest ViewRequest { get { return _viewRequest; } set { if (_viewRequest == null) _viewRequest = value; } }
-        private ViewRequest _viewRequest;
-        public ItemModel[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
-        private ItemModel[] _modelList;
-        public int Capacity = 100;
-
-        public async void PageDispatch()
+        private UIRequest _uiRequest;
+        internal UIRequest UIRequest { get { return _uiRequest; } set { if (_uiRequest == null && value != null) _uiRequest = value; } }
+        
+        internal void PageDispatch()
         {
-            if (Page != null)
+            if (_uiRequest != null)
             {
-                //if (CloseModel)
-                //{
-                //    await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => { Page.CloseModel(this); });
-                //}
-                //else if (ReloadModel)
-                //{
-                //    await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => { Page.ReloadModel(this); });
-                //}
-                //else
-                //{
-                //    if (_viewRequest != null)
-                //    {
-                //        var rq = _viewRequest;
-                //        _viewRequest = null;
-                //        await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => { Page.CreateView(rq); });
-                //    }
-                //    else
-                //    {
-                //        PageRefresh();
-                //    }
-                //}
+                var request = _uiRequest;
+                _uiRequest = null;
+
+                PageControl.Dispatch(request);
             }
         }
         #endregion
 
-        #region PageRefresh  ==================================================
-        public void PageRefresh()
-        {
-            if (ModelControl == null) return;
-            if (MajorDelta == Chef.MajorDelta && MinorDelta == Chef.MinorDelta) return;
-            switch (ControlType)
-            {
-                case ControlType.AppRootChef:
-                case ControlType.PrimaryTree:
-                case ControlType.PartialTree:
-                    ModelTreeRefreshAsync(ChangeType.NoChange);
-                    break;
-                case ControlType.GraphDisplay:
-                    ModelGraphRefreshAsync();
-                    break;
-                case ControlType.SymbolEditor:
-                    SymbolEditorRefreshAsync();
-                    break;
-            }
-        }
-        public async void ModelTreeRefreshAsync(ChangeType change)
-        {
-            //await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-            //{
-            //    if (Chef.ValidateModelTree(this, change))
-            //        ModelControl.Refresh();
-            //});
-        }
-        public async void ModelGraphRefreshAsync()
-        {
-            //await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-            //{
-            //    ModelControl.Refresh();
-            //});
-        }
-        public async void SymbolEditorRefreshAsync()
-        {
-            //await Page.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-            //{
-            //    ModelControl.Refresh();
-            //});
-        }
-        #endregion
-
-        #region UIControl  ====================================================
-
+        #region CalledFromUI  =================================================
         public void GetAppCommands()
         {
             AppButtonCommands.Clear();
@@ -329,6 +238,9 @@ namespace ModelGraphLibrary
             model.GetData(this);
             Chef.PostModelSetValueIndex(model, value);
         }
+
+        public UIRequest BuildViewRequest() => UIRequest.CreateNewView(ViewControl.ControlType, Trait, Chef, Item1, Item2, Item3, _getData, true);
+
         #endregion
     }
 }
