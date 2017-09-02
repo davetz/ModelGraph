@@ -29,6 +29,32 @@ namespace ModelGraphLibrary
         private StoreOf<Property> _propertyZStore;
         private StoreOf<Relation> _relationZStore;
 
+        #region UnitTestAccess  ===============================================
+        /*
+            ModelGraphUnitTest : TestData references these stores
+        */
+        internal ChangeSet T_ChangeSet => _changeSet;
+        internal ChangeRoot T_ChangeRoot => _changeRoot;
+        internal int T_ChangeSequence => _changeSequence;
+
+        internal Store[] T_PrimeStores => _primeStores;
+        internal StoreOf<EnumX> T_EnumXStore => _enumXStore;
+        internal StoreOf<ViewX> T_ViewXStore => _viewXStore;
+        internal StoreOf<TableX> T_TableXStore => _tableXStore;
+        internal StoreOf<GraphX> T_GraphXStore => _graphXStore;
+        internal StoreOf<QueryX> T_QueryXStore => _queryXStore;
+        internal StoreOf<ColumnX> T_ColumnXStore => _columnXStore;
+        internal StoreOf<SymbolX> T_SymbolStore => _symbolXStore;
+        internal StoreOf<ComputeX> T_ComputeXStore => _computeXStore;
+        internal StoreOf<RelationX> T_RelationXStore => _relationXStore;
+
+        internal StoreOf<Error> T_ErrorStore => _errorStore;
+        internal StoreOf<EnumZ> T_EnumZStore => _enumZStore;
+        internal StoreOf<Property> T_PropertyStore => _propertyStore;
+        internal StoreOf<Relation> T_RelationStore => _relationStore;
+        internal StoreOf<Property> T_PropertyZStore => _propertyZStore;
+        internal StoreOf<Relation> T_RelationZStore => _relationZStore;
+        #endregion
 
         #region InitializeStores  =============================================
         private void InitializeStores()

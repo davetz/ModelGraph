@@ -18,10 +18,10 @@ namespace ModelGraphLibrary
         internal abstract Item[] GetItems();
         internal abstract int Count { get; }
         internal abstract void RemoveAll();
-
-        //internal bool TryLookUpProperty(string name, out Property property, out NumericTerm term)
-        //{
-        //    return GetChef().TryLookUpProperty(this, name, out property, out term);
-        //}
+        
+        internal bool TryLookUpProperty(string name, out Property property, out NumericTerm term)
+        {
+            return GetChef().TryLookUpProperty(this, name, out property, out term);
+        }
     }
 }

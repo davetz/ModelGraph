@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModelGraphLibrary
-{
+{/*
+ */
+    [Flags]
     public enum ParseError : byte
     {
-        None,
-        TooFewArgs,
-        TooManyArgs,
-        InvalidArgs,
-        InvalidText,
-        InvalidString,
-        InvalidParens,
-        UnknownProperty,
+        None = 0,
+        TooFewArgs = 0x1,
+        TooManyArgs = 0x2,
+        InvalidArgs = 0x4,
+        InvalidText = 0x8,
+        InvalidString = 0x10,
+        InvalidParens = 0x20,
+        UnknownProperty = 0x40,
     }
 }

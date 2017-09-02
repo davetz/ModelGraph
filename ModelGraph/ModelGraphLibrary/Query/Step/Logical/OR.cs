@@ -13,7 +13,7 @@ namespace ModelGraphLibrary
             var N = Count;
             for (int i = 0; i < N; i++)
             {
-                Inputs[0].GetValue(out bool v1);
+                Inputs[i].GetValue(out bool v1);
                 if (v1) return true;
             }
             return false;

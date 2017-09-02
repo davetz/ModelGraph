@@ -35,6 +35,7 @@ namespace ModelGraphLibrary
 
         internal ParseError ParseError;
         internal StepType StepType;
+        private StepFlag _stepFlags;
 
         #region Constructor  ==================================================
         public Parser(string text)
@@ -49,7 +50,6 @@ namespace ModelGraphLibrary
             if (HasInvalidString()) return;
             if (HasInvalidParens()) return;
             if (!TryParse()) return;
-            if (!TryCompose()) return;
         }
         public Parser(Parser parent, string text, StepType parseType)
         {
@@ -78,23 +78,62 @@ namespace ModelGraphLibrary
         }
         #endregion
 
+        #region Flags  ========================================================
+        private bool GetFlag(StepFlag flag) => (_stepFlags & flag) != 0;
+        private void SetFlag(bool val, StepFlag flag) { if (val) _stepFlags |= flag; else _stepFlags &= ~flag; }
+
+        public bool IsWierd { get { return GetFlag(StepFlag.IsWierd); } set { SetFlag(value, StepFlag.IsWierd); } }
+        public bool HasParens { get { return GetFlag(StepFlag.HasParens); } set { SetFlag(value, StepFlag.HasParens); } }
+        public bool HasNewLine { get { return GetFlag(StepFlag.HasNewLine); } set { SetFlag(value, StepFlag.HasNewLine); } }
+        public bool IsUnresolved { get { return GetFlag(StepFlag.IsUnresolved); } set { SetFlag(value, StepFlag.IsUnresolved); } }
+        #endregion
+
         #region Validate  =====================================================
-        internal bool Validate(Store store)
+        internal bool Validate(Store sto, Func<Item> getItem)
         {
-            return false;
+            if (ParseError != ParseError.None) return false;
+            if (StepType == StepType.Property)
+            {
+                if (sto.TryLookUpProperty(Text, out Property property, out NumericTerm term))
+                {
+                    Step = new PROPERTY(property, term, getItem);
+                    if (property is ComputeX compute)
+                    {
+                    }
+                }
+                else
+                {
+                    ParseError = ParseError.UnknownProperty;
+                    return false;
+                }
+            }
+            foreach (var child in Children)
+            {
+                return child.Validate(sto, getItem);
+            }
+            return true;
         }
         #endregion
 
         #region IsValid  ======================================================
-        public bool IsValid => GetIsValid();
         private bool GetIsValid()
         {
             if (ParseError != ParseError.None) return false;
             foreach (var child in Children)
             {
-                if (!child.IsValid) return false;
+                if (!child.GetIsValid()) return false;
             }
             return true;
+        }
+        public bool IsValid => GetIsValid();
+        public ParseError CompositeError()
+        {
+            var error = ParseError;
+            foreach (var child in Children)
+            {
+                error |= child.CompositeError();
+            }
+            return error;
         }
         #endregion
 
@@ -160,10 +199,10 @@ namespace ModelGraphLibrary
         */
         static Dictionary<string, StepType> operatorParseType = new Dictionary<string, StepType>
         {
-            ["||"] = StepType.Or,
-            ["|"] = StepType.BitOr,
-            ["&&"] = StepType.And,
-            ["&"] = StepType.BitAnd,
+            ["|"] = StepType.Or1,
+            ["||"] = StepType.Or2,
+            ["&"] = StepType.And1,
+            ["&&"] = StepType.And2,
             ["!"] = StepType.Not,
             ["+"] = StepType.Plus,
             ["-"] = StepType.Minus,
@@ -183,8 +222,6 @@ namespace ModelGraphLibrary
             ["ends"] = StepType.Ends,
             ["starts"] = StepType.Starts,
         };
-        static string numberString = "0123456789";
-        static string alphaString = "abcdefghijklmnopqrstuvwxyz";
         static string operatorString = "!~|&+-/*<>=";
         static string newLineString = Environment.NewLine;
 
@@ -192,40 +229,20 @@ namespace ModelGraphLibrary
         {
             while (Index1 < Text.Length)
             {
-                var c = char.ToLower(Text[Index1]);
-                if (c == '"')
-                {
-                    Index1 = Index2 = (Index1 + 1);
-                    while (Text[Index2] != '"') { Index2++; }
-                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.String));
-                    Index1 = (Index2 + 1);
+                var c = Text[Index1];
+                if (char.IsWhiteSpace(c))
+                {// - - - - - - - - - - - - - - - - - - - - - start of white space
+                    Index1++; //- - - - - - - - - - - - - - - skip over it, and continue
                 }
-                else if (c == '(')
-                {
-                    Index1 = Index2 = (Index1 + 1);
-                    var count = 1;
-                    while (count > 0)
-                    {
-                        var t = Text[Index2];
-                        if (t == '(')
-                            count++;
-                        else if (t == ')')
-                            count--;
-                        Index2++;
-                    }
-                    Index2--;
-                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.None));
-                    Index1 = Index2 + 1;
-                }
-                else if (numberString.Contains(c))
-                {
+                else if (char.IsDigit(c))
+                {// - - - - - - - - - - - - - - - - - - - - - start of a numeric literal value
                     Index2 = (Index1 + 1);
                     bool isDouble = false;
                     while (Index2 < Text.Length)
-                    {
+                    {//- - - - - - - - - - - - - - - - - - - find the ending index
                         var t = Text[Index2];
                         if (t == '.') isDouble = true;
-                        else if (!numberString.Contains(t)) break;
+                        else if (!char.IsDigit(c)) break;
                         Index2++;
                     }
 
@@ -233,11 +250,21 @@ namespace ModelGraphLibrary
                     Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), parseType));
                     Index1 = Index2;
                 }
+                else if (c == '"')
+                {// - - - - - - - - - - - - - - - - - - - - - start of a string literal value
+                    Index1 = Index2 = (Index1 + 1);
+                    while (Text[Index2] != '"')
+                    {//- - - - - - - - - - - - - - - - - - - find the ending index
+                        Index2++;
+                    }
+                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.String));
+                    Index1 = (Index2 + 1);
+                }
                 else if (operatorString.Contains(c))
-                {
+                {// - - - - - - - - - - - - - - - - - - - - - start of a operator expression
                     Index2 = (Index1 + 1);
                     while (Index2 < Text.Length)
-                    {
+                    {//- - - - - - - - - - - - - - - - - - - find the ending index
                         var t = Text[Index2];
                         if (!operatorString.Contains(t)) break;
                         Index2++;
@@ -254,11 +281,49 @@ namespace ModelGraphLibrary
                         return false;
                     }
                 }
-                else if (newLineString.Contains(c))
-                {
+                else if (char.IsLetter(c))
+                {// - - - - - - - - - - - - - - - - - - - - - start of either a function or parameter
                     Index2 = (Index1 + 1);
                     while (Index2 < Text.Length)
+                    {//- - - - - - - - - - - - - - - - - - - find the ending index
+                        var t = Text[Index2];                        
+                        if (!(char.IsLetterOrDigit(t) || t == '.' || t == '_')) break;
+                        Index2++;
+                    }
+                    var key = Text.Substring(Index1, Index2 - Index1).ToLower();
+                    if (functionParseType.TryGetValue(key, out StepType parseType))
                     {
+                        Children.Add(new Parser(this, key, parseType));
+                        Index1 = Index2;
+                    }
+                    else
+                    {
+                        Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.Property));
+                        Index1 = Index2;
+                    }
+                }
+                else if (c == '(')
+                {// - - - - - - - - - - - - - - - - - - - - - start of a parethetical subexpression
+                    Index1 = Index2 = (Index1 + 1);
+                    var count = 1;
+                    while (count > 0)
+                    {//- - - - - - - - - - - - - - - - - - - find the ending index
+                        var t = Text[Index2];
+                        if (t == '(')
+                            count++;
+                        else if (t == ')')
+                            count--;
+                        Index2++;
+                    }
+                    Index2--;
+                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.None));
+                    Index1 = Index2 + 1;
+                }
+                else if (newLineString.Contains(c))
+                {// - - - - - - - - - - - - - - - - - - - - - start of a new line declaration
+                    Index2 = (Index1 + 1);
+                    while (Index2 < Text.Length)
+                    {//- - - - - - - - - - - - - - - - - - - find the ending index
                         var t = Text[Index2];
                         if (!newLineString.Contains(t)) break;
                         Index2++;
@@ -275,30 +340,10 @@ namespace ModelGraphLibrary
                         return false;
                     }
                 }
-                else if (alphaString.Contains(c))
-                {
-                    Index2 = (Index1 + 1);
-                    while (Index2 < Text.Length)
-                    {
-                        var t = char.ToLower(Text[Index2]);
-                        if (!alphaString.Contains(t)) break;
-                        Index2++;
-                    }
-                    var key = Text.Substring(Index1, Index2 - Index1).ToLower();
-                    if (functionParseType.TryGetValue(key, out StepType parseType))
-                    {
-                        Children.Add(new Parser(this, key, parseType));
-                        Index1 = Index2;
-                    }
-                    else
-                    {
-                        ParseError = ParseError.InvalidText;
-                        return false;
-                    }
-                }
                 else
                 {
-                    Index1++;
+                    ParseError = ParseError.InvalidText;
+                    return false;
                 }
             }
             return IsValid;
@@ -340,11 +385,11 @@ namespace ModelGraphLibrary
             [StepType.Integer] = new StepParam(ValType.None, 0, 0, ValType.Number),
             [StepType.Property] = new StepParam(ValType.None, 0, 0, ValType.Property),
 
-            [StepType.BitOr] = new StepParam(ValType.Flexible, 2, 255, ValType.Flexible),
-            [StepType.BitAnd] = new StepParam(ValType.Flexible, 2, 255, ValType.Flexible),
+            [StepType.Or1] = new StepParam(ValType.Flexible, 2, 255, ValType.Flexible),
+            [StepType.And1] = new StepParam(ValType.Flexible, 2, 255, ValType.Flexible),
 
-            [StepType.Or] = new StepParam(ValType.Bool, 2, 255, ValType.Bool),
-            [StepType.And] = new StepParam(ValType.Bool, 2, 255, ValType.Bool),
+            [StepType.Or2] = new StepParam(ValType.Bool, 2, 255, ValType.Bool),
+            [StepType.And2] = new StepParam(ValType.Bool, 2, 255, ValType.Bool),
         };
         bool TryCompose()
         {

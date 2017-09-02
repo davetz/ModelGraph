@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModelGraphLibrary
-{
+{/*
+ */
     internal class WhereSelect
     {
-        private Item _item;
-        private Store _store;
-
         private Step _root;
         private Parser _parser;
+
+        private Item _item;
 
         internal NativeType NativeType;
 
@@ -21,8 +17,8 @@ namespace ModelGraphLibrary
             _parser = new Parser(text);
         }
 
-        internal bool IsValid => true;
-        internal bool IsInvalid { get { return !IsValid; } }
+        internal bool IsValid => (_root != null) ? true : ((_parser == null) ? false : _parser.IsValid); 
+        internal bool IsUnresolved => (_root != null || _parser == null) ? false : _parser.IsUnresolved; 
         internal string InputString => GetInputString();
         private string GetInputString()
         {
@@ -41,13 +37,19 @@ namespace ModelGraphLibrary
         }
         internal void Validate(Store sto, string text)
         {
-            _store = sto;
             _root = null;
             _parser = new Parser(text);
+            Validate(sto);
+            
         }
         internal void Validate(Store sto)
         {
-            _store = sto;
+            _root = null;
+
+            if (IsValid)
+            {
+                _parser.Validate(sto, () => { return _item; });
+            }
         }
 
         internal bool Matches(Item item)

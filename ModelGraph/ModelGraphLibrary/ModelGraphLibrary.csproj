@@ -113,6 +113,7 @@
     <Compile Include="Models\UIRequest\IPageControl.cs" />
     <Compile Include="Models\UIRequest\IViewControl.cs" />
     <Compile Include="Models\UIRequest\UIRequest.cs" />
+    <Compile Include="Query\Step\Literal\PROPERTY.cs" />
     <Compile Include="Updates\ChangeRoot.cs" />
     <Compile Include="Updates\ChangeSet.cs" />
     <Compile Include="Updates\ItemChange.cs" />
@@ -299,7 +300,6 @@
   <ItemGroup>
     <Folder Include="Query\Step\Alphabetic\" />
     <Folder Include="Query\Step\Compare\" />
-    <Folder Include="Query\Step\Literal\" />
     <Folder Include="Query\Step\Numeric\" />
   </ItemGroup>
   <ItemGroup>

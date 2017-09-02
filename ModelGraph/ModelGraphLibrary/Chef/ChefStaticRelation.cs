@@ -49,6 +49,48 @@ namespace ModelGraphLibrary
         private RelationOf<EnumX, ColumnX> EnumX_ColumnX;
         private RelationOf<Store, ComputeX>   Store_ComputeX;
 
+        #region UnitTestAccess  ===============================================
+        /*
+            ModelGraphUnitTest : TestData references these relations
+        */
+        internal RelationOf<Store, Property> R_Store_Property => Store_Property;
+        internal RelationOf<Store, Relation> R_Store_ChildRelation => Store_ChildRelation;
+        internal RelationOf<Store, Relation> R_Store_ParentRelation => Store_ParentRelation;
+
+        internal RelationOf<TableX, ColumnX> R_TableX_ColumnX => TableX_ColumnX;
+        internal RelationOf<TableX, Property> R_TableX_NameProperty => TableX_NameProperty; // can be a ColumnX or a ComputeX
+        internal RelationOf<TableX, Property> R_TableX_SummaryProperty => TableX_SummaryProperty; // can be a ColumnX or a ComputeX
+        internal RelationOf<TableX, RelationX> R_TableX_ChildRelationX => TableX_ChildRelationX;
+        internal RelationOf<TableX, RelationX> R_TableX_ParentRelationX => TableX_ParentRelationX;
+
+
+        internal RelationOf<Item, Error> R_Item_Error => Item_Error;
+        internal RelationOf<ViewX, ViewX> R_ViewX_ViewX => ViewX_ViewX;
+        internal RelationOf<QueryX, ViewX> R_QueryX_ViewX => QueryX_ViewX;
+        internal RelationOf<Property, ViewX> R_Property_ViewX => Property_ViewX;
+        internal RelationOf<Relation, ViewX> R_Relation_ViewX => Relation_ViewX;
+
+        internal RelationOf<GraphX, QueryX> R_GraphX_SymbolQueryX => GraphX_SymbolQueryX; //REDUNDANT ??
+
+        internal RelationOf<GraphX, ColumnX> R_GraphX_ColorColumnX => GraphX_ColorColumnX;
+        internal RelationOf<GraphX, SymbolX> R_GraphX_SymbolX => GraphX_SymbolX;
+
+        internal RelationOf<ViewX, QueryX> R_ViewX_QueryX => ViewX_QueryX;
+        internal RelationOf<Store, QueryX> R_Store_QueryX => Store_QueryX;
+        internal RelationOf<GraphX, QueryX> R_GraphX_QueryX => GraphX_QueryX;
+        internal RelationOf<QueryX, QueryX> R_QueryX_QueryX => QueryX_QueryX;
+        internal RelationOf<SymbolX, QueryX> R_SymbolX_QueryX => SymbolX_QueryX;
+        internal RelationOf<ComputeX, QueryX> R_ComputeX_QueryX => ComputeX_QueryX;
+        internal RelationOf<Relation, QueryX> R_Relation_QueryX => Relation_QueryX;
+
+        internal RelationOf<ViewX, Property> R_ViewX_Property => ViewX_Property;
+        internal RelationOf<QueryX, Property> R_QueryX_Property => QueryX_Property;
+
+        internal RelationOf<EnumX, ColumnX> R_EnumX_ColumnX => EnumX_ColumnX;
+        internal RelationOf<Store, ComputeX> R_Store_ComputeX => Store_ComputeX;
+        #endregion
+
+        #region InitializeRelations  ==========================================
         private void InitializeRelations()
         {
             Item_Error = new RelationOf<Item, Error>(_relationZStore, Trait.Item_Error, new Guid("3BD787B0-C38A-4288-9E12-1C688EEF984E"), Pairing.OneToMany, 25, 25);
@@ -176,5 +218,6 @@ namespace ModelGraphLibrary
             if (!Store_ParentRelation.ContainsLink(childStore, relation))
                 Store_ParentRelation.SetLink(childStore, relation);
         }
+        #endregion
     }
 }

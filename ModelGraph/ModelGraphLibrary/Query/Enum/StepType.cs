@@ -14,11 +14,11 @@
         NewLine, // marks line breaks in the expression string
         Property, // a property value
 
-        BitOr, // "|" could be (string-concat, bitwise-OR, or boolean-OR) depends on context 
-        BitAnd, // "&" could be (bitwise-AND or boolean-AND) depends on context
+        Or1, // "|" could be (string-concat, bitwise-OR, or boolean-OR) depends on context 
+        And1, // "&" could be (bitwise-AND or boolean-AND) depends on context
 
-        Or, // "||"
-        And, // "&&"
+        Or2, // "||"
+        And2, // "&&"
         Not, // "!"
         Plus, // "+" could be (string-concat or numeric-ADD) depends on context
         Minus, // "-"

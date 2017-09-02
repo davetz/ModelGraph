@@ -6,6 +6,7 @@ namespace ModelGraphUnitTest
     [TestClass]
     public class ParserTest
     {
+        #region Parser  =======================================================
         [TestMethod]
         public void ParserNullOrWhiteSpaceText()
         {
@@ -59,38 +60,63 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void ParserString()
         {
-            RunTest("\"should work\"", true, 1, StepType.String, "should work");
+            RunTest("\"ok good\"", true, 1, StepType.String, "ok good");
             RunTest("   \"0.4-+=/*&|\" ", true, 1, StepType.String, "0.4-+=/*&|");
 
-            void RunTest(string inText, bool isValid, int childCount, StepType childType, string childText)
+            void RunTest(string inText, bool isValid, int count0, StepType childType, string childText)
             {
                 var p = new Parser(inText);
                 Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.Children.Count == childCount);
+                Assert.IsTrue(p.Children.Count == count0);
                 var q = p.Children[0];
                 Assert.IsTrue(q.StepType == childType);
                 Assert.IsTrue(q.Text == childText);
             }
         }
         [TestMethod]
-        public void ParserParens()
+        public void ParserParens1()
         {
-            RunTest("(\"should work\")", true, 1, 1, StepType.String, "should work");
-            RunTest(" (  \"should work\"  ) ", true, 1, 1, StepType.String, "should work");
-            RunTest(" (  \"should work\") ", true, 1, 1, StepType.String, "should work");
+            RunTest("(\"ok (good)\")", true, 1, 1, StepType.String, "ok (good)");
+            RunTest(" (  \"ok good\"  ) ", true, 1, 1, StepType.String, "ok good");
+            RunTest(" (  \"ok good\") ", true, 1, 1, StepType.String, "ok good");
 
-            void RunTest(string inText, bool isValid, int childCount, int grandChildCount, StepType grandChildType, string grandChildText)
+            void RunTest(string inText, bool isValid, int count0, int count1, StepType type1, string text1)
             {
                 var p = new Parser(inText);
                 Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.Children.Count == childCount);
+                Assert.IsTrue(p.Children.Count == count0);
 
                 var q = p.Children[0];
-                Assert.IsTrue(q.Children.Count == grandChildCount);
+                Assert.IsTrue(q.Children.Count == count1);
 
                 var r = q.Children[0];
-                Assert.IsTrue(r.StepType == grandChildType);
-                Assert.IsTrue(r.Text == grandChildText);
+                Assert.IsTrue(r.StepType == type1);
+                Assert.IsTrue(r.Text == text1);
+            }
+        }
+        [TestMethod]
+        public void ParserParens2()
+        {
+            RunTest("((\"ok (good)\"))", true, 1, 1, 1, StepType.String, "ok (good)");
+            RunTest(" (  ( \"ok good\" ) ) ", true, 1, 1, 1, StepType.String, "ok good");
+            RunTest(" (  (\"ok good\")) ", true, 1, 1, 1, StepType.String, "ok good");
+            RunTest("((\"ok good\"  )  ) ", true, 1, 1, 1, StepType.String, "ok good");
+
+            void RunTest(string inText, bool isValid, int count0, int count1, int count2, StepType type2, string text2)
+            {
+                var p = new Parser(inText);
+                Assert.IsTrue(p.IsValid == isValid);
+                Assert.IsTrue(p.Children.Count == count0);
+
+                var q = p.Children[0];
+                Assert.IsTrue(q.Children.Count == count1);
+
+                var r = q.Children[0];
+                Assert.IsTrue(r.Children.Count == count2);
+
+                var s = r.Children[0];
+                Assert.IsTrue(s.StepType == type2);
+                Assert.IsTrue(s.Text == text2);
             }
         }
         [TestMethod]
@@ -101,11 +127,11 @@ namespace ModelGraphUnitTest
             RunTest(" 16 ", true, 1, StepType.Integer, "16");
             RunTest(" 0.55 ", true, 1, StepType.Double, "0.55");
 
-            void RunTest(string inText, bool isValid, int childCount, StepType childType, string childText)
+            void RunTest(string inText, bool isValid, int count0, StepType childType, string childText)
             {
                 var p = new Parser(inText);
                 Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.Children.Count == childCount);
+                Assert.IsTrue(p.Children.Count == count0);
 
                 var q = p.Children[0];
                 Assert.IsTrue(q.StepType == childType);
@@ -131,12 +157,24 @@ namespace ModelGraphUnitTest
             Assert.IsTrue(s.Text == "0.45");
         }
         [TestMethod]
+        public void ParserGoNoGo()
+        {
+            RunTest("(dog & cat == fight) || ((13.8 / 12.3) > 5.1)", true);
+            RunTest("(dog & cat == fight) || (13.8 / 12.3) > 5.1)", false);
+
+            void RunTest(string text, bool isValid)
+            {
+                var p = new Parser(text);
+                Assert.IsTrue(p.IsValid == isValid);
+            }
+        }
+        [TestMethod]
         public void ParserOperator()
         {
-            RunTest("|", true, 1, StepType.BitOr);
-            RunTest("||", true, 1, StepType.Or);
-            RunTest("&", true, 1, StepType.BitAnd);
-            RunTest("&&", true, 1, StepType.And);
+            RunTest("|", true, 1, StepType.Or1);
+            RunTest("||", true, 1, StepType.Or2);
+            RunTest("&", true, 1, StepType.And1);
+            RunTest("&&", true, 1, StepType.And2);
             RunTest("!", true, 1, StepType.Not);
             RunTest("+", true, 1, StepType.Plus);
             RunTest("-", true, 1, StepType.Minus);
@@ -152,10 +190,10 @@ namespace ModelGraphUnitTest
             RunTest("Has", true, 1, StepType.Has);
             RunTest("Ends", true, 1, StepType.Ends);
             RunTest("Starts", true, 1, StepType.Starts);
-            RunTest(" | ", true, 1, StepType.BitOr);
-            RunTest(" || ", true, 1, StepType.Or);
-            RunTest(" & ", true, 1, StepType.BitAnd);
-            RunTest(" && ", true, 1, StepType.And);
+            RunTest(" | ", true, 1, StepType.Or1);
+            RunTest(" || ", true, 1, StepType.Or2);
+            RunTest(" & ", true, 1, StepType.And1);
+            RunTest(" && ", true, 1, StepType.And2);
             RunTest(" ! ", true, 1, StepType.Not);
             RunTest(" + ", true, 1, StepType.Plus);
             RunTest(" - ", true, 1, StepType.Minus);
@@ -172,18 +210,68 @@ namespace ModelGraphUnitTest
             RunTest(" Ends ", true, 1, StepType.Ends);
             RunTest(" Starts ", true, 1, StepType.Starts);
 
-            void RunTest(string inText, bool isValid, int childCount, StepType childType)
+            void RunTest(string inText, bool isValid, int count0, StepType childType)
             {
                 var p = new Parser(inText);
                 Assert.IsTrue(p.IsValid == isValid);
                 if (isValid)
                 {
-                    Assert.IsTrue(p.Children.Count == childCount);
+                    Assert.IsTrue(p.Children.Count == count0);
 
                     var q = p.Children[0];
                     Assert.IsTrue(q.StepType == childType);
                 }
             }
         }
+        #endregion
+
+        #region WhereSelect  ==================================================
+        [TestMethod]
+        public void WhereSelectTest1()
+        {
+            var td = TestData.Instance;         // get the TestData singleton
+            var rc = td.RootChef;               // get the rootChef
+            var dc = rc.GetItems()[0] as Chef;  // get dataChef[0]
+
+            var T1RC = 10; // number of rows in table t1
+
+            // create table t1
+
+            var t1 = new TableX(dc.T_TableXStore);      
+            t1.SetCapacity(T1RC);
+
+            // create column c1
+
+            var c1 = new ColumnX(dc.T_ColumnXStore);
+            c1.Initialize(ModelGraphLibrary.ValueType.String, null, T1RC);
+            c1.Name = "Id";
+            dc.R_Store_Property.SetLink(t1, c1);
+
+            // create column c2
+
+            var c2 = new ColumnX(dc.T_ColumnXStore);    
+            c2.Initialize(ModelGraphLibrary.ValueType.UInt16, null, T1RC);
+            c1.Name = "I2Val";
+            dc.R_Store_Property.SetLink(t1, c2);
+
+            // add rows to table t1
+
+            for (int i = 0; i < T1RC; i++)
+            {
+                var r = new RowX(t1);
+                c1.TrySetValue(r, $"R{i}");             // {R0, R1, R2, R3, ...}
+                c2.TrySetValue(r, $"{(i + 1) * 2}");    // { 2,  4,  8, 16, ...}
+            }
+
+            // begin test
+
+            var w = new WhereSelect("I2Val / 2");
+            Assert.IsTrue(w.IsValid);
+
+            w.Validate(t1);
+            Assert.IsTrue(w.IsValid);
+        }
+        #endregion
+
     }
 }
