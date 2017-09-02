@@ -7,8 +7,8 @@ namespace ModelGraphLibrary
     Parse an expression string (or substring) and recursivly build a 
     tree of elemental steps. From this and depending on the context of 
     neighboring parse steps, compose a computation expression tree.
-    The final stage simplifies that tree so that all constant elements
-    are rolled-up into the simplest form.
+    In the final stage the tree is simplified so that all constant
+    elements are rolled-up into the simplest form.
 
     If the input expression string is invalid the parser aborts and the
     incomplete parse tree is kept arround for error reporting. However,  
@@ -242,7 +242,7 @@ namespace ModelGraphLibrary
                     {//- - - - - - - - - - - - - - - - - - - find the ending index
                         var t = Text[Index2];
                         if (t == '.') isDouble = true;
-                        else if (!char.IsDigit(c)) break;
+                        else if (!char.IsDigit(t)) break;
                         Index2++;
                     }
 

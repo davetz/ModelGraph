@@ -71,12 +71,12 @@ namespace ModelGraphUnitTest
             var c1 = new ColumnX(dc.T_ColumnXStore);
             c1.Initialize(ModelGraphLibrary.ValueType.String, null, 100);
             c1.Name = "Id";           
-            dc.R_Store_Property.SetLink(t1, c1);
+            dc.R_TableX_ColumnX.SetLink(t1, c1);
 
             var c2 = new ColumnX(dc.T_ColumnXStore);
             c2.Initialize(ModelGraphLibrary.ValueType.UInt16, null, 100);
             c1.Name = "I2Val";
-            dc.R_Store_Property.SetLink(t1, c2);
+            dc.R_TableX_ColumnX.SetLink(t1, c2);
         }
         #endregion
     }
