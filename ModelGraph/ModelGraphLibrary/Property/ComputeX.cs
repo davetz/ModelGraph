@@ -45,6 +45,7 @@ namespace ModelGraphLibrary
         #region Property/Methods  =============================================
         internal bool IsNumericSet => (CompuType == CompuType.NumericValueSet);
         internal bool IsPathComposite => (CompuType == CompuType.CompositeReversed || CompuType == CompuType.CompositeString);
+        internal bool IsUnresolved => _nativeType == NativeType.Unresolved;
         internal override bool HasItemName => false;
         internal override string GetItemName(Item itm) { return null; }
         internal override ValueType ValueType => ValueType.String;

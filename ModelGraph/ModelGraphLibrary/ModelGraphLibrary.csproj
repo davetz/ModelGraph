@@ -113,6 +113,12 @@
     <Compile Include="Models\UIRequest\IPageControl.cs" />
     <Compile Include="Models\UIRequest\IViewControl.cs" />
     <Compile Include="Models\UIRequest\UIRequest.cs" />
+    <Compile Include="Query\Step\Literal\INT16.cs" />
+    <Compile Include="Query\Step\Literal\INT32.cs" />
+    <Compile Include="Query\Step\Literal\INT64.cs" />
+    <Compile Include="Query\Step\Literal\STRING.cs" />
+    <Compile Include="Query\Step\Literal\DOUBLE.cs" />
+    <Compile Include="Query\Step\Literal\BYTE.cs" />
     <Compile Include="Query\Step\Literal\PROPERTY.cs" />
     <Compile Include="Updates\ChangeRoot.cs" />
     <Compile Include="Updates\ChangeSet.cs" />

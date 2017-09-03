@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ModelGraphLibrary;
+using System;
 
 namespace ModelGraphUnitTest
 {
@@ -122,12 +123,21 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void ParserNumber()
         {
-            RunTest("13", true, 1, StepType.Integer, "13");
-            RunTest("0.45", true, 1, StepType.Double, "0.45");
-            RunTest(" 16 ", true, 1, StepType.Integer, "16");
-            RunTest(" 0.55 ", true, 1, StepType.Double, "0.55");
+            RunTest("13", true, 1, StepType.Integer, "13", typeof(BYTE), 13.0);
+            RunTest("0.45", true, 1, StepType.Double, "0.45", typeof(DOUBLE), 0.45);
+            RunTest(" 16 ", true, 1, StepType.Integer, "16", typeof(BYTE), 16.0);
+            RunTest(" 0.55 ", true, 1, StepType.Double, "0.55", typeof(DOUBLE), 0.55);
 
-            void RunTest(string inText, bool isValid, int count0, StepType childType, string childText)
+            RunTest("0", true, 1, StepType.Integer, "0", typeof(BYTE), 0.0);
+            RunTest("255", true, 1, StepType.Integer, "255", typeof(BYTE), 255.0);
+            RunTest("256", true, 1, StepType.Integer, "256", typeof(INT16), 256.0);
+            RunTest("32767", true, 1, StepType.Integer, "32767", typeof(INT16), 32767.0);
+            RunTest("32768", true, 1, StepType.Integer, "32768", typeof(INT32), 32768.0);
+            RunTest("2147483647", true, 1, StepType.Integer, "2147483647", typeof(INT32), 2147483647.0);
+            RunTest("2147483648", true, 1, StepType.Integer, "2147483648", typeof(INT64), 2147483648.0);
+            RunTest("32767.32767", true, 1, StepType.Double, "32767.32767", typeof(DOUBLE), 32767.32767);
+
+            void RunTest(string inText, bool isValid, int count0, StepType childType, string childText, Type stepType, double val)
             {
                 var p = new Parser(inText);
                 Assert.IsTrue(p.IsValid == isValid);
@@ -136,6 +146,12 @@ namespace ModelGraphUnitTest
                 var q = p.Children[0];
                 Assert.IsTrue(q.StepType == childType);
                 Assert.IsTrue(q.Text == childText);
+
+                q.Step.GetValue(out double tval);
+                Assert.IsTrue(tval == val);
+
+                Assert.IsTrue(q.Step != null);
+                Assert.IsTrue(stepType == q.Step.GetType());
             }
 
         }

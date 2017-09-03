@@ -12,7 +12,8 @@ namespace ModelGraphLibrary
         InvalidArgs = 0x4,
         InvalidText = 0x8,
         InvalidString = 0x10,
-        InvalidParens = 0x20,
-        UnknownProperty = 0x40,
+        InvalidNumber = 0x20,
+        InvalidParens = 0x40,
+        UnknownProperty = 0x80,
     }
 }

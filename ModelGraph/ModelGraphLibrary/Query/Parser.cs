@@ -16,7 +16,7 @@ namespace ModelGraphLibrary
     are destroyed. Whenever needed a properly formatted expression string
     can be created from the expression tree. The benifit of this is it 
     produces a standard expressing string format and also it solves the 
-    problem of what happens when someone renames column not knowing that
+    problem of what happens when someone renames a column not knowing that
     it was hardcoded in the expression string.
     (the expression tree references the property object, not it's name)
  */
@@ -51,27 +51,37 @@ namespace ModelGraphLibrary
             if (HasInvalidParens()) return;
             if (!TryParse()) return;
         }
-        public Parser(Parser parent, string text, StepType parseType)
+        public Parser(Parser parent, string text, StepType parseType, bool hasParens = false)
         {
             Parent = parent;
             Text = text;
             StepType = parseType;
+            HasParens = hasParens;
 
             switch (parseType)
             {
                 case StepType.None:
-                    if (!TryParse()) return;
+                    TryParse();
                     break;
+
                 case StepType.Index:
                     break;
+
                 case StepType.String:
+                    Step = new STRING(Text);
                     break;
+
                 case StepType.Double:
+                    TryAddLiteralNumber(true);
                     break;
+
                 case StepType.Integer:
+                    TryAddLiteralNumber();
                     break;
+
                 case StepType.Property:
                     break;
+
                 default:
                     break;
             }
@@ -86,6 +96,8 @@ namespace ModelGraphLibrary
         public bool HasParens { get { return GetFlag(StepFlag.HasParens); } set { SetFlag(value, StepFlag.HasParens); } }
         public bool HasNewLine { get { return GetFlag(StepFlag.HasNewLine); } set { SetFlag(value, StepFlag.HasNewLine); } }
         public bool IsUnresolved { get { return GetFlag(StepFlag.IsUnresolved); } set { SetFlag(value, StepFlag.IsUnresolved); } }
+        public bool IsInvalidReference { get { return GetFlag(StepFlag.InvalidReference); } set { SetFlag(value, StepFlag.InvalidReference); } }
+        public bool IsCircularReference { get { return GetFlag(StepFlag.CircularReference); } set { SetFlag(value, StepFlag.CircularReference); } }
         #endregion
 
         #region Validate  =====================================================
@@ -99,6 +111,12 @@ namespace ModelGraphLibrary
                     Step = new PROPERTY(property, term, getItem);
                     if (property is ComputeX compute)
                     {
+                        if (compute.NativeType == NativeType.Invalid)
+                            IsInvalidReference = true;
+                        else if (compute.NativeType == NativeType.Circular)
+                            IsCircularReference = true;
+                        else if (compute.NativeType == NativeType.Unresolved)
+                            IsUnresolved = true;
                     }
                 }
                 else
@@ -109,9 +127,9 @@ namespace ModelGraphLibrary
             }
             foreach (var child in Children)
             {
-                return child.Validate(sto, getItem);
+                if (!child.Validate(sto, getItem)) return false;
             }
-            return true;
+            return (!GetFlag(StepFlag.IsUnresolved | StepFlag.InvalidReference | StepFlag.CircularReference));
         }
         #endregion
 
@@ -316,7 +334,7 @@ namespace ModelGraphLibrary
                         Index2++;
                     }
                     Index2--;
-                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.None));
+                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.None, true));
                     Index1 = Index2 + 1;
                 }
                 else if (newLineString.Contains(c))
@@ -347,6 +365,35 @@ namespace ModelGraphLibrary
                 }
             }
             return IsValid;
+        }
+        #endregion
+
+        #region TryAddLiteralNumber  =========================================
+        private bool TryAddLiteralNumber(bool hasDecimalPoint = false)
+        {
+            if (double.TryParse(Text, out double val))
+            {
+                if (hasDecimalPoint)
+                {
+                    Step = new DOUBLE(val);
+                }
+                else
+                {
+                    if (val <= byte.MaxValue)
+                        Step = new BYTE(val);
+                    else if (val <= short.MaxValue)
+                        Step = new INT16(val);
+                    else if (val <= int.MaxValue)
+                        Step = new INT32(val);
+                    else if (val <= long.MaxValue)
+                        Step = new INT64(val);
+                    else
+                        Step = new DOUBLE(val);
+                }
+                return true;
+            }
+            ParseError = ParseError.InvalidNumber;
+            return false;
         }
         #endregion
 

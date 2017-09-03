@@ -48,7 +48,10 @@ namespace ModelGraphLibrary
 
             if (IsValid)
             {
-                _parser.Validate(sto, () => { return _item; });
+                if (_parser.Validate(sto, () => { return _item; }))
+                {
+
+                }
             }
         }
 

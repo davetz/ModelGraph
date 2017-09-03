@@ -13,5 +13,7 @@ namespace ModelGraphLibrary
         HasParens = 0x2, // enclose generated subexpression in parens (...)
         HasNewLine = 0x4, // start generated subexpression with a newLine
         IsUnresolved = 0x8, // a computed value is unresoved
+        InvalidReference = 0x10, // refernces a invalid computeX
+        CircularReference = 0x20, // references a cuputeX who's nativeType IsCircular
     }
 }
