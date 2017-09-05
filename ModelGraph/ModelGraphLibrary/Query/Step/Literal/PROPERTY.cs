@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModelGraphLibrary
 {/*
@@ -22,6 +18,8 @@ namespace ModelGraphLibrary
 
 
         #region Methods  ======================================================
+        internal Property Property => _property;
+
         internal override void GetValue(out bool value) { _property.GetValue(_getItem(), out value); }
         internal override void GetValue(out byte value) { _property.GetValue(_getItem(), out value); }
         internal override void GetValue(out int value) { _property.GetValue(_getItem(), out value); }

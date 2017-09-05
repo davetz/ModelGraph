@@ -6,7 +6,8 @@
     public enum StepType : byte
     {
         None, // the parse step type is currentlly unknown
-        Index, // "[nn]" an array index
+        List, // a list of parse elements
+        Index, // "[nn]" a list index
         String, // string constant
         Double, // double precision floating point constant
         Integer, // (byte, short, int, or long) constant

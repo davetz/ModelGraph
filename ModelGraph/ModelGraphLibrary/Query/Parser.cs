@@ -38,7 +38,13 @@ namespace ModelGraphLibrary
         private StepFlag _stepFlags;
 
         #region Constructor  ==================================================
-        public Parser(string text)
+        public static Parser Create(string text)
+        {
+            var p = new Parser(text).RemoveRedundantParens();
+            p.HasParens = false;
+            return p;
+        }
+        protected Parser(string text)
         {
             Text = text;
             if (string.IsNullOrWhiteSpace(text))
@@ -51,7 +57,7 @@ namespace ModelGraphLibrary
             if (HasInvalidParens()) return;
             if (!TryParse()) return;
         }
-        public Parser(Parser parent, string text, StepType parseType, bool hasParens = false)
+        protected Parser(Parser parent, string text, StepType parseType, bool hasParens = false)
         {
             Parent = parent;
             Text = text;
@@ -93,44 +99,12 @@ namespace ModelGraphLibrary
         private void SetFlag(bool val, StepFlag flag) { if (val) _stepFlags |= flag; else _stepFlags &= ~flag; }
 
         public bool IsWierd { get { return GetFlag(StepFlag.IsWierd); } set { SetFlag(value, StepFlag.IsWierd); } }
+        public bool IsNegated { get { return GetFlag(StepFlag.IsNegated); } set { SetFlag(value, StepFlag.IsNegated); } }
         public bool HasParens { get { return GetFlag(StepFlag.HasParens); } set { SetFlag(value, StepFlag.HasParens); } }
         public bool HasNewLine { get { return GetFlag(StepFlag.HasNewLine); } set { SetFlag(value, StepFlag.HasNewLine); } }
         public bool IsUnresolved { get { return GetFlag(StepFlag.IsUnresolved); } set { SetFlag(value, StepFlag.IsUnresolved); } }
         public bool IsInvalidReference { get { return GetFlag(StepFlag.InvalidReference); } set { SetFlag(value, StepFlag.InvalidReference); } }
         public bool IsCircularReference { get { return GetFlag(StepFlag.CircularReference); } set { SetFlag(value, StepFlag.CircularReference); } }
-        #endregion
-
-        #region Validate  =====================================================
-        internal bool Validate(Store sto, Func<Item> getItem)
-        {
-            if (ParseError != ParseError.None) return false;
-            if (StepType == StepType.Property)
-            {
-                if (sto.TryLookUpProperty(Text, out Property property, out NumericTerm term))
-                {
-                    Step = new PROPERTY(property, term, getItem);
-                    if (property is ComputeX compute)
-                    {
-                        if (compute.NativeType == NativeType.Invalid)
-                            IsInvalidReference = true;
-                        else if (compute.NativeType == NativeType.Circular)
-                            IsCircularReference = true;
-                        else if (compute.NativeType == NativeType.Unresolved)
-                            IsUnresolved = true;
-                    }
-                }
-                else
-                {
-                    ParseError = ParseError.UnknownProperty;
-                    return false;
-                }
-            }
-            foreach (var child in Children)
-            {
-                if (!child.Validate(sto, getItem)) return false;
-            }
-            return (!GetFlag(StepFlag.IsUnresolved | StepFlag.InvalidReference | StepFlag.CircularReference));
-        }
         #endregion
 
         #region IsValid  ======================================================
@@ -368,7 +342,7 @@ namespace ModelGraphLibrary
         }
         #endregion
 
-        #region TryAddLiteralNumber  =========================================
+        #region TryAddLiteralNumber  ==========================================
         private bool TryAddLiteralNumber(bool hasDecimalPoint = false)
         {
             if (double.TryParse(Text, out double val))
@@ -397,48 +371,233 @@ namespace ModelGraphLibrary
         }
         #endregion
 
+        #region TryValidate  ==================================================
+        internal bool TryValidate(Store sto, Func<Item> getItem)
+        {
+            if (ParseError != ParseError.None) return false;
+            if (StepType == StepType.Property)
+            {
+                if (sto.TryLookUpProperty(Text, out Property property, out NumericTerm term))
+                {
+                    Step = new PROPERTY(property, term, getItem);
+                    if (property is ComputeX compute)
+                    {
+                        if (compute.NativeType == NativeType.Invalid)
+                            IsInvalidReference = true;
+                        else if (compute.NativeType == NativeType.Circular)
+                            IsCircularReference = true;
+                        else if (compute.NativeType == NativeType.Unresolved)
+                            IsUnresolved = true;
+                    }
+                }
+                else
+                {
+                    ParseError = ParseError.UnknownProperty;
+                    return false;
+                }
+            }
+            foreach (var child in Children)
+            {
+                if (!child.TryValidate(sto, getItem)) return false;
+            }
+            return (!GetFlag(StepFlag.IsUnresolved | StepFlag.InvalidReference | StepFlag.CircularReference));
+        }
+        #endregion
+
         #region TryCompose  ===================================================
         /* 
-           Use the parse tree and depending on the context of neighboring parse
-           tree steps, compose a computable expression tree.
+            At this phase, only some of the parse elements have an assigned Step
+            the rest has be noodled-out based on context
         */
-        enum ValType : byte //the step's normal inut/output value type
+        internal bool TryCompose(out Step step)
         {
-            None, // properties and literal constants have input ValType.None 
-            Bool,
-            Number, //could be (byte, short, int, long, or double)
-            String,
-            Flexible, //it depends on context involving nieboring steps
-            Property, // determined by the property's NativeType 
+            step = null;
+            return true;
         }
-        struct StepParam
-        {
-            internal byte MinArgs;
-            internal byte MaxArgs;
-            internal ValType InType;
-            internal ValType OutType;
 
-            internal StepParam(ValType inType, byte minArgs, byte maxArgs, ValType outType)
+        #region ParseParam  ===================================================
+        [Flags]
+        enum PFlag : ushort
+        {/*
+            Facilitate the transformtion of a parse tree to an expression tree
+         */
+            None = 0,
+            Priority1 = 1,  // this parce step is evaluted first
+            Priority2 = 2,  // then this
+            Priority3 = 3,  // and this
+            Priority4 = 4,  // and this
+            Priority5 = 5,  // and this
+            Priority6 = 6,  // and this
+            Priority7 = 7,  // and finally this
+            CanBatch = 0x8, // can batch a succession of repeats, e.g. "A + B + C" becomes ADD(A, B, C)
+
+            HasLHS = 0x10, // takes a left hand side argument
+            HasRHS = 0x20, // takes a right hand side argument
+            OkListLHS = 0X40, // takes a left hand side argument list
+            OkListRHS = 0X80, // takes a right hand side argument list
+
+            IsNegateKey1 = 0x100, // this parse step must precede the negate operator
+            IsNegateKey2 = 0x200, // this parse step is the negate operator
+            IsNegateKey3 = 0x400, // this parse step will accept negation          
+        }
+        struct PParm
+        {
+            readonly internal Func<Parser, Step> ResolveStep;
+            private PFlag _flags;
+            readonly internal byte MinArgs;
+            readonly internal byte MaxArgs;
+
+            internal byte Priority => (byte)(_flags & PFlag.Priority7); // parse steps with lower value are evaluated first
+            internal bool CanBatch => (_flags & PFlag.CanBatch) != 0;
+
+            internal bool HasLHS => (_flags & PFlag.HasLHS) != 0;
+            internal bool HasRHS => (_flags & PFlag.HasRHS) != 0;
+            internal bool OkListLHS => (_flags & PFlag.OkListLHS) != 0;
+            internal bool OkListRHS => (_flags & PFlag.OkListRHS) != 0;
+
+            internal bool IsNegateKey1 => (_flags & PFlag.IsNegateKey1) != 0;
+            internal bool IsNegateKey2 => (_flags & PFlag.IsNegateKey2) != 0;
+            internal bool IsNegateKey3 => (_flags & PFlag.IsNegateKey3) != 0;
+
+            internal PParm(Func<Parser, Step> resolve, byte minArgs = 0, byte maxArgs = 0, PFlag flags = PFlag.None)
             {
-                InType = inType;
                 MinArgs = minArgs;
                 MaxArgs = maxArgs;
-                OutType = outType;
+                _flags = flags;
+                ResolveStep = resolve;
             }
         }
-        static Dictionary<StepType, StepParam> stepParams = new Dictionary<StepType, StepParam>
+        #endregion
+
+        #region StepTypeParm  =================================================
+        static Dictionary<StepType, PParm> StepTypeParm = new Dictionary<StepType, PParm>
         {
-            [StepType.Double] = new StepParam(ValType.None, 0, 0, ValType.Number),
-            [StepType.Integer] = new StepParam(ValType.None, 0, 0, ValType.Number),
-            [StepType.Property] = new StepParam(ValType.None, 0, 0, ValType.Property),
+            [StepType.None] = new PParm(Parenthetical, 0, 0, PFlag.IsNegateKey3),
 
-            [StepType.Or1] = new StepParam(ValType.Flexible, 2, 255, ValType.Flexible),
-            [StepType.And1] = new StepParam(ValType.Flexible, 2, 255, ValType.Flexible),
+            [StepType.String] = new PParm(LiteralValue, 0, 0, PFlag.Priority7),
+            [StepType.Double] = new PParm(LiteralValue, 0, 0, PFlag.Priority7 | PFlag.IsNegateKey3),
+            [StepType.Boolean] = new PParm(LiteralValue, 0, 0, PFlag.Priority7 | PFlag.IsNegateKey3),
+            [StepType.Integer] = new PParm(LiteralValue, 0, 0, PFlag.Priority7 | PFlag.IsNegateKey3),
+            [StepType.Property] = new PParm(LiteralValue, 0, 0, PFlag.Priority7 | PFlag.IsNegateKey3),
 
-            [StepType.Or2] = new StepParam(ValType.Bool, 2, 255, ValType.Bool),
-            [StepType.And2] = new StepParam(ValType.Bool, 2, 255, ValType.Bool),
+            //[StepType.Negate] = new SParam(1, VType.Flexible, 2, 255, VType.Number, PFlag.IsNegater),
+            //[StepType.Minus] = new SParam(2, VType.Flexible, 2, 255, VType.Number, PFlag.IsNegater),
+            //[StepType.Plus] = new SParam(2, VType.Flexible, 2, 255, VType.Flexible),
+            //[StepType.Divide] = new SParam(1, VType.Number, 2, 255, VType.Number),
+            //[StepType.Multiply] = new SParam(1, VType.Number, 2, 255, VType.Number),
         };
-        bool TryCompose()
+        #endregion
+
+        #region LiteralValue  =================================================
+        static Step LiteralValue(Parser p)
+        {
+            return p.Step;
+        }
+        #endregion
+
+        #region Parenthetical  ================================================
+        static Step Parenthetical(Parser p)
+        {
+            return null;
+        }
+        #endregion
+
+        #region NumericOperator  ==============================================
+        static Step NumericOperator(Parser p)
+        {
+            var pp = p.Parent;
+            return null;
+        }
+        #endregion
+
+        #region ResolveNegation  ==============================================
+        // Scan the list of children looking for the negate patern (key1, key2, key3)
+        // when found, remove the negate operator and set the IsNegated flag on
+        // the step that is being negated
+        void ResolveNagation()
+        {
+            var i = 0;
+            var N = Children.Count - 2;
+            while(i < N)
+            {
+                if (StepTypeParm[Children[i].StepType].IsNegateKey1 &&
+                    StepTypeParm[Children[i+1].StepType].IsNegateKey2 &&
+                    StepTypeParm[Children[i+2].StepType].IsNegateKey3)
+                {
+                    Children[i + 2].IsNegated = true;
+                    Children.RemoveAt(i + 1);
+
+                    N--;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+        }
+        #endregion
+
+        #region ResolveParens  ================================================
+        internal Parser RemoveRedundantParens()
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var c = Children[i];
+                Children[i] = c.RemoveRedundantParens();
+            }
+            return (StepType != StepType.None || Children.Count != 1) ? this : Children[0];
+        }
+        #endregion
+
+        #region ResolveComplexity  ============================================
+        bool TryResolveComplexity()
+        {
+            while (TryFindNextOperaor(out int index))
+            {
+                var p = Children[index];
+                var parm = StepTypeParm[p.StepType];
+                if (parm.HasLHS && index < 1)
+                {
+                    p.ParseError = ParseError.MissingArgLHS;
+                    return false;
+                }
+                if (parm.HasRHS && index >= (Children.Count - 1))
+                {
+                    p.ParseError = ParseError.MissingArgRHS;
+                    return false;
+                }
+            }
+            return false;
+        }
+        #endregion
+
+        #region TryFindNextOperaor  =========================================
+        bool TryFindNextOperaor(out int index)
+        {
+            index = -1;
+            var priority = byte.MaxValue;
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var p = Children[i];
+                var parm = StepTypeParm[p.StepType];
+                if (parm.HasLHS || parm.HasRHS)
+                {
+                    if (parm.Priority < priority)
+                    {
+                        priority = parm.Priority;
+                        index = i;
+                    }
+                }
+            }
+            return (index >= 0);
+        }
+        #endregion
+        #endregion
+
+
+        #region TrySimplify  ==================================================
+        internal bool TrySimplify()
         {
             return true;
         }

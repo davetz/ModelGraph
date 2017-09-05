@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ModelGraphLibrary
+﻿namespace ModelGraphLibrary
 {
     public class DOUBLE : Step
     {
@@ -12,6 +6,8 @@ namespace ModelGraphLibrary
         internal DOUBLE(double val)
         {
             _value = val;
+            InType = NativeType.None;
+            OutType = NativeType.Double;
         }
 
         #region Methods  ======================================================

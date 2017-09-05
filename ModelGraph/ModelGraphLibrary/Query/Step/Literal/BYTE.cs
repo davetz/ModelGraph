@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ModelGraphLibrary
+﻿namespace ModelGraphLibrary
 {
     public class BYTE : Step
     {
@@ -12,6 +6,8 @@ namespace ModelGraphLibrary
         internal BYTE(double val)
         {
             _value = (byte)val;
+            InType = NativeType.None;
+            OutType = NativeType.Byte;
         }
 
         #region Methods  ======================================================

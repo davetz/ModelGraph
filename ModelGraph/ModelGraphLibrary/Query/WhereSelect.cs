@@ -14,12 +14,13 @@ namespace ModelGraphLibrary
 
         internal WhereSelect(string text)
         {
-            _parser = new Parser(text);
+            _parser = Parser.Create(text);
         }
 
         internal bool IsValid => (_root != null) ? true : ((_parser == null) ? false : _parser.IsValid); 
         internal bool IsUnresolved => (_root != null || _parser == null) ? false : _parser.IsUnresolved; 
         internal string InputString => GetInputString();
+
         private string GetInputString()
         {
             if (_parser != null)
@@ -38,7 +39,7 @@ namespace ModelGraphLibrary
         internal void Validate(Store sto, string text)
         {
             _root = null;
-            _parser = new Parser(text);
+            _parser = Parser.Create(text);
             Validate(sto);
             
         }
@@ -46,12 +47,11 @@ namespace ModelGraphLibrary
         {
             _root = null;
 
-            if (IsValid)
+            if (IsValid &&
+                _parser.TryValidate(sto, () => { return _item; }) &&
+                _parser.TryCompose(out _root) &&
+                _parser.TrySimplify())
             {
-                if (_parser.Validate(sto, () => { return _item; }))
-                {
-
-                }
             }
         }
 

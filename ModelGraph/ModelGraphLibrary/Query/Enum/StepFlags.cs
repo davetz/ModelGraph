@@ -9,11 +9,13 @@ namespace ModelGraphLibrary
     public enum StepFlag : byte
     {
         None = 0,
-        IsWierd = 0x1, // the actual input data type does not match the expected type, ok, but wierd
-        HasParens = 0x2, // enclose generated subexpression in parens (...)
-        HasNewLine = 0x4, // start generated subexpression with a newLine
-        IsUnresolved = 0x8, // a computed value is unresoved
-        InvalidReference = 0x10, // refernces a invalid computeX
-        CircularReference = 0x20, // references a cuputeX who's nativeType IsCircular
+        IsWierd = 0x1, // the input type does not match the expected type, it's ok, but wierd
+        IsNegated = 0x2, // the parse step value should be negated
+        IsBatched = 0x4, // generated expression has a succession of repeats e.g. ADD(A, B, C) becomes A + B + C
+        HasParens = 0x8, // enclose generated expression in parens (...)
+        HasNewLine = 0x10, // start generated expression with a newLine
+        IsUnresolved = 0x20, // a computed value is unresoved
+        InvalidReference = 0x40, // refernces a invalid computeX
+        CircularReference = 0x80, // references a cuputeX who's nativeType IsCircular
     }
 }

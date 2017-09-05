@@ -16,7 +16,7 @@ namespace ModelGraphUnitTest
 
             void RunTest(string inText, bool isValid, ParseError error, int index1, int index2, string outText)
             {
-                var p = new Parser(inText);
+                var p = Parser.Create(inText);
                 Assert.IsTrue(p.IsValid == isValid);
                 Assert.IsTrue(p.ParseError == error);
                 Assert.IsTrue(p.Index1 == index1);
@@ -34,7 +34,7 @@ namespace ModelGraphUnitTest
 
             void RunTest(string inText, bool isValid, ParseError error, int index1, int index2, string outText)
             {
-                var p = new Parser(inText);
+                var p = Parser.Create(inText);
                 Assert.IsTrue(p.IsValid == isValid);
                 Assert.IsTrue(p.ParseError == error);
                 Assert.IsTrue(p.Index1 == index1);
@@ -50,7 +50,7 @@ namespace ModelGraphUnitTest
 
             void RunTest(string inText, bool isValid, ParseError error, int index1, int index2, string outText)
             {
-                var p = new Parser(inText);
+                var p = Parser.Create(inText);
                 Assert.IsTrue(p.IsValid == isValid);
                 Assert.IsTrue(p.ParseError == error);
                 Assert.IsTrue(p.Index1 == index1);
@@ -61,64 +61,53 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void ParserString()
         {
-            RunTest("\"ok good\"", true, 1, StepType.String, "ok good");
-            RunTest("   \"0.4-+=/*&|\" ", true, 1, StepType.String, "0.4-+=/*&|");
+            RunTest("\"ok good\"", true, StepType.String, "ok good");
+            RunTest("   \"0.4-+=/*&|\" ", true, StepType.String, "0.4-+=/*&|");
 
-            void RunTest(string inText, bool isValid, int count0, StepType childType, string childText)
+            void RunTest(string inText, bool isValid, StepType childType, string childText)
             {
-                var p = new Parser(inText);
+                var p = Parser.Create(inText);
                 Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.Children.Count == count0);
-                var q = p.Children[0];
-                Assert.IsTrue(q.StepType == childType);
-                Assert.IsTrue(q.Text == childText);
+                Assert.IsTrue(p.StepType == childType);
+                Assert.IsTrue(p.Text == childText);
             }
         }
         [TestMethod]
-        public void ParserParens1()
+        public void ParserParens()
         {
-            RunTest("(\"ok (good)\")", true, 1, 1, StepType.String, "ok (good)");
-            RunTest(" (  \"ok good\"  ) ", true, 1, 1, StepType.String, "ok good");
-            RunTest(" (  \"ok good\") ", true, 1, 1, StepType.String, "ok good");
+            RunTest("((\"ok (good)\"))", true, StepType.String, "ok (good)");
+            RunTest(" (  ( \"ok good\" ) ) ", true, StepType.String, "ok good");
+            RunTest(" (  (\"ok good\")) ", true, StepType.String, "ok good");
+            RunTest("((\"ok good\"  )  ) ", true, StepType.String, "ok good");
 
-            void RunTest(string inText, bool isValid, int count0, int count1, StepType type1, string text1)
+            void RunTest(string inText, bool isValid, StepType type2, string text2)
             {
-                var p = new Parser(inText);
+                var p = Parser.Create(inText);
                 Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.Children.Count == count0);
 
-                var q = p.Children[0];
-                Assert.IsTrue(q.Children.Count == count1);
-
-                var r = q.Children[0];
-                Assert.IsTrue(r.StepType == type1);
-                Assert.IsTrue(r.Text == text1);
+                Assert.IsTrue(p.StepType == type2);
+                Assert.IsTrue(p.Text == text2);
             }
         }
         [TestMethod]
-        public void ParserParens2()
+        public void ParserRedundantParens()
         {
-            RunTest("((\"ok (good)\"))", true, 1, 1, 1, StepType.String, "ok (good)");
-            RunTest(" (  ( \"ok good\" ) ) ", true, 1, 1, 1, StepType.String, "ok good");
-            RunTest(" (  (\"ok good\")) ", true, 1, 1, 1, StepType.String, "ok good");
-            RunTest("((\"ok good\"  )  ) ", true, 1, 1, 1, StepType.String, "ok good");
+            var text = "(((((((Id)(((+)))((1)))))(((/)))(((2))))))";
+            var p = Parser.Create(text);
+            Assert.IsTrue(p.IsValid);
+            Assert.IsTrue(p.Children.Count == 3);
 
-            void RunTest(string inText, bool isValid, int count0, int count1, int count2, StepType type2, string text2)
-            {
-                var p = new Parser(inText);
-                Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.Children.Count == count0);
+            var q = p.Children[0];
+            Assert.IsTrue(q.Children.Count == 3);
+            Assert.IsTrue(q.Children[0].Text == "Id");
+            Assert.IsTrue(q.Children[1].Text == "+");
+            Assert.IsTrue(q.Children[2].Text == "1");
 
-                var q = p.Children[0];
-                Assert.IsTrue(q.Children.Count == count1);
+            var r = p.Children[1];
+            Assert.IsTrue(r.Text == "/");
 
-                var r = q.Children[0];
-                Assert.IsTrue(r.Children.Count == count2);
-
-                var s = r.Children[0];
-                Assert.IsTrue(s.StepType == type2);
-                Assert.IsTrue(s.Text == text2);
-            }
+            var s = p.Children[2];
+            Assert.IsTrue(s.Text == "2");
         }
         [TestMethod]
         public void ParserNumber()
@@ -135,23 +124,20 @@ namespace ModelGraphUnitTest
             RunTest("32768", true, 1, StepType.Integer, "32768", typeof(INT32), 32768.0);
             RunTest("2147483647", true, 1, StepType.Integer, "2147483647", typeof(INT32), 2147483647.0);
             RunTest("2147483648", true, 1, StepType.Integer, "2147483648", typeof(INT64), 2147483648.0);
-            RunTest("32767.32767", true, 1, StepType.Double, "32767.32767", typeof(DOUBLE), 32767.32767);
+            RunTest("2147483648.2147483648", true, 1, StepType.Double, "2147483648.2147483648", typeof(DOUBLE), 2147483648.2147483648);
 
             void RunTest(string inText, bool isValid, int count0, StepType childType, string childText, Type stepType, double val)
             {
-                var p = new Parser(inText);
+                var p = Parser.Create(inText);
                 Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.Children.Count == count0);
+                Assert.IsTrue(p.StepType == childType);
+                Assert.IsTrue(p.Text == childText);
 
-                var q = p.Children[0];
-                Assert.IsTrue(q.StepType == childType);
-                Assert.IsTrue(q.Text == childText);
-
-                q.Step.GetValue(out double tval);
+                p.Step.GetValue(out double tval);
                 Assert.IsTrue(tval == val);
 
-                Assert.IsTrue(q.Step != null);
-                Assert.IsTrue(stepType == q.Step.GetType());
+                Assert.IsTrue(p.Step != null);
+                Assert.IsTrue(stepType == p.Step.GetType());
             }
 
         }
@@ -159,17 +145,14 @@ namespace ModelGraphUnitTest
         public void ParserParenStringNumber()
         {
             var text = " ( \" rip 0 \" 0.45 ) ";
-            var p = new Parser(text);
+            var p = Parser.Create(text);
             Assert.IsTrue(p.IsValid);
-            Assert.IsTrue(p.Children.Count == 1);
+            Assert.IsTrue(p.Children.Count == 2);
 
-            var q = p.Children[0];
-            Assert.IsTrue(q.Children.Count == 2);
-
-            var r = q.Children[0];
+            var r = p.Children[0];
             Assert.IsTrue(r.Text == " rip 0 ");
 
-            var s = q.Children[1];
+            var s = p.Children[1];
             Assert.IsTrue(s.Text == "0.45");
         }
         [TestMethod]
@@ -180,62 +163,59 @@ namespace ModelGraphUnitTest
 
             void RunTest(string text, bool isValid)
             {
-                var p = new Parser(text);
+                var p = Parser.Create(text);
                 Assert.IsTrue(p.IsValid == isValid);
             }
         }
         [TestMethod]
         public void ParserOperator()
         {
-            RunTest("|", true, 1, StepType.Or1);
-            RunTest("||", true, 1, StepType.Or2);
-            RunTest("&", true, 1, StepType.And1);
-            RunTest("&&", true, 1, StepType.And2);
-            RunTest("!", true, 1, StepType.Not);
-            RunTest("+", true, 1, StepType.Plus);
-            RunTest("-", true, 1, StepType.Minus);
-            RunTest("=", true, 1, StepType.Equals);
-            RunTest("==", true, 1, StepType.Equals);
-            RunTest("~", true, 1, StepType.Negate);
-            RunTest("/", true, 1, StepType.Divide);
-            RunTest("*", true, 1, StepType.Multiply);
-            RunTest("<", true, 1, StepType.LessThan);
-            RunTest(">", true, 1, StepType.GreaterThan);
-            RunTest(">=", true, 1, StepType.NotLessThan);
-            RunTest("<=", true, 1, StepType.NotGreaterThan);
-            RunTest("Has", true, 1, StepType.Has);
-            RunTest("Ends", true, 1, StepType.Ends);
-            RunTest("Starts", true, 1, StepType.Starts);
-            RunTest(" | ", true, 1, StepType.Or1);
-            RunTest(" || ", true, 1, StepType.Or2);
-            RunTest(" & ", true, 1, StepType.And1);
-            RunTest(" && ", true, 1, StepType.And2);
-            RunTest(" ! ", true, 1, StepType.Not);
-            RunTest(" + ", true, 1, StepType.Plus);
-            RunTest(" - ", true, 1, StepType.Minus);
-            RunTest(" = ", true, 1, StepType.Equals);
-            RunTest(" == ", true, 1, StepType.Equals);
-            RunTest(" ~ ", true, 1, StepType.Negate);
-            RunTest(" / ", true, 1, StepType.Divide);
-            RunTest(" * ", true, 1, StepType.Multiply);
-            RunTest(" < ", true, 1, StepType.LessThan);
-            RunTest(" > ", true, 1, StepType.GreaterThan);
-            RunTest(" >= ", true, 1, StepType.NotLessThan);
-            RunTest(" <= ", true, 1, StepType.NotGreaterThan);
-            RunTest(" Has ", true, 1, StepType.Has);
-            RunTest(" Ends ", true, 1, StepType.Ends);
-            RunTest(" Starts ", true, 1, StepType.Starts);
+            RunTest("|", true, StepType.Or1);
+            RunTest("||", true, StepType.Or2);
+            RunTest("&", true, StepType.And1);
+            RunTest("&&", true, StepType.And2);
+            RunTest("!", true, StepType.Not);
+            RunTest("+", true, StepType.Plus);
+            RunTest("-", true, StepType.Minus);
+            RunTest("=", true, StepType.Equals);
+            RunTest("==", true, StepType.Equals);
+            RunTest("~", true, StepType.Negate);
+            RunTest("/", true, StepType.Divide);
+            RunTest("*", true, StepType.Multiply);
+            RunTest("<", true, StepType.LessThan);
+            RunTest(">", true, StepType.GreaterThan);
+            RunTest(">=", true, StepType.NotLessThan);
+            RunTest("<=", true, StepType.NotGreaterThan);
+            RunTest("Has", true, StepType.Has);
+            RunTest("Ends", true, StepType.Ends);
+            RunTest("Starts", true, StepType.Starts);
+            RunTest(" | ", true, StepType.Or1);
+            RunTest(" || ", true, StepType.Or2);
+            RunTest(" & ", true, StepType.And1);
+            RunTest(" && ", true, StepType.And2);
+            RunTest(" ! ", true, StepType.Not);
+            RunTest(" + ", true, StepType.Plus);
+            RunTest(" - ", true, StepType.Minus);
+            RunTest(" = ", true, StepType.Equals);
+            RunTest(" == ", true, StepType.Equals);
+            RunTest(" ~ ", true, StepType.Negate);
+            RunTest(" / ", true, StepType.Divide);
+            RunTest(" * ", true, StepType.Multiply);
+            RunTest(" < ", true, StepType.LessThan);
+            RunTest(" > ", true, StepType.GreaterThan);
+            RunTest(" >= ", true, StepType.NotLessThan);
+            RunTest(" <= ", true, StepType.NotGreaterThan);
+            RunTest(" Has ", true, StepType.Has);
+            RunTest(" Ends ", true, StepType.Ends);
+            RunTest(" Starts ", true, StepType.Starts);
 
-            void RunTest(string inText, bool isValid, int count0, StepType childType)
+            void RunTest(string inText, bool isValid, StepType stepType)
             {
-                var p = new Parser(inText);
+                var p = Parser.Create(inText);
                 Assert.IsTrue(p.IsValid == isValid);
                 if (isValid)
                 {
-                    Assert.IsTrue(p.Children.Count == count0);
-
-                    var q = p.Children[0];
-                    Assert.IsTrue(q.StepType == childType);
+                    Assert.IsTrue(p.StepType == stepType);
                 }
             }
         }
@@ -281,11 +261,11 @@ namespace ModelGraphUnitTest
 
             // begin test
 
-            var w = new WhereSelect("I2Val / 2");
+            var w = new WhereSelect("(Id + 1) / 2");
             Assert.IsTrue(w.IsValid);
 
-            w.Validate(t1);
-            Assert.IsTrue(w.IsValid);
+            //w.Validate(t1);
+           // Assert.IsTrue(w.IsValid);
         }
         #endregion
 

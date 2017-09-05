@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ModelGraphLibrary
+﻿namespace ModelGraphLibrary
 {
     public class INT16 : Step
     {
@@ -12,6 +6,8 @@ namespace ModelGraphLibrary
         internal INT16(double val)
         {
             _value = (short)val;
+            InType = NativeType.None;
+            OutType = NativeType.Int16;
         }
 
         #region Methods  ======================================================

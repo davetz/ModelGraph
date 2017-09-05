@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ModelGraphLibrary
+﻿namespace ModelGraphLibrary
 {
     public class INT32 : Step
     {
@@ -12,6 +6,8 @@ namespace ModelGraphLibrary
         internal INT32(double val)
         {
             _value = (int)val;
+            InType = NativeType.None;
+            OutType = NativeType.Int32;
         }
 
         #region Methods  ======================================================
