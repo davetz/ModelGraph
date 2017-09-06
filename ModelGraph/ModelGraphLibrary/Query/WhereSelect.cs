@@ -49,7 +49,6 @@ namespace ModelGraphLibrary
 
             if (IsValid &&
                 _parser.TryValidate(sto, () => { return _item; }) &&
-                _parser.TryCompose(out _root) &&
                 _parser.TrySimplify())
             {
             }

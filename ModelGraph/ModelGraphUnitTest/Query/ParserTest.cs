@@ -18,7 +18,7 @@ namespace ModelGraphUnitTest
             {
                 var p = Parser.Create(inText);
                 Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.ParseError == error);
+                Assert.IsTrue(p.Error == error);
                 Assert.IsTrue(p.Index1 == index1);
                 Assert.IsTrue(p.Index2 == index2);
                 Assert.IsTrue(p.Text == outText);
@@ -36,7 +36,7 @@ namespace ModelGraphUnitTest
             {
                 var p = Parser.Create(inText);
                 Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.ParseError == error);
+                Assert.IsTrue(p.Error == error);
                 Assert.IsTrue(p.Index1 == index1);
                 Assert.IsTrue(p.Index2 == index2);
                 Assert.IsTrue(p.Text == outText);
@@ -52,7 +52,7 @@ namespace ModelGraphUnitTest
             {
                 var p = Parser.Create(inText);
                 Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.ParseError == error);
+                Assert.IsTrue(p.Error == error);
                 Assert.IsTrue(p.Index1 == index1);
                 Assert.IsTrue(p.Index2 == index2);
                 Assert.IsTrue(p.Text == outText);
@@ -73,6 +73,45 @@ namespace ModelGraphUnitTest
             }
         }
         [TestMethod]
+        public void ParserCommas()
+        {
+            var p = Parser.Create("5.4,3");
+            Assert.IsTrue(p.IsValid);
+            Assert.IsTrue(p.Children.Count == 2);
+
+            var q = p.Children[0];
+            Assert.IsTrue(q.StepType == StepType.Double);
+
+            var r = p.Children[1];
+            Assert.IsTrue(r.StepType == StepType.Integer);
+        }
+        [TestMethod]
+        public void ParserList()
+        {
+            var p = Parser.Create("((5 + 2),3)");
+            Assert.IsTrue(p.IsValid);
+            Assert.IsTrue(p.Children.Count == 2);
+
+            var q = p.Children[0];
+            Assert.IsTrue(q.StepType == StepType.None);
+
+            var r = p.Children[1];
+            Assert.IsTrue(r.StepType == StepType.Integer);
+        }
+        [TestMethod]
+        public void ParserVector()
+        {
+            var p = Parser.Create("{(5 + 2),3}");
+            Assert.IsTrue(p.IsValid);
+            Assert.IsTrue(p.Children.Count == 2);
+
+            var q = p.Children[0];
+            Assert.IsTrue(q.StepType == StepType.None);
+
+            var r = p.Children[1];
+            Assert.IsTrue(r.StepType == StepType.Integer);
+        }
+        [TestMethod]
         public void ParserParens()
         {
             RunTest("((\"ok (good)\"))", true, StepType.String, "ok (good)");
@@ -88,26 +127,6 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(p.StepType == type2);
                 Assert.IsTrue(p.Text == text2);
             }
-        }
-        [TestMethod]
-        public void ParserRedundantParens()
-        {
-            var text = "(((((((Id)(((+)))((1)))))(((/)))(((2))))))";
-            var p = Parser.Create(text);
-            Assert.IsTrue(p.IsValid);
-            Assert.IsTrue(p.Children.Count == 3);
-
-            var q = p.Children[0];
-            Assert.IsTrue(q.Children.Count == 3);
-            Assert.IsTrue(q.Children[0].Text == "Id");
-            Assert.IsTrue(q.Children[1].Text == "+");
-            Assert.IsTrue(q.Children[2].Text == "1");
-
-            var r = p.Children[1];
-            Assert.IsTrue(r.Text == "/");
-
-            var s = p.Children[2];
-            Assert.IsTrue(s.Text == "2");
         }
         [TestMethod]
         public void ParserNumber()
@@ -158,6 +177,9 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void ParserGoNoGo()
         {
+            RunTest("5 * 2 / 3 < 8", true);
+            RunTest("5 + 3 + 6 + 7", true);
+            RunTest("5 / 3", true);
             RunTest("(dog & cat == fight) || ((13.8 / 12.3) > 5.1)", true);
             RunTest("(dog & cat == fight) || (13.8 / 12.3) > 5.1)", false);
 
@@ -261,7 +283,7 @@ namespace ModelGraphUnitTest
 
             // begin test
 
-            var w = new WhereSelect("(Id + 1) / 2");
+            var w = new WhereSelect("Id");
             Assert.IsTrue(w.IsValid);
 
             //w.Validate(t1);

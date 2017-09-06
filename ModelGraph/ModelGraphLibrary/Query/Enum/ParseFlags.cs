@@ -6,7 +6,7 @@ namespace ModelGraphLibrary
         Expression tree step flags.
     */
     [Flags]
-    public enum StepFlag : byte
+    public enum ParseFlag : ushort
     {
         None = 0,
         IsDone = 0x1,
@@ -15,5 +15,8 @@ namespace ModelGraphLibrary
         IsBatched = 0x8, // generated expression has a succession of repeats e.g. ADD(A, B, C) becomes A + B + C
         HasParens = 0x10, // enclose generated expression in parens (...)
         HasNewLine = 0x20, // start generated expression with a newLine
+        IsUnresolved = 0x40,
+        IsInvalidRef = 0x80,
+        IsCircularRef = 0x100,
     }
 }
