@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ModelGraphLibrary
 {
-    internal class OR : Step
+    internal class AND : Step
     {
         internal bool GetVal()
         {
@@ -14,7 +14,7 @@ namespace ModelGraphLibrary
             for (int i = 0; i < N; i++)
             {
                 Inputs[i].GetValue(out bool v1);
-                if (v1) return true;
+                if (!v1) return false;
             }
             return false;
         }
@@ -35,7 +35,7 @@ namespace ModelGraphLibrary
             Inputs[0].GetText(sb);
             for (int i = 1; i < Count; i++)
             {
-                sb.Append(" ||");
+                sb.Append(" &&");
                 Inputs[i].GetText(sb);
             }
             GetSufix(sb);

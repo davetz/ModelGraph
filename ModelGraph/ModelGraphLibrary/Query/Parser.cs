@@ -31,15 +31,13 @@ namespace ModelGraphLibrary
         internal List<Parser> Arguments = new List<Parser>(4);
 
         internal string Text;
-        private short _index1;
-        private short _index2;
+        internal int Index1;
+        internal int Index2;
         private ParseFlag _flags;
         internal ParseError Error;
         internal StepType StepType;
 
-        internal int Index1 { get { return _index1; } set { _index1 = (short)value; } }
-        internal int Index2 { get { return _index2; } set { _index2 = (short)value; } }
-
+ 
         #region Constructor  ==================================================
         public static Parser Create(string text)
         {
@@ -115,26 +113,54 @@ namespace ModelGraphLibrary
         public bool IsCircularRef { get { return GetFlag(ParseFlag.IsCircularRef); } set { SetFlag(value, ParseFlag.IsCircularRef); } }
         #endregion
 
-        #region IsValid  ======================================================
+        #region IsValid, NativeType, CompositeFlags  ==========================
+        internal bool IsValid => GetIsValid();
+        internal NativeType NativeType => GetNativeType();
+        internal ParseFlag CompositeFlags => GetCompositeFlags();
         private bool GetIsValid()
         {
             if (Error != ParseError.None) return false;
             foreach (var child in Children)
             {
-                if (!child.GetIsValid()) return false;
+                if (child.Error != ParseError.None) return false;
+                foreach (var arg in child.Arguments)
+                {
+                    if (arg.Error != ParseError.None) return false;
+                }
             }
             return true;
         }
-        public bool IsValid => GetIsValid();
-        public ParseError CompositeError()
+        private NativeType GetNativeType()
         {
-            var error = Error;
+            if (Step != null)
+                return Step.NativeType;
+
+            var flags = GetCompositeFlags();
+            if ((flags & ParseFlag.IsCircularRef) != 0)
+                return NativeType.Circular;
+
+            if ((flags & ParseFlag.IsUnresolved) != 0)
+                return NativeType.Unresolved;
+
+            if ((flags & ParseFlag.IsInvalidRef) != 0)
+                return NativeType.Invalid;
+
+            return NativeType.None;
+        }
+        private ParseFlag GetCompositeFlags()
+        {
+            var flags = _flags;
             foreach (var child in Children)
             {
-                error |= child.CompositeError();
+                flags |= GetCompositeFlags();
+                foreach (var arg in child.Arguments)
+                {
+                    flags |= arg.GetCompositeFlags();
+                }
             }
-            return error;
+            return flags;
         }
+
         #endregion
 
         #region HasInvalidString  =============================================
@@ -362,35 +388,6 @@ namespace ModelGraphLibrary
             return IsValid;
         }
 
-        #region StaticParms  ==================================================
-        static Dictionary<string, StepType> operatorParseType = new Dictionary<string, StepType>
-        {
-            ["|"] = StepType.Or1,
-            ["||"] = StepType.Or2,
-            ["&"] = StepType.And1,
-            ["&&"] = StepType.And2,
-            ["!"] = StepType.Not,
-            ["+"] = StepType.Plus,
-            ["-"] = StepType.Minus,
-            ["~"] = StepType.Negate,
-            ["="] = StepType.Equals,
-            ["=="] = StepType.Equals,
-            ["/"] = StepType.Divide,
-            ["*"] = StepType.Multiply,
-            ["<"] = StepType.LessThan,
-            [">"] = StepType.GreaterThan,
-            [">="] = StepType.NotLessThan,
-            ["<="] = StepType.NotGreaterThan,
-        };
-        static Dictionary<string, StepType> functionParseType = new Dictionary<string, StepType>
-        {
-            ["has"] = StepType.Has,
-            ["ends"] = StepType.Ends,
-            ["starts"] = StepType.Starts,
-        };
-        static string operatorString = "!~|&+-/*<>=";
-        static string newLineString = Environment.NewLine;
-        #endregion
         #endregion
 
         #region RemoveRedundantParens  ========================================
@@ -581,27 +578,12 @@ namespace ModelGraphLibrary
             else
             {
                 var parm = StepTypeParm[StepType];
-                parm.ResolveStep(this);
+                parm.Resolve(this);
             }
             return (!GetFlag(ParseFlag.IsUnresolved | ParseFlag.IsInvalidRef | ParseFlag.IsCircularRef));
         }
         #endregion
 
-        #region TryCompose  ===================================================
-        /* 
-            At this phase, only some of the parse elements have an assigned Step
-            the rest has be noodled-out based on context
-        */
-        internal bool TryCompose(out Step step)
-        {
-            foreach (var child in Children)
-            {
-
-            }
-
-            step = null;
-            return true;
-        }
 
         #region ParseParam  ===================================================
         [Flags]
@@ -630,7 +612,7 @@ namespace ModelGraphLibrary
         }
         struct PParm
         {
-            readonly internal Func<Parser, Step> ResolveStep;
+            readonly internal Action<Parser> Resolve;
             private PFlag _flags;
 
             internal byte Priority => (byte)(_flags & PFlag.Priority7); // parse steps with lower value are evaluated first
@@ -645,10 +627,10 @@ namespace ModelGraphLibrary
             internal bool IsNegateKey2 => (_flags & PFlag.IsNegateKey2) != 0;
             internal bool IsNegateKey3 => (_flags & PFlag.IsNegateKey3) != 0;
 
-            internal PParm(Func<Parser, Step> resolve, PFlag flags = PFlag.None)
+            internal PParm(Action<Parser> resolve, PFlag flags = PFlag.None)
             {
                 _flags = flags;
-                ResolveStep = resolve;
+                Resolve = resolve;
             }
         }
         #endregion
@@ -656,60 +638,67 @@ namespace ModelGraphLibrary
         #region StepTypeParm  =================================================
         static Dictionary<StepType, PParm> StepTypeParm = new Dictionary<StepType, PParm>
         {
-            [StepType.None] = new PParm(Parenthetical, PFlag.IsNegateKey3),
+            [StepType.None] = new PParm((p) => { }, PFlag.IsNegateKey3),
 
-            [StepType.List] = new PParm(LiteralValue, PFlag.Priority7),
-            [StepType.Index] = new PParm(LiteralValue, PFlag.Priority7),
-            [StepType.Vector] = new PParm(LiteralValue, PFlag.Priority7),
-            [StepType.String] = new PParm(LiteralValue, PFlag.Priority7),
-            [StepType.Double] = new PParm(LiteralValue, PFlag.Priority7 | PFlag.IsNegateKey3 | PFlag.IsNegateKey3),
-            [StepType.Integer] = new PParm(LiteralValue, PFlag.Priority7 | PFlag.IsNegateKey3 | PFlag.IsNegateKey3),
-            [StepType.Boolean] = new PParm(LiteralValue, PFlag.Priority7 | PFlag.IsNegateKey3),
-            [StepType.Property] = new PParm(LiteralValue, PFlag.Priority7 | PFlag.IsNegateKey3),
+            [StepType.List] = new PParm((p) => { }, PFlag.Priority7),
+            [StepType.Index] = new PParm((p) => { }, PFlag.Priority7),
+            [StepType.Vector] = new PParm((p) => { }, PFlag.Priority7),
+            [StepType.String] = new PParm((p) => { }, PFlag.Priority7),
+            [StepType.Double] = new PParm((p) => { }, PFlag.Priority7 | PFlag.IsNegateKey3 | PFlag.IsNegateKey3),
+            [StepType.Integer] = new PParm((p) => { }, PFlag.Priority7 | PFlag.IsNegateKey3 | PFlag.IsNegateKey3),
+            [StepType.Boolean] = new PParm((p) => { }, PFlag.Priority7 | PFlag.IsNegateKey3),
+            [StepType.Property] = new PParm((p) => { }, PFlag.Priority7 | PFlag.IsNegateKey3),
 
-            [StepType.Or1] = new PParm(LiteralValue, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Or2] = new PParm(LiteralValue, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.And1] = new PParm(LiteralValue, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.And2] = new PParm(LiteralValue, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Not] = new PParm(LiteralValue, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Plus] = new PParm(LiteralValue, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
-            [StepType.Minus] = new PParm(LiteralValue, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey2),
-            [StepType.Equals] = new PParm(LiteralValue, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
-            [StepType.Negate] = new PParm(LiteralValue, PFlag.Priority1 | PFlag.HasRHS),
-            [StepType.Divide] = new PParm(LiteralValue, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
-            [StepType.Multiply] = new PParm(LiteralValue, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
-            [StepType.LessThan] = new PParm(LiteralValue, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
-            [StepType.GreaterThan] = new PParm(LiteralValue, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
-            [StepType.NotLessThan] = new PParm(LiteralValue, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
-            [StepType.NotGreaterThan] = new PParm(LiteralValue, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
+            [StepType.Or1] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.Or2] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.And1] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.And2] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.Not] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.Plus] = new PParm((p) => { new PLUS(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
+            [StepType.Minus] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey2),
+            [StepType.Equals] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
+            [StepType.Negate] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS),
+            [StepType.Divide] = new PParm((p) => { }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
+            [StepType.Multiply] = new PParm((p) => { }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
+            [StepType.LessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
+            [StepType.GreaterThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
+            [StepType.NotLessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
+            [StepType.NotGreaterThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
 
-            [StepType.Has] = new PParm(LiteralValue, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Ends] = new PParm(LiteralValue, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Starts] = new PParm(LiteralValue, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.Has] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.Ends] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.Starts] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
         };
         #endregion
 
-        #region LiteralValue  =================================================
-        static Step LiteralValue(Parser p)
+        #region StaticParms  ==================================================
+        static Dictionary<string, StepType> operatorParseType = new Dictionary<string, StepType>
         {
-            return p.Step;
-        }
-        #endregion
-
-        #region Parenthetical  ================================================
-        static Step Parenthetical(Parser p)
+            ["|"] = StepType.Or1,
+            ["||"] = StepType.Or2,
+            ["&"] = StepType.And1,
+            ["&&"] = StepType.And2,
+            ["!"] = StepType.Not,
+            ["+"] = StepType.Plus,
+            ["-"] = StepType.Minus,
+            ["~"] = StepType.Negate,
+            ["="] = StepType.Equals,
+            ["=="] = StepType.Equals,
+            ["/"] = StepType.Divide,
+            ["*"] = StepType.Multiply,
+            ["<"] = StepType.LessThan,
+            [">"] = StepType.GreaterThan,
+            [">="] = StepType.NotLessThan,
+            ["<="] = StepType.NotGreaterThan,
+        };
+        static Dictionary<string, StepType> functionParseType = new Dictionary<string, StepType>
         {
-            return null;
-        }
-        #endregion
-
-        #region NumericOperator  ==============================================
-        static Step NumericOperator(Parser p)
-        {
-            var pp = p.Parent;
-            return null;
-        }
-        #endregion
+            ["has"] = StepType.Has,
+            ["ends"] = StepType.Ends,
+            ["starts"] = StepType.Starts,
+        };
+        static string operatorString = "!~|&+-/*<>=";
+        static string newLineString = Environment.NewLine;
         #endregion
 
         #region TrySimplify  ==================================================

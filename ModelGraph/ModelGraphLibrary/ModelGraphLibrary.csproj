@@ -122,6 +122,9 @@
     <Compile Include="Query\Step\Literal\DOUBLE.cs" />
     <Compile Include="Query\Step\Literal\BYTE.cs" />
     <Compile Include="Query\Step\Literal\PROPERTY.cs" />
+    <Compile Include="Query\Step\Logical\AND.cs" />
+    <Compile Include="Query\Step\Numeric\MINUS.cs" />
+    <Compile Include="Query\Step\Numeric\PLUS.cs" />
     <Compile Include="Updates\ChangeRoot.cs" />
     <Compile Include="Updates\ChangeSet.cs" />
     <Compile Include="Updates\ItemChange.cs" />
@@ -308,7 +311,6 @@
   <ItemGroup>
     <Folder Include="Query\Step\Alphabetic\" />
     <Folder Include="Query\Step\Compare\" />
-    <Folder Include="Query\Step\Numeric\" />
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="Strings\en-US\Resources.resw" />

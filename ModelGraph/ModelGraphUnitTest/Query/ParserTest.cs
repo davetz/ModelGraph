@@ -280,14 +280,17 @@ namespace ModelGraphUnitTest
                 c1.TrySetValue(r, $"R{i}");             // {R0, R1, R2, R3, ...}
                 c2.TrySetValue(r, $"{(i + 1) * 2}");    // { 2,  4,  8, 16, ...}
             }
+            var rows = t1.Items;
 
             // begin test
 
-            var w = new WhereSelect("Id");
+            var w = new WhereSelect("I2Val + 5");
             Assert.IsTrue(w.IsValid);
 
-            //w.Validate(t1);
-           // Assert.IsTrue(w.IsValid);
+            w.Validate(t1);
+            var str = w.InputString;
+            var val = w.GetValue(rows[0]);
+            Assert.IsTrue(w.IsValid);
         }
         #endregion
 
