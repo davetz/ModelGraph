@@ -122,8 +122,11 @@
     <Compile Include="Query\Step\Literal\DOUBLE.cs" />
     <Compile Include="Query\Step\Literal\BYTE.cs" />
     <Compile Include="Query\Step\Literal\PROPERTY.cs" />
-    <Compile Include="Query\Step\Logical\AND.cs" />
+    <Compile Include="Query\Step\Logical\AND2.cs" />
+    <Compile Include="Query\Step\Logical\OR2.cs" />
     <Compile Include="Query\Step\Numeric\MINUS.cs" />
+    <Compile Include="Query\Step\Numeric\DIVIDE.cs" />
+    <Compile Include="Query\Step\Numeric\MULTIPLY.cs" />
     <Compile Include="Query\Step\Numeric\PLUS.cs" />
     <Compile Include="Updates\ChangeRoot.cs" />
     <Compile Include="Updates\ChangeSet.cs" />
@@ -286,7 +289,6 @@
     <Compile Include="Value\Column\ValuesOfBool.cs" />
     <Compile Include="Value\Column\ValuesOf.cs" />
     <Compile Include="Query\Parser.cs" />
-    <Compile Include="Query\Step\Logical\OR.cs" />
     <Compile Include="Query\Step\Step.cs" />
     <Compile Include="Query\WhereSelect.cs" />
     <EmbeddedResource Include="Properties\ModelGraphLibrary.rd.xml" />

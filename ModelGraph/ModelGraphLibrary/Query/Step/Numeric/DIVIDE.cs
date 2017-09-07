@@ -2,9 +2,9 @@
 
 namespace ModelGraphLibrary
 {
-    internal class PLUS : Step
+    internal class DIVIDE : Step
     {
-        internal PLUS(Parser p) : base(p) { p.Step = this; }
+        internal DIVIDE(Parser p) : base(p) { p.Step = this; }
 
         internal double GetVal()
         {
@@ -13,7 +13,7 @@ namespace ModelGraphLibrary
             for (int i = 1; i < N; i++)
             {
                 Inputs[i].GetValue(out double v1);
-                val += v1;
+                val /= v1;
             }
             return val;
         }

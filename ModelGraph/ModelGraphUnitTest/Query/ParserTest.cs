@@ -288,6 +288,8 @@ namespace ModelGraphUnitTest
             Assert.IsTrue(w.IsValid);
 
             w.Validate(t1);
+            Assert.IsTrue(w.IsValid);
+
             var str = w.InputString;
             int value;
             for (int i = 0; i < T1RC; i++)

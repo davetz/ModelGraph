@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace ModelGraphLibrary
 {
-    internal class OR : Step
+    internal class OR2 : Step
     {
+        internal OR2(Parser p) : base(p) { p.Step = this; }
+
         internal bool GetVal()
         {
             var N = Count;
