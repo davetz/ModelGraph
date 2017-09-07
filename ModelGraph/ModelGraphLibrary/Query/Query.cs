@@ -34,7 +34,7 @@ namespace ModelGraphLibrary
         /// <summary>
         /// Try to populate a list of stepValues (they will be in reverse order)
         /// </summary>
-        internal bool TryGetValues(List<IStepValue> values)
+        internal bool TryGetValues(List<(Item, WhereSelect)> values)
         {
             values.Clear();
             var q = this;
@@ -46,8 +46,7 @@ namespace ModelGraphLibrary
                     foreach (var item in q.Items)
                     {
                         if (item == null) continue;
-                        var val = select.GetValue(item);
-                        values.Add(val);
+                        values.Add((item, select));
                     }
                 }
                 if (q.IsHead) return true;

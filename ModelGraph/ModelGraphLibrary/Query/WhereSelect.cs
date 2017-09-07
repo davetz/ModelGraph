@@ -6,23 +6,21 @@ namespace ModelGraphLibrary
  */
     internal class WhereSelect
     {
+        private Item _item;
         private Step _root;
         private Parser _parser;
-        internal Parser SavedParser;
-
-        private Item _item;
-
-        internal NativeType NativeType => (_root != null) ? _root.NativeType : ((_parser != null) ? _parser.NativeType : NativeType.Invalid);
 
         internal WhereSelect(string text)
         {
             _parser = Parser.Create(text);
         }
 
-        internal bool IsValid => (_root != null) ? true : ((_parser == null) ? false : _parser.IsValid); 
-        internal string InputString => GetInputString();
+        #region Property  =====================================================
+        internal string InputString => GetText();
+        internal bool IsValid => (_root != null) ? true : ((_parser == null) ? false : _parser.IsValid);
+        internal NativeType NativeType => (_root != null) ? _root.NativeType : ((_parser != null) ? _parser.NativeType : NativeType.Invalid);
 
-        private string GetInputString()
+        private string GetText()
         {
             if (_parser != null)
             {
@@ -39,6 +37,9 @@ namespace ModelGraphLibrary
                 return null;
             }
         }
+        #endregion
+
+        #region Validate  =====================================================
         internal void Validate(Store sto, string text)
         {
             _root = null;
@@ -49,7 +50,6 @@ namespace ModelGraphLibrary
         internal void Validate(Store sto)
         {
             _root = null;
-            SavedParser = _parser;
 
             if (IsValid &&
                 _parser.TryValidate(sto, () => { return _item; }) &&
@@ -59,7 +59,9 @@ namespace ModelGraphLibrary
                 _parser = null;
             }
         }
+        #endregion
 
+        #region Matches / GetValue  ===========================================
         internal bool Matches(Item item)
         {
             _item = item;
@@ -67,15 +69,55 @@ namespace ModelGraphLibrary
             if (IsValid) _root.GetValue(out result);
             return result;
         }
-        internal IStepValue GetValue(Item item)
+        internal void GetValue(Item item, out bool value)
         {
-            if (IsValid)
-            {
-                _item = item;
-                return _root.GetValue();
-            }
-            return new InvalidStep();
-        }
+            if (_root == null) { value = false; return; }
 
+            _item = item;
+             _root.GetValue(out value);
+        }
+        internal void GetValue(Item item, out byte value)
+        {
+            if (_root == null) { value = 0; return; }
+
+            _item = item;
+            _root.GetValue(out value);
+        }
+        internal void GetValue(Item item, out short value)
+        {
+            if (_root == null) { value = 0; return; }
+
+            _item = item;
+            _root.GetValue(out value);
+        }
+        internal void GetValue(Item item, out int value)
+        {
+            if (_root == null) { value = 0; return; }
+
+            _item = item;
+            _root.GetValue(out value);
+        }
+        internal void GetValue(Item item, out long value)
+        {
+            if (_root == null) { value = 0; return; }
+
+            _item = item;
+            _root.GetValue(out value);
+        }
+        internal void GetValue(Item item, out double value)
+        {
+            if (_root == null) { value = 0; return; }
+
+            _item = item;
+            _root.GetValue(out value);
+        }
+        internal void GetValue(Item item, out string value)
+        {
+            if (_root == null) { value = Chef.InvalidItem; return; }
+
+            _item = item;
+            _root.GetValue(out value);
+        }
+        #endregion
     }
 }

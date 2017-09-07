@@ -269,7 +269,7 @@ namespace ModelGraphUnitTest
 
             var c2 = new ColumnX(dc.T_ColumnXStore);    
             c2.Initialize(ModelGraphLibrary.ValueType.UInt16, null, T1RC);
-            c1.Name = "I2Val";
+            c2.Name = "I2Val";
             dc.R_TableX_ColumnX.SetLink(t1, c2);
 
             // add rows to table t1
@@ -289,8 +289,12 @@ namespace ModelGraphUnitTest
 
             w.Validate(t1);
             var str = w.InputString;
-            var val = w.GetValue(rows[0]);
-            Assert.IsTrue(w.IsValid);
+            int value;
+            for (int i = 0; i < T1RC; i++)
+            {
+                w.GetValue(rows[i], out value);
+                Assert.IsTrue(value == ((i + 1) * 2) + 5);
+            }
         }
         #endregion
 

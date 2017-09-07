@@ -27,22 +27,6 @@ namespace ModelGraphLibrary
         internal override void GetValue(out short value) { _property.GetValue(_getItem(), out value); }
         internal override void GetValue(out double value) { _property.GetValue(_getItem(), _term, out value); }
         internal override void GetValue(out string value) { _property.GetValue(_getItem(), _term, out value); }
-        internal override IStepValue GetValue()
-        {
-            var nativeType = _property.NativeType;
-            switch (nativeType)
-            {
-                //case NativeType.None: { if (_property is ComputeX cx) return cx.GetStepValue(_getItem()); else return new InvalidStep(); }
-                case NativeType.Bool: { _property.GetValue(_getItem(), out bool v); return new BoolValue(v); }
-                case NativeType.Byte: { _property.GetValue(_getItem(), out byte v); return new ByteValue(v); }
-                case NativeType.Int16: { _property.GetValue(_getItem(), out short v); return new Int16Value(v); }
-                case NativeType.Int32: { _property.GetValue(_getItem(), out int v); return new Int32Value(v); }
-                case NativeType.Int64: { _property.GetValue(_getItem(), out long v); return new Int64Value(v); }
-                case NativeType.Double: { _property.GetValue(_getItem(), _term, out double v); return new DoubleValue(v); }
-                case NativeType.String: { _property.GetValue(_getItem(), _term, out string v); return new StringValue(v); }
-            }
-            return new InvalidStep();
-        }
         internal override void GetText(StringBuilder sb)
         {
             GetPrefix(sb);

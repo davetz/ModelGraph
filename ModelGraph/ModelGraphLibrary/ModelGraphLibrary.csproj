@@ -209,15 +209,6 @@
     <Compile Include="Item\Error.cs" />
     <Compile Include="Item\RowX.cs" />
     <Compile Include="Query\QueryX.cs" />
-    <Compile Include="Query\Step\Struct\BoolValue.cs" />
-    <Compile Include="Query\Step\Struct\ByteValue.cs" />
-    <Compile Include="Query\Step\Struct\DoubleValue.cs" />
-    <Compile Include="Query\Step\Struct\Int16Value.cs" />
-    <Compile Include="Query\Step\Struct\Int32Value.cs" />
-    <Compile Include="Query\Step\Struct\Int64Value.cs" />
-    <Compile Include="Query\Step\Struct\InvalidStep.cs" />
-    <Compile Include="Query\Step\Struct\IStepValue.cs" />
-    <Compile Include="Query\Step\Struct\StringValue.cs" />
     <Compile Include="Relation\RelationX.cs" />
     <Compile Include="Store\TableX.cs" />
     <Compile Include="Item\ViewX.cs" />

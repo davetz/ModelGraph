@@ -282,35 +282,35 @@ namespace ModelGraphLibrary
         {
             value = false;
             var selector = GetRootSelect(cx);
-            if (selector != null) selector.GetValue(item).GetValue(out value);
+            if (selector != null) selector.GetValue(item, out value);
             cx.ValueCache.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out byte value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
-            if (selector != null) selector.GetValue(item).GetValue(out value);
+            if (selector != null) selector.GetValue(item, out value);
             cx.ValueCache.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out int value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
-            if (selector != null) selector.GetValue(item).GetValue(out value);
+            if (selector != null) selector.GetValue(item, out value);
             cx.ValueCache.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out short value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
-            if (selector != null) selector.GetValue(item).GetValue(out value);
+            if (selector != null) selector.GetValue(item, out value);
             cx.ValueCache.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out long value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
-            if (selector != null) selector.GetValue(item).GetValue(out value);
+            if (selector != null) selector.GetValue(item, out value);
             cx.ValueCache.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out double value)
@@ -319,7 +319,7 @@ namespace ModelGraphLibrary
             var selector = GetRootSelect(cx);
             if (selector != null)
             {
-                selector.GetValue(item).GetValue(out value);
+                selector.GetValue(item, out value);
                 cx.ValueCache.SetValue(item, value);
             }
         }
@@ -339,7 +339,7 @@ namespace ModelGraphLibrary
                 case CompuType.RowValue:
                     value = null;
                     var selector = GetRootSelect(cx);
-                    if (selector != null) selector.GetValue(item).GetValue(out value);
+                    if (selector != null) selector.GetValue(item, out value);
                     break;
 
                 case CompuType.RelatedValue:
@@ -373,7 +373,7 @@ namespace ModelGraphLibrary
 
             if (forest != null && root != null)
             {
-                var values = new List<IStepValue>();
+                var values = new List<(Item Item, WhereSelect Select)>();
                 var sb = new StringBuilder(120);
 
                 double v, cnt = 0, min = double.MaxValue, max = double.MinValue, sum = 0, ave = 0, std = 0;
@@ -397,7 +397,7 @@ namespace ModelGraphLibrary
                             {
                                 foreach (var val in values)
                                 {
-                                    val.GetValue(out v);
+                                    val.Select.GetValue(val.Item, out v);
                                     if (v < min) min = v;
                                     if (v > max) max = v;
                                 }
@@ -414,7 +414,7 @@ namespace ModelGraphLibrary
                             {
                                 foreach (var val in values)
                                 {
-                                    val.GetValue(out v);
+                                    val.Select.GetValue(val.Item, out v);
                                     if (v < min) min = v;
                                     if (v > max) max = v;
                                     sum += v;
@@ -432,7 +432,7 @@ namespace ModelGraphLibrary
                             {
                                 foreach (var val in values)
                                 {
-                                    val.GetValue(out v);
+                                    val.Select.GetValue(val.Item, out v);
                                     if (v < min) min = v;
                                     if (v > max) max = v;
                                     sum += v;
@@ -452,7 +452,7 @@ namespace ModelGraphLibrary
                             {
                                 foreach (var val in values)
                                 {
-                                    val.GetValue(out v);
+                                    val.Select.GetValue(val.Item, out v);
                                     if (v < min) min = v;
                                     if (v > max) max = v;
                                     sum += v;
@@ -544,7 +544,7 @@ namespace ModelGraphLibrary
 
             if (forest != null && root != null)
             {
-                var values = new List<IStepValue>();
+                var values = new List<(Item Item, WhereSelect Select)>();
                 var sb = new StringBuilder(120);
                 string str;
                 if (isReversed)
@@ -552,8 +552,7 @@ namespace ModelGraphLibrary
                     // use the first one that can produce values
                     if (root.HasSelect && root.Select.NativeType != NativeType.None)
                     {
-                        var val = root.Select.GetValue(item);
-                        val.GetValue(out str);
+                        root.Select.GetValue(item, out str);
                         sb.Append(str);
                     }
                     foreach (var tailSeg in tailQuerys)
@@ -563,7 +562,7 @@ namespace ModelGraphLibrary
                             values.Reverse();
                             foreach (var val in values)
                             {
-                                val.GetValue(out str);
+                                val.Select.GetValue(val.Item, out str);
                                 sb.Append(cd.Separator);
                                 sb.Append(str);
                             }
@@ -580,7 +579,7 @@ namespace ModelGraphLibrary
                         {
                             foreach (var val in values)
                             {
-                                val.GetValue(out str);
+                                val.Select.GetValue(val.Item, out str);
                                 sb.Append(str);
                                 sb.Append(cd.Separator);
                             }
@@ -588,8 +587,7 @@ namespace ModelGraphLibrary
                     }
                     if (root.HasSelect && root.Select.NativeType != NativeType.None)
                     {
-                        var val = root.Select.GetValue(item);
-                        val.GetValue(out str);
+                        root.Select.GetValue(item, out str);
                         sb.Append(str);
                     }
                     value = sb.ToString();
@@ -609,7 +607,7 @@ namespace ModelGraphLibrary
 
             if (forest != null && root != null)
             {
-                var values = new List<IStepValue>();
+                var values = new List<(Item Item, WhereSelect Select)>();
                 // use the first one that can produce values
                 foreach (var tailSeg in tailQuerys)
                 {
@@ -617,7 +615,7 @@ namespace ModelGraphLibrary
                     {
                         foreach (var val in values)
                         {
-                            val.GetValue(out value);
+                            val.Select.GetValue(val.Item1, out value);
                             if (string.IsNullOrEmpty(value)) continue;
                             return;
                         }

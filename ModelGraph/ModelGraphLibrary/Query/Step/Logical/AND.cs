@@ -21,7 +21,6 @@ namespace ModelGraphLibrary
 
         #region Methods  ======================================================
         internal override NativeType NativeType => NativeType.Bool;
-        internal override IStepValue GetValue() => new BoolValue(GetVal());
         internal override void GetValue(out bool value) { value = GetVal(); }
         internal override void GetValue(out byte value) { value = Value.ToByte(GetVal()); }
         internal override void GetValue(out int value) { value = Value.ToInt32(GetVal()); }

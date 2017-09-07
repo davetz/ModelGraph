@@ -46,7 +46,6 @@ namespace ModelGraphLibrary
         #region Methods  ======================================================
         internal int Count => (Inputs == null) ? 0 : Inputs.Length;
         internal abstract NativeType NativeType { get; } // output native data type
-        internal abstract IStepValue GetValue();
         internal abstract void GetValue(out bool value);
         internal abstract void GetValue(out byte value);
         internal abstract void GetValue(out int value);
