@@ -55,8 +55,13 @@ namespace ModelGraphLibrary
                 _parser.TryValidate(sto, () => { return _item; }) &&
                 _parser.TrySimplify())
             {
-                _root = _parser.Children[0].Step;
-                _parser = null;
+                _root = _parser.Step;
+                if (_root == null && _parser.Children.Count == 1)
+                    _root = _parser.Children[0].Step;
+                if (_root == null)
+                    _parser.Error = ParseError.InvalidText;
+                else
+                    _parser = null;
             }
         }
         #endregion

@@ -2,18 +2,18 @@
 
 namespace ModelGraphLibrary
 {
-    internal class MINUS : Step
+    internal class CONCAT : Step
     {
-        internal MINUS(Parser p) : base(p) { p.Step = this; }
+        internal CONCAT(Parser p) : base(p) { p.Step = this; }
 
-        internal double GetVal()
+        internal string GetVal()
         {
             var N = Count;
-            Inputs[0].GetValue(out double val);
+            Inputs[0].GetValue(out string val);
             for (int i = 1; i < N; i++)
             {
-                Inputs[i].GetValue(out double v1);
-                val -= v1;
+                Inputs[i].GetValue(out string v1);
+                val += v1;
             }
             return val;
         }
@@ -25,15 +25,15 @@ namespace ModelGraphLibrary
         internal override void GetValue(out int value) { value = Value.ToInt32(GetVal()); }
         internal override void GetValue(out long value) { value = Value.ToInt64(GetVal()); }
         internal override void GetValue(out short value) { value = Value.ToInt16(GetVal()); }
-        internal override void GetValue(out double value) { value = GetVal(); }
-        internal override void GetValue(out string value) { value = Value.ToString(GetVal()); }
+        internal override void GetValue(out double value) { value = Value.ToDouble(GetVal()); }
+        internal override void GetValue(out string value) { value = GetVal(); }
         internal override void GetText(StringBuilder sb)
         {
             GetPrefix(sb);
             Inputs[0].GetText(sb);
             for (int i = 1; i < Count; i++)
             {
-                sb.Append(" - ");
+                sb.Append(" |");
                 Inputs[i].GetText(sb);
             }
             GetSufix(sb);

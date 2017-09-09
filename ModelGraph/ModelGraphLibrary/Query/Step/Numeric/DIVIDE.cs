@@ -33,7 +33,7 @@ namespace ModelGraphLibrary
             Inputs[0].GetText(sb);
             for (int i = 1; i < Count; i++)
             {
-                sb.Append(" +");
+                sb.Append(" / ");
                 Inputs[i].GetText(sb);
             }
             GetSufix(sb);

@@ -16,9 +16,9 @@ namespace ModelGraphLibrary
         internal Step() { }
         internal Step(Parser p)
         {
-            HasParens = p.HasParens;
+            HasParens = p.Parent.HasParens;
             IsBatched = p.IsBatched;
-            HasNewLine = p.HasNewLine;
+            HasNewLine = p.Parent.HasNewLine;
 
             var N = p.Arguments.Count;
             if (N > 0)
@@ -27,6 +27,10 @@ namespace ModelGraphLibrary
                 for (int i = 0; i < N; i++)
                 {
                     Inputs[i] = p.Arguments[i].Step;
+                    if (Inputs[i] == null && p.Arguments[i].Children.Count == 1)
+                        Inputs[i] = p.Arguments[i].Children[0].Step;
+                    if (Inputs[i] == null)
+                        p.Error = ParseError.InvalidText;
                 }
             }
         }
@@ -62,7 +66,6 @@ namespace ModelGraphLibrary
         protected void GetSufix(StringBuilder sb)
         {
             if (HasParens) sb.Append(")");
-            sb.Append(" ");
         }
         #endregion
     }

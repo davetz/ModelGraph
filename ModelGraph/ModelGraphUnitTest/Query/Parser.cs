@@ -3,13 +3,14 @@ using ModelGraphLibrary;
 using System;
 
 namespace ModelGraphUnitTest
-{
-    [TestClass]
-    public class ParserTest
+{/*
+    Test the Parser class
+ */
+    public partial class ModelGraphLibraryTest
     {
-        #region Parser  =======================================================
+        #region NullOrWhiteSpaceText  =========================================
         [TestMethod]
-        public void ParserNullOrWhiteSpaceText()
+        public void Parser_NullOrWhiteSpaceText()
         {
             RunTest(null, false, ParseError.InvalidText, 0, 0, string.Empty);
             RunTest("   ", false, ParseError.InvalidText, 0, 0, string.Empty);
@@ -24,10 +25,11 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(p.Text == outText);
             }
         }
+        #endregion
 
-
+        #region InvalidString  ================================================
         [TestMethod]
-        public void ParserInvalidString()
+        public void Parser_InvalidString()
         {
             RunTest("ab\"c", false, ParseError.InvalidString, 2, 4, "ab\"c");
             RunTest("a\"b\"c\"", false, ParseError.InvalidString, 5, 6, "a\"b\"c\"");
@@ -42,8 +44,11 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(p.Text == outText);
             }
         }
+        #endregion
+
+        #region InvalidParens  ================================================
         [TestMethod]
-        public void ParserInvalidParens()
+        public void Parser_InvalidParens()
         {
             RunTest("012(4(67)9", false, ParseError.InvalidParens, 3, 10, "012(4(67)9");
             RunTest("0()(4\"))\"9", false, ParseError.InvalidParens, 3, 10, "0()(4\"))\"9");
@@ -58,8 +63,11 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(p.Text == outText);
             }
         }
+        #endregion
+
+        #region String  =======================================================
         [TestMethod]
-        public void ParserString()
+        public void Parser_String()
         {
             RunTest("\"ok good\"", true, StepType.String, "ok good");
             RunTest("   \"0.4-+=/*&|\" ", true, StepType.String, "0.4-+=/*&|");
@@ -72,8 +80,11 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(p.Text == childText);
             }
         }
+        #endregion
+
+        #region Commas  =======================================================
         [TestMethod]
-        public void ParserCommas()
+        public void Parser_Commas()
         {
             var p = Parser.Create("5.4,3");
             Assert.IsTrue(p.IsValid);
@@ -85,8 +96,11 @@ namespace ModelGraphUnitTest
             var r = p.Children[1];
             Assert.IsTrue(r.StepType == StepType.Integer);
         }
+        #endregion
+
+        #region Lists  ========================================================
         [TestMethod]
-        public void ParserList()
+        public void Parser_List()
         {
             var p = Parser.Create("((5 + 2),3)");
             Assert.IsTrue(p.IsValid);
@@ -98,8 +112,11 @@ namespace ModelGraphUnitTest
             var r = p.Children[1];
             Assert.IsTrue(r.StepType == StepType.Integer);
         }
+        #endregion
+
+        #region Vector  =======================================================
         [TestMethod]
-        public void ParserVector()
+        public void Parser_Vector()
         {
             var p = Parser.Create("{(5 + 2),3}");
             Assert.IsTrue(p.IsValid);
@@ -111,8 +128,11 @@ namespace ModelGraphUnitTest
             var r = p.Children[1];
             Assert.IsTrue(r.StepType == StepType.Integer);
         }
+        #endregion
+
+        #region Parens  =======================================================
         [TestMethod]
-        public void ParserParens()
+        public void Parser_Parens()
         {
             RunTest("((\"ok (good)\"))", true, StepType.String, "ok (good)");
             RunTest(" (  ( \"ok good\" ) ) ", true, StepType.String, "ok good");
@@ -128,8 +148,11 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(p.Text == text2);
             }
         }
+        #endregion
+
+        #region Number  =======================================================
         [TestMethod]
-        public void ParserNumber()
+        public void Parser_Number()
         {
             RunTest("13", true, 1, StepType.Integer, "13", typeof(BYTE), 13.0);
             RunTest("0.45", true, 1, StepType.Double, "0.45", typeof(DOUBLE), 0.45);
@@ -158,39 +181,12 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(p.Step != null);
                 Assert.IsTrue(stepType == p.Step.GetType());
             }
-
         }
-        [TestMethod]
-        public void ParserParenStringNumber()
-        {
-            var text = " ( \" rip 0 \" 0.45 ) ";
-            var p = Parser.Create(text);
-            Assert.IsTrue(p.IsValid);
-            Assert.IsTrue(p.Children.Count == 2);
+        #endregion
 
-            var r = p.Children[0];
-            Assert.IsTrue(r.Text == " rip 0 ");
-
-            var s = p.Children[1];
-            Assert.IsTrue(s.Text == "0.45");
-        }
+        #region ParserOperator  ===============================================
         [TestMethod]
-        public void ParserGoNoGo()
-        {
-            RunTest("5 * 2 / 3 < 8", true);
-            RunTest("5 + 3 + 6 + 7", true);
-            RunTest("5 / 3", true);
-            RunTest("(dog & cat == fight) || ((13.8 / 12.3) > 5.1)", true);
-            RunTest("(dog & cat == fight) || (13.8 / 12.3) > 5.1)", false);
-
-            void RunTest(string text, bool isValid)
-            {
-                var p = Parser.Create(text);
-                Assert.IsTrue(p.IsValid == isValid);
-            }
-        }
-        [TestMethod]
-        public void ParserOperator()
+        public void Parser_Operator()
         {
             RunTest("|", true, StepType.Or1);
             RunTest("||", true, StepType.Or2);
@@ -242,63 +238,5 @@ namespace ModelGraphUnitTest
             }
         }
         #endregion
-
-        #region WhereSelect  ==================================================
-        [TestMethod]
-        public void WhereSelectTest1()
-        {
-            var td = TestData.Instance;         // get the TestData singleton
-            var rc = td.RootChef;               // get the rootChef
-            var dc = rc.GetItems()[0] as Chef;  // get dataChef[0]
-
-            var T1RC = 10; // number of rows in table t1
-
-            // create table t1
-
-            var t1 = new TableX(dc.T_TableXStore);      
-            t1.SetCapacity(T1RC);
-
-            // create column c1
-
-            var c1 = new ColumnX(dc.T_ColumnXStore);
-            c1.Initialize(ModelGraphLibrary.ValueType.String, null, T1RC);
-            c1.Name = "Id";
-            dc.R_TableX_ColumnX.SetLink(t1, c1);
-
-            // create column c2
-
-            var c2 = new ColumnX(dc.T_ColumnXStore);    
-            c2.Initialize(ModelGraphLibrary.ValueType.UInt16, null, T1RC);
-            c2.Name = "I2Val";
-            dc.R_TableX_ColumnX.SetLink(t1, c2);
-
-            // add rows to table t1
-
-            for (int i = 0; i < T1RC; i++)
-            {
-                var r = new RowX(t1);
-                c1.TrySetValue(r, $"R{i}");             // {R0, R1, R2, R3, ...}
-                c2.TrySetValue(r, $"{(i + 1) * 2}");    // { 2,  4,  8, 16, ...}
-            }
-            var rows = t1.Items;
-
-            // begin test
-
-            var w = new WhereSelect("I2Val + 5");
-            Assert.IsTrue(w.IsValid);
-
-            w.Validate(t1);
-            Assert.IsTrue(w.IsValid);
-
-            var str = w.InputString;
-            int value;
-            for (int i = 0; i < T1RC; i++)
-            {
-                w.GetValue(rows[i], out value);
-                Assert.IsTrue(value == ((i + 1) * 2) + 5);
-            }
-        }
-        #endregion
-
     }
 }

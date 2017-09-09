@@ -18,7 +18,7 @@ namespace ModelGraphLibrary
     produces a standard expressing string format and also it solves the 
     problem of what happens when someone renames a column not knowing that
     it was hardcoded in the expression string.
-    (the expression tree references the property object, not it's name)
+    (the expression tree references the property object and not it's name)
  */
     /// <summary>
     /// Parse a string and create an expession tree
@@ -33,10 +33,10 @@ namespace ModelGraphLibrary
         internal string Text;
         internal int Index1;
         internal int Index2;
+
         private ParseFlag _flags;
         internal ParseError Error;
         internal StepType StepType;
-
  
         #region Constructor  ==================================================
         public static Parser Create(string text)
@@ -112,6 +112,7 @@ namespace ModelGraphLibrary
         public bool IsInvalidRef { get { return GetFlag(ParseFlag.IsInvalidRef); } set { SetFlag(value, ParseFlag.IsInvalidRef); } }
         public bool IsCircularRef { get { return GetFlag(ParseFlag.IsCircularRef); } set { SetFlag(value, ParseFlag.IsCircularRef); } }
         #endregion
+
 
         #region IsValid, NativeType, CompositeFlags  ==========================
         internal bool IsValid => GetIsValid();
@@ -218,6 +219,7 @@ namespace ModelGraphLibrary
         }
         #endregion
 
+
         #region TryParse  =====================================================
         /* 
             Parse an expression string (or substring) and recursivly build a 
@@ -229,19 +231,22 @@ namespace ModelGraphLibrary
             {
                 var c = Text[Index1];
                 if (char.IsWhiteSpace(c))
-                {// - - - - - - - - - - - - - - - - - - - - - start of white space
-                    Index1++; //- - - - - - - - - - - - - - - skip over it, and continue
+                {// - - - - - - - - - - - - - - - - - - - - ->  White Space
+                    Index1++;
                 }
+
                 else if (c == ',')
-                {// - - - - - - - - - - - - - - - - - - - - - argument separator
-                    Index1++; //- - - - - - - - - - - - - - - skip over it, and continue
+                {// - - - - - - - - - - - - - - - - - - - - ->  Argument Separator
+                    Index1++;
                 }
+
+
                 else if (char.IsDigit(c))
-                {// - - - - - - - - - - - - - - - - - - - - - start of a numeric literal value
+                {// - - - - - - - - - - - - - - - - - - - - ->  Numeric Literal
                     Index2 = (Index1 + 1);
                     bool isDouble = false;
                     while (Index2 < Text.Length)
-                    {//- - - - - - - - - - - - - - - - - - - find the ending index
+                    {//- - - - - - - - - - - - - - - - - - - find the end
                         var t = Text[Index2];
                         if (t == '.') isDouble = true;
                         else if (!char.IsDigit(t)) break;
@@ -252,25 +257,31 @@ namespace ModelGraphLibrary
                     Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), parseType));
                     Index1 = Index2;
                 }
+
+
                 else if (c == '"')
-                {// - - - - - - - - - - - - - - - - - - - - - start of a string literal value
+                {// - - - - - - - - - - - - - - - - - - - - ->  String Literal
                     Index1 = Index2 = (Index1 + 1);
                     while (Text[Index2] != '"')
-                    {//- - - - - - - - - - - - - - - - - - - find the ending index
+                    {//- - - - - - - - - - - - - - - - - - find the end
                         Index2++;
                     }
+
                     Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.String));
                     Index1 = (Index2 + 1);
                 }
+
+
                 else if (operatorString.Contains(c))
-                {// - - - - - - - - - - - - - - - - - - - - - start of a operator expression
+                {// - - - - - - - - - - - - - - - - - - - - ->  Operator
                     Index2 = (Index1 + 1);
                     while (Index2 < Text.Length)
-                    {//- - - - - - - - - - - - - - - - - - - find the ending index
+                    {//- - - - - - - - - - - - - - - - - - find the end
                         var t = Text[Index2];
                         if (!operatorString.Contains(t)) break;
                         Index2++;
                     }
+
                     var key = Text.Substring(Index1, Index2 - Index1);
                     if (operatorParseType.TryGetValue(key, out StepType parseType))
                     {
@@ -283,15 +294,18 @@ namespace ModelGraphLibrary
                         return false;
                     }
                 }
+
+
                 else if (char.IsLetter(c))
-                {// - - - - - - - - - - - - - - - - - - - - - start of either a function or property
+                {// - - - - - - - - - - - - - - - - - - - - ->  Function or Property
                     Index2 = (Index1 + 1);
                     while (Index2 < Text.Length)
-                    {//- - - - - - - - - - - - - - - - - - - find the ending index
+                    {//- - - - - - - - - - - - - - - - - - find the end
                         var t = Text[Index2];                        
                         if (!(char.IsLetterOrDigit(t) || t == '.' || t == '_')) break;
                         Index2++;
                     }
+
                     var key = Text.Substring(Index1, Index2 - Index1).ToLower();
                     if (functionParseType.TryGetValue(key, out StepType parseType))
                     {
@@ -304,14 +318,16 @@ namespace ModelGraphLibrary
                         Index1 = Index2;
                     }
                 }
+
+
                 else if (c == '(')
-                {// - - - - - - - - - - - - - - - - - - - - - start of a parethetical subexpression
+                {// - - - - - - - - - - - - - - - - - - - - ->  Parethetical
                     Index1 = Index2 = (Index1 + 1);
                     var count = 1;
                     var onString = false;
                     var hasComma = false;
                     while (count > 0)
-                    {//- - - - - - - - - - - - - - - - - - - find the ending index
+                    {//- - - - - - - - - - - - - - - - - find the end
                         var t = Text[Index2];
                         if (t == '"')
                             onString = !onString;
@@ -326,6 +342,7 @@ namespace ModelGraphLibrary
                         }
                         Index2++;
                     }
+
                     Index2--;
                     if (hasComma)
                         Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.List));
@@ -334,13 +351,15 @@ namespace ModelGraphLibrary
 
                     Index1 = Index2 + 1;
                 }
+
+
                 else if (c == '{')
-                {// - - - - - - - - - - - - - - - - - - - - - start of a vector subexpression
+                {// - - - - - - - - - - - - - - - - - - - - ->  Vector 
                     Index1 = Index2 = (Index1 + 1);
                     var count = 1;
                     var onString = false;
                     while (count > 0)
-                    {//- - - - - - - - - - - - - - - - - - - find the ending index
+                    {//- - - - - - - - - - - - - - - - - - find the end
                         var t = Text[Index2];
                         if (t == '"')
                             onString = !onString;
@@ -353,20 +372,24 @@ namespace ModelGraphLibrary
                         }
                         Index2++;
                     }
+
                     Index2--;
                     Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.Vector, true));
 
                     Index1 = Index2 + 1;
                 }
+
+
                 else if (newLineString.Contains(c))
-                {// - - - - - - - - - - - - - - - - - - - - - start of a new line declaration
+                {// - - - - - - - - - - - - - - - - - - - - ->  New Line
                     Index2 = (Index1 + 1);
                     while (Index2 < Text.Length)
-                    {//- - - - - - - - - - - - - - - - - - - find the ending index
+                    {//- - - - - - - - - - - - - - - - - - find the end
                         var t = Text[Index2];
                         if (!newLineString.Contains(t)) break;
                         Index2++;
                     }
+
                     var key = Text.Substring(Index1, Index2 - Index1);
                     if (key == newLineString)
                     {
@@ -379,8 +402,10 @@ namespace ModelGraphLibrary
                         return false;
                     }
                 }
+
+
                 else
-                {
+                {// - - - - - - - - - - - - - - - - - - - - ->  Invalid Text
                     Error = ParseError.InvalidText;
                     return false;
                 }
@@ -405,6 +430,8 @@ namespace ModelGraphLibrary
         #region ResolveComplexity  ============================================
         bool ResolveComplexity()
         {
+            if (Children.Count == 0) return true;
+
             ResolveNagation();
             foreach (var child in Children)
             {
@@ -445,7 +472,7 @@ namespace ModelGraphLibrary
                                 p.IsDone = true;
                                 hitList.Add(Children[i]);
                                 hitList.Add(Children[i + 1]);
-                                Arguments.Add(Children[i + 1]);
+                                p.Arguments.Add(Children[i + 1]);
                             }
                             else
                             {
@@ -546,12 +573,12 @@ namespace ModelGraphLibrary
         internal bool TryValidate(Store sto, Func<Item> getItem)
         {
             if (Error != ParseError.None) return false;
+            foreach (var arg in Arguments)
+            {
+                if (!arg.TryValidate(sto, getItem)) return false;
+            }
             foreach (var child in Children)
             {
-                foreach (var arg in child.Arguments)
-                {
-                    if (!arg.TryValidate(sto, getItem)) return false;
-                }
                 if (!child.TryValidate(sto, getItem)) return false;
             }
             if (StepType == StepType.Property)
@@ -584,10 +611,17 @@ namespace ModelGraphLibrary
         }
         #endregion
 
+        #region TrySimplify  ==================================================
+        internal bool TrySimplify()
+        {
+            return true;
+        }
+        #endregion
+
 
         #region ParseParam  ===================================================
         [Flags]
-        enum PFlag : ushort
+        private enum PFlag : ushort
         {/*
             Facilitate the transformtion of a parse tree to an expression tree
          */
@@ -610,7 +644,7 @@ namespace ModelGraphLibrary
             IsNegateKey2 = 0x200, // this parse step is the negate operator
             IsNegateKey3 = 0x400, // this parse step will accept negation          
         }
-        struct PParm
+        private struct PParm
         {
             readonly internal Action<Parser> Resolve;
             private PFlag _flags;
@@ -649,12 +683,12 @@ namespace ModelGraphLibrary
             [StepType.Boolean] = new PParm((p) => { }, PFlag.Priority7 | PFlag.IsNegateKey3),
             [StepType.Property] = new PParm((p) => { }, PFlag.Priority7 | PFlag.IsNegateKey3),
 
-            [StepType.Or1] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.Or1] = new PParm((p) => { Or1(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.Or2] = new PParm((p) => { new OR2(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.And1] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.And2] = new PParm((p) => { new AND2(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.Not] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasRHS),
-            [StepType.Plus] = new PParm((p) => { new PLUS(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
+            [StepType.Plus] = new PParm((p) => { Plus(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
             [StepType.Minus] = new PParm((p) => { new MINUS(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey2),
             [StepType.Equals] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
             [StepType.Negate] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS),
@@ -669,6 +703,25 @@ namespace ModelGraphLibrary
             [StepType.Ends] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.Starts] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
         };
+
+        static void Or1(Parser p)
+        {
+            var type = p.Arguments[0].NativeType;
+            if (type == NativeType.String)
+                new CONCAT(p);
+            else if (type == NativeType.Bool)
+                new OR2(p);
+        }
+        static void Plus(Parser p)
+        {
+            var type = p.Arguments[0].NativeType;
+            if (type == NativeType.String)
+                new CONCAT(p);
+            else if (type == NativeType.Bool)
+                new OR2(p);
+            else
+                new PLUS(p);
+        }
         #endregion
 
         #region StaticParms  ==================================================
@@ -699,13 +752,6 @@ namespace ModelGraphLibrary
         };
         static string operatorString = "!~|&+-/*<>=";
         static string newLineString = Environment.NewLine;
-        #endregion
-
-        #region TrySimplify  ==================================================
-        internal bool TrySimplify()
-        {
-            return true;
-        }
         #endregion
     }
 }

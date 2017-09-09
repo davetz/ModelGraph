@@ -114,6 +114,7 @@
     <Compile Include="Models\UIRequest\IViewControl.cs" />
     <Compile Include="Models\UIRequest\UIRequest.cs" />
     <Compile Include="Query\Enum\ParseFlags.cs" />
+    <Compile Include="Query\Step\Alphabetic\CONCAT.cs" />
     <Compile Include="Query\Step\Literal\BOOL.cs" />
     <Compile Include="Query\Step\Literal\INT16.cs" />
     <Compile Include="Query\Step\Literal\INT32.cs" />
@@ -302,7 +303,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Query\Step\Alphabetic\" />
     <Folder Include="Query\Step\Compare\" />
   </ItemGroup>
   <ItemGroup>
