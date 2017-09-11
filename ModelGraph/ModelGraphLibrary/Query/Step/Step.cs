@@ -16,9 +16,10 @@ namespace ModelGraphLibrary
         internal Step() { }
         internal Step(Parser p)
         {
-            HasParens = p.Parent.HasParens;
             IsBatched = p.IsBatched;
-            HasNewLine = p.Parent.HasNewLine;
+            HasParens = (p.HasParens || p.Parent.HasParens);
+            IsNegated = (p.IsNegated || p.Parent.IsNegated);
+            HasNewLine = (p.HasNewLine || p.Parent.HasNewLine);
 
             var N = p.Arguments.Count;
             if (N > 0)
@@ -45,6 +46,8 @@ namespace ModelGraphLibrary
         internal bool IsNegated { get { return GetFlag(StepFlag.IsNegated); } set { SetFlag(value, StepFlag.IsNegated); } }
         internal bool HasParens { get { return GetFlag(StepFlag.HasParens); } set { SetFlag(value, StepFlag.HasParens); } }
         internal bool HasNewLine { get { return GetFlag(StepFlag.HasNewLine); } set { SetFlag(value, StepFlag.HasNewLine); } }
+        internal bool IsBitField { get { return GetFlag(StepFlag.IsBitField); } set { SetFlag(value, StepFlag.IsBitField); } }
+
         #endregion
 
         #region Methods  ======================================================
@@ -61,11 +64,33 @@ namespace ModelGraphLibrary
         protected void GetPrefix(StringBuilder sb)
         {
             if (HasNewLine) sb.Append(Environment.NewLine);
-            if (HasParens) sb.Append("(");
+            if (IsNegated)
+            {
+                switch (NativeType)
+                {
+                    case NativeType.Bool:
+                        sb.Append('!');
+                        break;
+                    case NativeType.SByte:
+                    case NativeType.Int16:
+                    case NativeType.Int32:
+                    case NativeType.Int64:
+                    case NativeType.Double:
+                        sb.Append('-');
+                        break;
+                    case NativeType.Byte:
+                    case NativeType.UInt16:
+                    case NativeType.UInt32:
+                    case NativeType.UInt64:
+                        sb.Append('~');
+                        break;
+                }
+            }
+            if (HasParens) sb.Append('(');
         }
         protected void GetSufix(StringBuilder sb)
         {
-            if (HasParens) sb.Append(")");
+            if (HasParens) sb.Append(')');
         }
         #endregion
     }

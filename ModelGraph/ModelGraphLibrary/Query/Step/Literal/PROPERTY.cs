@@ -20,13 +20,40 @@ namespace ModelGraphLibrary
         #region Methods  ======================================================
         internal Property Property => _property;
         internal override NativeType NativeType => _property.NativeType;
-        internal override void GetValue(out bool value) { _property.GetValue(_getItem(), out value); }
-        internal override void GetValue(out byte value) { _property.GetValue(_getItem(), out value); }
-        internal override void GetValue(out int value) { _property.GetValue(_getItem(), out value); }
-        internal override void GetValue(out long value) { _property.GetValue(_getItem(), out value); }
-        internal override void GetValue(out short value) { _property.GetValue(_getItem(), out value); }
-        internal override void GetValue(out double value) { _property.GetValue(_getItem(), _term, out value); }
-        internal override void GetValue(out string value) { _property.GetValue(_getItem(), _term, out value); }
+        internal override void GetValue(out bool value)
+        {
+            _property.GetValue(_getItem(), out value);
+            if (IsNegated) value = !value;
+        }
+        internal override void GetValue(out byte value)
+        {
+            _property.GetValue(_getItem(), out value);
+            if (IsNegated) value = (byte)~value;
+        }
+        internal override void GetValue(out int value)
+        {
+            _property.GetValue(_getItem(), out value);
+            if (IsNegated) value = -value;
+        }
+        internal override void GetValue(out long value)
+        {
+            _property.GetValue(_getItem(), out value);
+            if (IsNegated) value = -value;
+        }
+        internal override void GetValue(out short value)
+        {
+            _property.GetValue(_getItem(), out value);
+            if (IsNegated) value = (short)-value;
+        }
+        internal override void GetValue(out double value)
+        {
+            _property.GetValue(_getItem(), _term, out value);
+            if (IsNegated) value = -value;
+        }
+        internal override void GetValue(out string value)
+        {
+            _property.GetValue(_getItem(), _term, out value);
+        }
         internal override void GetText(StringBuilder sb)
         {
             GetPrefix(sb);

@@ -78,7 +78,7 @@ namespace ModelGraphLibrary
                     break;
 
                 case StepType.String:
-                    Step = new STRING(Text);
+                    Step = new STRING(this, Text);
                     break;
 
                 case StepType.Double:
@@ -87,6 +87,10 @@ namespace ModelGraphLibrary
 
                 case StepType.Integer:
                     TryAddLiteralNumber();
+                    break;
+
+                case StepType.BitField:
+                    TryAddLiteralBitField();
                     break;
 
                 case StepType.Property:
@@ -245,16 +249,21 @@ namespace ModelGraphLibrary
                 {// - - - - - - - - - - - - - - - - - - - - ->  Numeric Literal
                     Index2 = (Index1 + 1);
                     bool isDouble = false;
+                    bool isHex = false;
                     while (Index2 < Text.Length)
                     {//- - - - - - - - - - - - - - - - - - - find the end
-                        var t = Text[Index2];
+                        var t = char.ToLower(Text[Index2]);
                         if (t == '.') isDouble = true;
-                        else if (!char.IsDigit(t)) break;
+                        if (t == 'x') isDouble = true;
+                        else if (!char.IsDigit(t))
+                        {
+                            if (!isHex) break;
+                            if (t != 'a' && t != 'b' && t != 'c' && t != 'd' && t != 'e' && t != 'f') break;
+                        }
                         Index2++;
                     }
-
-                    var parseType = (isDouble) ? StepType.Double : StepType.Integer;
-                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), parseType));
+                    var stepType = isDouble ? StepType.Double : (isHex) ? StepType.BitField : StepType.Integer;
+                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), stepType));
                     Index1 = Index2;
                 }
 
@@ -496,6 +505,15 @@ namespace ModelGraphLibrary
         // the step that is being negated
         void ResolveNagation()
         {
+            if (Children.Count > 1)
+            {
+                if (StepTypeParm[Children[0].StepType].IsNegateKey2 &&
+                    StepTypeParm[Children[1].StepType].IsNegateKey3)
+                {
+                    Children[1].IsNegated = true;
+                    Children.RemoveAt(0);
+                }
+            }
             var i = 0;
             var N = Children.Count - 2;
             while (i < N)
@@ -551,8 +569,8 @@ namespace ModelGraphLibrary
                 }
                 else
                 {
-                    if (val <= byte.MaxValue)
-                        Step = new BYTE(val);
+                    if (val <= sbyte.MaxValue)
+                        Step = new SBYTE(val);
                     else if (val <= short.MaxValue)
                         Step = new INT16(val);
                     else if (val <= int.MaxValue)
@@ -566,6 +584,57 @@ namespace ModelGraphLibrary
             }
             Error = ParseError.InvalidNumber;
             return false;
+        }
+        #endregion
+
+        #region TryAddLiteralBitField  ========================================
+        private bool TryAddLiteralBitField()
+        {
+            long val = 0;
+            var chars = Text.ToLower().ToCharArray();
+            var N = chars.Length;
+            if (N < 3 || chars[0] != '0' || chars[1] != 'x')
+            {
+                Error = ParseError.InvalidNumber;
+                return false;
+            }
+            for (int i = 2; i < N; i++)
+            {
+                var c = chars[i];
+
+                val = val << 4;
+
+                if (c == '1') val += 1;
+                else if (c == '2') val += 2;
+                else if (c == '3') val += 3;
+                else if (c == '4') val += 4;
+                else if (c == '5') val += 5;
+                else if (c == '6') val += 6;
+                else if (c == '7') val += 7;
+                else if (c == '8') val += 8;
+                else if (c == '9') val += 9;
+                else if (c == 'a') val += 10;
+                else if (c == 'b') val += 11;
+                else if (c == 'c') val += 12;
+                else if (c == 'd') val += 13;
+                else if (c == 'e') val += 14;
+                else if (c == 'f') val += 15;
+                else
+                {
+                    Error = ParseError.InvalidNumber;
+                    return false;
+                }
+            }
+            if (val <= byte.MaxValue)
+                Step = new BYTE(val);
+            else if (val <= ushort.MaxValue)
+                Step = new UINT16(val);
+            else if (val <= uint.MaxValue)
+                Step = new UINT32(val);
+            else
+                Step = new UINT64(val);
+
+            return true;
         }
         #endregion
 
@@ -678,20 +747,21 @@ namespace ModelGraphLibrary
             [StepType.Index] = new PParm((p) => { }, PFlag.Priority7),
             [StepType.Vector] = new PParm((p) => { }, PFlag.Priority7),
             [StepType.String] = new PParm((p) => { }, PFlag.Priority7),
-            [StepType.Double] = new PParm((p) => { }, PFlag.Priority7 | PFlag.IsNegateKey3 | PFlag.IsNegateKey3),
-            [StepType.Integer] = new PParm((p) => { }, PFlag.Priority7 | PFlag.IsNegateKey3 | PFlag.IsNegateKey3),
-            [StepType.Boolean] = new PParm((p) => { }, PFlag.Priority7 | PFlag.IsNegateKey3),
-            [StepType.Property] = new PParm((p) => { }, PFlag.Priority7 | PFlag.IsNegateKey3),
-
+            [StepType.Double] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.IsNegateKey3),
+            [StepType.Integer] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.IsNegateKey3),
+            [StepType.Boolean] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.IsNegateKey3),
+            [StepType.Property] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.IsNegateKey3),
+            [StepType.BitField] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.IsNegateKey3),
+ 
             [StepType.Or1] = new PParm((p) => { Or1(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.Or2] = new PParm((p) => { new OR2(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.And1] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.And2] = new PParm((p) => { new AND2(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Not] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasRHS),
+            [StepType.Not] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegateKey2),
             [StepType.Plus] = new PParm((p) => { Plus(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
             [StepType.Minus] = new PParm((p) => { new MINUS(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey2),
             [StepType.Equals] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
-            [StepType.Negate] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS),
+            [StepType.Negate] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegateKey2),
             [StepType.Divide] = new PParm((p) => { new DIVIDE(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
             [StepType.Multiply] = new PParm((p) => { new MULTIPLY(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
             [StepType.LessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
@@ -722,6 +792,14 @@ namespace ModelGraphLibrary
             else
                 new PLUS(p);
         }
+        static void Literal(Parser p)
+        {
+            if (p.Step != null)
+            {
+                p.Step.IsNegated = p.IsNegated;
+            }
+        }
+
         #endregion
 
         #region StaticParms  ==================================================

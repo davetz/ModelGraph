@@ -1,44 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace ModelGraphLibrary
 {
-    internal class OR2 : Step
+    internal class UINT32 : Step
     {
-        internal OR2(Parser p) : base(p) { p.Step = this; }
-
-        internal bool GetVal()
-        {
-            var N = Count;
-            for (int i = 0; i < N; i++)
-            {
-                Inputs[i].GetValue(out bool v1);
-                if (v1) return IsNegated ? false : true;
-            }
-            return IsNegated ? true : false;
-        }
+        private uint _value;
+        internal UINT32(double val) { _value = (uint)val; }
+        uint GetVal() => IsNegated ? ~_value : _value;
 
         #region Methods  ======================================================
-        internal override NativeType NativeType => NativeType.Bool;
-        internal override void GetValue(out bool value) { value = GetVal(); }
+        internal override NativeType NativeType => NativeType.UInt32;
+
+        internal override void GetValue(out bool value) { value = Value.ToBool(GetVal()); }
         internal override void GetValue(out byte value) { value = Value.ToByte(GetVal()); }
         internal override void GetValue(out int value) { value = Value.ToInt32(GetVal()); }
         internal override void GetValue(out long value) { value = Value.ToInt64(GetVal()); }
         internal override void GetValue(out short value) { value = Value.ToInt16(GetVal()); }
         internal override void GetValue(out double value) { value = Value.ToDouble(GetVal()); }
         internal override void GetValue(out string value) { value = Value.ToString(GetVal()); }
+
         internal override void GetText(StringBuilder sb)
         {
             GetPrefix(sb);
-            Inputs[0].GetText(sb);
-            for (int i = 1; i < Count; i++)
-            {
-                sb.Append(" || ");
-                Inputs[i].GetText(sb);
-            }
+            sb.Append(_value.ToString());
             GetSufix(sb);
         }
         #endregion

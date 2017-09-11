@@ -14,5 +14,6 @@ namespace ModelGraphLibrary
         IsBatched = 0x4, // generated expression has a succession of repeats e.g. ADD(A, B, C) becomes A + B + C
         HasParens = 0x8, // enclose generated expression in parens (...)
         HasNewLine = 0x10, // start generated expression with a newLine
+        IsBitField = 0x20, // can particiapte in (~, &, |, ^, >>, and <<) bit field operations
     }
 }

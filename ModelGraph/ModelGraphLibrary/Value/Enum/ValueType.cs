@@ -29,6 +29,7 @@
         TimeSpan = 15,
 
         String = 16,
+
         CharArray = 17,
         HexArray = 18,
         ByteArray = 19,

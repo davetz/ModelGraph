@@ -116,6 +116,11 @@
     <Compile Include="Query\Enum\ParseFlags.cs" />
     <Compile Include="Query\Step\Alphabetic\CONCAT.cs" />
     <Compile Include="Query\Step\Literal\BOOL.cs" />
+    <Compile Include="Query\Step\Literal\DATETIME.cs" />
+    <Compile Include="Query\Step\Literal\UINT64.cs" />
+    <Compile Include="Query\Step\Literal\UINT32.cs" />
+    <Compile Include="Query\Step\Literal\UINT16 .cs" />
+    <Compile Include="Query\Step\Literal\SBYTE.cs" />
     <Compile Include="Query\Step\Literal\INT16.cs" />
     <Compile Include="Query\Step\Literal\INT32.cs" />
     <Compile Include="Query\Step\Literal\INT64.cs" />

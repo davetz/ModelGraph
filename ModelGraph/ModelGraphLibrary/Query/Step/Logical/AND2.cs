@@ -16,9 +16,9 @@ namespace ModelGraphLibrary
             for (int i = 0; i < N; i++)
             {
                 Inputs[i].GetValue(out bool v1);
-                if (!v1) return false;
+                if (!v1) return IsNegated ? true : false;
             }
-            return false;
+            return IsNegated ? true : false;
         }
 
         #region Methods  ======================================================

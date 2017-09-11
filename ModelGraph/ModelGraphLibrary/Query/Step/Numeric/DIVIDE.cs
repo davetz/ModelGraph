@@ -15,7 +15,7 @@ namespace ModelGraphLibrary
                 Inputs[i].GetValue(out double v1);
                 val /= v1;
             }
-            return val;
+            return IsNegated ? -val : val;
         }
 
         #region Methods  ======================================================

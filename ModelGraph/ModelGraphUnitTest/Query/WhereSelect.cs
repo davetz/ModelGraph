@@ -49,5 +49,33 @@ namespace ModelGraphUnitTest
 
         }
         #endregion
+
+        #region GetText  ======================================================
+        [TestMethod]
+        public void WhereSelect_Negate()
+        {
+            RunTest("-1", -1);
+            RunTest("5 * -3 + 2", -13);
+            RunTest("-5 * (3 + 2)", -25);
+            RunTest("2 + 2 + (5 * -(3 + (2 * 3))) / 2", -18.5);
+
+
+            void RunTest(string text, double value)
+            {
+                var w = new WhereSelect(text);
+                Assert.IsTrue(w.IsValid);
+
+                w.Validate(null);
+                Assert.IsTrue(w.IsValid);
+
+                var txt = w.InputString;
+                Assert.IsTrue(txt == text);
+
+                w.GetValue(null, out double val);
+                Assert.IsTrue(val == value);
+            }
+
+        }
+        #endregion
     }
 }
