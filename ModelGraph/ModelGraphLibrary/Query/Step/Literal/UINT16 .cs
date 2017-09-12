@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class UINT16 : Step
     {
         private ushort _value;
-        internal UINT16(double val) { _value = (ushort)val; }
+        internal UINT16(ulong val) { _value = (ushort)val; }
         ushort GetVal() => IsNegated ? (ushort)~_value : _value;
 
         #region Methods  ======================================================

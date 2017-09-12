@@ -254,7 +254,7 @@ namespace ModelGraphLibrary
                     {//- - - - - - - - - - - - - - - - - - - find the end
                         var t = char.ToLower(Text[Index2]);
                         if (t == '.') isDouble = true;
-                        if (t == 'x') isDouble = true;
+                        else if (t == 'x') isHex = true;
                         else if (!char.IsDigit(t))
                         {
                             if (!isHex) break;
@@ -590,7 +590,7 @@ namespace ModelGraphLibrary
         #region TryAddLiteralBitField  ========================================
         private bool TryAddLiteralBitField()
         {
-            long val = 0;
+            ulong val = 0;
             var chars = Text.ToLower().ToCharArray();
             var N = chars.Length;
             if (N < 3 || chars[0] != '0' || chars[1] != 'x')
@@ -619,7 +619,7 @@ namespace ModelGraphLibrary
                 else if (c == 'd') val += 13;
                 else if (c == 'e') val += 14;
                 else if (c == 'f') val += 15;
-                else
+                else if (c != '0')
                 {
                     Error = ParseError.InvalidNumber;
                     return false;
@@ -758,12 +758,12 @@ namespace ModelGraphLibrary
             [StepType.And1] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.And2] = new PParm((p) => { new AND2(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.Not] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegateKey2),
-            [StepType.Plus] = new PParm((p) => { Plus(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
-            [StepType.Minus] = new PParm((p) => { new MINUS(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey2),
+            [StepType.Plus] = new PParm((p) => { Plus(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey3),
+            [StepType.Minus] = new PParm((p) => { new MINUS(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey2 | PFlag.IsNegateKey3),
             [StepType.Equals] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
             [StepType.Negate] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegateKey2),
-            [StepType.Divide] = new PParm((p) => { new DIVIDE(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
-            [StepType.Multiply] = new PParm((p) => { new MULTIPLY(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1),
+            [StepType.Divide] = new PParm((p) => { new DIVIDE(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey3),
+            [StepType.Multiply] = new PParm((p) => { new MULTIPLY(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey3),
             [StepType.LessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
             [StepType.GreaterThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
             [StepType.NotLessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),

@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class UINT64 : Step
     {
         private ulong _value;
-        internal UINT64(double val) { _value = (ulong)val; }
+        internal UINT64(ulong val) { _value = val; }
         ulong GetVal() => IsNegated ? ~_value : _value;
 
         #region Methods  ======================================================

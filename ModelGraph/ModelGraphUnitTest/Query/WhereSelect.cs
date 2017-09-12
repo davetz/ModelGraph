@@ -54,10 +54,20 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void WhereSelect_Negate()
         {
+            RunTest("0", 0);
             RunTest("-1", -1);
+            RunTest("1 * 0", 0);
+            RunTest("-1 * -1", 1);
+            RunTest("-5 + -12", -17);
             RunTest("5 * -3 + 2", -13);
             RunTest("-5 * (3 + 2)", -25);
+            RunTest("-5 * -3 / -2 - -4", -3.5);
+            RunTest("-5 * -3 / -2 + -4", -11.5);
+            RunTest("-5 * -3 / -2 - 7 / 4", -9.25);
+            RunTest("-5 * -3 / -2 - 7 / -4", -5.75);
             RunTest("2 + 2 + (5 * -(3 + (2 * 3))) / 2", -18.5);
+            RunTest("2 + 2 + -(5 * -(3 + (-2 * 3))) / 2", -3.5);
+            RunTest("-2 + -1 + -(-5 * -(-3 + (-2 * -3))) / -2", 4.5);
 
 
             void RunTest(string text, double value)

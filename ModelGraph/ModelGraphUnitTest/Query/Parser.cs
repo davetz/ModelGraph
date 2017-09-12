@@ -154,24 +154,40 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void Parser_Number()
         {
-            RunTest("13", true, 1, StepType.Integer, "13", typeof(BYTE), 13.0);
-            RunTest("0.45", true, 1, StepType.Double, "0.45", typeof(DOUBLE), 0.45);
-            RunTest(" 16 ", true, 1, StepType.Integer, "16", typeof(BYTE), 16.0);
-            RunTest(" 0.55 ", true, 1, StepType.Double, "0.55", typeof(DOUBLE), 0.55);
+            RunTest("13", StepType.Integer, "13", typeof(SBYTE), 13.0);
+            RunTest("0.45", StepType.Double, "0.45", typeof(DOUBLE), 0.45);
+            RunTest(" 16 ", StepType.Integer, "16", typeof(SBYTE), 16.0);
+            RunTest(" 0.55 ", StepType.Double, "0.55", typeof(DOUBLE), 0.55);
 
-            RunTest("0", true, 1, StepType.Integer, "0", typeof(BYTE), 0.0);
-            RunTest("255", true, 1, StepType.Integer, "255", typeof(BYTE), 255.0);
-            RunTest("256", true, 1, StepType.Integer, "256", typeof(INT16), 256.0);
-            RunTest("32767", true, 1, StepType.Integer, "32767", typeof(INT16), 32767.0);
-            RunTest("32768", true, 1, StepType.Integer, "32768", typeof(INT32), 32768.0);
-            RunTest("2147483647", true, 1, StepType.Integer, "2147483647", typeof(INT32), 2147483647.0);
-            RunTest("2147483648", true, 1, StepType.Integer, "2147483648", typeof(INT64), 2147483648.0);
-            RunTest("2147483648.2147483648", true, 1, StepType.Double, "2147483648.2147483648", typeof(DOUBLE), 2147483648.2147483648);
+            RunTest("0x0", StepType.BitField, "0x0", typeof(BYTE), 0x0);
 
-            void RunTest(string inText, bool isValid, int count0, StepType childType, string childText, Type stepType, double val)
+            RunTest("0x55", StepType.BitField, "0x55", typeof(BYTE), 0x55);
+            RunTest("0xFF", StepType.BitField, "0xFF", typeof(BYTE), byte.MaxValue);
+
+            RunTest("0x100 ", StepType.BitField, "0x100", typeof(UINT16), 0x100);
+            RunTest("0xFFFF", StepType.BitField, "0xFFFF", typeof(UINT16), ushort.MaxValue);
+
+            RunTest("0x10000", StepType.BitField, "0x10000", typeof(UINT32), 0x10000);
+            RunTest("0xFFFFFFFF", StepType.BitField, "0xFFFFFFFF", typeof(UINT32), uint.MaxValue);
+
+            RunTest("0x100000000", StepType.BitField, "0x100000000", typeof(UINT64), 0x100000000);
+            RunTest("0x1000000000000000", StepType.BitField, "0x1000000000000000", typeof(UINT64), 0x1000000000000000);
+            RunTest("0x101010101010F0E0", StepType.BitField, "0x101010101010F0E0", typeof(UINT64), 0x101010101010F0E0);
+            RunTest("0xFFFFFFFFFFFFFFFF", StepType.BitField, "0xFFFFFFFFFFFFFFFF", typeof(UINT64), ulong.MaxValue);
+
+            RunTest("0", StepType.Integer, "0", typeof(SBYTE), 0.0);
+            RunTest("127", StepType.Integer, "127", typeof(SBYTE), 127.0);
+            RunTest("128", StepType.Integer, "128", typeof(INT16), 128.0);
+            RunTest("32767", StepType.Integer, "32767", typeof(INT16), 32767.0);
+            RunTest("32768", StepType.Integer, "32768", typeof(INT32), 32768.0);
+            RunTest("2147483647", StepType.Integer, "2147483647", typeof(INT32), 2147483647.0);
+            RunTest("2147483648", StepType.Integer, "2147483648", typeof(INT64), 2147483648.0);
+            RunTest("2147483648.2147483648", StepType.Double, "2147483648.2147483648", typeof(DOUBLE), 2147483648.2147483648);
+
+            void RunTest(string inText, StepType childType, string childText, Type stepType, double val)
             {
                 var p = Parser.Create(inText);
-                Assert.IsTrue(p.IsValid == isValid);
+                Assert.IsTrue(p.IsValid);
                 Assert.IsTrue(p.StepType == childType);
                 Assert.IsTrue(p.Text == childText);
 

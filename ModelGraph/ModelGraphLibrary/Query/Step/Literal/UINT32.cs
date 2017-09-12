@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class UINT32 : Step
     {
         private uint _value;
-        internal UINT32(double val) { _value = (uint)val; }
+        internal UINT32(ulong val) { _value = (uint)val; }
         uint GetVal() => IsNegated ? ~_value : _value;
 
         #region Methods  ======================================================

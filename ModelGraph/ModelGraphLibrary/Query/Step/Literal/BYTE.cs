@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class BYTE : Step
     {
         private byte _value;
-        internal BYTE(double val) { _value = (byte)val; }
+        internal BYTE(ulong val) { _value = (byte)val; }
 
         byte GetVal() => IsNegated ? (byte)~_value : _value;
 
