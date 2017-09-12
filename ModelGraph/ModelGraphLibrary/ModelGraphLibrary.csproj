@@ -115,6 +115,7 @@
     <Compile Include="Models\UIRequest\UIRequest.cs" />
     <Compile Include="Query\Enum\ParseFlags.cs" />
     <Compile Include="Query\Step\Alphabetic\CONCAT.cs" />
+    <Compile Include="Query\Step\Compare\GT.cs" />
     <Compile Include="Query\Step\Literal\BOOL.cs" />
     <Compile Include="Query\Step\Literal\DATETIME.cs" />
     <Compile Include="Query\Step\Literal\UINT64.cs" />
@@ -307,9 +308,7 @@
       <Version>4.4.0</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Query\Step\Compare\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>

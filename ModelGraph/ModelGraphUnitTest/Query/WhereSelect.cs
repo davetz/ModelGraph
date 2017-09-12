@@ -21,9 +21,9 @@ namespace ModelGraphUnitTest
         }
         #endregion
 
-        #region GetText  ======================================================
+        #region Numeric  ======================================================
         [TestMethod]
-        public void WhereSelect_NumericExpression()
+        public void WhereSelect_Numeric()
         {
             RunTest("1", 1);
             RunTest("1 + 2", 3);
@@ -50,7 +50,7 @@ namespace ModelGraphUnitTest
         }
         #endregion
 
-        #region GetText  ======================================================
+        #region Negate  =======================================================
         [TestMethod]
         public void WhereSelect_Negate()
         {
@@ -89,3 +89,4 @@ namespace ModelGraphUnitTest
         #endregion
     }
 }
+
