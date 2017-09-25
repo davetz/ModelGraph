@@ -4,11 +4,8 @@ using System.Linq;
 
 namespace ModelGraphLibrary
 {/* 
-    Parse an expression string (or substring) and recursivly build a 
-    tree of elemental steps. From this and depending on the context of 
-    neighboring parse steps, compose a computation expression tree.
-    In the final stage the tree is simplified so that all constant
-    elements are rolled-up into the simplest form.
+    Parse an algebraic expression string and recursivly build a parse
+    tree of elemental steps. 
 
     If the input expression string is invalid the parser aborts and the
     incomplete parse tree is kept arround for error reporting. However,  
@@ -43,7 +40,7 @@ namespace ModelGraphLibrary
         {
             var p = new Parser(text).RemoveRedundantParens();
             p.HasParens = false;
-            p.ResolveComplexity();
+            p.ResolveStepArguments();
             return p;
         }
         protected Parser(string text)
@@ -426,7 +423,10 @@ namespace ModelGraphLibrary
 
         #region RemoveRedundantParens  ========================================
         internal Parser RemoveRedundantParens()
-        {
+        {/*
+            recursively descend the parse tree and at each node conditionally
+            replace it's child node with its grand child 
+         */
             for (int i = 0; i < Children.Count; i++)
             {
                 var c = Children[i];
@@ -436,15 +436,15 @@ namespace ModelGraphLibrary
         }
         #endregion
 
-        #region ResolveComplexity  ============================================
-        bool ResolveComplexity()
+        #region ResolveStepArguments  =========================================
+        bool ResolveStepArguments()
         {
             if (Children.Count == 0) return true;
 
             ResolveNagation();
             foreach (var child in Children)
             {
-                if (!child.ResolveComplexity()) return false;
+                if (!child.ResolveStepArguments()) return false;
             }
             while (TryFindNextOperaor(out int index))
             {
@@ -500,35 +500,61 @@ namespace ModelGraphLibrary
         #endregion
 
         #region ResolveNegation  ==============================================
-        // Scan the list of children looking for the negate patern (key1, key2, key3)
-        // when found, remove the negate operator and set the IsNegated flag on
-        // the step that is being negated
         void ResolveNagation()
         {
             if (Children.Count > 1)
             {
-                if (StepTypeParm[Children[0].StepType].IsNegateKey2 &&
-                    StepTypeParm[Children[1].StepType].IsNegateKey3)
-                {
-                    Children[1].IsNegated = true;
-                    Children.RemoveAt(0);
-                }
-            }
-            var i = 0;
-            var N = Children.Count - 2;
-            while (i < N)
-            {
-                if (StepTypeParm[Children[i].StepType].IsNegateKey1 &&
-                    StepTypeParm[Children[i + 1].StepType].IsNegateKey2 &&
-                    StepTypeParm[Children[i + 2].StepType].IsNegateKey3)
-                {
-                    Children[i + 2].IsNegated = true;
-                    Children.RemoveAt(i + 1);
+                var i = 0;
+                var N = Children.Count - 1;
 
-                    N--;
-                }
-                else
+                while (i < N)
                 {
+                    var st = Children[i].StepType;
+                    if (i == 0)
+                    {
+                        switch (st)
+                        {
+                            case StepType.Not:
+                            case StepType.Minus:
+                            case StepType.Negate:
+                                Children[i + 1].IsNegated = true;
+                                Children.RemoveAt(i);
+                                N--;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        switch (st)
+                        {
+                            case StepType.Plus:
+                            case StepType.Minus:
+                            case StepType.Divide:
+                            case StepType.Multiply:
+                                if (i + 2 > N) return;
+                                if (Children[i + 1].StepType == StepType.Minus)
+                                {
+                                    Children[i + 2].IsNegated = true;
+                                    Children.RemoveAt(i + 1);
+                                    N--;
+                                    i++;
+                                }
+                                else if (Children[i + 1].StepType == StepType.Plus)
+                                {
+                                    Children.RemoveAt(i + 1);
+                                    N--;
+                                    i++;
+                                }
+                                break;
+
+                            case StepType.Not:
+                            case StepType.Negate:
+                                Children[i + 1].IsNegated = true;
+                                Children.RemoveAt(i);
+                                N--;
+                                break;
+                        }
+                    }
                     i++;
                 }
             }
@@ -655,6 +681,7 @@ namespace ModelGraphLibrary
                 if (sto.TryLookUpProperty(Text, out Property property, out NumericTerm term))
                 {
                     Step = new PROPERTY(property, term, getItem);
+                    Step.IsNegated = IsNegated;
                     if (property is ComputeX compute)
                     {
                         if (compute.NativeType == NativeType.Invalid)
@@ -709,9 +736,9 @@ namespace ModelGraphLibrary
             OkListLHS = 0X40, // takes a left hand side argument list
             OkListRHS = 0X80, // takes a right hand side argument list
 
-            IsNegateKey1 = 0x100, // this parse step must precede the negate operator
-            IsNegateKey2 = 0x200, // this parse step is the negate operator
-            IsNegateKey3 = 0x400, // this parse step will accept negation          
+            IsNegate = 0x100,  // this parse step is the negate operator
+            CanNegate = 0x200, // this parse step will accept negation          
+            PreNegate = 0x400, // this parse step may precede the negate operator e.g. (A - B) : (A * - B)
         }
         private struct PParm
         {
@@ -726,9 +753,9 @@ namespace ModelGraphLibrary
             internal bool OkListLHS => (_flags & PFlag.OkListLHS) != 0;
             internal bool OkListRHS => (_flags & PFlag.OkListRHS) != 0;
 
-            internal bool IsNegateKey1 => (_flags & PFlag.IsNegateKey1) != 0;
-            internal bool IsNegateKey2 => (_flags & PFlag.IsNegateKey2) != 0;
-            internal bool IsNegateKey3 => (_flags & PFlag.IsNegateKey3) != 0;
+            internal bool IsNegate => (_flags & PFlag.IsNegate) != 0;
+            internal bool CanNegate => (_flags & PFlag.CanNegate) != 0;
+            internal bool IsPreNegate => (_flags & PFlag.PreNegate) != 0;
 
             internal PParm(Action<Parser> resolve, PFlag flags = PFlag.None)
             {
@@ -741,33 +768,33 @@ namespace ModelGraphLibrary
         #region StepTypeParm  =================================================
         static Dictionary<StepType, PParm> StepTypeParm = new Dictionary<StepType, PParm>
         {
-            [StepType.None] = new PParm((p) => { }, PFlag.IsNegateKey3),
+            [StepType.None] = new PParm((p) => { }, PFlag.CanNegate),
 
             [StepType.List] = new PParm((p) => { }, PFlag.Priority7),
             [StepType.Index] = new PParm((p) => { }, PFlag.Priority7),
             [StepType.Vector] = new PParm((p) => { }, PFlag.Priority7),
             [StepType.String] = new PParm((p) => { }, PFlag.Priority7),
-            [StepType.Double] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.IsNegateKey3),
-            [StepType.Integer] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.IsNegateKey3),
-            [StepType.Boolean] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.IsNegateKey3),
-            [StepType.Property] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.IsNegateKey3),
-            [StepType.BitField] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.IsNegateKey3),
+            [StepType.Double] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.CanNegate),
+            [StepType.Integer] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.CanNegate),
+            [StepType.Boolean] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.CanNegate),
+            [StepType.Property] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.CanNegate),
+            [StepType.BitField] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.CanNegate),
  
             [StepType.Or1] = new PParm((p) => { Or1(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.Or2] = new PParm((p) => { new OR2(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.And1] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.And2] = new PParm((p) => { new AND2(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Not] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegateKey2),
-            [StepType.Plus] = new PParm((p) => { Plus(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey3),
-            [StepType.Minus] = new PParm((p) => { new MINUS(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey2 | PFlag.IsNegateKey3),
-            [StepType.Equals] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
-            [StepType.Negate] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegateKey2),
-            [StepType.Divide] = new PParm((p) => { new DIVIDE(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey3),
-            [StepType.Multiply] = new PParm((p) => { new MULTIPLY(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.IsNegateKey1 | PFlag.IsNegateKey3),
-            [StepType.LessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
-            [StepType.GreaterThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
-            [StepType.NotLessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
-            [StepType.NotGreaterThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.IsNegateKey1),
+            [StepType.Not] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegate | PFlag.CanNegate),
+            [StepType.Plus] = new PParm((p) => { Plus(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.CanNegate),
+            [StepType.Minus] = new PParm((p) => { new MINUS(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.IsNegate | PFlag.CanNegate),
+            [StepType.Equals] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
+            [StepType.Negate] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegate),
+            [StepType.Divide] = new PParm((p) => { new DIVIDE(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.CanNegate),
+            [StepType.Multiply] = new PParm((p) => { new MULTIPLY(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.CanNegate),
+            [StepType.LessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
+            [StepType.GreaterThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
+            [StepType.NotLessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
+            [StepType.NotGreaterThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
 
             [StepType.Has] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.Ends] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),

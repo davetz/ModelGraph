@@ -29,6 +29,7 @@ namespace ModelGraphUnitTest
             RunTest("1 + 2", 3);
             RunTest("5 * 3 + 2", 17);
             RunTest("5 * (3 + 2)", 25);
+            RunTest("2 - 1.5", 0.5);
             RunTest("2 + 2 + (5 * (3 + (2 * 3))) / 2 - 1.5", 25);
 
 
@@ -50,9 +51,9 @@ namespace ModelGraphUnitTest
         }
         #endregion
 
-        #region Negate  =======================================================
+        #region Negate1  ======================================================
         [TestMethod]
-        public void WhereSelect_Negate()
+        public void WhereSelect_Negate1()
         {
             RunTest("0", 0);
             RunTest("-1", -1);
@@ -85,6 +86,39 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(val == value);
             }
 
+        }
+        #endregion
+
+        #region NegateBool  ======================================================
+        [TestMethod]
+        public void WhereSelect_NegateBool()
+        {
+            var td = TestData.Instance;
+            var td_0 = td.TestData_0;
+            var tbl = td_0.Table;
+            var row = tbl.Items[0];
+
+            RunTest("cBoolA", "cBoolA", false);
+            RunTest("cBoolB", "cBoolB", true);
+
+            RunTest("!cBoolA", "!cBoolA", true);
+            RunTest("!cBoolB", "!cBoolB", false);
+
+            void RunTest(string inText, string outText, bool value)
+            {
+                var w = new WhereSelect(inText);
+                Assert.IsTrue(w.IsValid);
+
+                w.Validate(tbl);
+                Assert.IsTrue(w.IsValid);
+
+                var txt = w.InputString;
+                Assert.IsTrue(txt == outText);
+
+
+                w.GetValue(row, out bool val);
+                Assert.IsTrue(val == value);
+            }
         }
         #endregion
     }
