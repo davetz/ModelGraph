@@ -54,8 +54,12 @@ namespace ModelGraphLibrary
         internal override bool TrySetValue(Item item, string value) { return _values.TrySetValue(item, value); }
         internal override void GetValue(Item item, out bool value) { _values.GetValue(item, out value); }
         internal override void GetValue(Item item, out byte value) { _values.GetValue(item, out value); }
+        internal override void GetValue(Item item, out sbyte value) { _values.GetValue(item, out value); }
+        internal override void GetValue(Item item, out uint value) { _values.GetValue(item, out value); }
         internal override void GetValue(Item item, out int value) { _values.GetValue(item, out value); }
+        internal override void GetValue(Item item, out ushort value) { _values.GetValue(item, out value); }
         internal override void GetValue(Item item, out short value) { _values.GetValue(item, out value); }
+        internal override void GetValue(Item item, out ulong value) { _values.GetValue(item, out value); }
         internal override void GetValue(Item item, out long value) { _values.GetValue(item, out value); }
         internal override void GetValue(Item item, NumericTerm term, out double value) { _values.GetValue(item, out value); }
         internal override void GetValue(Item item, NumericTerm term, out string value) { _values.GetValue(item, out value); }

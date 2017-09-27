@@ -691,7 +691,60 @@ namespace ModelGraphLibrary
                     }
                 }
             }
-            #endregion
         }
+        #endregion
+
+        #region GetValue  =====================================================
+        internal void GetValue(ComputeX cx, Item item, out bool value, short index)
+        {
+            value = false;
+        }
+        internal void GetValue(ComputeX cx, Item item, out byte value, short index)
+        {
+            value = 0;
+        }
+        internal void GetValue(ComputeX cx, Item item, out sbyte value, short index)
+        {
+            value = 0;
+        }
+        internal void GetValue(ComputeX cx, Item item, out short value, short index)
+        {
+            value = 0;
+        }
+        internal void GetValue(ComputeX cx, Item item, out ushort value, short index)
+        {
+            value = 0;
+        }
+        internal void GetValue(ComputeX cx, Item item, out int value, short index)
+        {
+            value = 0;
+        }
+        internal void GetValue(ComputeX cx, Item item, out uint value, short index)
+        {
+            value = 0;
+        }
+        internal void GetValue(ComputeX cx, Item item, out long value, short index)
+        {
+            value = 0;
+        }
+        internal void GetValue(ComputeX cx, Item item, out ulong value, short index)
+        {
+            value = 0;
+        }
+        internal void GetValue(ComputeX cx, Item item, out float value, short index)
+        {
+            value = 0;
+        }
+        internal void GetValue(ComputeX cx, Item item, out double value, short index)
+        {
+            value = 0;
+        }
+        internal void GetValue(ComputeX cx, Item item, out string value, short index)
+        {
+            value = string.Empty;
+        }
+
+
+        #endregion
     }
 }

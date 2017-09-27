@@ -30,20 +30,40 @@ namespace ModelGraphLibrary
             _property.GetValue(_getItem(), out value);
             if (IsNegated) value = (byte)~value;
         }
+        internal override void GetValue(out sbyte value)
+        {
+            _property.GetValue(_getItem(), out value);
+            if (IsNegated) value = (sbyte)-value;
+        }
         internal override void GetValue(out int value)
         {
             _property.GetValue(_getItem(), out value);
             if (IsNegated) value = -value;
+        }
+        internal override void GetValue(out uint value)
+        {
+            _property.GetValue(_getItem(), out value);
+            if (IsNegated) value = ~value;
         }
         internal override void GetValue(out long value)
         {
             _property.GetValue(_getItem(), out value);
             if (IsNegated) value = -value;
         }
+        internal override void GetValue(out ulong value)
+        {
+            _property.GetValue(_getItem(), out value);
+            if (IsNegated) value = ~value;
+        }
         internal override void GetValue(out short value)
         {
             _property.GetValue(_getItem(), out value);
             if (IsNegated) value = (short)-value;
+        }
+        internal override void GetValue(out ushort value)
+        {
+            _property.GetValue(_getItem(), out value);
+            if (IsNegated) value = (ushort)~value;
         }
         internal override void GetValue(out double value)
         {

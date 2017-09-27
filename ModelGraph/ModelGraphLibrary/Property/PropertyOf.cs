@@ -44,30 +44,16 @@ namespace ModelGraphLibrary
         {
             throw new NotImplementedException();
         }
-        internal override void GetValue(Item item, out byte value)
-        {
-            throw new NotImplementedException();
-        }
-        internal override void GetValue(Item item, out int value)
-        {
-            throw new NotImplementedException();
-        }
-        internal override void GetValue(Item item, out short value)
-        {
-            throw new NotImplementedException();
-        }
-        internal override void GetValue(Item item, out long value)
-        {
-            throw new NotImplementedException();
-        }
-        internal override void GetValue(Item item, NumericTerm term, out double value)
-        {
-            throw new NotImplementedException();
-        }
-        internal override void GetValue(Item item, NumericTerm term, out string value)
-        {
-            value = (GetValueFunc == null) ? null : GetValueFunc(item);
-        }
+        internal override void GetValue(Item item, out byte value) => throw new NotImplementedException();
+        internal override void GetValue(Item item, out sbyte value) => throw new NotImplementedException();
+        internal override void GetValue(Item item, out int value) => throw new NotImplementedException();
+        internal override void GetValue(Item item, out uint value) => throw new NotImplementedException();
+        internal override void GetValue(Item item, out short value) => throw new NotImplementedException();
+        internal override void GetValue(Item item, out ushort value) => throw new NotImplementedException();
+        internal override void GetValue(Item item, out long value) => throw new NotImplementedException();
+        internal override void GetValue(Item item, out ulong value) => throw new NotImplementedException();
+        internal override void GetValue(Item item, NumericTerm term, out double value) => throw new NotImplementedException();
+        internal override void GetValue(Item item, NumericTerm term, out string value) => throw new NotImplementedException();
     }
     #endregion
 }

@@ -11,18 +11,19 @@ namespace ModelGraphLibrary
         private Dictionary<Item, T> _values;
 
         #region Properties  ===================================================
-        private T Value(Item item) { T val; return (_values != null && _values.TryGetValue(item, out val)) ? val : _default; }
+        private T Value(Item item) => (_values != null && _values.TryGetValue(item, out T val)) ? val : _default;
 
-        internal bool IsEmpty { get { return (Count == 0); } }
-        internal override int Count { get { return (_values == null) ? 0 : _values.Count; } }
+        internal bool IsEmpty => Count == 0;
+        internal override int Count => (_values == null) ? 0 : _values.Count;
 
-        internal bool IsDefault(T value) { return IsDefault(value, _default); }
-        internal bool IsDefault(T v, T d) { return (d == null) ? ((v == null) ? true : false) : ((v == null) ? false : d.Equals(v)); }
+        internal bool IsDefault(T value) => IsDefault(value, _default);
+        private bool IsDefault(T v, T d) => (d == null) ? ((v == null) ? true : false) : ((v == null) ? false : d.Equals(v));
         #endregion
 
         #region Overrides  ====================================================
-        internal override string GetValue(Item item) { return ToString(Value(item)); }
-        internal override string GetDefault() { return (_default == null) ? null : _default.ToString(); }
+        internal override string GetValue(Item item) => ToString(Value(item));
+        internal override string GetDefault() => (_default == null) ? null : _default.ToString();
+        internal override bool IsValid(string value) => TryParse(value, out T val);
 
         internal override bool TryGetKeys(out Item[] keys)
         {
@@ -34,12 +35,6 @@ namespace ModelGraphLibrary
 
             keys = _values.Keys.ToArray();
             return true;
-        }
-
-        internal override bool IsValid(string value)
-        {
-            T val;
-            return TryParse(value, out val);
         }
 
         internal override void SetCapacity(int capacity)
@@ -59,15 +54,13 @@ namespace ModelGraphLibrary
 
         internal override void Initialize(string defaultValue, int capacity)
         {
-            T def;
-            if (TryParse(defaultValue, out def)) _default = def;
+            if (TryParse(defaultValue, out T def)) _default = def;
             _values = new Dictionary<Item, T>(capacity);
         }
 
         internal override bool TrySetValue(Item item, string value)
         {
-            T val;
-            if (!TryParse(value, out val)) return false;
+            if (!TryParse(value, out T val)) return false;
             if (IsEmpty) _values = new Dictionary<Item, T>();
 
             if (item != null)
@@ -83,8 +76,7 @@ namespace ModelGraphLibrary
 
         internal override bool TrySetDefault(Item[] items, string value)
         {
-            T def;
-            if (!TryParse(value, out def)) return false;
+            if (!TryParse(value, out T def)) return false;
 
             if (items == null || items.Length == 0)
             {
@@ -196,47 +188,138 @@ namespace ModelGraphLibrary
         #endregion
 
         #region GetValue  =====================================================
-        internal override void GetValue(Item item, out bool value)
+        internal override void GetValue(Item item, out bool value, short index = 0)
         {
-            T val;
-            if (_values == null || !_values.TryGetValue(item, out val)) val = _default;
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToBool(val);
         }
-        internal override void GetValue(Item item, out byte value)
+        internal override void GetValue(Item item, out byte value, short index = 0)
         {
-            T val;
-            if (_values == null || !_values.TryGetValue(item, out val)) val = _default;
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToByte(val);
         }
-        internal override void GetValue(Item item, out int value)
+        internal override void GetValue(Item item, out sbyte value, short index = 0)
         {
-            T val;
-            if (_values == null || !_values.TryGetValue(item, out val)) val = _default;
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
+            value = ToSByte(val);
+        }
+        internal override void GetValue(Item item, out int value, short index = 0)
+        {
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToInt32(val);
         }
-        internal override void GetValue(Item item, out short value)
+        internal override void GetValue(Item item, out uint value, short index = 0)
         {
-            T val;
-            if (_values == null || !_values.TryGetValue(item, out val)) val = _default;
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
+            value = ToUInt32(val);
+        }
+        internal override void GetValue(Item item, out short value, short index = 0)
+        {
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToInt16(val);
         }
-        internal override void GetValue(Item item, out long value)
+        internal override void GetValue(Item item, out ushort value, short index = 0)
         {
-            T val;
-            if (_values == null || !_values.TryGetValue(item, out val)) val = _default;
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
+            value = ToUInt16(val);
+        }
+        internal override void GetValue(Item item, out long value, short index = 0)
+        {
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToInt64(val);
         }
-        internal override void GetValue(Item item, out double value)
+        internal override void GetValue(Item item, out ulong value, short index = 0)
         {
-            T val;
-            if (_values == null || !_values.TryGetValue(item, out val)) val = _default;
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
+            value = ToUInt64(val);
+        }
+        internal override void GetValue(Item item, out double value, short index = 0)
+        {
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToDouble(val);
         }
-        internal override void GetValue(Item item, out string value)
+        internal override void GetValue(Item item, out string value, short index = 0)
         {
-            T val;
-            if (_values == null || !_values.TryGetValue(item, out val)) val = _default;
+            if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToString(val);
+        }
+
+        internal override void GetValue(ComputeX cx, Item item, out bool value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToBool(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
+        }
+        internal override void GetValue(ComputeX cx, Item item, out byte value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToByte(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
+        }
+        internal override void GetValue(ComputeX cx, Item item, out sbyte value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToSByte(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
+        }
+        internal override void GetValue(ComputeX cx, Item item, out int value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToInt32(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
+        }
+        internal override void GetValue(ComputeX cx, Item item, out uint value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToUInt32(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
+        }
+        internal override void GetValue(ComputeX cx, Item item, out short value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToInt16(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
+        }
+        internal override void GetValue(ComputeX cx, Item item, out ushort value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToUInt16(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
+        }
+        internal override void GetValue(ComputeX cx, Item item, out long value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToInt64(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
+        }
+        internal override void GetValue(ComputeX cx, Item item, out ulong value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToUInt64(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
+        }
+        internal override void GetValue(ComputeX cx, Item item, out double value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToDouble(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
+        }
+        internal override void GetValue(ComputeX cx, Item item, out string value, short index = 0)
+        {
+            if (_values != null && _values.TryGetValue(item, out T val))
+                value = ToString(val);
+            else
+                cx.GetChef().GetValue(cx, item, out value, index);
         }
         #endregion
 
@@ -244,8 +327,12 @@ namespace ModelGraphLibrary
         protected abstract bool TryParse(string input, out T value);
         protected abstract bool ToBool(T value);
         protected abstract byte ToByte(T value);
+        protected abstract sbyte ToSByte(T value);
+        protected abstract ushort ToUInt16(T value);
         protected abstract short ToInt16(T value);
+        protected abstract uint ToUInt32(T value);
         protected abstract int ToInt32(T value);
+        protected abstract ulong ToUInt64(T value);
         protected abstract long ToInt64(T value);
         protected abstract double ToDouble(T value);
         protected abstract string ToString(T value);

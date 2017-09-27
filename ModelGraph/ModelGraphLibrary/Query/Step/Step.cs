@@ -55,8 +55,12 @@ namespace ModelGraphLibrary
         internal abstract NativeType NativeType { get; } // output native data type
         internal abstract void GetValue(out bool value);
         internal abstract void GetValue(out byte value);
+        internal abstract void GetValue(out sbyte value);
+        internal abstract void GetValue(out uint value);
         internal abstract void GetValue(out int value);
+        internal abstract void GetValue(out ushort value);
         internal abstract void GetValue(out short value);
+        internal abstract void GetValue(out ulong value);
         internal abstract void GetValue(out long value);
         internal abstract void GetValue(out double value);
         internal abstract void GetValue(out string value);

@@ -8,6 +8,7 @@ namespace ModelGraphLibrary
     {
         internal const string DefaultSeparator = " : ";
 
+        private Value _values;
         internal Guid Guid;
         internal string Name;
         internal string Summary;
@@ -58,122 +59,21 @@ namespace ModelGraphLibrary
         internal void SetNativeType(NativeType type) { _nativeType = type; }
         internal string SelectString { get { return GetChef().GetSelectString(this); } set { GetChef().SetSelectString(this, value); } }
 
-        internal override bool TrySetValue(Item item, string value) { return false; }
-
+        internal override bool TrySetValue(Item item, string value) => false;
         internal override bool GetBool(Item item) => false;
 
+        internal override void GetValue(Item item, out bool value) => _values.GetValue(this, item, out value);
+        internal override void GetValue(Item item, out byte value) => _values.GetValue(this, item, out value);
+        internal override void GetValue(Item item, out sbyte value) => _values.GetValue(this, item, out value);
+        internal override void GetValue(Item item, out uint value) => _values.GetValue(this, item, out value);
+        internal override void GetValue(Item item, out int value) => _values.GetValue(this, item, out value);
+        internal override void GetValue(Item item, out ushort value) => _values.GetValue(this, item, out value);
+        internal override void GetValue(Item item, out short value) => _values.GetValue(this, item, out value);
+        internal override void GetValue(Item item, out ulong value) => _values.GetValue(this, item, out value);
+        internal override void GetValue(Item item, out long value) => _values.GetValue(this, item, out value);
+        internal override void GetValue(Item item, NumericTerm term, out double value) => _values.GetValue(this, item, out value);
+        internal override void GetValue(Item item, NumericTerm term, out string value) => _values.GetValue(this, item, out value);
 
-        internal override void GetValue(Item item, out bool value)
-        {
-            if (ValueCache == null || !ValueCache.GetValue(item, out value))
-            {
-                var chef = GetChef();
-                if (ValueCache == null) chef.AllocateValueCache(this);
-                chef.UpdateValueCache(item, this, out value);
-            }
-        }
-
-        internal override void GetValue(Item item, out byte value)
-        {
-            if (ValueCache == null || !ValueCache.GetValue(item, out value))
-            {
-                var chef = GetChef();
-                if (ValueCache == null) chef.AllocateValueCache(this);
-                chef.UpdateValueCache(item, this, out value);
-            }
-        }
-
-        internal override void GetValue(Item item, out int value)
-        {
-            if (ValueCache == null || !ValueCache.GetValue(item, out value))
-            {
-                var chef = GetChef();
-                if (ValueCache == null) chef.AllocateValueCache(this);
-                chef.UpdateValueCache(item, this, out value);
-            }
-        }
-
-        internal override void GetValue(Item item, out short value)
-        {
-            if (ValueCache == null || !ValueCache.GetValue(item, out value))
-            {
-                var chef = GetChef();
-                if (ValueCache == null) chef.AllocateValueCache(this);
-                chef.UpdateValueCache(item, this, out value);
-            }
-        }
-
-        internal override void GetValue(Item item, out long value)
-        {
-            if (ValueCache == null || !ValueCache.GetValue(item, out value))
-            {
-                var chef = GetChef();
-                if (ValueCache == null) chef.AllocateValueCache(this);
-                chef.UpdateValueCache(item, this, out value);
-            }
-        }
-
-        internal override void GetValue(Item item, NumericTerm term, out double value)
-        {
-            if (CompuType == CompuType.NumericValueSet)
-            {
-                if (ValueCache == null)
-                {
-                    var chef = GetChef();
-                    chef.AllocateValueCache(this);
-                    chef.UpdateValueCache(item, this, out string _);
-
-                    if (term == NumericTerm.None)
-                        chef.UpdateValueCache(item, this, out value);
-                    else
-                        ValueCacheSet[(int)term].GetValue(item, out value);
-                }
-                else if (term == NumericTerm.None)
-                    ValueCache.GetValue(item, out value);
-                else
-                    ValueCacheSet[(int)term].GetValue(item, out value);
-            }
-            else
-            {
-                if (ValueCache == null || !ValueCache.GetValue(item, out value))
-                {
-                    var chef = GetChef();
-                    if (ValueCache == null) chef.AllocateValueCache(this);
-                    chef.UpdateValueCache(item, this, out value);
-                }
-            }
-        }
-
-        internal override void GetValue(Item item, NumericTerm term, out string value)
-        {
-            if (CompuType == CompuType.NumericValueSet)
-            {
-                if (ValueCache == null)
-                {
-                    var chef = GetChef();
-                    chef.AllocateValueCache(this);
-                    chef.UpdateValueCache(item, this, out string _);
-
-                    if (term == NumericTerm.None)
-                        chef.UpdateValueCache(item, this, out value);
-                    else
-                        ValueCacheSet[(int)term].GetValue(item, out value);
-                }
-                else if (term == NumericTerm.None)
-                    ValueCache.GetValue(item, out value);
-                else
-                    ValueCacheSet[(int)term].GetValue(item, out value);
-            }
-            else
-            {
-                if (ValueCache == null || !ValueCache.GetValue(item, out value))
-                {
-                    var chef = GetChef();
-                    if (ValueCache == null) chef.AllocateValueCache(this);
-                    chef.UpdateValueCache(item, this, out value);
-                }
-            }
-        }
         #endregion
     }
 }

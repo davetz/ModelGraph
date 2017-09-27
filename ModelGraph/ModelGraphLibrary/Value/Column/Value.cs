@@ -33,14 +33,29 @@ namespace ModelGraphLibrary
         internal abstract void Clear();
 
         // get the computed value types
-        internal abstract void GetValue(Item item, out bool value);
-        internal abstract void GetValue(Item item, out byte value);
-        internal abstract void GetValue(Item item, out int value);
-        internal abstract void GetValue(Item item, out short value);
-        internal abstract void GetValue(Item item, out long value);
-        internal abstract void GetValue(Item item, out double value);
-        internal abstract void GetValue(Item item, out string value);
+        internal abstract void GetValue(Item item, out bool value, short index = 0);
+        internal abstract void GetValue(Item item, out byte value, short index = 0);
+        internal abstract void GetValue(Item item, out sbyte value, short index = 0);
+        internal abstract void GetValue(Item item, out uint value, short index = 0);
+        internal abstract void GetValue(Item item, out int value, short index = 0);
+        internal abstract void GetValue(Item item, out ushort value, short index = 0);
+        internal abstract void GetValue(Item item, out short value, short index = 0);
+        internal abstract void GetValue(Item item, out ulong value, short index = 0);
+        internal abstract void GetValue(Item item, out long value, short index = 0);
+        internal abstract void GetValue(Item item, out double value, short index = 0);
+        internal abstract void GetValue(Item item, out string value, short index = 0);
 
+        internal abstract void GetValue(ComputeX cx, Item item, out bool value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out byte value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out sbyte value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out uint value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out int value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out ushort value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out short value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out ulong value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out long value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out double value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out string value, short index = 0);
         #endregion
 
         #region Create  =======================================================

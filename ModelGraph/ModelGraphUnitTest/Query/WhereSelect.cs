@@ -89,7 +89,7 @@ namespace ModelGraphUnitTest
         }
         #endregion
 
-        #region NegateBool  ======================================================
+        #region NegateBool  ===================================================
         [TestMethod]
         public void WhereSelect_NegateBool()
         {
@@ -117,6 +117,90 @@ namespace ModelGraphUnitTest
 
 
                 w.GetValue(row, out bool val);
+                Assert.IsTrue(val == value);
+            }
+        }
+        #endregion
+
+        #region NegateByte  ===================================================
+        [TestMethod]
+        public void WhereSelect_NegateField()
+        {
+            var td = TestData.Instance;
+            var td_0 = td.TestData_0;
+            var tbl = td_0.Table;
+            var row = tbl.Items[0];
+
+            //RunTestByte("cByteA", "cByteA", 0);
+            //RunTestByte("cByteB", "cByteB", 0xFF);
+
+            //RunTestByte("~cByteA", "~cByteA", 0xFF);
+            //RunTestByte("~cByteB", "~cByteB", 0);
+
+            //RunTestInt16("cByteA", "cByteA", 0);
+            //RunTestInt16("cByteB", "cByteB", 0xFF);
+
+            RunTestInt16("~cByteA", "~cByteA", 0xFF);
+            RunTestInt16("~cByteB", "~cByteB", 0);
+
+            void RunTestByte(string inText, string outText, byte value)
+            {
+                var w = new WhereSelect(inText);
+                Assert.IsTrue(w.IsValid);
+
+                w.Validate(tbl);
+                Assert.IsTrue(w.IsValid);
+
+                var txt = w.InputString;
+                Assert.IsTrue(txt == outText);
+
+
+                w.GetValue(row, out byte val);
+                Assert.IsTrue(val == value);
+            }
+            void RunTestInt16(string inText, string outText, short value)
+            {
+                var w = new WhereSelect(inText);
+                Assert.IsTrue(w.IsValid);
+
+                w.Validate(tbl);
+                Assert.IsTrue(w.IsValid);
+
+                var txt = w.InputString;
+                Assert.IsTrue(txt == outText);
+
+
+                w.GetValue(row, out short val);
+                Assert.IsTrue(val == value);
+            }
+            void RunTestInt32(string inText, string outText, int value)
+            {
+                var w = new WhereSelect(inText);
+                Assert.IsTrue(w.IsValid);
+
+                w.Validate(tbl);
+                Assert.IsTrue(w.IsValid);
+
+                var txt = w.InputString;
+                Assert.IsTrue(txt == outText);
+
+
+                w.GetValue(row, out int val);
+                Assert.IsTrue(val == value);
+            }
+            void RunTestInt64(string inText, string outText, long value)
+            {
+                var w = new WhereSelect(inText);
+                Assert.IsTrue(w.IsValid);
+
+                w.Validate(tbl);
+                Assert.IsTrue(w.IsValid);
+
+                var txt = w.InputString;
+                Assert.IsTrue(txt == outText);
+
+
+                w.GetValue(row, out long val);
                 Assert.IsTrue(val == value);
             }
         }
