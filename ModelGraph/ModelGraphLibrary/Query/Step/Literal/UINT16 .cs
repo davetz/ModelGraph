@@ -9,7 +9,7 @@ namespace ModelGraphLibrary
         ushort GetVal() => IsNegated ? (ushort)~_value : _value;
 
         #region Methods  ======================================================
-        internal override NativeType NativeType => NativeType.UInt16;
+        internal override ValueType ValueType => ValueType.UInt16;
 
         internal override void GetValue(out bool value) => value = Value.ToBool(GetVal());
         internal override void GetValue(out byte value) => value = Value.ToByte(GetVal());

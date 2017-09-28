@@ -19,7 +19,7 @@ namespace ModelGraphLibrary
 
         #region Methods  ======================================================
         internal Property Property => _property;
-        internal override NativeType NativeType => _property.NativeType;
+        internal override ValueType ValueType => _property.ValueType;
         internal override void GetValue(out bool value)
         {
             _property.GetValue(_getItem(), out value);

@@ -117,7 +117,7 @@ namespace ModelGraphLibrary
 
         #region IsValid, NativeType, CompositeFlags  ==========================
         internal bool IsValid => GetIsValid();
-        internal NativeType NativeType => GetNativeType();
+        internal ValueType NativeType => GetNativeType();
         internal ParseFlag CompositeFlags => GetCompositeFlags();
         private bool GetIsValid()
         {
@@ -132,22 +132,22 @@ namespace ModelGraphLibrary
             }
             return true;
         }
-        private NativeType GetNativeType()
+        private ValueType GetNativeType()
         {
             if (Step != null)
-                return Step.NativeType;
+                return Step.ValueType;
 
             var flags = GetCompositeFlags();
             if ((flags & ParseFlag.IsCircularRef) != 0)
-                return NativeType.Circular;
+                return ValueType.Circular;
 
             if ((flags & ParseFlag.IsUnresolved) != 0)
-                return NativeType.Unresolved;
+                return ValueType.Unresolved;
 
             if ((flags & ParseFlag.IsInvalidRef) != 0)
-                return NativeType.Invalid;
+                return ValueType.Invalid;
 
-            return NativeType.None;
+            return ValueType.None;
         }
         private ParseFlag GetCompositeFlags()
         {
@@ -684,11 +684,11 @@ namespace ModelGraphLibrary
                     Step.IsNegated = IsNegated;
                     if (property is ComputeX compute)
                     {
-                        if (compute.NativeType == NativeType.Invalid)
+                        if (compute.ValueType == ValueType.Invalid)
                             IsInvalidRef = true;
-                        else if (compute.NativeType == NativeType.Circular)
+                        else if (compute.ValueType == ValueType.Circular)
                             IsCircularRef = true;
-                        else if (compute.NativeType == NativeType.Unresolved)
+                        else if (compute.ValueType == ValueType.Unresolved)
                             IsUnresolved = true;
                     }
                 }
@@ -804,17 +804,17 @@ namespace ModelGraphLibrary
         static void Or1(Parser p)
         {
             var type = p.Arguments[0].NativeType;
-            if (type == NativeType.String)
+            if (type == ValueType.String)
                 new CONCAT(p);
-            else if (type == NativeType.Bool)
+            else if (type == ValueType.Bool)
                 new OR2(p);
         }
         static void Plus(Parser p)
         {
             var type = p.Arguments[0].NativeType;
-            if (type == NativeType.String)
+            if (type == ValueType.String)
                 new CONCAT(p);
-            else if (type == NativeType.Bool)
+            else if (type == ValueType.Bool)
                 new OR2(p);
             else
                 new PLUS(p);

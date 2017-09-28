@@ -10,7 +10,7 @@ namespace ModelGraphLibrary
         sbyte GetVal() => IsNegated ? (sbyte)-_value : _value;
 
         #region Methods  ======================================================
-        internal override NativeType NativeType => NativeType.SByte;
+        internal override ValueType ValueType => ValueType.SByte;
 
         internal override void GetValue(out bool value) => value = Value.ToBool(GetVal());
         internal override void GetValue(out byte value) => value = Value.ToByte(GetVal());

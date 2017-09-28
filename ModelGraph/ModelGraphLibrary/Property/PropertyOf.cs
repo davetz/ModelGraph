@@ -39,7 +39,6 @@ namespace ModelGraphLibrary
         internal override bool GetBool(Item item) { return (bool.TryParse(GetValue(item, NumericTerm.None), out bool val)) ? val : false;  }
         internal override bool HasItemName => (GetItemNameFunc != null);
         internal override ValueType ValueType => _valueType;
-        internal override NativeType NativeType => NativeType.String;
         internal override void GetValue(Item item, out bool value)
         {
             throw new NotImplementedException();

@@ -9,44 +9,46 @@ namespace ModelGraphLibrary
  */
     public partial class Chef
     {
-        static InvalidCache InvalidCache = new InvalidCache();
-        static CircularCache CyclicalCache = new CircularCache();
         static internal string BlankName = "???"; // indicates blank or missing name
         static internal string InvalidItem = "######"; // indicates invalid reference 
-        static internal string CircularItem = "@@@@@@"; // indicates circular reference
+
+        static internal ValueNone ValuesNone = new ValueNone();
+        static internal ValueInvalid ValuesInvalid = new ValueInvalid();
+        static internal ValueCircular ValuesCircular = new ValueCircular();
+        static internal ValueUnresolved ValuesUnresolved = new ValueUnresolved();
 
         #region ResetCacheValues  =============================================
         private void ResetCacheValues()
         {
-            foreach (var cx in _computeXStore.Items) { cx.ValueCache = null; cx.ValueCacheSet = null; }
+            foreach (var cx in _computeXStore.Items) { cx.Values.Clear(); }
         }
         #endregion
 
         #region <Get/Set>SelectString  ========================================
-        internal NativeType GetNativeType(ComputeX cd)
+        internal ValueType GetNativeType(ComputeX cd)
         {
             var root = ComputeX_QueryX.GetChild(cd) as QueryX;
             switch (cd.CompuType)
             {
                 case CompuType.RowValue:
-                    return (root.HasSelect) ? root.Select.NativeType : NativeType.None; ;
+                    return (root.HasSelect) ? root.Select.ValueType : ValueType.None; ;
 
                 case CompuType.RelatedValue:
-                    return (root.HasSelect) ? root.Select.NativeType : NativeType.None; ;
+                    return (root.HasSelect) ? root.Select.ValueType : ValueType.None; ;
 
                 case CompuType.NumericValueSet:
                     if (cd.NumericSet == NumericSet.Count)
-                        return (AnyValueXHeads()) ? NativeType.String : NativeType.Invalid;
+                        return (AnyValueXHeads()) ? ValueType.String : ValueType.Invalid;
                     else
-                        return (AnyValueXNumbers()) ? NativeType.String : NativeType.Invalid;
+                        return (AnyValueXNumbers()) ? ValueType.String : ValueType.Invalid;
 
                 case CompuType.CompositeString:
-                    return (AnyValueXSelects()) ? NativeType.String : NativeType.Invalid;
+                    return (AnyValueXSelects()) ? ValueType.String : ValueType.Invalid;
 
                 case CompuType.CompositeReversed:
-                    return (AnyValueXSelects()) ? NativeType.String : NativeType.Invalid;
+                    return (AnyValueXSelects()) ? ValueType.String : ValueType.Invalid;
                 default:
-                    return NativeType.Invalid;
+                    return ValueType.Invalid;
             }
             bool AnyValueXHeads()
             {
@@ -69,21 +71,21 @@ namespace ModelGraphLibrary
                 var vd = root;
                 while (vd != null)
                 {
-                    if (vd.HasSelect && IsNumber(vd.Select.NativeType)) return true;
+                    if (vd.HasSelect && IsNumber(vd.Select.ValueType)) return true;
                     vd = QueryX_QueryX.GetChild(vd) as QueryX;
                 }
                 return false;
             }
 
-            bool IsNumber(NativeType nt)
+            bool IsNumber(ValueType nt)
             {
                 switch(nt)
                 {
-                    case NativeType.Byte:
-                    case NativeType.Int16:
-                    case NativeType.Int32:
-                    case NativeType.Int64:
-                    case NativeType.Double:
+                    case ValueType.Byte:
+                    case ValueType.Int16:
+                    case ValueType.Int32:
+                    case ValueType.Int64:
+                    case ValueType.Double:
                         return true;
                     default:
                         return false;
@@ -109,8 +111,7 @@ namespace ModelGraphLibrary
             {
                 return false;
             }
-            cd.ValueCache = null;
-            cd.ValueCacheSet = null;
+            cd.Values.Clear();
             return true;
         }
         #endregion
@@ -122,8 +123,7 @@ namespace ModelGraphLibrary
             {
                 return false;
             }
-            cd.ValueCache = null;
-            cd.ValueCacheSet = null;
+            cd.Values.Clear();
             return true;
         }
         #endregion
@@ -137,8 +137,7 @@ namespace ModelGraphLibrary
                 vx.WhereString = value;
                 ValidateValueX(vx);
             }
-            cd.ValueCache = null;
-            cd.ValueCacheSet = null;
+            cd.Values.Clear();
             return true;
         }
         private bool SetComputeXSelect(ComputeX cd, string value)
@@ -149,8 +148,7 @@ namespace ModelGraphLibrary
                 vx.SelectString = value;
                 ValidateValueX(vx);
             }
-            cd.ValueCache = null;
-            cd.ValueCacheSet = null;
+            cd.Values.Clear();
             return true;
         }
         #endregion
@@ -169,8 +167,7 @@ namespace ModelGraphLibrary
                     var cx = ComputeX_QueryX.GetParent(qx);
                     if (cx != null)
                     {
-                        cx.ValueCache = null;
-                        cx.ValueCacheSet = null;
+                        cx.Values.Clear();
                     }
                 }
                 qx = qx2;
@@ -187,8 +184,8 @@ namespace ModelGraphLibrary
                 case CompuType.RowValue:
 
                     var vx = ComputeX_QueryX.GetChild(cx) as QueryX;
-                    if (vx == null || vx.Select == null || vx.Select.NativeType == NativeType.Invalid)
-                        cx.ValueCache = InvalidCache;
+                    if (vx == null || vx.Select == null || vx.Select.ValueType == ValueType.Invalid)
+                        cx.Values = ValuesInvalid;
                     else
                         AllocateCache(vx);
                     break;
@@ -197,80 +194,41 @@ namespace ModelGraphLibrary
 
                     var qx = ComputeX_QueryX.GetChild(cx) as QueryX;
                     while(QueryX_QueryX.HasChildLink(qx)) { qx = QueryX_QueryX.GetChild(qx); }
-                    if (qx == null || qx.Select == null || qx.Select.NativeType == NativeType.Invalid)
-                        cx.ValueCache = InvalidCache;
+                    if (qx == null || qx.Select == null || qx.Select.ValueType == ValueType.Invalid)
+                        cx.Values = ValuesInvalid;
                     else
                         AllocateCache(qx);
                     break;
 
                 case CompuType.NumericValueSet:
 
-                    cx.ValueCache = new StringCache(); //display a composite of the numeric set values
-                    AlocateCacheSet();
+                    cx.Values = Value.Create(ValueType.DoubleArray);
                     break;
 
                 case CompuType.CompositeString:
 
-                    cx.ValueCache = new StringCache();
+                    cx.Values = Value.Create(ValueType.String);
                     break;
 
                 case CompuType.CompositeReversed:
 
-                    cx.ValueCache = new StringCache();
+                    cx.Values = Value.Create(ValueType.String);
                     break;
             }
 
             void AllocateCache(QueryX vx)
             {
-                switch (vx.Select.NativeType)
-                {
-                    case NativeType.Bool:
-                        cx.ValueCache = new BoolCache();
-                        break;
-                    case NativeType.Byte:
-                        cx.ValueCache = new ByteCache();
-                        break;
-                    case NativeType.Int16:
-                        cx.ValueCache = new Int16Cache();
-                        break;
-                    case NativeType.Int32:
-                        cx.ValueCache = new Int32Cache();
-                        break;
-                    case NativeType.Int64:
-                        cx.ValueCache = new Int64Cache();
-                        break;
-                    case NativeType.Double:
-                        cx.ValueCache = new DoubleCache();
-                        break;
-                    case NativeType.String:
-                        cx.ValueCache = new StringCache();
-                        break;
-                    default:
-                        cx.ValueCache = InvalidCache;
-                        break;
-                }
-            }
-
-            void AlocateCacheSet()
-            {
-                switch (cx.NumericSet)
-                {
-                    case NumericSet.Count:
-                        cx.ValueCacheSet = new ICacheValue[] { new DoubleCache(), };
-                        break;
-                    case NumericSet.Count_Min_Max:
-                        cx.ValueCacheSet = new ICacheValue[] { new DoubleCache(), new DoubleCache(), new DoubleCache(), };
-                        break;
-                    case NumericSet.Count_Min_Max_Sum:
-                        cx.ValueCacheSet = new ICacheValue[] { new DoubleCache(), new DoubleCache(), new DoubleCache(), new DoubleCache(), };
-                        break;
-                    case NumericSet.Count_Min_Max_Sum_Ave:
-                        cx.ValueCacheSet = new ICacheValue[] { new DoubleCache(), new DoubleCache(), new DoubleCache(), new DoubleCache(), new DoubleCache(), };
-                        break;
-                    case NumericSet.Count_Min_Max_Sum_Ave_Std:
-                        cx.ValueCacheSet = new ICacheValue[] { new DoubleCache(), new DoubleCache(), new DoubleCache(), new DoubleCache(), new DoubleCache(), new DoubleCache(), };
-                        break;
-                }
+                var type = vx.Select.ValueType;
+                if (type < ValueType.MaximumType)
+                    cx.Values = Value.Create(type);
+                else if (type == ValueType.None)
+                    cx.Values = ValuesNone;
+                else if (type == ValueType.Circular)
+                    cx.Values = ValuesCircular;
+                else if (type == ValueType.Unresolved)
+                    cx.Values = ValuesUnresolved;
+                else
+                    cx.Values = ValuesInvalid;
             }
         }
         #endregion
@@ -283,45 +241,42 @@ namespace ModelGraphLibrary
             value = false;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            cx.ValueCache.SetValue(item, value);
+            if (cx.Values is ValuesOfBool v) v.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out byte value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            cx.ValueCache.SetValue(item, value);
+            if (cx.Values is ValuesOfByte v) v.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out int value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            cx.ValueCache.SetValue(item, value);
+            if (cx.Values is ValuesOfInt32 v) v.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out short value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            cx.ValueCache.SetValue(item, value);
+            if (cx.Values is ValuesOfInt16 v) v.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out long value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            cx.ValueCache.SetValue(item, value);
+            if (cx.Values is ValuesOfInt64 v) v.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out double value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
-            if (selector != null)
-            {
-                selector.GetValue(item, out value);
-                cx.ValueCache.SetValue(item, value);
-            }
+            if (selector != null) selector.GetValue(item, out value);
+            if (cx.Values is ValuesOfDouble v) v.SetValue(item, value);
         }
         private WhereSelect GetRootSelect(ComputeX cx)
         {
@@ -358,18 +313,18 @@ namespace ModelGraphLibrary
                     GetCompositeResult(item, cx, out value);
                     break;
             }
-            cx.ValueCache.SetValue(item, value);
+            if (cx.Values is ValuesOfString v) v.SetValue(item, value);
         }
         #endregion
 
         #region GetNumericResult  =============================================
-        private void GetNumericResult(Item item, ComputeX cd, out string value)
+        private void GetNumericResult(Item item, ComputeX cx, out string value)
         {
             value = InvalidItem;
 
             var tailQuerys = new List<Query>();
-            var forest = GetForest(cd, item, tailQuerys);
-            var root = ComputeX_QueryX.GetChild(cd) as QueryX;
+            var forest = GetForest(cx, item, tailQuerys);
+            var root = ComputeX_QueryX.GetChild(cx) as QueryX;
 
             if (forest != null && root != null)
             {
@@ -378,7 +333,7 @@ namespace ModelGraphLibrary
 
                 double v, cnt = 0, min = double.MaxValue, max = double.MinValue, sum = 0, ave = 0, std = 0;
 
-                switch (cd.NumericSet)
+                switch (cx.NumericSet)
                 {
                     case NumericSet.Count:
 
@@ -386,6 +341,7 @@ namespace ModelGraphLibrary
                         {
                             cnt += tailSeg.ItemCount;
                         }
+                        if (cx.Values is ValuesOfDoubleArray v1) v1.SetValue(item, new double[] { cnt });
                         break;
 
                     case NumericSet.Count_Min_Max:
@@ -403,6 +359,8 @@ namespace ModelGraphLibrary
                                 }
                             }
                         }
+                        if (cx.Values is ValuesOfDoubleArray v3) v3.SetValue(item, new double[] { cnt, min, max });
+
                         break;
 
                     case NumericSet.Count_Min_Max_Sum:
@@ -421,6 +379,7 @@ namespace ModelGraphLibrary
                                 }
                             }
                         }
+                        if (cx.Values is ValuesOfDoubleArray v4) v4.SetValue(item, new double[] { cnt, min, max, sum });
                         break;
 
                     case NumericSet.Count_Min_Max_Sum_Ave:
@@ -440,6 +399,7 @@ namespace ModelGraphLibrary
                             }
                         }
                         if (cnt > 0) ave = sum / cnt;
+                        if (cx.Values is ValuesOfDoubleArray v5) v5.SetValue(item, new double[] { cnt, min, max, sum, ave });
                         break;
 
                     case NumericSet.Count_Min_Max_Sum_Ave_Std:
@@ -471,6 +431,7 @@ namespace ModelGraphLibrary
                             }
                             std = Math.Sqrt(vsum / vals.Count);
                         }
+                        if (cx.Values is ValuesOfDoubleArray v6) v6.SetValue(item, new double[] { cnt, min, max, sum, ave, std });
                         break;
                 }
 
@@ -478,48 +439,42 @@ namespace ModelGraphLibrary
                 sb.Append("=");
                 sb.Append(cnt.ToString());
                 sb.Append("  ");
-                cd.ValueCacheSet[(int)NumericTerm.Count].SetValue(item, cnt);
 
-                if (cd.NumericSet == NumericSet.Count_Min_Max || cd.NumericSet == NumericSet.Count_Min_Max_Sum || cd.NumericSet == NumericSet.Count_Min_Max_Sum_Ave || cd.NumericSet == NumericSet.Count_Min_Max_Sum_Ave_Std)
+                if (cx.NumericSet == NumericSet.Count_Min_Max || cx.NumericSet == NumericSet.Count_Min_Max_Sum || cx.NumericSet == NumericSet.Count_Min_Max_Sum_Ave || cx.NumericSet == NumericSet.Count_Min_Max_Sum_Ave_Std)
                 {
                     sb.Append(_resourceLoader.GetString(GetNameKey(Trait.NumericTerm_Min)));
                     sb.Append("=");
                     sb.Append(DecimalString(min));
                     sb.Append("  ");
-                    cd.ValueCacheSet[(int)NumericTerm.Min].SetValue(item, min);
 
                     sb.Append(_resourceLoader.GetString(GetNameKey(Trait.NumericTerm_Max)));
                     sb.Append("=");
                     sb.Append(DecimalString(max));
                     sb.Append("  ");
-                    cd.ValueCacheSet[(int)NumericTerm.Max].SetValue(item, max);
                 }
 
-                if (cd.NumericSet == NumericSet.Count_Min_Max_Sum || cd.NumericSet == NumericSet.Count_Min_Max_Sum_Ave || cd.NumericSet == NumericSet.Count_Min_Max_Sum_Ave_Std)
+                if (cx.NumericSet == NumericSet.Count_Min_Max_Sum || cx.NumericSet == NumericSet.Count_Min_Max_Sum_Ave || cx.NumericSet == NumericSet.Count_Min_Max_Sum_Ave_Std)
                 {
                     sb.Append(_resourceLoader.GetString(GetNameKey(Trait.NumericTerm_Sum)));
                     sb.Append("=");
                     sb.Append(DecimalString(sum));
                     sb.Append("  ");
-                    cd.ValueCacheSet[(int)NumericTerm.Sum].SetValue(item, sum);
                 }
 
-                if (cd.NumericSet == NumericSet.Count_Min_Max_Sum_Ave || cd.NumericSet == NumericSet.Count_Min_Max_Sum_Ave_Std)
+                if (cx.NumericSet == NumericSet.Count_Min_Max_Sum_Ave || cx.NumericSet == NumericSet.Count_Min_Max_Sum_Ave_Std)
                 {
                     sb.Append(_resourceLoader.GetString(GetNameKey(Trait.NumericTerm_Ave)));
                     sb.Append("=");
                     sb.Append(DecimalString(ave));
                     sb.Append("  ");
-                    cd.ValueCacheSet[(int)NumericTerm.Ave].SetValue(item, ave);
                 }
 
-                if (cd.NumericSet == NumericSet.Count_Min_Max_Sum_Ave_Std)
+                if (cx.NumericSet == NumericSet.Count_Min_Max_Sum_Ave_Std)
                 {
                     sb.Append(_resourceLoader.GetString(GetNameKey(Trait.NumericTerm_Std)));
                     sb.Append("=");
                     sb.Append(DecimalString(std));
                     sb.Append("  ");
-                    cd.ValueCacheSet[(int)NumericTerm.Std].SetValue(item, std);
                 }
 
                 value = sb.ToString();
@@ -550,7 +505,7 @@ namespace ModelGraphLibrary
                 if (isReversed)
                 {
                     // use the first one that can produce values
-                    if (root.HasSelect && root.Select.NativeType != NativeType.None)
+                    if (root.HasSelect && root.Select.ValueType != ValueType.None)
                     {
                         root.Select.GetValue(item, out str);
                         sb.Append(str);
@@ -585,7 +540,7 @@ namespace ModelGraphLibrary
                             }
                         }
                     }
-                    if (root.HasSelect && root.Select.NativeType != NativeType.None)
+                    if (root.HasSelect && root.Select.ValueType != ValueType.None)
                     {
                         root.Select.GetValue(item, out str);
                         sb.Append(str);
@@ -637,8 +592,8 @@ namespace ModelGraphLibrary
         }
         string GetNativeType(QueryX vd)
         {
-            if (vd.Select == null) return GetEnumDisplayValue(_nativeTypeEnum, (int)NativeType.None);
-            return GetEnumDisplayValue(_nativeTypeEnum, (int)vd.Select.NativeType);
+            if (vd.Select == null) return GetEnumDisplayValue(_nativeTypeEnum, (int)ValueType.None);
+            return GetEnumDisplayValue(_nativeTypeEnum, (int)vd.Select.ValueType);
         }
         #endregion
 
@@ -650,19 +605,19 @@ namespace ModelGraphLibrary
                 var cxList = _computeXStore.Items;
                 var qxQueue = new Queue<QueryX>();
                 var cxList2 = new List<ComputeX>();
-                foreach (var cx in cxList) { cx.SetNativeType(NativeType.None); }
+                foreach (var cx in cxList) { cx.SetNativeType(ValueType.None); }
                 var anyChange = true;
                 while (anyChange)
                 {
                     anyChange = false;
                     foreach (var cx in cxList)
                     {
-                        if (cx.NativeType == NativeType.None)
+                        if (cx.ValueType == ValueType.None)
                         {
                             var qx = ComputeX_QueryX.GetChild(cx);
                             if (qx == null)
                             {
-                                cx.SetNativeType(NativeType.Invalid);
+                                cx.SetNativeType(ValueType.Invalid);
                                 anyChange = true;
                             }
                             else
@@ -676,13 +631,13 @@ namespace ModelGraphLibrary
                                     var st = Store_ComputeX.GetParent(cx);
                                     if (st == null)
                                     {
-                                        cx.SetNativeType(NativeType.Invalid);
+                                        cx.SetNativeType(ValueType.Invalid);
                                         anyChange = true;
                                     }
                                     else
                                     {
                                         qx.Select.Validate(st);
-                                        cx.SetNativeType(qx.Select.NativeType);
+                                        cx.SetNativeType(qx.Select.ValueType);
                                         anyChange = true;
                                     }
                                 }

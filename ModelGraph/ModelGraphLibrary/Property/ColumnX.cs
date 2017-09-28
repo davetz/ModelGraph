@@ -44,7 +44,6 @@ namespace ModelGraphLibrary
         internal override bool HasItemName => false;
         internal override string GetItemName(Item itm) { return null; }
         internal override ValueType ValueType => _values.ValueType;
-        internal override NativeType NativeType => _values.PreferredType;
         internal bool HasSpecificDefault => _values.HasSpecificDefault();
         internal bool IsSpecific(Item item) { return _values.IsSpecific(item); }
         internal string Default => (_values == null) ? null : _values.GetDefault();

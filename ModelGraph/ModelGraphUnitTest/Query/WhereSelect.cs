@@ -131,17 +131,29 @@ namespace ModelGraphUnitTest
             var tbl = td_0.Table;
             var row = tbl.Items[0];
 
-            //RunTestByte("cByteA", "cByteA", 0);
-            //RunTestByte("cByteB", "cByteB", 0xFF);
+            RunTestByte("cByteA", "cByteA", 0);
+            RunTestByte("cByteB", "cByteB", 0xFF);
 
-            //RunTestByte("~cByteA", "~cByteA", 0xFF);
-            //RunTestByte("~cByteB", "~cByteB", 0);
+            RunTestByte("~cByteA", "~cByteA", 0xFF);
+            RunTestByte("~cByteB", "~cByteB", 0);
 
-            //RunTestInt16("cByteA", "cByteA", 0);
-            //RunTestInt16("cByteB", "cByteB", 0xFF);
+            RunTestUInt16("cByteA", "cByteA", 0);
+            RunTestUInt16("cByteB", "cByteB", 0xFF);
 
-            RunTestInt16("~cByteA", "~cByteA", 0xFF);
-            RunTestInt16("~cByteB", "~cByteB", 0);
+            RunTestUInt16("~cByteA", "~cByteA", 0xFFFF);
+            RunTestUInt16("~cByteB", "~cByteB", 0xFF00);
+
+            RunTestUInt32("cByteA", "cByteA", 0);
+            RunTestUInt32("cByteB", "cByteB", 0xFF);
+
+            RunTestUInt32("~cByteA", "~cByteA", 0xFFFFFFFF);
+            RunTestUInt32("~cByteB", "~cByteB", 0xFFFFFF00);
+
+            RunTestUInt64("cByteA", "cByteA", 0);
+            RunTestUInt64("cByteB", "cByteB", 0xFF);
+
+            RunTestUInt64("~cByteA", "~cByteA", 0xFFFFFFFFFFFFFFFF);
+            RunTestUInt64("~cByteB", "~cByteB", 0xFFFFFFFFFFFFFF00);
 
             void RunTestByte(string inText, string outText, byte value)
             {
@@ -158,7 +170,7 @@ namespace ModelGraphUnitTest
                 w.GetValue(row, out byte val);
                 Assert.IsTrue(val == value);
             }
-            void RunTestInt16(string inText, string outText, short value)
+            void RunTestUInt16(string inText, string outText, ushort value)
             {
                 var w = new WhereSelect(inText);
                 Assert.IsTrue(w.IsValid);
@@ -170,10 +182,10 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(txt == outText);
 
 
-                w.GetValue(row, out short val);
+                w.GetValue(row, out ushort val);
                 Assert.IsTrue(val == value);
             }
-            void RunTestInt32(string inText, string outText, int value)
+            void RunTestUInt32(string inText, string outText, uint value)
             {
                 var w = new WhereSelect(inText);
                 Assert.IsTrue(w.IsValid);
@@ -185,10 +197,10 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(txt == outText);
 
 
-                w.GetValue(row, out int val);
+                w.GetValue(row, out uint val);
                 Assert.IsTrue(val == value);
             }
-            void RunTestInt64(string inText, string outText, long value)
+            void RunTestUInt64(string inText, string outText, ulong value)
             {
                 var w = new WhereSelect(inText);
                 Assert.IsTrue(w.IsValid);
@@ -200,7 +212,7 @@ namespace ModelGraphUnitTest
                 Assert.IsTrue(txt == outText);
 
 
-                w.GetValue(row, out long val);
+                w.GetValue(row, out ulong val);
                 Assert.IsTrue(val == value);
             }
         }

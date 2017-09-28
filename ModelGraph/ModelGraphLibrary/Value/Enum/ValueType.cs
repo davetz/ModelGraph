@@ -2,8 +2,9 @@
 {/*
     Enumeration of data value types
 
-    Never change or remove the assigned values because the
-    numeric value is (saved to/loaded from) model data files; 
+    Never remove of changed the assigned values of these types.
+    The values are (saved to/loaded from) modeling data files
+    and must be immutable to maintain backwards compatability.
  */
     /// <summary>
     /// Enumerated data value types
@@ -43,8 +44,13 @@
         SingleArray = 27,
         DoubleArray = 28,
         DecimalArray = 29,
+                            // <== add more types here, then modify the method Value.Create()
+        MaximumType = 30,   // loader integrity check, increase this if more types are added
 
-        MaximumType = 30, // loader integrity check, may increase if need more types
-        InternalEnum = 99, // don't change this
+        None = 95,          // a computeX before it has been validated 
+        Invalid = 96,       // a computeX's select clause is invalid
+        Circular = 97,      // a computeX is attempting to create a circular reference cycle 
+        Unresolved = 98,    // a computeX's value type is currently unkown
+        InternalEnum = 99,  // used for internal enums
     }
 }

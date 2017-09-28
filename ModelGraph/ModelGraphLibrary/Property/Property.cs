@@ -22,7 +22,6 @@
 
         internal abstract bool TrySetValue(Item item, string value);
         internal abstract ValueType ValueType { get; }
-        internal abstract NativeType NativeType { get; }
     }
 }
 

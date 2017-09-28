@@ -231,7 +231,7 @@ namespace ModelGraphLibrary
             }
             {
                 var p = _computeXNativeTypeProperty = new PropertyOf<ComputeX>(_propertyStore, Trait.ComputeXNativeType_P, ValueType.String);
-                p.GetValueFunc = (item) => { return p.Cast(item).NativeType.ToString(); };
+                p.GetValueFunc = (item) => { return p.Cast(item).ValueType.ToString(); };
                 props.Add(p);
             }
             Store_Property.SetLink(_computeXStore, props.ToArray());

@@ -165,7 +165,7 @@
             new PairZ(_computeTypeEnum, Trait.CompuType_CompositeString);
             new PairZ(_computeTypeEnum, Trait.CompuType_CompositeReversed);
 
-            _nativeTypeEnum = new EnumZ(_enumZStore, Trait.NativeTypeEnum, typeof(NativeType));
+            _nativeTypeEnum = new EnumZ(_enumZStore, Trait.NativeTypeEnum, typeof(ValueType));
             new PairZ(_nativeTypeEnum, Trait.NativeType_None);
             new PairZ(_nativeTypeEnum, Trait.NativeType_Bool);
             new PairZ(_nativeTypeEnum, Trait.NativeType_Byte);

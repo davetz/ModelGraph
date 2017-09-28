@@ -18,7 +18,7 @@ namespace ModelGraphLibrary
         #region Property  =====================================================
         internal string InputString => GetText();
         internal bool IsValid => (_root != null) ? true : ((_parser == null) ? false : _parser.IsValid);
-        internal NativeType NativeType => (_root != null) ? _root.NativeType : ((_parser != null) ? _parser.NativeType : NativeType.Invalid);
+        internal ValueType ValueType => (_root != null) ? _root.ValueType : ((_parser != null) ? _parser.NativeType : ValueType.Invalid);
 
         private string GetText()
         {
@@ -88,7 +88,21 @@ namespace ModelGraphLibrary
             _item = item;
             _root.GetValue(out value);
         }
+        internal void GetValue(Item item, out sbyte value)
+        {
+            if (_root == null) { value = 0; return; }
+
+            _item = item;
+            _root.GetValue(out value);
+        }
         internal void GetValue(Item item, out short value)
+        {
+            if (_root == null) { value = 0; return; }
+
+            _item = item;
+            _root.GetValue(out value);
+        }
+        internal void GetValue(Item item, out ushort value)
         {
             if (_root == null) { value = 0; return; }
 
@@ -102,7 +116,21 @@ namespace ModelGraphLibrary
             _item = item;
             _root.GetValue(out value);
         }
+        internal void GetValue(Item item, out uint value)
+        {
+            if (_root == null) { value = 0; return; }
+
+            _item = item;
+            _root.GetValue(out value);
+        }
         internal void GetValue(Item item, out long value)
+        {
+            if (_root == null) { value = 0; return; }
+
+            _item = item;
+            _root.GetValue(out value);
+        }
+        internal void GetValue(Item item, out ulong value)
         {
             if (_root == null) { value = 0; return; }
 

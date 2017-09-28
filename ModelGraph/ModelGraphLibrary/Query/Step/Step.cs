@@ -52,7 +52,7 @@ namespace ModelGraphLibrary
 
         #region Methods  ======================================================
         internal int Count => (Inputs == null) ? 0 : Inputs.Length;
-        internal abstract NativeType NativeType { get; } // output native data type
+        internal abstract ValueType ValueType { get; } // output native data type
         internal abstract void GetValue(out bool value);
         internal abstract void GetValue(out byte value);
         internal abstract void GetValue(out sbyte value);
@@ -70,22 +70,22 @@ namespace ModelGraphLibrary
             if (HasNewLine) sb.Append(Environment.NewLine);
             if (IsNegated)
             {
-                switch (NativeType)
+                switch (ValueType)
                 {
-                    case NativeType.Bool:
+                    case ValueType.Bool:
                         sb.Append('!');
                         break;
-                    case NativeType.SByte:
-                    case NativeType.Int16:
-                    case NativeType.Int32:
-                    case NativeType.Int64:
-                    case NativeType.Double:
+                    case ValueType.SByte:
+                    case ValueType.Int16:
+                    case ValueType.Int32:
+                    case ValueType.Int64:
+                    case ValueType.Double:
                         sb.Append('-');
                         break;
-                    case NativeType.Byte:
-                    case NativeType.UInt16:
-                    case NativeType.UInt32:
-                    case NativeType.UInt64:
+                    case ValueType.Byte:
+                    case ValueType.UInt16:
+                    case ValueType.UInt32:
+                    case ValueType.UInt64:
                         sb.Append('~');
                         break;
                 }

@@ -9,7 +9,7 @@ namespace ModelGraphLibrary
         ulong GetVal() => IsNegated ? ~_value : _value;
 
         #region Methods  ======================================================
-        internal override NativeType NativeType => NativeType.Int64;
+        internal override ValueType ValueType => ValueType.Int64;
 
         internal override void GetValue(out bool value) => value = Value.ToBool(GetVal());
         internal override void GetValue(out byte value) => value = Value.ToByte(GetVal());

@@ -42,10 +42,10 @@ namespace ModelGraphLibrary
                 return false;
             }
 
-            var prevNativeType = sx.Where.NativeType;
+            var prevNativeType = sx.Where.ValueType;
             sx.Where.Validate(tail);
 
-            return (prevNativeType != sx.Where.NativeType);
+            return (prevNativeType != sx.Where.ValueType);
         }
         private bool ValidateValueX(QueryX vx)
         {
@@ -62,15 +62,15 @@ namespace ModelGraphLibrary
             var anyChange = false;
             if (vx.Where != null)
             {
-                var prevNativeType = vx.Where.NativeType;
+                var prevNativeType = vx.Where.ValueType;
                 vx.Where.Validate(tail);
-                anyChange = (prevNativeType != vx.Where.NativeType);
+                anyChange = (prevNativeType != vx.Where.ValueType);
             }
             if (vx.Select != null)
             {
-                var prevNativeType = vx.Select.NativeType;
+                var prevNativeType = vx.Select.ValueType;
                 vx.Select.Validate(tail);
-                anyChange |= (prevNativeType != vx.Select.NativeType);
+                anyChange |= (prevNativeType != vx.Select.ValueType);
             }
             return anyChange;
         }
