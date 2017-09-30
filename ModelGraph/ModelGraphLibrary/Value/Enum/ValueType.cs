@@ -47,8 +47,8 @@
                             // <== add more types here, then modify the method Value.Create()
         MaximumType = 30,   // loader integrity check, increase this if more types are added
 
-        None = 95,          // a computeX before it has been validated 
-        Invalid = 96,       // a computeX's select clause is invalid
+        None = 95,          // a computeX prior to validation
+        Invalid = 96,       // a computeX's select or where clause is invalid
         Circular = 97,      // a computeX is attempting to create a circular reference cycle 
         Unresolved = 98,    // a computeX's value type is currently unkown
         InternalEnum = 99,  // used for internal enums

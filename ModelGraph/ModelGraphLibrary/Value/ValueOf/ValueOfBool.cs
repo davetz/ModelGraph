@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfBool : ValuesOf<bool>
+    public class ValueOfBool : ValueOfType<bool>
     {
         internal override ValueType ValueType { get { return ValueType.Bool; } }
         protected override bool TryParse(string input, out bool value) { return Value.TryParse(input, out value); }

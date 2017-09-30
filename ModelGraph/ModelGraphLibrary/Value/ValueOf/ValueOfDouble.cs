@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfDouble : ValuesOf<double>
+    public class ValueOfDouble : ValueOfType<double>
     {
         internal override ValueType ValueType { get { return ValueType.Double; } }
         protected override bool TryParse(string input, out double value) { return Value.TryParse(input, out value); }

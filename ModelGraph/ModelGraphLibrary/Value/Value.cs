@@ -32,30 +32,29 @@ namespace ModelGraphLibrary
         internal abstract bool HasSpecificDefault();
         internal abstract void Clear();
 
-        // get the computed value types
-        internal abstract void GetValue(Item item, out bool value, short index = 0);
-        internal abstract void GetValue(Item item, out byte value, short index = 0);
-        internal abstract void GetValue(Item item, out sbyte value, short index = 0);
-        internal abstract void GetValue(Item item, out uint value, short index = 0);
-        internal abstract void GetValue(Item item, out int value, short index = 0);
-        internal abstract void GetValue(Item item, out ushort value, short index = 0);
-        internal abstract void GetValue(Item item, out short value, short index = 0);
-        internal abstract void GetValue(Item item, out ulong value, short index = 0);
-        internal abstract void GetValue(Item item, out long value, short index = 0);
-        internal abstract void GetValue(Item item, out double value, short index = 0);
-        internal abstract void GetValue(Item item, out string value, short index = 0);
+        internal abstract void GetValue(Item item, out bool value, int index = 0);
+        internal abstract void GetValue(Item item, out byte value, int index = 0);
+        internal abstract void GetValue(Item item, out sbyte value, int index = 0);
+        internal abstract void GetValue(Item item, out uint value, int index = 0);
+        internal abstract void GetValue(Item item, out int value, int index = 0);
+        internal abstract void GetValue(Item item, out ushort value, int index = 0);
+        internal abstract void GetValue(Item item, out short value, int index = 0);
+        internal abstract void GetValue(Item item, out ulong value, int index = 0);
+        internal abstract void GetValue(Item item, out long value, int index = 0);
+        internal abstract void GetValue(Item item, out double value, int index = 0);
+        internal abstract void GetValue(Item item, out string value, int index = 0);
 
-        internal abstract void GetValue(ComputeX cx, Item item, out bool value, short index = 0);
-        internal abstract void GetValue(ComputeX cx, Item item, out byte value, short index = 0);
-        internal abstract void GetValue(ComputeX cx, Item item, out sbyte value, short index = 0);
-        internal abstract void GetValue(ComputeX cx, Item item, out uint value, short index = 0);
-        internal abstract void GetValue(ComputeX cx, Item item, out int value, short index = 0);
-        internal abstract void GetValue(ComputeX cx, Item item, out ushort value, short index = 0);
-        internal abstract void GetValue(ComputeX cx, Item item, out short value, short index = 0);
-        internal abstract void GetValue(ComputeX cx, Item item, out ulong value, short index = 0);
-        internal abstract void GetValue(ComputeX cx, Item item, out long value, short index = 0);
-        internal abstract void GetValue(ComputeX cx, Item item, out double value, short index = 0);
-        internal abstract void GetValue(ComputeX cx, Item item, out string value, short index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out bool value, int index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out byte value, int index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out sbyte value, int index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out uint value, int index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out int value, int index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out ushort value, int index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out short value, int index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out ulong value, int index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out long value, int index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out double value, int index = 0);
+        internal abstract void GetValue(ComputeX cx, Item item, out string value, int index = 0);
         #endregion
 
         #region Create  =======================================================
@@ -68,36 +67,36 @@ namespace ModelGraphLibrary
         }
         private static Func<Value>[] _valueTypes =
         {
-            () => { return new ValuesOfBool(); },   // 0
-            () => { return new ValuesOfChar(); },   // 1
-            () => { return new ValuesOfByte(); },   // 2
-            () => { return new ValuesOfSByte(); },  // 3
-            () => { return new ValuesOfInt16(); },  // 4
-            () => { return new ValuesOfInt32(); },  // 5
-            () => { return new ValuesOfInt64(); },  // 6
-            () => { return new ValuesOfUInt16(); }, // 7
-            () => { return new ValuesOfUInt32(); }, // 8
-            () => { return new ValuesOfUInt64(); }, // 9
-            () => { return new ValuesOfSingle(); },   // 10
-            () => { return new ValuesOfDouble(); },   // 11
-            () => { return new ValuesOfDecimal(); },  // 12
-            () => { return new ValuesOfGuid(); },     // 13
-            () => { return new ValuesOfDateTime(); }, // 14
-            () => { return new ValuesOfTimeSpan(); }, // 15
-            () => { return new ValuesOfString(); },   // 16
-            () => { return new ValuesOfCharArray(); },  // 17
-            () => { return new ValuesOfHexArray(); },    // 18
-            () => { return new ValuesOfByteArray(); },    // 19
-            () => { return new ValuesOfSByteArray(); },   // 20
-            () => { return new ValuesOfInt16Array(); },   // 21
-            () => { return new ValuesOfInt32Array(); },   // 22
-            () => { return new ValuesOfInt64Array(); },   // 23
-            () => { return new ValuesOfUInt16Array(); },  // 24
-            () => { return new ValuesOfUInt32Array(); },  // 25
-            () => { return new ValuesOfUInt64Array(); },  // 26
-            () => { return new ValuesOfSingleArray(); },  // 27
-            () => { return new ValuesOfDoubleArray(); },  // 28
-            () => { return new ValuesOfDecimalArray(); }, // 29
+            () => { return new ValueOfBool(); },   // 0
+            () => { return new ValueOfChar(); },   // 1
+            () => { return new ValueOfByte(); },   // 2
+            () => { return new ValueOfSByte(); },  // 3
+            () => { return new ValueOfInt16(); },  // 4
+            () => { return new ValueOfInt32(); },  // 5
+            () => { return new ValueOfInt64(); },  // 6
+            () => { return new ValueOfUInt16(); }, // 7
+            () => { return new ValueOfUInt32(); }, // 8
+            () => { return new ValueOfUInt64(); }, // 9
+            () => { return new ValueOfSingle(); },   // 10
+            () => { return new ValueOfDouble(); },   // 11
+            () => { return new ValueOfDecimal(); },  // 12
+            () => { return new ValueOfGuid(); },     // 13
+            () => { return new ValueOfDateTime(); }, // 14
+            () => { return new ValueOfTimeSpan(); }, // 15
+            () => { return new ValueOfString(); },   // 16
+            () => { return new ValueOfCharArray(); },  // 17
+            () => { return new ValueOfHexArray(); },    // 18
+            () => { return new ValueOfByteArray(); },    // 19
+            () => { return new ValueOfSByteArray(); },   // 20
+            () => { return new ValueOfInt16Array(); },   // 21
+            () => { return new ValueOfInt32Array(); },   // 22
+            () => { return new ValueOfInt64Array(); },   // 23
+            () => { return new ValueOfUInt16Array(); },  // 24
+            () => { return new ValueOfUInt32Array(); },  // 25
+            () => { return new ValueOfUInt64Array(); },  // 26
+            () => { return new ValueOfSingleArray(); },  // 27
+            () => { return new ValueOfDoubleArray(); },  // 28
+            () => { return new ValueOfDecimalArray(); }, // 29
         };
         #endregion
 

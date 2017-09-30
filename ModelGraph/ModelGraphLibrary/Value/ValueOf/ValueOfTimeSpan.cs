@@ -2,7 +2,7 @@
 
 namespace ModelGraphLibrary
 {
-    public class ValuesOfTimeSpan : ValuesOf<TimeSpan>
+    public class ValueOfTimeSpan : ValueOfType<TimeSpan>
     {
         internal override ValueType ValueType { get { return ValueType.TimeSpan; } }
         protected override bool TryParse(string input, out TimeSpan value) { return Value.TryParse(input, out value); }

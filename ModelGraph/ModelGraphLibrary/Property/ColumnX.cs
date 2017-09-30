@@ -41,27 +41,17 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Properties/Methods ============================================
+        internal override Value Values { get { return _values; } set { _values = value; } }
+        internal override ValueType ValueType => Values.ValueType;
         internal override bool HasItemName => false;
         internal override string GetItemName(Item itm) { return null; }
-        internal override ValueType ValueType => _values.ValueType;
         internal bool HasSpecificDefault => _values.HasSpecificDefault();
         internal bool IsSpecific(Item item) { return _values.IsSpecific(item); }
         internal string Default => (_values == null) ? null : _values.GetDefault();
         internal void SetDefault(Item[] items) { _values.SetDefault(items); }
-        internal override string GetValue(Item item, NumericTerm term = NumericTerm.None) { return _values.GetValue(item); }
-        internal override bool GetBool(Item item) { bool val; GetValue(item, out val); return val; }
+        internal override bool GetBool(Item item) { _values.GetValue(item, out bool val); return val; }
+        internal override string GetValue(Item item) { _values.GetValue(item, out string val); return val; }
         internal override bool TrySetValue(Item item, string value) { return _values.TrySetValue(item, value); }
-        internal override void GetValue(Item item, out bool value) { _values.GetValue(item, out value); }
-        internal override void GetValue(Item item, out byte value) { _values.GetValue(item, out value); }
-        internal override void GetValue(Item item, out sbyte value) { _values.GetValue(item, out value); }
-        internal override void GetValue(Item item, out uint value) { _values.GetValue(item, out value); }
-        internal override void GetValue(Item item, out int value) { _values.GetValue(item, out value); }
-        internal override void GetValue(Item item, out ushort value) { _values.GetValue(item, out value); }
-        internal override void GetValue(Item item, out short value) { _values.GetValue(item, out value); }
-        internal override void GetValue(Item item, out ulong value) { _values.GetValue(item, out value); }
-        internal override void GetValue(Item item, out long value) { _values.GetValue(item, out value); }
-        internal override void GetValue(Item item, NumericTerm term, out double value) { _values.GetValue(item, out value); }
-        internal override void GetValue(Item item, NumericTerm term, out string value) { _values.GetValue(item, out value); }
 
         internal bool TrySetDefault(Item[] items, string defaultValue)
         {

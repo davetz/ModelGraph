@@ -678,9 +678,9 @@ namespace ModelGraphLibrary
             }
             if (StepType == StepType.Property)
             {
-                if (sto.TryLookUpProperty(Text, out Property property, out NumericTerm term))
+                if (sto.TryLookUpProperty(Text, out Property property, out int index))
                 {
-                    Step = new PROPERTY(property, term, getItem);
+                    Step = new PROPERTY(property, index, getItem);
                     Step.IsNegated = IsNegated;
                     if (property is ComputeX compute)
                     {

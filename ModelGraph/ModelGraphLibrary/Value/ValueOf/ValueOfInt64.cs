@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfInt64 : ValuesOf<long>
+    public class ValueOfInt64 : ValueOfType<long>
     {
         internal override ValueType ValueType => ValueType.Int64;
         protected override bool TryParse(string input, out long value) { return Value.TryParse(input, out value); }

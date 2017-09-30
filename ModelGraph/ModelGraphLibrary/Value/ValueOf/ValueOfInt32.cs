@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfInt32 : ValuesOf<int>
+    public class ValueOfInt32 : ValueOfType<int>
     {
         internal override ValueType ValueType { get { return ValueType.Int32; } }
         protected override bool TryParse(string input, out int value) { return Value.TryParse(input, out value); }

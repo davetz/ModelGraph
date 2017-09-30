@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfInt64Array : ValuesOf<long[]>
+    public class ValueOfInt64Array : ValueOfType<long[]>
     {
         internal override ValueType ValueType { get { return ValueType.Int64Array; } }
         protected override bool TryParse(string input, out long[] value) { return Value.TryParse(input, out value); }

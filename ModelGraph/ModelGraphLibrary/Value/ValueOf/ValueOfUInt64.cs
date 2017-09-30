@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfUInt64 : ValuesOf<ulong>
+    public class ValueOfUInt64 : ValueOfType<ulong>
     {
         internal override ValueType ValueType { get { return ValueType.UInt64; } }
         protected override bool TryParse(string input, out ulong value) { return Value.TryParse(input, out value); }

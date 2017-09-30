@@ -2,7 +2,7 @@
 
 namespace ModelGraphLibrary
 {
-    public class ValuesOfGuid : ValuesOf<Guid>
+    public class ValueOfGuid : ValueOfType<Guid>
     {
         internal override ValueType ValueType { get { return ValueType.Guid; } }
         protected override bool TryParse(string input, out Guid value) { return Value.TryParse(input, out value); }

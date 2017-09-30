@@ -19,9 +19,9 @@ namespace ModelGraphLibrary
         internal abstract int Count { get; }
         internal abstract void RemoveAll();
         
-        internal bool TryLookUpProperty(string name, out Property property, out NumericTerm term)
+        internal bool TryLookUpProperty(string name, out Property property, out int index)
         {
-            return GetChef().TryLookUpProperty(this, name, out property, out term);
+            return GetChef().TryLookUpProperty(this, name, out property, out index);
         }
     }
 }

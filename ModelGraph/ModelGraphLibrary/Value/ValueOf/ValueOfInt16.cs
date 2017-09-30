@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfInt16 : ValuesOf<short>
+    public class ValueOfInt16 : ValueOfType<short>
     {
         internal override ValueType ValueType { get { return ValueType.Int16; } }
 

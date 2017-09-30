@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfDecimalArray : ValuesOf<decimal[]>
+    public class ValueOfDecimalArray : ValueOfType<decimal[]>
     {
         internal override ValueType ValueType { get { return ValueType.DecimalArray; } }
         protected override bool TryParse(string input, out decimal[] value) { return Value.TryParse(input, out value); }

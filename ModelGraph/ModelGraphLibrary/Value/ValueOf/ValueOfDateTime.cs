@@ -2,7 +2,7 @@
 
 namespace ModelGraphLibrary
 {
-    public class ValuesOfDateTime : ValuesOf<DateTime>
+    public class ValueOfDateTime : ValueOfType<DateTime>
     {
         internal override ValueType ValueType { get { return ValueType.DateTime; } }
         protected override bool TryParse(string input, out DateTime value) { return Value.TryParse(input, out value); }

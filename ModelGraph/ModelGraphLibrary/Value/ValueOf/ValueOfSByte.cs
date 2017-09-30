@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfSByte : ValuesOf<sbyte>
+    public class ValueOfSByte : ValueOfType<sbyte>
     {
         internal override ValueType ValueType { get { return ValueType.SByte; } }
         protected override bool TryParse(string input, out sbyte value) { return Value.TryParse(input, out value); }

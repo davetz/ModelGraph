@@ -91,12 +91,14 @@ namespace ModelGraphLibrary
                 var p = _viewXNameProperty = new PropertyOf<ViewX>(_propertyStore, Trait.ViewName_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Name; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Name = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _viewXSummaryProperty = new PropertyOf<ViewX>(_propertyStore, Trait.ViewSummary_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Summary; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Summary = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             Store_Property.SetLink(_tableXStore, props.ToArray());
@@ -108,12 +110,14 @@ namespace ModelGraphLibrary
                 var p = _enumXNameProperty = new PropertyOf<EnumX>(_propertyStore, Trait.EnumName_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Name; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Name = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _enumXSummaryProperty = new PropertyOf<EnumX>(_propertyStore, Trait.EnumSummary_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Summary; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Summary = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             Store_Property.SetLink(_enumXStore, props.ToArray());
@@ -138,12 +142,14 @@ namespace ModelGraphLibrary
                 var p = _tableXNameProperty = new PropertyOf<TableX>(_propertyStore, Trait.TableName_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Name; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Name = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _tableXSummaryProperty = new PropertyOf<TableX>(_propertyStore, Trait.TableSummary_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Summary; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Summary = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             Store_Property.SetLink(_tableXStore, props.ToArray());
@@ -155,29 +161,34 @@ namespace ModelGraphLibrary
                 var p = _columnXNameProperty = new PropertyOf<ColumnX>(_propertyStore, Trait.ColumnName_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Name; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Name = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _columnXSummaryProperty = new PropertyOf<ColumnX>(_propertyStore, Trait.ColumnSummary_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Summary; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Summary = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _columnXTypeOfProperty = new PropertyOf<ColumnX>(_propertyStore, Trait.ColumnValueType_P, ValueType.InternalEnum);
                 p.GetValueFunc = (item) => { return GetEnumDisplayValue(_valueTypeEnum, (int)p.Cast(item).ValueType); };
                 p.TrySetValueFunc = (item, value) => { return TrySetValueType(p.Cast(item), value); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _columnXIsChoiceProperty = new PropertyOf<ColumnX>(_propertyStore, Trait.ColumnIsChoice_P, ValueType.Bool);
                 p.GetValueFunc = (item) => { return p.Cast(item).IsChoice.ToString(); };
                 p.TrySetValueFunc = (item, value) => { return TrySetColumnIsChoice(p.Cast(item), value); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _columnXDefaultProperty = new PropertyOf<ColumnX>(_propertyStore, Trait.ColumnDefault_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Default; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             Store_Property.SetLink(_columnXStore, props.ToArray());
@@ -189,24 +200,28 @@ namespace ModelGraphLibrary
                 var p = _computeXNameProperty = new PropertyOf<ComputeX>(_propertyStore, Trait.ComputeXName_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Name; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Name = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _computeXSummaryProperty = new PropertyOf<ComputeX>(_propertyStore, Trait.ComputeXSummary_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Summary; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Summary = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _computeXCompuTypeProperty = new PropertyOf<ComputeX>(_propertyStore, Trait.ComputeXCompuType_P, ValueType.String);
                 p.GetValueFunc = (item) => { return GetEnumDisplayValue(_computeTypeEnum, (int)p.Cast(item).CompuType); };
                 p.TrySetValueFunc = (item, value) => { MajorDelta += 1; return TrySetComputeTypeProperty(p.Cast(item), value); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _computeXNumericSetProperty = new PropertyOf<ComputeX>(_propertyStore, Trait.ComputeXNumericSet_P, ValueType.String);
                 p.GetValueFunc = (item) => { return GetEnumDisplayValue(_numericSetEnum, (int)p.Cast(item).NumericSet); };
                 p.TrySetValueFunc = (item, value) => { return TrySetNumericSetProperty(p.Cast(item), value); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
@@ -214,6 +229,7 @@ namespace ModelGraphLibrary
                 p.GetValueFunc = (item) => { return p.Cast(item).SelectString; };
                 p.TrySetValueFunc = (item, value) => { return SetComputeXWhere(p.Cast(item), value); };
                 p.GetItemNameFunc = (item) => { return GetSelectorName(p.Cast(item)); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
@@ -221,17 +237,20 @@ namespace ModelGraphLibrary
                 p.GetValueFunc = (item) => { return p.Cast(item).SelectString; };
                 p.TrySetValueFunc = (item, value) => { return SetComputeXSelect(p.Cast(item), value); };
                 p.GetItemNameFunc = (item) => { return GetSelectorName(p.Cast(item)); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _computeXSeparatorProperty = new PropertyOf<ComputeX>(_propertyStore, Trait.ComputeXSeparator_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Separator; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Separator = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _computeXNativeTypeProperty = new PropertyOf<ComputeX>(_propertyStore, Trait.ComputeXNativeType_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).ValueType.ToString(); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             Store_Property.SetLink(_computeXStore, props.ToArray());
@@ -243,42 +262,49 @@ namespace ModelGraphLibrary
                 var p = _relationXNameProperty = new PropertyOf<RelationX>(_propertyStore, Trait.RelationName_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Name; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Name = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _relationXSummaryProperty = new PropertyOf<RelationX>(_propertyStore, Trait.RelationSummary_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Summary; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Summary = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _relationXPairingProperty = new PropertyOf<RelationX>(_propertyStore, Trait.RelationPairing_P, ValueType.InternalEnum);
                 p.GetValueFunc = (item) => { return GetEnumDisplayValue(_pairingEnum, (int)p.Cast(item).Pairing); };
                 p.TrySetValueFunc = (item, value) => { return TrySetPairing(p.Cast(item), value); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _relationXIsRequiredProperty = new PropertyOf<RelationX>(_propertyStore, Trait.RelationIsRequired_P, ValueType.Bool);
                 p.GetValueFunc = (item) => { return p.Cast(item).IsRequired.ToString(); };
                 p.TrySetValueFunc = (item, value) => { return TrySetRelationIsRequired(p.Cast(item), value); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _relationXIsLimitedProperty = new PropertyOf<RelationX>(_propertyStore, Trait.RelationIsReference_P, ValueType.Bool);
                 p.GetValueFunc = (item) => { return p.Cast(item).IsLimited.ToString(); };
                 p.TrySetValueFunc = (item, value) => { return TrySetRelationIsLimited(p.Cast(item), value); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _relationXMinOccuranceProperty = new PropertyOf<RelationX>(_propertyStore, Trait.RelationMinOccurance_P, ValueType.Int16);
                 p.GetValueFunc = (item) => { return p.Cast(item).MinOccurance.ToString(); };
                 p.TrySetValueFunc = (item, value) => { return Value.TryParse(value, out p.Cast(item).MinOccurance); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _relationXMaxOccuranceProperty = new PropertyOf<RelationX>(_propertyStore, Trait.RelationMaxOccurance_P, ValueType.Int16);
                 p.GetValueFunc = (item) => { return p.Cast(item).MaxOccurance.ToString(); };
                 p.TrySetValueFunc = (item, value) => { return Value.TryParse(value, out p.Cast(item).MaxOccurance); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             Store_Property.SetLink(_relationXStore, props.ToArray());
@@ -291,12 +317,14 @@ namespace ModelGraphLibrary
                 var p = _graphXNameProperty = new PropertyOf<GraphX>(_propertyStore, Trait.GraphName_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Name; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Name = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _graphXSummaryProperty = new PropertyOf<GraphX>(_propertyStore, Trait.GraphSummary_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Summary; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Summary = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             Store_Property.SetLink(_graphXStore, props.ToArray());
@@ -308,30 +336,35 @@ namespace ModelGraphLibrary
                 var p = _symbolXNameProperty = new PropertyOf<SymbolX>(_propertyStore, Trait.SymbolName_P, ValueType.String);
                 p.GetValueFunc = (item) => { return p.Cast(item).Name; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).Name = value; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _symbolXTopContactProperty = new PropertyOf<SymbolX>(_propertyStore, Trait.SymbolTopContact_P, ValueType.InternalEnum);
                 p.GetValueFunc = (item) => { return GetEnumDisplayValue(_contactEnum, (int)p.Cast(item).TopContact); };
                 p.TrySetValueFunc = (item, value) => { Contact cval; if (Enum.TryParse(value, out cval)) { p.Cast(item).TopContact = cval; RefreshDrawing(p.Cast(item)); return true; } return false; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _symbolXLeftContacttProperty = new PropertyOf<SymbolX>(_propertyStore, Trait.SymbolLeftContactt_P, ValueType.InternalEnum);
                 p.GetValueFunc = (item) => { return GetEnumDisplayValue(_contactEnum, (int)p.Cast(item).LeftContact); };
                 p.TrySetValueFunc = (item, value) => { Contact cval; if (Enum.TryParse(value, out cval)) { p.Cast(item).LeftContact = cval; RefreshDrawing(p.Cast(item)); return true; } return false; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _symbolXRightContactProperty = new PropertyOf<SymbolX>(_propertyStore, Trait.SymbolRightContact_P, ValueType.InternalEnum);
                 p.GetValueFunc = (item) => { return GetEnumDisplayValue(_contactEnum, (int)p.Cast(item).RightContact); };
                 p.TrySetValueFunc = (item, value) => { Contact cval; if (Enum.TryParse(value, out cval)) { p.Cast(item).RightContact = cval; RefreshDrawing(p.Cast(item)); return true; } return false; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _symbolXBottomContactProperty = new PropertyOf<SymbolX>(_propertyStore, Trait.SymbolBottomContact_P, ValueType.InternalEnum);
                 p.GetValueFunc = (item) => { return GetEnumDisplayValue(_contactEnum, (int)p.Cast(item).BottomContact); };
                 p.TrySetValueFunc = (item, value) => { Contact cval; if (Enum.TryParse(value, out cval)) { p.Cast(item).BottomContact = cval; RefreshDrawing(p.Cast(item)); return true; } return false; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             Store_Property.SetLink(_symbolXStore, props.ToArray());
@@ -344,48 +377,56 @@ namespace ModelGraphLibrary
                 p.GetValueFunc = (item) => { return p.Cast(item).WhereString; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).WhereString = value; return ValidateQueryX(p.Cast(item)); };
                 p.GetItemNameFunc = (item) => { return GetWhereName(p.Cast(item)); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _queryXConnect1Property = new PropertyOf<QueryX>(_propertyStore, Trait.QueryXConnect1_P, ValueType.InternalEnum);
                 p.GetValueFunc = (item) => { return GetEnumDisplayValue(_connectEnum, (int)p.Cast(item).Connect1); };
                 p.TrySetValueFunc = (item, value) => { Connect cval; if (Enum.TryParse(value, out cval)) { p.Cast(item).Connect1 = cval; RefreshDrawing(p.Cast(item)); return true; } return false; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _queryXConnect2Property = new PropertyOf<QueryX>(_propertyStore, Trait.QueryXConnect2_P, ValueType.InternalEnum);
                 p.GetValueFunc = (item) => { return GetEnumDisplayValue(_connectEnum, (int)p.Cast(item).Connect2); };
                 p.TrySetValueFunc = (item, value) => { Connect cval; if (Enum.TryParse(value, out cval)) { p.Cast(item).Connect2 = cval; return true; } return false; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _queryXRelationProperty = new PropertyOf<QueryX>(_propertyStore, Trait.QueryXRelation_P, ValueType.String);
                 p.GetValueFunc = (item) =>{ return GetQueryXRelationName(p.Cast(item)); } ;
                 p.TrySetValueFunc = (item, value) => { return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _queryXIsReversedProperty = new PropertyOf<QueryX>(_propertyStore, Trait.QueryXIsReversed_P, ValueType.Bool);
                 p.GetValueFunc = (item) => { return p.Cast(item).IsReversed.ToString(); };
                 p.TrySetValueFunc = (item, value) => { Value.TryParse(value, out bool val); p.Cast(item).IsReversed = val; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _queryXIsPersistentProperty = new PropertyOf<QueryX>(_propertyStore, Trait.QueryXIsPersistent_P, ValueType.Bool);
                 p.GetValueFunc = (item) => { return p.Cast(item).IsPersistent.ToString(); };
                 p.TrySetValueFunc = (item, value) => { Value.TryParse(value, out bool val); p.Cast(item).IsPersistent = val; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _queryXIsBreakPointProperty = new PropertyOf<QueryX>(_propertyStore, Trait.QueryXIsBreakPoint_P, ValueType.Bool);
                 p.GetValueFunc = (item) => { return p.Cast(item).IsBreakPoint.ToString(); };
                 p.TrySetValueFunc = (item, value) => { Value.TryParse(value, out bool val); p.Cast(item).IsBreakPoint = val; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _queryXExclusiveKeyProperty = new PropertyOf<QueryX>(_propertyStore, Trait.QueryXExclusiveKey_P, ValueType.Byte);
                 p.GetValueFunc = (item) => { return p.Cast(item).ExclusiveKey.ToString(); };
                 p.TrySetValueFunc = (item, value) => { Value.TryParse(value, out byte val); p.Cast(item).ExclusiveKey = val; return true; };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
@@ -393,6 +434,7 @@ namespace ModelGraphLibrary
                 p.GetValueFunc = (item) => { return p.Cast(item).WhereString; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).WhereString = value; return ValidateQueryX(p.Cast(item)); };
                 p.GetItemNameFunc = (item) => { return GetWhereName(p.Cast(item)); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
@@ -400,11 +442,13 @@ namespace ModelGraphLibrary
                 p.GetValueFunc = (item) => { return p.Cast(item).SelectString; };
                 p.TrySetValueFunc = (item, value) => { p.Cast(item).SelectString = value; ValidateValueXChange(p.Cast(item)); return true; };
                 p.GetItemNameFunc = (item) => { return GetSelectName(p.Cast(item)); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             {
                 var p = _queryXNativeTypeProperty = new PropertyOf<QueryX>(_propertyStore, Trait.ValueXNativeType_P, ValueType.String);
                 p.GetValueFunc = (item) => { return GetNativeType(p.Cast(item)); };
+                p.Values = new ValueOfProperty(p);
                 props.Add(p);
             }
             Store_Property.SetLink(_queryXStore, props.ToArray());
@@ -483,10 +527,10 @@ namespace ModelGraphLibrary
 
         #region LookUpProperty  ===============================================
         static char[] _dotSplit = ".".ToCharArray();
-        internal bool TryLookUpProperty(Store store, string name, out Property prop, out NumericTerm term)
+        internal bool TryLookUpProperty(Store store, string name, out Property prop, out int index)
         {
             prop = null;
-            term = NumericTerm.None;
+            index = (int)NumericTerm.None;
 
             if (string.IsNullOrWhiteSpace(name)) return false;
 
@@ -514,12 +558,12 @@ namespace ModelGraphLibrary
                             var parts = name.Split(_dotSplit);
                             if (parts.Length == 2 && (string.Compare(parts[0], n, true) == 0))
                             {
-                                if (string.Compare(parts[1], "COUNT") == 0) { prop = cd; term = NumericTerm.Count; return true; }
-                                if (string.Compare(parts[1], "MIN") == 0) { prop = cd; term = NumericTerm.Min; return true; }
-                                if (string.Compare(parts[1], "MAX") == 0) { prop = cd; term = NumericTerm.Max; return true; }
-                                if (string.Compare(parts[1], "SUM") == 0) { prop = cd; term = NumericTerm.Sum; return true; }
-                                if (string.Compare(parts[1], "AVE") == 0) { prop = cd; term = NumericTerm.Ave; return true; }
-                                if (string.Compare(parts[1], "STD") == 0) { prop = cd; term = NumericTerm.Std; return true; }
+                                if (string.Compare(parts[1], "COUNT") == 0) { prop = cd; index = (int)NumericTerm.Count; return true; }
+                                if (string.Compare(parts[1], "MIN") == 0) { prop = cd; index = (int)NumericTerm.Min; return true; }
+                                if (string.Compare(parts[1], "MAX") == 0) { prop = cd; index = (int)NumericTerm.Max; return true; }
+                                if (string.Compare(parts[1], "SUM") == 0) { prop = cd; index = (int)NumericTerm.Sum; return true; }
+                                if (string.Compare(parts[1], "AVE") == 0) { prop = cd; index = (int)NumericTerm.Ave; return true; }
+                                if (string.Compare(parts[1], "STD") == 0) { prop = cd; index = (int)NumericTerm.Std; return true; }
                             }
                         }
                         else if (string.Compare(n, name, true) == 0) { prop = cd; return true; }

@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfInt16Array : ValuesOf<short[]>
+    public class ValueOfInt16Array : ValueOfType<short[]>
     {
         internal override ValueType ValueType { get { return ValueType.Int16Array; } }
         protected override bool TryParse(string input, out short[] value) { return Value.TryParse(input, out value); }

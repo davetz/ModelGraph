@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfCharArray : ValuesOf<char[]>
+    public class ValueOfCharArray : ValueOfType<char[]>
     {
         internal override ValueType ValueType { get { return ValueType.CharArray; } }
         protected override bool TryParse(string input, out char[] value) { return Value.TryParse(input, out value); }

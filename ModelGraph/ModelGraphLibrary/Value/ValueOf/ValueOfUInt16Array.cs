@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfUInt16Array : ValuesOf<ushort[]>
+    public class ValueOfUInt16Array : ValueOfType<ushort[]>
     {
         internal override ValueType ValueType { get { return ValueType.UInt16Array; } }
         protected override bool TryParse(string input, out ushort[] value) { return Value.TryParse(input, out value); }

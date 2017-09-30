@@ -499,7 +499,7 @@ namespace ModelGraphLibrary
         {
             if (EnumX_ColumnX.TryGetParent(col, out EnumX enu))
                 return new ItemModel(model, Trait.ComboProperty_M, level, item, col, enu, ComboColomn_X);
-            else if (col.ValueType == ValueType.Bool)
+            else if (col.Values.ValueType == ValueType.Bool)
                 return new ItemModel(model, Trait.CheckProperty_M, level, item, col, null, CheckColumn_X);
             else
                 return new ItemModel(model, Trait.TextProperty_M, level, item, col, null, TextColumn_M);
@@ -508,7 +508,7 @@ namespace ModelGraphLibrary
         {
             if (EnumX_ColumnX.TryGetParent(cx, out EnumX enu))
                 return new ItemModel(model, Trait.ComboProperty_M, level, item, cx, enu, ComboProperty_X);
-            else if (cx.ValueType == ValueType.Bool)
+            else if (cx.Values.ValueType == ValueType.Bool)
                 return new ItemModel(model, Trait.CheckProperty_M, level, item, cx, null, CheckProperty_X);
             else
                 return new ItemModel(model, Trait.TextProperty_M, level, item, cx, null, TextCompute_X);

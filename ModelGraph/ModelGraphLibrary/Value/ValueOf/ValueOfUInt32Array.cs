@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfUInt32Array : ValuesOf<uint[]>
+    public class ValueOfUInt32Array : ValueOfType<uint[]>
     {
         internal override ValueType ValueType { get { return ValueType.UInt32Array; } }
         protected override bool TryParse(string input, out uint[] value) { return Value.TryParse(input, out value); }

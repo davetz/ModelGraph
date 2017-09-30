@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfSingleArray : ValuesOf<float[]>
+    public class ValueOfSingleArray : ValueOfType<float[]>
     {
         internal override ValueType ValueType { get { return ValueType.SingleArray; } }
         protected override bool TryParse(string input, out float[] value) { return Value.TryParse(input, out value); }

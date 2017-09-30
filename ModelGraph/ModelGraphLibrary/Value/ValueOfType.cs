@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ModelGraphLibrary
 {
-    public abstract class ValuesOf<T> : Value
+    public abstract class ValueOfType<T> : Value
     {
         private T _default = default(T);
         private Dictionary<Item, T> _values;
@@ -188,134 +188,137 @@ namespace ModelGraphLibrary
         }
         #endregion
 
-        #region GetValue  =====================================================
-        internal override void GetValue(Item item, out bool value, short index = 0)
+        #region ColumnX-GetValue  =============================================
+        internal override void GetValue(Item item, out bool value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToBool(val);
         }
-        internal override void GetValue(Item item, out byte value, short index = 0)
+        internal override void GetValue(Item item, out byte value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToByte(val);
         }
-        internal override void GetValue(Item item, out sbyte value, short index = 0)
+        internal override void GetValue(Item item, out sbyte value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToSByte(val);
         }
-        internal override void GetValue(Item item, out int value, short index = 0)
+        internal override void GetValue(Item item, out int value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToInt32(val);
         }
-        internal override void GetValue(Item item, out uint value, short index = 0)
+        internal override void GetValue(Item item, out uint value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToUInt32(val);
         }
-        internal override void GetValue(Item item, out short value, short index = 0)
+        internal override void GetValue(Item item, out short value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToInt16(val);
         }
-        internal override void GetValue(Item item, out ushort value, short index = 0)
+        internal override void GetValue(Item item, out ushort value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToUInt16(val);
         }
-        internal override void GetValue(Item item, out long value, short index = 0)
+        internal override void GetValue(Item item, out long value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToInt64(val);
         }
-        internal override void GetValue(Item item, out ulong value, short index = 0)
+        internal override void GetValue(Item item, out ulong value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToUInt64(val);
         }
-        internal override void GetValue(Item item, out double value, short index = 0)
+        internal override void GetValue(Item item, out double value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToDouble(val);
         }
-        internal override void GetValue(Item item, out string value, short index = 0)
+        internal override void GetValue(Item item, out string value, int index = 0)
         {
             if (_values == null || !_values.TryGetValue(item, out T val)) val = _default;
             value = ToString(val);
         }
+        #endregion
 
-        internal override void GetValue(ComputeX cx, Item item, out bool value, short index = 0)
+        #region ComputeX-GetValue  ============================================
+
+        internal override void GetValue(ComputeX cx, Item item, out bool value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToBool(val);
             else
                 cx.GetChef().GetValue(cx, item, out value, index);
         }
-        internal override void GetValue(ComputeX cx, Item item, out byte value, short index = 0)
+        internal override void GetValue(ComputeX cx, Item item, out byte value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToByte(val);
             else
                 cx.GetChef().GetValue(cx, item, out value, index);
         }
-        internal override void GetValue(ComputeX cx, Item item, out sbyte value, short index = 0)
+        internal override void GetValue(ComputeX cx, Item item, out sbyte value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToSByte(val);
             else
                 cx.GetChef().GetValue(cx, item, out value, index);
         }
-        internal override void GetValue(ComputeX cx, Item item, out int value, short index = 0)
+        internal override void GetValue(ComputeX cx, Item item, out int value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToInt32(val);
             else
                 cx.GetChef().GetValue(cx, item, out value, index);
         }
-        internal override void GetValue(ComputeX cx, Item item, out uint value, short index = 0)
+        internal override void GetValue(ComputeX cx, Item item, out uint value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToUInt32(val);
             else
                 cx.GetChef().GetValue(cx, item, out value, index);
         }
-        internal override void GetValue(ComputeX cx, Item item, out short value, short index = 0)
+        internal override void GetValue(ComputeX cx, Item item, out short value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToInt16(val);
             else
                 cx.GetChef().GetValue(cx, item, out value, index);
         }
-        internal override void GetValue(ComputeX cx, Item item, out ushort value, short index = 0)
+        internal override void GetValue(ComputeX cx, Item item, out ushort value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToUInt16(val);
             else
                 cx.GetChef().GetValue(cx, item, out value, index);
         }
-        internal override void GetValue(ComputeX cx, Item item, out long value, short index = 0)
+        internal override void GetValue(ComputeX cx, Item item, out long value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToInt64(val);
             else
                 cx.GetChef().GetValue(cx, item, out value, index);
         }
-        internal override void GetValue(ComputeX cx, Item item, out ulong value, short index = 0)
+        internal override void GetValue(ComputeX cx, Item item, out ulong value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToUInt64(val);
             else
                 cx.GetChef().GetValue(cx, item, out value, index);
         }
-        internal override void GetValue(ComputeX cx, Item item, out double value, short index = 0)
+        internal override void GetValue(ComputeX cx, Item item, out double value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToDouble(val);
             else
                 cx.GetChef().GetValue(cx, item, out value, index);
         }
-        internal override void GetValue(ComputeX cx, Item item, out string value, short index = 0)
+        internal override void GetValue(ComputeX cx, Item item, out string value, int index = 0)
         {
             if (_values != null && _values.TryGetValue(item, out T val))
                 value = ToString(val);

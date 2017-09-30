@@ -1,9 +1,8 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfHexArray : ValuesOf<byte[]>
+    public class ValueOfByteArray : ValueOfType<byte[]>
     {
-        internal override ValueType ValueType { get { return ValueType.HexArray; } }
-
+        internal override ValueType ValueType { get { return ValueType.ByteArray; } }
         protected override bool TryParse(string input, out byte[] value) { return Value.TryParse(input, out value); }
 
         protected override bool ToBool(byte[] value) => Value.ToBool(value);

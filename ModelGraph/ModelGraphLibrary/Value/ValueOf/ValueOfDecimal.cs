@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfDecimal : ValuesOf<decimal>
+    public class ValueOfDecimal : ValueOfType<decimal>
     {
         internal override ValueType ValueType { get { return ValueType.Decimal; } }
         protected override bool TryParse(string input, out decimal value) { return Value.TryParse(input, out value); }

@@ -51,33 +51,14 @@ namespace ModelGraphLibrary
 
 
         // Add  =============================================================
-        internal override void Add(Item item)
-        {
-            var child = item as T;
-            if (child != null) Add(child);
-        }
-        internal void Add(T item)
-        {
-            _items.Add(item);
-        }
+        internal void Add(T item) => _items.Add(item);
+        internal override void Add(Item item) { if (item is T child) Add(child); }
 
         // Remove  ==========================================================
-        public override void Remove(Item item)
-        {
-            var child = item as T;
-            Remove(child);
-        }
-        internal void Remove(T item)
-        {
-            _items.Remove(item);
-        }
+        internal void Remove(T item) => _items.Remove(item);
+        public override void Remove(Item item) { if (item is T child) Remove(child); }
 
         // Insert  ============================================================
-        internal override void Insert(Item item, int index)
-        {
-            var child = item as T;
-            if (child != null) Insert(child, index);
-        }
         internal void Insert(T item, int index)
         {
             if (_items == null) _items = new List<T>();
@@ -89,37 +70,22 @@ namespace ModelGraphLibrary
             else
                 _items.Add(item);
         }
+        internal override void Insert(Item item, int index) { if (item is T child) Insert(child, index); }
 
         // Append  ============================================================
-        internal override void Append(Item item)
-        {
-            var child = item as T;
-            if (child != null) Append(child);
-        }
         internal void Append(T item)
         {
             if (_items == null) _items = new List<T>();
 
             _items.Add(item);
         }
+        internal override void Append(Item item) { if (item is T child) Append(child); }
 
         // IndexOf  ===========================================================
-        internal override int IndexOf(Item item)
-        {
-            var child = item as T;
-            return (child == null) ? -1 : IndexOf(child);
-        }
-        internal int IndexOf(T item)
-        {
-            return (Count > 0) ? _items.IndexOf(item) : -1;
-        }
+        internal int IndexOf(T item) => (Count > 0) ? _items.IndexOf(item) : -1;
+        internal override int IndexOf(Item item) => (item is T child) ? IndexOf(child) : -1;
 
         // Move  ==============================================================
-        internal override void Move(Item item, int index)
-        {
-            var child = item as T;
-            if (child != null) Move(child, index);
-        }
         internal void Move(T item, int index)
         {
             if (_items.Remove(item))
@@ -132,7 +98,7 @@ namespace ModelGraphLibrary
                     _items.Add(item);
             }
         }
-
+        internal override void Move(Item item, int index) { if (item is T child) Move(child, index); }
         #endregion
     }
 }

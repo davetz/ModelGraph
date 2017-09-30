@@ -1,6 +1,6 @@
 ﻿namespace ModelGraphLibrary
 {
-    public class ValuesOfString : ValuesOf<string>
+    public class ValueOfString : ValueOfType<string>
     {
         internal override ValueType ValueType { get { return ValueType.String; } }
         protected override bool TryParse(string input, out string value) { return Value.TryParse(input, out value); }

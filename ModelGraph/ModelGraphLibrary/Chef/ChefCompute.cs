@@ -25,10 +25,10 @@ namespace ModelGraphLibrary
         #endregion
 
         #region <Get/Set>SelectString  ========================================
-        internal ValueType GetNativeType(ComputeX cd)
+        internal ValueType GetValueType(ComputeX cx)
         {
-            var root = ComputeX_QueryX.GetChild(cd) as QueryX;
-            switch (cd.CompuType)
+            var root = ComputeX_QueryX.GetChild(cx);
+            switch (cx.CompuType)
             {
                 case CompuType.RowValue:
                     return (root.HasSelect) ? root.Select.ValueType : ValueType.None; ;
@@ -37,7 +37,7 @@ namespace ModelGraphLibrary
                     return (root.HasSelect) ? root.Select.ValueType : ValueType.None; ;
 
                 case CompuType.NumericValueSet:
-                    if (cd.NumericSet == NumericSet.Count)
+                    if (cx.NumericSet == NumericSet.Count)
                         return (AnyValueXHeads()) ? ValueType.String : ValueType.Invalid;
                     else
                         return (AnyValueXNumbers()) ? ValueType.String : ValueType.Invalid;
@@ -57,22 +57,22 @@ namespace ModelGraphLibrary
 
             bool AnyValueXSelects()
             {
-                var vd = root;
-                while (vd != null)
+                var qx = root;
+                while (qx != null)
                 {
-                    if (vd.HasSelect) return true;
-                    vd = QueryX_QueryX.GetChild(vd) as QueryX;
+                    if (qx.HasSelect) return true;
+                    qx = QueryX_QueryX.GetChild(qx) as QueryX;
                 }
                 return false;
             }
 
             bool AnyValueXNumbers()
             {
-                var vd = root;
-                while (vd != null)
+                var qx = root;
+                while (qx != null)
                 {
-                    if (vd.HasSelect && IsNumber(vd.Select.ValueType)) return true;
-                    vd = QueryX_QueryX.GetChild(vd) as QueryX;
+                    if (qx.HasSelect && IsNumber(qx.Select.ValueType)) return true;
+                    qx = QueryX_QueryX.GetChild(qx);
                 }
                 return false;
             }
@@ -92,73 +92,72 @@ namespace ModelGraphLibrary
                 }
             }
         }
-        internal string GetSelectString(ComputeX cd)
+        internal string GetSelectString(ComputeX cx)
         {
-            var root = ComputeX_QueryX.GetChild(cd) as QueryX;
+            var root = ComputeX_QueryX.GetChild(cx);
             return (root != null && root.HasSelect) ? root.SelectString : null;
         }
-        internal void SetSelectString(ComputeX cd, string value)
+        internal void SetSelectString(ComputeX cx, string value)
         {
-            var root = ComputeX_QueryX.GetChild(cd) as QueryX;
+            var root = ComputeX_QueryX.GetChild(cx);
             if (root != null) root.SelectString = value;
         }
         #endregion
 
         #region TrySetComputeTypeProperty  ====================================
-        private bool TrySetComputeTypeProperty(ComputeX cd, string value)
+        private bool TrySetComputeTypeProperty(ComputeX cx, string value)
         {
-            if (!Enum.TryParse<CompuType>(value, out cd.CompuType))
+            if (!Enum.TryParse<CompuType>(value, out cx.CompuType))
             {
                 return false;
             }
-            cd.Values.Clear();
+            cx.Values.Clear();
             return true;
         }
         #endregion
 
         #region TrySetNumericSetProperty  =====================================
-        private bool TrySetNumericSetProperty(ComputeX cd, string value)
+        private bool TrySetNumericSetProperty(ComputeX cx, string value)
         {
-            if (!Enum.TryParse<NumericSet>(value, out cd.NumericSet))
+            if (!Enum.TryParse<NumericSet>(value, out cx.NumericSet))
             {
                 return false;
             }
-            cd.Values.Clear();
+            cx.Values.Clear();
             return true;
         }
         #endregion
 
         #region SetComputeXProperty  ==========================================
-        private bool SetComputeXWhere(ComputeX cd, string value)
+        private bool SetComputeXWhere(ComputeX cx, string value)
         {
-            var vx = ComputeX_QueryX.GetChild(cd) as QueryX;
-            if (vx != null)
+            var qx = ComputeX_QueryX.GetChild(cx);
+            if (qx != null)
             {
-                vx.WhereString = value;
-                ValidateValueX(vx);
+                qx.WhereString = value;
+                ValidateValueX(qx);
             }
-            cd.Values.Clear();
+            cx.Values.Clear();
             return true;
         }
-        private bool SetComputeXSelect(ComputeX cd, string value)
+        private bool SetComputeXSelect(ComputeX cx, string value)
         {
-            var vx = ComputeX_QueryX.GetChild(cd) as QueryX;
-            if (vx != null)
+            var qx = ComputeX_QueryX.GetChild(cx) as QueryX;
+            if (qx != null)
             {
-                vx.SelectString = value;
-                ValidateValueX(vx);
+                qx.SelectString = value;
+                ValidateValueX(qx);
             }
-            cd.Values.Clear();
+            cx.Values.Clear();
             return true;
         }
         #endregion
 
         #region ValidateValueXChange  =========================================
-        private void ValidateValueXChange(QueryX vx)
+        private void ValidateValueXChange(QueryX qx)
         {
-            ValidateValueX(vx);
+            ValidateValueX(qx);
 
-            var qx = vx as QueryX;
             while (qx != null)
             {
                 var qx2 = QueryX_QueryX.GetParent(qx);
@@ -241,42 +240,42 @@ namespace ModelGraphLibrary
             value = false;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            if (cx.Values is ValuesOfBool v) v.SetValue(item, value);
+            if (cx.Values is ValueOfBool v) v.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out byte value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            if (cx.Values is ValuesOfByte v) v.SetValue(item, value);
+            if (cx.Values is ValueOfByte v) v.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out int value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            if (cx.Values is ValuesOfInt32 v) v.SetValue(item, value);
+            if (cx.Values is ValueOfInt32 v) v.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out short value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            if (cx.Values is ValuesOfInt16 v) v.SetValue(item, value);
+            if (cx.Values is ValueOfInt16 v) v.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out long value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            if (cx.Values is ValuesOfInt64 v) v.SetValue(item, value);
+            if (cx.Values is ValueOfInt64 v) v.SetValue(item, value);
         }
         internal void UpdateValueCache(Item item, ComputeX cx, out double value)
         {
             value = 0;
             var selector = GetRootSelect(cx);
             if (selector != null) selector.GetValue(item, out value);
-            if (cx.Values is ValuesOfDouble v) v.SetValue(item, value);
+            if (cx.Values is ValueOfDouble v) v.SetValue(item, value);
         }
         private WhereSelect GetRootSelect(ComputeX cx)
         {
@@ -313,7 +312,7 @@ namespace ModelGraphLibrary
                     GetCompositeResult(item, cx, out value);
                     break;
             }
-            if (cx.Values is ValuesOfString v) v.SetValue(item, value);
+            if (cx.Values is ValueOfString v) v.SetValue(item, value);
         }
         #endregion
 
@@ -341,7 +340,7 @@ namespace ModelGraphLibrary
                         {
                             cnt += tailSeg.ItemCount;
                         }
-                        if (cx.Values is ValuesOfDoubleArray v1) v1.SetValue(item, new double[] { cnt });
+                        if (cx.Values is ValueOfDoubleArray v1) v1.SetValue(item, new double[] { cnt });
                         break;
 
                     case NumericSet.Count_Min_Max:
@@ -359,7 +358,7 @@ namespace ModelGraphLibrary
                                 }
                             }
                         }
-                        if (cx.Values is ValuesOfDoubleArray v3) v3.SetValue(item, new double[] { cnt, min, max });
+                        if (cx.Values is ValueOfDoubleArray v3) v3.SetValue(item, new double[] { cnt, min, max });
 
                         break;
 
@@ -379,7 +378,7 @@ namespace ModelGraphLibrary
                                 }
                             }
                         }
-                        if (cx.Values is ValuesOfDoubleArray v4) v4.SetValue(item, new double[] { cnt, min, max, sum });
+                        if (cx.Values is ValueOfDoubleArray v4) v4.SetValue(item, new double[] { cnt, min, max, sum });
                         break;
 
                     case NumericSet.Count_Min_Max_Sum_Ave:
@@ -399,7 +398,7 @@ namespace ModelGraphLibrary
                             }
                         }
                         if (cnt > 0) ave = sum / cnt;
-                        if (cx.Values is ValuesOfDoubleArray v5) v5.SetValue(item, new double[] { cnt, min, max, sum, ave });
+                        if (cx.Values is ValueOfDoubleArray v5) v5.SetValue(item, new double[] { cnt, min, max, sum, ave });
                         break;
 
                     case NumericSet.Count_Min_Max_Sum_Ave_Std:
@@ -431,7 +430,7 @@ namespace ModelGraphLibrary
                             }
                             std = Math.Sqrt(vsum / vals.Count);
                         }
-                        if (cx.Values is ValuesOfDoubleArray v6) v6.SetValue(item, new double[] { cnt, min, max, sum, ave, std });
+                        if (cx.Values is ValueOfDoubleArray v6) v6.SetValue(item, new double[] { cnt, min, max, sum, ave, std });
                         break;
                 }
 
@@ -605,7 +604,7 @@ namespace ModelGraphLibrary
                 var cxList = _computeXStore.Items;
                 var qxQueue = new Queue<QueryX>();
                 var cxList2 = new List<ComputeX>();
-                foreach (var cx in cxList) { cx.SetNativeType(ValueType.None); }
+                foreach (var cx in cxList) { cx.Values = ValuesNone; }
                 var anyChange = true;
                 while (anyChange)
                 {
@@ -617,7 +616,7 @@ namespace ModelGraphLibrary
                             var qx = ComputeX_QueryX.GetChild(cx);
                             if (qx == null)
                             {
-                                cx.SetNativeType(ValueType.Invalid);
+                                cx.Values = ValuesInvalid;
                                 anyChange = true;
                             }
                             else
@@ -631,13 +630,12 @@ namespace ModelGraphLibrary
                                     var st = Store_ComputeX.GetParent(cx);
                                     if (st == null)
                                     {
-                                        cx.SetNativeType(ValueType.Invalid);
+                                        cx.Values = ValuesInvalid;
                                         anyChange = true;
                                     }
                                     else
                                     {
                                         qx.Select.Validate(st);
-                                        cx.SetNativeType(qx.Select.ValueType);
                                         anyChange = true;
                                     }
                                 }
@@ -650,51 +648,51 @@ namespace ModelGraphLibrary
         #endregion
 
         #region GetValue  =====================================================
-        internal void GetValue(ComputeX cx, Item item, out bool value, short index)
+        internal void GetValue(ComputeX cx, Item item, out bool value, int index)
         {
             value = false;
         }
-        internal void GetValue(ComputeX cx, Item item, out byte value, short index)
+        internal void GetValue(ComputeX cx, Item item, out byte value, int index)
         {
             value = 0;
         }
-        internal void GetValue(ComputeX cx, Item item, out sbyte value, short index)
+        internal void GetValue(ComputeX cx, Item item, out sbyte value, int index)
         {
             value = 0;
         }
-        internal void GetValue(ComputeX cx, Item item, out short value, short index)
+        internal void GetValue(ComputeX cx, Item item, out short value, int index)
         {
             value = 0;
         }
-        internal void GetValue(ComputeX cx, Item item, out ushort value, short index)
+        internal void GetValue(ComputeX cx, Item item, out ushort value, int index)
         {
             value = 0;
         }
-        internal void GetValue(ComputeX cx, Item item, out int value, short index)
+        internal void GetValue(ComputeX cx, Item item, out int value, int index)
         {
             value = 0;
         }
-        internal void GetValue(ComputeX cx, Item item, out uint value, short index)
+        internal void GetValue(ComputeX cx, Item item, out uint value, int index)
         {
             value = 0;
         }
-        internal void GetValue(ComputeX cx, Item item, out long value, short index)
+        internal void GetValue(ComputeX cx, Item item, out long value, int index)
         {
             value = 0;
         }
-        internal void GetValue(ComputeX cx, Item item, out ulong value, short index)
+        internal void GetValue(ComputeX cx, Item item, out ulong value, int index)
         {
             value = 0;
         }
-        internal void GetValue(ComputeX cx, Item item, out float value, short index)
+        internal void GetValue(ComputeX cx, Item item, out float value, int index)
         {
             value = 0;
         }
-        internal void GetValue(ComputeX cx, Item item, out double value, short index)
+        internal void GetValue(ComputeX cx, Item item, out double value, int index)
         {
             value = 0;
         }
-        internal void GetValue(ComputeX cx, Item item, out string value, short index)
+        internal void GetValue(ComputeX cx, Item item, out string value, int index)
         {
             value = string.Empty;
         }
