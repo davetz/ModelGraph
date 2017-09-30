@@ -18,7 +18,7 @@ namespace ModelGraphLibrary
         #region Property  =====================================================
         internal string InputString => GetText();
         internal bool IsValid => (_root != null) ? true : ((_parser == null) ? false : _parser.IsValid);
-        internal ValueType ValueType => (_root != null) ? _root.ValueType : ((_parser != null) ? _parser.NativeType : ValueType.Invalid);
+        internal ValueType ValueType => (_root != null) ? _root.ValueType : ((_parser != null) ? _parser.ValueType : ValueType.Invalid);
 
         private string GetText()
         {
@@ -71,7 +71,7 @@ namespace ModelGraphLibrary
         {
             _item = item;
             bool result = false;
-            if (IsValid) _root.GetValue(out result);
+            if (_root != null && _root.ValueType == ValueType.Bool) _root.GetValue(out result);
             return result;
         }
         internal void GetValue(Item item, out bool value)

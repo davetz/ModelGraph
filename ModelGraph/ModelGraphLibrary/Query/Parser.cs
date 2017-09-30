@@ -117,7 +117,7 @@ namespace ModelGraphLibrary
 
         #region IsValid, NativeType, CompositeFlags  ==========================
         internal bool IsValid => GetIsValid();
-        internal ValueType NativeType => GetNativeType();
+        internal ValueType ValueType => GetValueType();
         internal ParseFlag CompositeFlags => GetCompositeFlags();
         private bool GetIsValid()
         {
@@ -132,7 +132,7 @@ namespace ModelGraphLibrary
             }
             return true;
         }
-        private ValueType GetNativeType()
+        private ValueType GetValueType()
         {
             if (Step != null)
                 return Step.ValueType;
@@ -803,7 +803,7 @@ namespace ModelGraphLibrary
 
         static void Or1(Parser p)
         {
-            var type = p.Arguments[0].NativeType;
+            var type = p.Arguments[0].ValueType;
             if (type == ValueType.String)
                 new CONCAT(p);
             else if (type == ValueType.Bool)
@@ -811,7 +811,7 @@ namespace ModelGraphLibrary
         }
         static void Plus(Parser p)
         {
-            var type = p.Arguments[0].NativeType;
+            var type = p.Arguments[0].ValueType;
             if (type == ValueType.String)
                 new CONCAT(p);
             else if (type == ValueType.Bool)
