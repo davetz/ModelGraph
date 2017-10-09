@@ -46,8 +46,8 @@ namespace ModelGraphLibrary
         #endregion
 
         #region Flags  ========================================================
-        internal bool GetFlag(State flag) => (_flags & flag) != 0;
-        internal void SetFlag(State flag, bool value = true) { if (value) _flags |= flag; else _flags &= ~flag; }
+        private bool GetFlag(State flag) => (_flags & flag) != 0;
+        private void SetFlag(State flag, bool value = true) { if (value) _flags |= flag; else _flags &= ~flag; }
         internal bool HasFlags() => (_flags & State.Mask) != 0;
         internal ushort GetFlags() => (ushort)(_flags & State.Mask);
         internal void SetFlags(ushort flags) { _flags = ((State)flags & State.Mask); }

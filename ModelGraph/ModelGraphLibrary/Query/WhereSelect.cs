@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace ModelGraphLibrary
 {/*
@@ -7,71 +6,46 @@ namespace ModelGraphLibrary
     internal class WhereSelect
     {
         private Item _item;
-        private Step _root;
-        private Parser _parser;
+        private ComputeStep _root; // root of the expression tree
 
+        #region Constructor  ==================================================
         internal WhereSelect(string text)
         {
-            _parser = Parser.Create(text);
-        }
-
-        #region Property  =====================================================
-        internal string InputString => GetText();
-        internal bool IsValid => (_root != null) ? true : ((_parser == null) ? false : _parser.IsValid);
-        internal ValueType ValueType => (_root != null) ? _root.ValueType : ((_parser != null) ? _parser.ValueType : ValueType.Invalid);
-
-        private string GetText()
-        {
-            if (_parser != null)
-            {
-                return _parser.Text;
-            }
-            else if (_root != null)
-            {
-                var sb = new StringBuilder(100);
-                _root.GetText(sb);
-                return sb.ToString();
-            }
-            else
-            {
-                return null;
-            }
+            _root = Parser.CreateExpressionTree(text);
         }
         #endregion
 
-        #region Validate  =====================================================
-        internal void Validate(Store sto, string text)
-        {
-            _root = null;
-            _parser = Parser.Create(text);
-            Validate(sto);
-            
-        }
-        internal void Validate(Store sto)
-        {
-            _root = null;
+        #region Property  =====================================================
+        internal bool IsValid => _root.IsValid;
+        internal string InputString => GetText();
+        internal ValueType ValueType => _root.ValueType;
 
-            if (IsValid &&
-                _parser.TryValidate(sto, () => { return _item; }) &&
-                _parser.TrySimplify())
-            {
-                _root = _parser.Step;
-                if (_root == null && _parser.Children.Count == 1)
-                    _root = _parser.Children[0].Step;
-                if (_root == null)
-                    _parser.Error = ParseError.InvalidText;
-                else
-                    _parser = null;
-            }
+        private string GetText()
+        {
+            var sb = new StringBuilder(100);
+            _root.GetText(sb);
+            return sb.ToString();
         }
+        #endregion
+
+        #region TryResolve / TryValidate  =====================================
+        internal bool TryValidate(Store sto, string text)
+        {
+            _root = Parser.CreateExpressionTree(text);
+            return TryValidate(sto);
+        }
+
+        internal bool TryResolve() => _root.TryResolve();
+        internal bool TryValidate(Store sto) => _root.TryValidate(sto, () => _item);
         #endregion
 
         #region Matches / GetValue  ===========================================
         internal bool Matches(Item item)
         {
+            if (_root == null || _root.ValueType != ValueType.Bool) return false;
+
             _item = item;
-            bool result = false;
-            if (_root != null && _root.ValueType == ValueType.Bool) _root.GetValue(out result);
+            _root.GetValue(out bool result);
             return result;
         }
         internal void GetValue(Item item, out bool value)

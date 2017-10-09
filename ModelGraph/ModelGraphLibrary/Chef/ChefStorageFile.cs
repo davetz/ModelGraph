@@ -127,7 +127,6 @@ namespace ModelGraphLibrary
                     }
                 }
                 InitializeChoiceColumns();
-                ValidateAllSelectors();
                 ValidateQueryXStore();
             }
             catch (Exception ex)

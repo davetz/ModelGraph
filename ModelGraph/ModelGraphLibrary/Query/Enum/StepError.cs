@@ -3,9 +3,14 @@
 namespace ModelGraphLibrary
 {/*
  */
-    public enum ParseError : byte
+    public enum StepError : byte
     {
         None,
+
+        EmptyString,
+        UnbalancedQuotes,
+        UnbalancedParens,
+        InvalidExpression,
 
         MissingArgLHS,
         MissingArgRHS,
@@ -13,9 +18,8 @@ namespace ModelGraphLibrary
         InvalidArgsRHS,
 
         InvalidText,
-        InvalidString,
         InvalidNumber,
-        InvalidParens,
+        InvalidOperator,
 
         UnknownProperty,
     }

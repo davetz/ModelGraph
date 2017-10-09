@@ -20,32 +20,55 @@ namespace ModelGraphLibrary
         }
         #endregion
 
-        #region ValidateSelectors  ============================================
-        private void ValidateAllSelectors()
-        {
+        #region ValidateQueryXStore  ==========================================
+        /// <summary>
+        /// Validate all uses cases of queryX
+        /// </summary>
+        private void ValidateQueryXStore()
+        {/*
+            QueryX is used to traverse conditional relational paths, filtering table rows,
+            selecting graphic symbols, and compute values. These various used cases can 
+            overlap and have interdependancies. 
+            
+            This method will preform a comprehensive validation all cases. Because of 
+            posible interdependicies, it's necessary to persist until all unresolved
+            queryX's have been delt with.
+            
+            Circular dependanies and invalid where/select clauses will be identified.
+         */
             var anyChange = true;
             while (anyChange)
             {
                 anyChange = false;
-                foreach (var qx in _queryXStore.Items) { anyChange |= ValidateQueryX(qx); }
+                foreach (var qx in _queryXStore.Items)
+                {
+                    anyChange |= ValidateQueryX(qx);
+                }
             }
         }
-        private bool ValidateQueryX(QueryX sx)
+        private bool ValidateQueryX(QueryX qx)
         {
-            if (sx.Where == null) return false;
-            if (sx.Where.IsValid) return false;
+            var sto = GetQueryXTarget(qx);
+            if (qx.Where != null)
+            {
+                qx.Where.TryValidate(sto);
+            }
+            if (qx.Select != null)
+            {
+                qx.Select.TryValidate(sto);
+            }
 
-            GetHeadTail(sx, out Store head, out Store tail);
+            GetHeadTail(qx, out Store head, out Store tail);
             if (tail == null)
             {
-                sx.Where = null;
+                qx.Where = null;
                 return false;
             }
 
-            var prevNativeType = sx.Where.ValueType;
-            sx.Where.Validate(tail);
+            var prevNativeType = qx.Where.ValueType;
+            qx.Where.TryValidate(tail);
 
-            return (prevNativeType != sx.Where.ValueType);
+            return (prevNativeType != qx.Where.ValueType);
         }
         private bool ValidateValueX(QueryX vx)
         {
@@ -63,13 +86,13 @@ namespace ModelGraphLibrary
             if (vx.Where != null)
             {
                 var prevNativeType = vx.Where.ValueType;
-                vx.Where.Validate(tail);
+                vx.Where.TryValidate(tail);
                 anyChange = (prevNativeType != vx.Where.ValueType);
             }
             if (vx.Select != null)
             {
                 var prevNativeType = vx.Select.ValueType;
-                vx.Select.Validate(tail);
+                vx.Select.TryValidate(tail);
                 anyChange |= (prevNativeType != vx.Select.ValueType);
             }
             return anyChange;
@@ -160,6 +183,24 @@ namespace ModelGraphLibrary
         }
         #endregion
 
+        #region GetQueryXTarget  ==============================================
+        internal Store  GetQueryXTarget(QueryX qx)
+        {
+            Store target = null;
+            var re = Relation_QueryX.GetParent(qx);
+            if (re != null)
+            {
+                GetHeadTail(re, out Store head, out target);
+                if (qx.IsReversed) { target = head; }
+            }
+            else
+            {
+                target = Store_QueryX.GetParent(qx);
+            }
+            return target;
+        }
+        #endregion
+
         #region GetHeadTail  ==================================================
         internal void GetHeadTail(QueryX sx, out Store head, out Store tail)
         {
@@ -218,17 +259,6 @@ namespace ModelGraphLibrary
         }
         #endregion
 
-        #region ValidateQueryXStore  ==========================================
-        private void ValidateQueryXStore()
-        {
-            var qxStore = _queryXStore.Items;
-            foreach (var qx in qxStore)
-            {
-                qx.IsTail = QueryX_QueryX.HasNoChildren(qx);
-                qx.IsRoot = Store_QueryX.HasParentLink(qx);
-            }
-        }
-        #endregion
 
         #region CreateQueryX  =================================================
         private QueryX CreateQueryX(ViewX vx, Store st)

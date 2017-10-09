@@ -45,12 +45,14 @@
         DoubleArray = 28,
         DecimalArray = 29,
                             // <== add more types here, then modify the method Value.Create()
-        MaximumType = 30,   // loader integrity check, increase this if more types are added
+        MaximumType = 30,   // valid valueType < ValueType.MaximumType (loader integrety check)
 
-        None = 95,          // a computeX prior to validation
-        Invalid = 96,       // a computeX's select or where clause is invalid
-        Circular = 97,      // a computeX is attempting to create a circular reference cycle 
-        Unresolved = 98,    // a computeX's value type is currently unkown
-        InternalEnum = 99,  // used for internal enums
+        None = 65,          // a computeX prior to validation or if a Query without Where and Select clauses
+        IsInvalid = 66,     // a computeX's select or where clause is invalid
+        IsCircular = 67,    // a computeX is attempting to create a circular reference cycle 
+        IsUnresolved = 68,  // a computeX's value type is currently unkown
+        IsParseError = 69,  // the parser aborted leaving this invalid computeStep for error reporting
+
+        InternalEnum = 75,  // used for internal enums
     }
 }

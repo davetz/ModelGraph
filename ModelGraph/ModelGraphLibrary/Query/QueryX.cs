@@ -14,6 +14,7 @@ namespace ModelGraphLibrary
         internal Connect Connect1;
         internal Connect Connect2;
         internal byte ExclusiveKey;
+        private PFlag _flags;
 
         #region Constructor  ==================================================
         internal QueryX() { } // parameterless constructor required for ValueX
@@ -37,6 +38,45 @@ namespace ModelGraphLibrary
             Guid = guid;
 
             owner.Add(this);
+        }
+        #endregion
+
+        #region Validation  ===================================================
+        [Flags]
+        private enum PFlag : byte //private validation state
+        {
+            Reset = 0,
+            Completed = 0x1,
+            InvalidRef = 0x2,
+            CircularRef = 0x4,
+            UnresolvedRef = 0x8,
+            InvalidSyntax = 0x10,
+            ErrorMask = InvalidRef | CircularRef | InvalidSyntax,
+        } 
+        private bool GetFlag(PFlag flag) => (_flags & flag) != 0;
+        private void SetFlag(bool val, PFlag flag) { if (val) _flags |= flag; else _flags &= ~flag; }
+
+        internal bool IsResolved => HasCompleted || HasError; 
+        internal bool HasError => (_flags & PFlag.ErrorMask) != 0;
+
+        internal bool HasCompleted { get { return GetFlag(PFlag.Completed); } set { SetFlag(value, PFlag.Completed); } }
+        internal bool HasInvalidRef { get { return GetFlag(PFlag.InvalidRef); } set { SetFlag(value, PFlag.InvalidRef); } }
+        internal bool HasCircularRef { get { return GetFlag(PFlag.CircularRef); } set { SetFlag(value, PFlag.CircularRef); } }
+        internal bool HasUnresolvedRef { get { return GetFlag(PFlag.UnresolvedRef); } set { SetFlag(value, PFlag.UnresolvedRef); } }
+        internal bool HasInvalidSyntax { get { return GetFlag(PFlag.InvalidSyntax); } set { SetFlag(value, PFlag.InvalidSyntax); } }
+        internal void Validate(Store store, bool firstPass = false)
+        {
+            if (firstPass)
+            {
+                _flags = PFlag.Reset;
+                if (Where != null && !Where.TryValidate(store)) HasInvalidSyntax = true;
+                if (Select != null && !Select.TryValidate(store)) HasInvalidSyntax = true;
+                return;
+            }
+            else
+            {
+
+            }
         }
         #endregion
 

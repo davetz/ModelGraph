@@ -3,71 +3,71 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace ModelGraphLibrary
-{/* 
-    Parse an algebraic expression string and recursivly build a parse
-    tree of elemental steps. 
-
-    If the input expression string is invalid the parser aborts and the
-    incomplete parse tree is kept arround for error reporting. However,  
-    if there were no errors the parser tree and original expression string
-    are destroyed. Whenever needed a properly formatted expression string
-    can be created from the expression tree. The benifit of this is it 
-    produces a standard expressing string format and also it solves the 
-    problem of what happens when someone renames a column not knowing that
-    it was hardcoded in the expression string.
-    (the expression tree references the property object and not it's name)
- */
+{
     /// <summary>
     /// Parse a string and create an expession tree
     /// </summary>
     internal class Parser
     {
-        internal Step Step;
-        internal Parser Parent;
+        internal ComputeStep Step;
+        internal EvaluateParse Evaluate;
         internal List<Parser> Children = new List<Parser>(4);
-        internal List<Parser> Arguments = new List<Parser>(4);
+        internal bool IsDone; // keep track of which parser nodes have already been processed
 
-        internal string Text;
-        internal int Index1;
-        internal int Index2;
-
-        private ParseFlag _flags;
-        internal ParseError Error;
-        internal StepType StepType;
- 
-        #region Constructor  ==================================================
-        public static Parser Create(string text)
+        public static ComputeStep CreateExpressionTree(string text)
         {
-            var p = new Parser(text).RemoveRedundantParens();
-            p.HasParens = false;
-            p.ResolveStepArguments();
-            return p;
+            var p = new Parser(text);   // create a parser tree
+
+            p = p.RemoveRedundantParens(); // remove redundant parentheses
+
+            p.Step.HasParens = false;   // not appropriate for the root
+            p.Step.HasNewLine = false;  // not appropriate for the root
+
+            p.TryAssignInputs();        // prune parse tree and assign step inputs
+
+            return p.Step;              // return the root of the expression tree
         }
+
+        #region Constructor  ==================================================
         protected Parser(string text)
         {
-            Text = text;
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                Text = string.Empty;
-                Error = ParseError.InvalidText;
-                return;
-            }
-            if (HasInvalidString()) return;
-            if (HasInvalidParens()) return;
-            if (!TryParse()) return;
-        }
-        protected Parser(Parser parent, string text, StepType parseType, bool hasParens = false)
-        {
-            Parent = parent;
-            Text = text;
-            StepType = parseType;
-            HasParens = hasParens;
+            Evaluate = new EvaluateParse(text);
+            Step = new ComputeStep(Evaluate);
 
-            switch (parseType)
+            if (Evaluate.IsEmpty)
             {
-                case StepType.None:
+                Step.Error = StepError.EmptyString;
+                Step.ParseAborted = true;
+            }
+            else if (Evaluate.HasUnbalancedQuotes())
+            {
+                Step.Error = StepError.UnbalancedQuotes;
+                Step.ParseAborted = true;
+            }
+            else if (Evaluate.HasUnbancedParens())
+            {
+                Step.Error = StepError.UnbalancedParens;
+                Step.ParseAborted = true;
+            }
+            else
+            {
+                TryParse();
+            }
+        }
+        protected Parser(string text, StepType stepType, bool hasNewLine = false, bool hasParens = false)
+        {
+            Step = new ComputeStep(stepType);
+            Evaluate = new EvaluateParse(text);
+
+            Step.HasParens = hasParens;
+            Step.HasNewLine = hasNewLine;
+
+            switch (stepType)
+            {
+                case StepType.Parse:
                 case StepType.List:
                 case StepType.Vector:
+                    Step.Evaluate = Evaluate;
                     TryParse();
                     break;
 
@@ -75,7 +75,7 @@ namespace ModelGraphLibrary
                     break;
 
                 case StepType.String:
-                    Step = new STRING(this, Text);
+                    Step.Evaluate = new EvaluateString(Step, text);
                     break;
 
                 case StepType.Double:
@@ -91,165 +91,160 @@ namespace ModelGraphLibrary
                     break;
 
                 case StepType.Property:
+                    Step.Evaluate = Evaluate; // the property name is needed by Step.TryValidate() 
+                    Step.IsPropertyRef = true;
                     break;
 
                 default:
                     break;
             }
-        }
-        #endregion
 
-        #region Flags  ========================================================
-        private bool GetFlag(ParseFlag flag) => (_flags & flag) != 0;
-        private void SetFlag(bool val, ParseFlag flag) { if (val) _flags |= flag; else _flags &= ~flag; }
-
-        public bool IsDone { get { return GetFlag(ParseFlag.IsDone); } set { SetFlag(value, ParseFlag.IsDone); } }
-        public bool IsWierd { get { return GetFlag(ParseFlag.IsWierd); } set { SetFlag(value, ParseFlag.IsWierd); } }
-        public bool IsBatched { get { return GetFlag(ParseFlag.IsBatched); } set { SetFlag(value, ParseFlag.IsBatched); } }
-        public bool IsNegated { get { return GetFlag(ParseFlag.IsNegated); } set { SetFlag(value, ParseFlag.IsNegated); } }
-        public bool HasParens { get { return GetFlag(ParseFlag.HasParens); } set { SetFlag(value, ParseFlag.HasParens); } }
-        public bool HasNewLine { get { return GetFlag(ParseFlag.HasNewLine); } set { SetFlag(value, ParseFlag.HasNewLine); } }
-        public bool IsUnresolved { get { return GetFlag(ParseFlag.IsUnresolved); } set { SetFlag(value, ParseFlag.IsUnresolved); } }
-        public bool IsInvalidRef { get { return GetFlag(ParseFlag.IsInvalidRef); } set { SetFlag(value, ParseFlag.IsInvalidRef); } }
-        public bool IsCircularRef { get { return GetFlag(ParseFlag.IsCircularRef); } set { SetFlag(value, ParseFlag.IsCircularRef); } }
-        #endregion
-
-
-        #region IsValid, NativeType, CompositeFlags  ==========================
-        internal bool IsValid => GetIsValid();
-        internal ValueType ValueType => GetValueType();
-        internal ParseFlag CompositeFlags => GetCompositeFlags();
-        private bool GetIsValid()
-        {
-            if (Error != ParseError.None) return false;
-            foreach (var child in Children)
+            #region TryAddLiteralNumber  ==========================================
+            bool TryAddLiteralNumber(bool hasDecimalPoint = false)
             {
-                if (child.Error != ParseError.None) return false;
-                foreach (var arg in child.Arguments)
+                if (double.TryParse(Evaluate.Text, out double val))
                 {
-                    if (arg.Error != ParseError.None) return false;
+                    if (hasDecimalPoint)
+                    {
+                        Step.Evaluate = new EvaluateDouble(Step, val);
+                    }
+                    else
+                    {
+                        if (val <= sbyte.MaxValue)
+                            Step.Evaluate = new EvaluateSByte(Step, val);
+                        else if (val <= short.MaxValue)
+                            Step.Evaluate = new EvaluateInt16(Step, val);
+                        else if (val <= int.MaxValue)
+                            Step.Evaluate = new EvaluateInt32(Step, val);
+                        else if (val <= long.MaxValue)
+                            Step.Evaluate = new EvaluateInt64(Step, val);
+                        else
+                            Step.Evaluate = new EvaluateDouble(Step, val);
+                    }
+                    return true;
                 }
+                else
+                {
+                    Step.Error = StepError.InvalidNumber;
+                    Step.Evaluate = Evaluate;
+                }
+                return false;
             }
-            return true;
-        }
-        private ValueType GetValueType()
-        {
-            if (Step != null)
-                return Step.ValueType;
+            #endregion
 
-            var flags = GetCompositeFlags();
-            if ((flags & ParseFlag.IsCircularRef) != 0)
-                return ValueType.Circular;
-
-            if ((flags & ParseFlag.IsUnresolved) != 0)
-                return ValueType.Unresolved;
-
-            if ((flags & ParseFlag.IsInvalidRef) != 0)
-                return ValueType.Invalid;
-
-            return ValueType.None;
-        }
-        private ParseFlag GetCompositeFlags()
-        {
-            var flags = _flags;
-            foreach (var child in Children)
+            #region TryAddLiteralBitField  ========================================
+            bool TryAddLiteralBitField()
             {
-                flags |= GetCompositeFlags();
-                foreach (var arg in child.Arguments)
+                ulong val = 0;
+                var chars = Evaluate.Text.ToLower().ToCharArray();
+                var N = chars.Length;
+                if (N < 3 || chars[0] != '0' || chars[1] != 'x')
                 {
-                    flags |= arg.GetCompositeFlags();
+                    Step.Error = StepError.InvalidNumber;
+                    return false;
                 }
+                for (int i = 2; i < N; i++)
+                {
+                    var c = chars[i];
+
+                    val = val << 4;
+
+                    if (c == '1') val += 1;
+                    else if (c == '2') val += 2;
+                    else if (c == '3') val += 3;
+                    else if (c == '4') val += 4;
+                    else if (c == '5') val += 5;
+                    else if (c == '6') val += 6;
+                    else if (c == '7') val += 7;
+                    else if (c == '8') val += 8;
+                    else if (c == '9') val += 9;
+                    else if (c == 'a') val += 10;
+                    else if (c == 'b') val += 11;
+                    else if (c == 'c') val += 12;
+                    else if (c == 'd') val += 13;
+                    else if (c == 'e') val += 14;
+                    else if (c == 'f') val += 15;
+                    else if (c != '0')
+                    {
+                        Step.Error = StepError.InvalidNumber;
+                        Step.Evaluate = Evaluate;
+                        return false;
+                    }
+                }
+
+                if (val <= byte.MaxValue)
+                    Step.Evaluate = new EvaluateByte(Step, val);
+                else if (val <= ushort.MaxValue)
+                    Step.Evaluate = new EvaluateUInt16(Step, val);
+                else if (val <= uint.MaxValue)
+                    Step.Evaluate = new EvaluateUInt32(Step, val);
+                else
+                    Step.Evaluate = new EvaluateUInt64(Step, val);
+
+                return true;
             }
-            return flags;
-        }
-
-        #endregion
-
-        #region HasInvalidString  =============================================
-        bool HasInvalidString()
-        {
-            var last = -1;
-            var isOn = false;
-            for (int i = 0; i < Text.Length; i++)
-            {
-                var c = Text[i];
-                if (c == '"')
-                {
-                    last = i;
-                    isOn = !isOn;
-                }
-            }
-            if (!isOn) return false;
-
-            Index1 = last;
-            Index2 = Text.Length;
-            Error = ParseError.InvalidString;
-            return true;
-        }
-        #endregion
-
-        #region HasInvalidParens  =============================================
-        bool HasInvalidParens()
-        {
-            var count = 0;
-            var first = -1;
-            var isOn = false;
-            for (int i = 0; i < Text.Length; i++)
-            {
-                var c = Text[i];
-                if (c == '"') isOn = !isOn;
-                if (isOn) continue;
-
-                if (c == '(')
-                {
-                    if (count == 0) first = i;
-                    count++;
-                }
-                if (c == ')')
-                {
-                    if (first < 0) first = i;
-                    count--;
-                }
-            }
-            if (count == 0) return false;
-
-            if (first >= 0) Index1 = first;
-            Index2 = Text.Length;
-            Error = ParseError.InvalidParens;
-            return true;
+            #endregion
         }
         #endregion
 
+
+        #region RemoveRedundantParens  ========================================
+        internal Parser RemoveRedundantParens()
+        {/*
+            recursively descend the parse tree and at each node conditionally
+            replace it's child node with its grandchild. This is necessary
+            when the expression string contains redundant parentheses. 
+         */
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var c = Children[i];
+                Children[i] = c.RemoveRedundantParens(); //<- - - recursive depth-first traversal
+            }
+            if (Step.StepType != StepType.Parse || Children.Count != 1) return this;
+
+            // propagate the flags to next generation
+
+            Children[0].Step.HasParens |= Step.HasParens;
+            Children[0].Step.HasNewLine |= Step.HasNewLine;
+
+            // effectively remove this redunant parser from the tree
+
+            return  Children[0];
+        }
+        #endregion
 
         #region TryParse  =====================================================
         /* 
             Parse an expression string (or substring) and recursivly build a 
-            tree of elemental parse steps.
+            tree of elemental parse steps. return
         */
-        bool TryParse()
+        void TryParse()
         {
-            while (Index1 < Text.Length)
+            var e = Evaluate; // shorthand reference
+            var hasNewLine = false;
+
+            while (e.CanGetHead)
             {
-                var c = Text[Index1];
+                var c = e.HeadChar;
                 if (char.IsWhiteSpace(c))
                 {// - - - - - - - - - - - - - - - - - - - - ->  White Space
-                    Index1++;
+                    e.AdvanceHead(); // ignore white space
                 }
 
                 else if (c == ',')
                 {// - - - - - - - - - - - - - - - - - - - - ->  Argument Separator
-                    Index1++;
+                    e.AdvanceHead();
                 }
 
 
                 else if (char.IsDigit(c))
                 {// - - - - - - - - - - - - - - - - - - - - ->  Numeric Literal
-                    Index2 = (Index1 + 1);
+                    e.SetTail();
                     bool isDouble = false;
                     bool isHex = false;
-                    while (Index2 < Text.Length)
+                    while (e.CanGetTail)
                     {//- - - - - - - - - - - - - - - - - - - find the end
-                        var t = char.ToLower(Text[Index2]);
+                        var t = char.ToLower(e.TailChar);
                         if (t == '.') isDouble = true;
                         else if (t == 'x') isHex = true;
                         else if (!char.IsDigit(t))
@@ -257,84 +252,92 @@ namespace ModelGraphLibrary
                             if (!isHex) break;
                             if (t != 'a' && t != 'b' && t != 'c' && t != 'd' && t != 'e' && t != 'f') break;
                         }
-                        Index2++;
+                        e.AdvanceTail();
                     }
                     var stepType = isDouble ? StepType.Double : (isHex) ? StepType.BitField : StepType.Integer;
-                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), stepType));
-                    Index1 = Index2;
+
+                    Children.Add(new Parser(e.HeadToTailString, stepType, hasNewLine));
+
+                    hasNewLine = false;
+                    e.SetNextHead();
                 }
 
 
                 else if (c == '"')
                 {// - - - - - - - - - - - - - - - - - - - - ->  String Literal
-                    Index1 = Index2 = (Index1 + 1);
-                    while (Text[Index2] != '"')
+                    e.SetNextHeadTail();
+                    while (e.TailChar != '"')
                     {//- - - - - - - - - - - - - - - - - - find the end
-                        Index2++;
+                        e.AdvanceTail();
                     }
 
-                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.String));
-                    Index1 = (Index2 + 1);
+                    Children.Add(new Parser(e.HeadToTailString, StepType.String, hasNewLine));
+                    hasNewLine = false;
+
+                    e.AdvanceTail();
+                    e.SetNextHead();
                 }
 
 
                 else if (operatorString.Contains(c))
                 {// - - - - - - - - - - - - - - - - - - - - ->  Operator
-                    Index2 = (Index1 + 1);
-                    while (Index2 < Text.Length)
+                    e.SetNextHeadTail();
+                    while (e.CanGetTail)
                     {//- - - - - - - - - - - - - - - - - - find the end
-                        var t = Text[Index2];
+                        var t = e.TailChar;
                         if (!operatorString.Contains(t)) break;
-                        Index2++;
+                        e.AdvanceTail();
                     }
 
-                    var key = Text.Substring(Index1, Index2 - Index1);
+                    var key = e.HeadToTailString;
                     if (operatorParseType.TryGetValue(key, out StepType parseType))
                     {
-                        Children.Add(new Parser(this, key, parseType));
-                        Index1 = Index2;
+                        Children.Add(new Parser(key, parseType, hasNewLine));
+
+                        hasNewLine = false;
+                        e.SetNextHead();
                     }
                     else
                     {
-                        Error = ParseError.InvalidText;
-                        return false;
+                        Step.Error = StepError.InvalidOperator;
+                        Step.ParseAborted = true;
+                        return;
                     }
                 }
 
 
                 else if (char.IsLetter(c))
                 {// - - - - - - - - - - - - - - - - - - - - ->  Function or Property
-                    Index2 = (Index1 + 1);
-                    while (Index2 < Text.Length)
+                    e.SetTail();
+                    while (e.CanGetHead)
                     {//- - - - - - - - - - - - - - - - - - find the end
-                        var t = Text[Index2];                        
+                        var t = e.TailChar;
                         if (!(char.IsLetterOrDigit(t) || t == '.' || t == '_')) break;
-                        Index2++;
+                        e.AdvanceTail();
                     }
 
-                    var key = Text.Substring(Index1, Index2 - Index1).ToLower();
+                    var key = e.HeadToTailString.ToLower();
+
                     if (functionParseType.TryGetValue(key, out StepType parseType))
-                    {
-                        Children.Add(new Parser(this, key, parseType));
-                        Index1 = Index2;
-                    }
+                        Children.Add(new Parser(key, parseType, hasNewLine));
+
                     else
-                    {
-                        Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.Property));
-                        Index1 = Index2;
-                    }
+                        Children.Add(new Parser(e.HeadToTailString, StepType.Property, hasNewLine));
+
+                    hasNewLine = false;
+                    e.SetNextHead();
                 }
 
 
                 else if (c == '(')
                 {// - - - - - - - - - - - - - - - - - - - - ->  Parethetical
-                    Index1 = Index2 = (Index1 + 1);
+                    e.SetNextHeadTail();
                     var count = 1;
                     var onString = false;
                     var hasComma = false;
                     while (count > 0)
                     {//- - - - - - - - - - - - - - - - - find the end
-                        var t = Text[Index2];
+                        var t = e.TailChar;
                         if (t == '"')
                             onString = !onString;
                         if (!onString)
@@ -346,27 +349,31 @@ namespace ModelGraphLibrary
                             else if (t == ',')
                                 hasComma = true;
                         }
-                        Index2++;
+                        e.AdvanceTail();
                     }
 
-                    Index2--;
-                    if (hasComma)
-                        Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.List));
-                    else
-                        Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.None, true));
+                    e.DecrementTail(); // don't include the trailing closing paren
 
-                    Index1 = Index2 + 1;
+                    if (hasComma)
+                        Children.Add(new Parser(e.HeadToTailString, StepType.List, hasNewLine));
+
+                    else
+                        Children.Add(new Parser(e.HeadToTailString, StepType.Parse, hasNewLine, true));
+
+                    hasNewLine = false;
+                    e.AdvanceTail();
+                    e.SetNextHead();
                 }
 
 
                 else if (c == '{')
                 {// - - - - - - - - - - - - - - - - - - - - ->  Vector 
-                    Index1 = Index2 = (Index1 + 1);
+                    e.SetNextHeadTail();
                     var count = 1;
                     var onString = false;
                     while (count > 0)
                     {//- - - - - - - - - - - - - - - - - - find the end
-                        var t = Text[Index2];
+                        var t = e.TailChar;
                         if (t == '"')
                             onString = !onString;
                         if (!onString)
@@ -376,112 +383,109 @@ namespace ModelGraphLibrary
                             else if (t == '}')
                                 count--;
                         }
-                        Index2++;
+                        e.AdvanceTail();
                     }
 
-                    Index2--;
-                    Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.Vector, true));
+                    e.DecrementTail(); // don't include the trailing closing curly brace
 
-                    Index1 = Index2 + 1;
+                    Children.Add(new Parser(e.HeadToTailString, StepType.Vector, hasNewLine, true));
+
+                    hasNewLine = false;
+                    e.AdvanceTail();
+                    e.SetNextHead();
                 }
 
 
                 else if (newLineString.Contains(c))
                 {// - - - - - - - - - - - - - - - - - - - - ->  New Line
-                    Index2 = (Index1 + 1);
-                    while (Index2 < Text.Length)
+                    e.SetTail();
+                    while (e.CanGetTail)
                     {//- - - - - - - - - - - - - - - - - - find the end
-                        var t = Text[Index2];
+                        var t = e.TailChar;
                         if (!newLineString.Contains(t)) break;
-                        Index2++;
+                        e.AdvanceTail();
                     }
 
-                    var key = Text.Substring(Index1, Index2 - Index1);
+                    var key = e.HeadToTailString;
                     if (key == newLineString)
                     {
-                        Children.Add(new Parser(this, Text.Substring(Index1, Index2 - Index1), StepType.NewLine));
-                        Index1 = Index2;
+                        hasNewLine = true; //- - - - - will be used by the next child 
+                        e.SetNextHead();
                     }
                     else
                     {
-                        Error = ParseError.InvalidText;
-                        return false;
+                        Step.Error = StepError.InvalidText;
+                        Step.ParseAborted = true;
+                        return;
                     }
                 }
 
 
                 else
                 {// - - - - - - - - - - - - - - - - - - - - ->  Invalid Text
-                    Error = ParseError.InvalidText;
-                    return false;
+                    Step.Error = StepError.InvalidText;
+                    Step.ParseAborted = true;
+                    return;
                 }
             }
-            return IsValid;
         }
 
         #endregion
 
-        #region RemoveRedundantParens  ========================================
-        internal Parser RemoveRedundantParens()
-        {/*
-            recursively descend the parse tree and at each node conditionally
-            replace it's child node with its grand child 
-         */
-            for (int i = 0; i < Children.Count; i++)
-            {
-                var c = Children[i];
-                Children[i] = c.RemoveRedundantParens();
-            }
-            return (StepType != StepType.None || Children.Count != 1) ? this : Children[0];
-        }
-        #endregion
-
-        #region ResolveStepArguments  =========================================
-        bool ResolveStepArguments()
+        #region TryAssignInputs  ==============================================
+        bool TryAssignInputs()
         {
             if (Children.Count == 0) return true;
 
             ResolveNagation();
+
             foreach (var child in Children)
             {
-                if (!child.ResolveStepArguments()) return false;
+                if (!child.TryAssignInputs()) return false;
             }
+
+            var hitList = new List<Parser>(4);
+            var inputList = new List<ComputeStep>(4);
+
             while (TryFindNextOperaor(out int index))
             {
                 var p = Children[index];
                 p.IsDone = true;
 
-                var parm = StepTypeParm[p.StepType];
-                if (parm.HasLHS && index < 1)
+                var type = StepTypeParm[p.Step.StepType];
+                if (type.HasLHS && index < 1)
                 {
-                    p.Error = ParseError.MissingArgLHS;
+                    p.Step.Error = StepError.MissingArgLHS;
                     return false;
                 }
-                if (parm.HasRHS && index >= (Children.Count - 1))
+                if (type.HasRHS && index >= (Children.Count - 1))
                 {
-                    p.Error = ParseError.MissingArgRHS;
+                    p.Step.Error = StepError.MissingArgRHS;
                     return false;
                 }
-                List<Parser> hitList = new List<Parser>(4);
-                if (parm.HasLHS)
+
+                hitList.Clear();
+                inputList.Clear();
+
+                if (type.HasLHS)
                 {
-                    p.Arguments.Add(Children[index - 1]);
+                    inputList.Add(Children[index - 1].Step);
                     hitList.Add(Children[index - 1]);
                 }
-                if (parm.HasRHS)
+                if (type.HasRHS)
                 {
-                    p.Arguments.Add(Children[index + 1]);
+                    inputList.Add(Children[index + 1].Step);
                     hitList.Add(Children[index + 1]);
-                    if (parm.CanBatch)
+                    if (type.CanBatch)
                     {
                         for (int i = index + 2; i < (Children.Count - 1); i += 2)
                         {
-                            if (Children[i].StepType == p.StepType)
+                            if (Children[i].Step.StepType == p.Step.StepType)
                             {
                                 p.IsDone = true;
                                 hitList.Add(Children[i]);
                                 hitList.Add(Children[i + 1]);
-                                p.Arguments.Add(Children[i + 1]);
+                                inputList.Add(Children[i + 1].Step);
                             }
                             else
                             {
@@ -490,227 +494,96 @@ namespace ModelGraphLibrary
                         }
                     }
                 }
-                foreach (var hit in hitList)
-                {
-                    Children.Remove(hit);
-                }
+
+                if (inputList.Count > 0) p.Step.Inputs = inputList.ToArray();
+                foreach (var hit in hitList) { Children.Remove(hit); }
             }
             return true;
-        }
-        #endregion
 
-        #region ResolveNegation  ==============================================
-        void ResolveNagation()
-        {
-            if (Children.Count > 1)
+            #region ResolveNegation  ==============================================
+            void ResolveNagation()
             {
-                var i = 0;
-                var N = Children.Count - 1;
-
-                while (i < N)
+                if (Children.Count > 1)
                 {
-                    var st = Children[i].StepType;
-                    if (i == 0)
+                    var i = 0;
+                    var N = Children.Count - 1;
+
+                    while (i < N)
                     {
-                        switch (st)
+                        var st = Children[i].Step.StepType;
+                        if (i == 0)
                         {
-                            case StepType.Not:
-                            case StepType.Minus:
-                            case StepType.Negate:
-                                Children[i + 1].IsNegated = true;
-                                Children.RemoveAt(i);
-                                N--;
-                                break;
+                            switch (st)
+                            {
+                                case StepType.Not:
+                                case StepType.Minus:
+                                case StepType.Negate:
+                                    Children[i + 1].Step.IsNegated = true;
+                                    Children.RemoveAt(i);
+                                    N--;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch (st)
+                            {
+                                case StepType.Plus:
+                                case StepType.Minus:
+                                case StepType.Divide:
+                                case StepType.Multiply:
+                                    if (i + 2 > N) return;
+                                    if (Children[i + 1].Step.StepType == StepType.Minus)
+                                    {
+                                        Children[i + 2].Step.IsNegated = true;
+                                        Children.RemoveAt(i + 1);
+                                        N--;
+                                        i++;
+                                    }
+                                    else if (Children[i + 1].Step.StepType == StepType.Plus)
+                                    {
+                                        Children.RemoveAt(i + 1);
+                                        N--;
+                                        i++;
+                                    }
+                                    break;
+
+                                case StepType.Not:
+                                case StepType.Negate:
+                                    Children[i + 1].Step.IsNegated = true;
+                                    Children.RemoveAt(i);
+                                    N--;
+                                    break;
+                            }
+                        }
+                        i++;
+                    }
+                }
+            }
+            #endregion
+
+            #region TryFindNextOperaor  ===========================================
+            bool TryFindNextOperaor(out int index)
+            {
+                index = -1;
+                var priority = byte.MaxValue;
+
+                for (int i = 0; i < Children.Count; i++)
+                {
+                    var p = Children[i];
+                    var parm = StepTypeParm[p.Step.StepType];
+                    if (!p.IsDone && (parm.HasLHS || parm.HasRHS))
+                    {
+                        if (parm.Priority < priority)
+                        {
+                            priority = parm.Priority;
+                            index = i;
                         }
                     }
-                    else
-                    {
-                        switch (st)
-                        {
-                            case StepType.Plus:
-                            case StepType.Minus:
-                            case StepType.Divide:
-                            case StepType.Multiply:
-                                if (i + 2 > N) return;
-                                if (Children[i + 1].StepType == StepType.Minus)
-                                {
-                                    Children[i + 2].IsNegated = true;
-                                    Children.RemoveAt(i + 1);
-                                    N--;
-                                    i++;
-                                }
-                                else if (Children[i + 1].StepType == StepType.Plus)
-                                {
-                                    Children.RemoveAt(i + 1);
-                                    N--;
-                                    i++;
-                                }
-                                break;
-
-                            case StepType.Not:
-                            case StepType.Negate:
-                                Children[i + 1].IsNegated = true;
-                                Children.RemoveAt(i);
-                                N--;
-                                break;
-                        }
-                    }
-                    i++;
                 }
+                return (index >= 0);
             }
-        }
-        #endregion
-
-        #region TryFindNextOperaor  ===========================================
-        bool TryFindNextOperaor(out int index)
-        {
-            index = -1;
-            var priority = byte.MaxValue;
-
-            for (int i = 0; i < Children.Count; i++)
-            {
-                var p = Children[i];
-                var parm = StepTypeParm[p.StepType];
-                if (!p.IsDone && (parm.HasLHS || parm.HasRHS))
-                {
-                    if (parm.Priority < priority)
-                    {
-                        priority = parm.Priority;
-                        index = i;
-                    }
-                }
-            }
-            return (index >= 0);
-        }
-        #endregion
-
-        #region TryAddLiteralNumber  ==========================================
-        private bool TryAddLiteralNumber(bool hasDecimalPoint = false)
-        {
-            if (double.TryParse(Text, out double val))
-            {
-                if (hasDecimalPoint)
-                {
-                    Step = new DOUBLE(val);
-                }
-                else
-                {
-                    if (val <= sbyte.MaxValue)
-                        Step = new SBYTE(val);
-                    else if (val <= short.MaxValue)
-                        Step = new INT16(val);
-                    else if (val <= int.MaxValue)
-                        Step = new INT32(val);
-                    else if (val <= long.MaxValue)
-                        Step = new INT64(val);
-                    else
-                        Step = new DOUBLE(val);
-                }
-                return true;
-            }
-            Error = ParseError.InvalidNumber;
-            return false;
-        }
-        #endregion
-
-        #region TryAddLiteralBitField  ========================================
-        private bool TryAddLiteralBitField()
-        {
-            ulong val = 0;
-            var chars = Text.ToLower().ToCharArray();
-            var N = chars.Length;
-            if (N < 3 || chars[0] != '0' || chars[1] != 'x')
-            {
-                Error = ParseError.InvalidNumber;
-                return false;
-            }
-            for (int i = 2; i < N; i++)
-            {
-                var c = chars[i];
-
-                val = val << 4;
-
-                if (c == '1') val += 1;
-                else if (c == '2') val += 2;
-                else if (c == '3') val += 3;
-                else if (c == '4') val += 4;
-                else if (c == '5') val += 5;
-                else if (c == '6') val += 6;
-                else if (c == '7') val += 7;
-                else if (c == '8') val += 8;
-                else if (c == '9') val += 9;
-                else if (c == 'a') val += 10;
-                else if (c == 'b') val += 11;
-                else if (c == 'c') val += 12;
-                else if (c == 'd') val += 13;
-                else if (c == 'e') val += 14;
-                else if (c == 'f') val += 15;
-                else if (c != '0')
-                {
-                    Error = ParseError.InvalidNumber;
-                    return false;
-                }
-            }
-            if (val <= byte.MaxValue)
-                Step = new BYTE(val);
-            else if (val <= ushort.MaxValue)
-                Step = new UINT16(val);
-            else if (val <= uint.MaxValue)
-                Step = new UINT32(val);
-            else
-                Step = new UINT64(val);
-
-            return true;
-        }
-        #endregion
-
-        #region TryValidate  ==================================================
-        internal bool TryValidate(Store sto, Func<Item> getItem)
-        {
-            if (Error != ParseError.None) return false;
-            foreach (var arg in Arguments)
-            {
-                if (!arg.TryValidate(sto, getItem)) return false;
-            }
-            foreach (var child in Children)
-            {
-                if (!child.TryValidate(sto, getItem)) return false;
-            }
-            if (StepType == StepType.Property)
-            {
-                if (sto.TryLookUpProperty(Text, out Property property, out int index))
-                {
-                    Step = new PROPERTY(property, index, getItem);
-                    Step.IsNegated = IsNegated;
-                    if (property is ComputeX compute)
-                    {
-                        if (compute.ValueType == ValueType.Invalid)
-                            IsInvalidRef = true;
-                        else if (compute.ValueType == ValueType.Circular)
-                            IsCircularRef = true;
-                        else if (compute.ValueType == ValueType.Unresolved)
-                            IsUnresolved = true;
-                    }
-                }
-                else
-                {
-                    Error = ParseError.UnknownProperty;
-                    return false;
-                }
-            }
-            else
-            {
-                var parm = StepTypeParm[StepType];
-                parm.Resolve(this);
-            }
-            return (!GetFlag(ParseFlag.IsUnresolved | ParseFlag.IsInvalidRef | ParseFlag.IsCircularRef));
-        }
-        #endregion
-
-        #region TrySimplify  ==================================================
-        internal bool TrySimplify()
-        {
-            return true;
+            #endregion
         }
         #endregion
 
@@ -742,7 +615,6 @@ namespace ModelGraphLibrary
         }
         private struct PParm
         {
-            readonly internal Action<Parser> Resolve;
             private PFlag _flags;
 
             internal byte Priority => (byte)(_flags & PFlag.Priority7); // parse steps with lower value are evaluated first
@@ -757,10 +629,9 @@ namespace ModelGraphLibrary
             internal bool CanNegate => (_flags & PFlag.CanNegate) != 0;
             internal bool IsPreNegate => (_flags & PFlag.PreNegate) != 0;
 
-            internal PParm(Action<Parser> resolve, PFlag flags = PFlag.None)
+            internal PParm(PFlag flags = PFlag.None)
             {
                 _flags = flags;
-                Resolve = resolve;
             }
         }
         #endregion
@@ -768,65 +639,38 @@ namespace ModelGraphLibrary
         #region StepTypeParm  =================================================
         static Dictionary<StepType, PParm> StepTypeParm = new Dictionary<StepType, PParm>
         {
-            [StepType.None] = new PParm((p) => { }, PFlag.CanNegate),
+            [StepType.Parse] = new PParm(PFlag.CanNegate),
 
-            [StepType.List] = new PParm((p) => { }, PFlag.Priority7),
-            [StepType.Index] = new PParm((p) => { }, PFlag.Priority7),
-            [StepType.Vector] = new PParm((p) => { }, PFlag.Priority7),
-            [StepType.String] = new PParm((p) => { }, PFlag.Priority7),
-            [StepType.Double] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.CanNegate),
-            [StepType.Integer] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.CanNegate),
-            [StepType.Boolean] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.CanNegate),
-            [StepType.Property] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.CanNegate),
-            [StepType.BitField] = new PParm((p) => { Literal(p); }, PFlag.Priority7 | PFlag.CanNegate),
- 
-            [StepType.Or1] = new PParm((p) => { Or1(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Or2] = new PParm((p) => { new OR2(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.And1] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.And2] = new PParm((p) => { new AND2(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Not] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegate | PFlag.CanNegate),
-            [StepType.Plus] = new PParm((p) => { Plus(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.CanNegate),
-            [StepType.Minus] = new PParm((p) => { new MINUS(p); }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.IsNegate | PFlag.CanNegate),
-            [StepType.Equals] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
-            [StepType.Negate] = new PParm((p) => { }, PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegate),
-            [StepType.Divide] = new PParm((p) => { new DIVIDE(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.CanNegate),
-            [StepType.Multiply] = new PParm((p) => { new MULTIPLY(p); }, PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.CanNegate),
-            [StepType.LessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
-            [StepType.GreaterThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
-            [StepType.NotLessThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
-            [StepType.NotGreaterThan] = new PParm((p) => { }, PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
+            [StepType.List] = new PParm(PFlag.Priority7),
+            [StepType.Index] = new PParm(PFlag.Priority7),
+            [StepType.Vector] = new PParm(PFlag.Priority7),
+            [StepType.String] = new PParm(PFlag.Priority7),
+            [StepType.Double] = new PParm(PFlag.Priority7 | PFlag.CanNegate),
+            [StepType.Integer] = new PParm(PFlag.Priority7 | PFlag.CanNegate),
+            [StepType.Boolean] = new PParm(PFlag.Priority7 | PFlag.CanNegate),
+            [StepType.Property] = new PParm(PFlag.Priority7 | PFlag.CanNegate),
+            [StepType.BitField] = new PParm(PFlag.Priority7 | PFlag.CanNegate),
 
-            [StepType.Has] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Ends] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
-            [StepType.Starts] = new PParm((p) => { }, PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.Or1] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.Or2] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.And1] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.And2] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.Not] = new PParm(PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegate | PFlag.CanNegate),
+            [StepType.Plus] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.CanNegate),
+            [StepType.Minus] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.IsNegate | PFlag.CanNegate),
+            [StepType.Equals] = new PParm(PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
+            [StepType.Negate] = new PParm(PFlag.Priority1 | PFlag.HasRHS | PFlag.IsNegate),
+            [StepType.Divide] = new PParm(PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.CanNegate),
+            [StepType.Multiply] = new PParm(PFlag.Priority2 | PFlag.HasLHS | PFlag.HasRHS | PFlag.CanBatch | PFlag.PreNegate | PFlag.CanNegate),
+            [StepType.LessThan] = new PParm(PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
+            [StepType.GreaterThan] = new PParm(PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
+            [StepType.NotLessThan] = new PParm(PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
+            [StepType.NotGreaterThan] = new PParm(PFlag.Priority6 | PFlag.HasLHS | PFlag.HasRHS | PFlag.PreNegate),
+
+            [StepType.Contains] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.EndsWith] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
+            [StepType.StartsWith] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
         };
-
-        static void Or1(Parser p)
-        {
-            var type = p.Arguments[0].ValueType;
-            if (type == ValueType.String)
-                new CONCAT(p);
-            else if (type == ValueType.Bool)
-                new OR2(p);
-        }
-        static void Plus(Parser p)
-        {
-            var type = p.Arguments[0].ValueType;
-            if (type == ValueType.String)
-                new CONCAT(p);
-            else if (type == ValueType.Bool)
-                new OR2(p);
-            else
-                new PLUS(p);
-        }
-        static void Literal(Parser p)
-        {
-            if (p.Step != null)
-            {
-                p.Step.IsNegated = p.IsNegated;
-            }
-        }
-
         #endregion
 
         #region StaticParms  ==================================================
@@ -851,9 +695,9 @@ namespace ModelGraphLibrary
         };
         static Dictionary<string, StepType> functionParseType = new Dictionary<string, StepType>
         {
-            ["has"] = StepType.Has,
-            ["ends"] = StepType.Ends,
-            ["starts"] = StepType.Starts,
+            ["has"] = StepType.Contains,
+            ["ends"] = StepType.EndsWith,
+            ["starts"] = StepType.StartsWith,
         };
         static string operatorString = "!~|&+-/*<>=";
         static string newLineString = Environment.NewLine;

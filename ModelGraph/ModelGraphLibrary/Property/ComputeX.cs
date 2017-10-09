@@ -8,7 +8,7 @@ namespace ModelGraphLibrary
     {
         internal const string DefaultSeparator = " : ";
 
-        private Value _values { get; set; } = Chef.ValuesNone; // provides default behavior prior to validation
+        private Value _values = Chef.ValuesNone; // provides default behavior prior to validation
         internal Guid Guid;
         internal string Name;
         internal string Summary;

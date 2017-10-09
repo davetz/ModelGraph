@@ -18,17 +18,17 @@ namespace ModelGraphLibrary
     class ValueInvalid : ValueDefault
     {
         protected override string IdString => "######";
-        internal override ValueType ValueType => ValueType.Invalid;
+        internal override ValueType ValueType => ValueType.IsInvalid;
     }
     class ValueCircular : ValueDefault
     {
         protected override string IdString => "@@@@@@";
-        internal override ValueType ValueType => ValueType.Circular;
+        internal override ValueType ValueType => ValueType.IsCircular;
     }
     class ValueUnresolved : ValueDefault
     {
         protected override string IdString => "??????";
-        internal override ValueType ValueType => ValueType.Unresolved;
+        internal override ValueType ValueType => ValueType.IsUnresolved;
     }
     //=========================================================================
     abstract class ValueDefault : Value

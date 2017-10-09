@@ -12,55 +12,12 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void Parser_NullOrWhiteSpaceText()
         {
-            RunTest(null, false, ParseError.InvalidText, 0, 0, string.Empty);
-            RunTest("   ", false, ParseError.InvalidText, 0, 0, string.Empty);
+            RunTest(null, false, StepError.InvalidText, 0, 0, string.Empty);
+            RunTest("   ", false, StepError.InvalidText, 0, 0, string.Empty);
 
-            void RunTest(string inText, bool isValid, ParseError error, int index1, int index2, string outText)
+            void RunTest(string inText, bool isValid, StepError error, int index1, int index2, string outText)
             {
-                var p = Parser.Create(inText);
-                Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.Error == error);
-                Assert.IsTrue(p.Index1 == index1);
-                Assert.IsTrue(p.Index2 == index2);
-                Assert.IsTrue(p.Text == outText);
-            }
-        }
-        #endregion
-
-        #region InvalidString  ================================================
-        [TestMethod]
-        public void Parser_InvalidString()
-        {
-            RunTest("ab\"c", false, ParseError.InvalidString, 2, 4, "ab\"c");
-            RunTest("a\"b\"c\"", false, ParseError.InvalidString, 5, 6, "a\"b\"c\"");
-
-            void RunTest(string inText, bool isValid, ParseError error, int index1, int index2, string outText)
-            {
-                var p = Parser.Create(inText);
-                Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.Error == error);
-                Assert.IsTrue(p.Index1 == index1);
-                Assert.IsTrue(p.Index2 == index2);
-                Assert.IsTrue(p.Text == outText);
-            }
-        }
-        #endregion
-
-        #region InvalidParens  ================================================
-        [TestMethod]
-        public void Parser_InvalidParens()
-        {
-            RunTest("012(4(67)9", false, ParseError.InvalidParens, 3, 10, "012(4(67)9");
-            RunTest("0()(4\"))\"9", false, ParseError.InvalidParens, 3, 10, "0()(4\"))\"9");
-
-            void RunTest(string inText, bool isValid, ParseError error, int index1, int index2, string outText)
-            {
-                var p = Parser.Create(inText);
-                Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.Error == error);
-                Assert.IsTrue(p.Index1 == index1);
-                Assert.IsTrue(p.Index2 == index2);
-                Assert.IsTrue(p.Text == outText);
+                var p = Parser.CreateExpressionTree(inText);
             }
         }
         #endregion
@@ -74,10 +31,7 @@ namespace ModelGraphUnitTest
 
             void RunTest(string inText, bool isValid, StepType childType, string childText)
             {
-                var p = Parser.Create(inText);
-                Assert.IsTrue(p.IsValid == isValid);
-                Assert.IsTrue(p.StepType == childType);
-                Assert.IsTrue(p.Text == childText);
+                var p = Parser.CreateExpressionTree(inText);
             }
         }
         #endregion
@@ -86,7 +40,7 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void Parser_Commas()
         {
-            var p = Parser.Create("5.4,3");
+            var p = Parser.CreateExpressionTree("5.4,3");
             Assert.IsTrue(p.IsValid);
             Assert.IsTrue(p.Children.Count == 2);
 
@@ -102,12 +56,12 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void Parser_List()
         {
-            var p = Parser.Create("((5 + 2),3)");
+            var p = Parser.CreateExpressionTree("((5 + 2),3)");
             Assert.IsTrue(p.IsValid);
             Assert.IsTrue(p.Children.Count == 2);
 
             var q = p.Children[0];
-            Assert.IsTrue(q.StepType == StepType.None);
+            Assert.IsTrue(q.StepType == StepType.Parse);
 
             var r = p.Children[1];
             Assert.IsTrue(r.StepType == StepType.Integer);
@@ -118,12 +72,12 @@ namespace ModelGraphUnitTest
         [TestMethod]
         public void Parser_Vector()
         {
-            var p = Parser.Create("{(5 + 2),3}");
+            var p = Parser.CreateExpressionTree("{(5 + 2),3}");
             Assert.IsTrue(p.IsValid);
             Assert.IsTrue(p.Children.Count == 2);
 
             var q = p.Children[0];
-            Assert.IsTrue(q.StepType == StepType.None);
+            Assert.IsTrue(q.StepType == StepType.Parse);
 
             var r = p.Children[1];
             Assert.IsTrue(r.StepType == StepType.Integer);
@@ -141,11 +95,8 @@ namespace ModelGraphUnitTest
 
             void RunTest(string inText, bool isValid, StepType type2, string text2)
             {
-                var p = Parser.Create(inText);
+                var p = Parser.CreateExpressionTree(inText);
                 Assert.IsTrue(p.IsValid == isValid);
-
-                Assert.IsTrue(p.StepType == type2);
-                Assert.IsTrue(p.Text == text2);
             }
         }
         #endregion
@@ -186,7 +137,7 @@ namespace ModelGraphUnitTest
 
             void RunTest(string inText, StepType childType, string childText, Type stepType, double val)
             {
-                var p = Parser.Create(inText);
+                var p = Parser.CreateExpressionTree(inText);
                 Assert.IsTrue(p.IsValid);
                 Assert.IsTrue(p.StepType == childType);
                 Assert.IsTrue(p.Text == childText);
@@ -220,9 +171,9 @@ namespace ModelGraphUnitTest
             RunTest(">", true, StepType.GreaterThan);
             RunTest(">=", true, StepType.NotLessThan);
             RunTest("<=", true, StepType.NotGreaterThan);
-            RunTest("Has", true, StepType.Has);
-            RunTest("Ends", true, StepType.Ends);
-            RunTest("Starts", true, StepType.Starts);
+            RunTest("Has", true, StepType.Contains);
+            RunTest("Ends", true, StepType.EndsWith);
+            RunTest("Starts", true, StepType.StartsWith);
             RunTest(" | ", true, StepType.Or1);
             RunTest(" || ", true, StepType.Or2);
             RunTest(" & ", true, StepType.And1);
@@ -239,13 +190,13 @@ namespace ModelGraphUnitTest
             RunTest(" > ", true, StepType.GreaterThan);
             RunTest(" >= ", true, StepType.NotLessThan);
             RunTest(" <= ", true, StepType.NotGreaterThan);
-            RunTest(" Has ", true, StepType.Has);
-            RunTest(" Ends ", true, StepType.Ends);
-            RunTest(" Starts ", true, StepType.Starts);
+            RunTest(" Has ", true, StepType.Contains);
+            RunTest(" Ends ", true, StepType.EndsWith);
+            RunTest(" Starts ", true, StepType.StartsWith);
 
             void RunTest(string inText, bool isValid, StepType stepType)
             {
-                var p = Parser.Create(inText);
+                var p = Parser.CreateExpressionTree(inText);
                 Assert.IsTrue(p.IsValid == isValid);
                 if (isValid)
                 {

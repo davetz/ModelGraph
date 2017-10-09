@@ -16,6 +16,7 @@ namespace ModelGraphLibrary
         static internal ValueInvalid ValuesInvalid = new ValueInvalid();
         static internal ValueCircular ValuesCircular = new ValueCircular();
         static internal ValueUnresolved ValuesUnresolved = new ValueUnresolved();
+        static internal EvaluateUnresolved EvaluateUnresolved = new EvaluateUnresolved(null);
 
         #region ResetCacheValues  =============================================
         private void ResetCacheValues()
@@ -38,17 +39,17 @@ namespace ModelGraphLibrary
 
                 case CompuType.NumericValueSet:
                     if (cx.NumericSet == NumericSet.Count)
-                        return (AnyValueXHeads()) ? ValueType.String : ValueType.Invalid;
+                        return (AnyValueXHeads()) ? ValueType.String : ValueType.IsInvalid;
                     else
-                        return (AnyValueXNumbers()) ? ValueType.String : ValueType.Invalid;
+                        return (AnyValueXNumbers()) ? ValueType.String : ValueType.IsInvalid;
 
                 case CompuType.CompositeString:
-                    return (AnyValueXSelects()) ? ValueType.String : ValueType.Invalid;
+                    return (AnyValueXSelects()) ? ValueType.String : ValueType.IsInvalid;
 
                 case CompuType.CompositeReversed:
-                    return (AnyValueXSelects()) ? ValueType.String : ValueType.Invalid;
+                    return (AnyValueXSelects()) ? ValueType.String : ValueType.IsInvalid;
                 default:
-                    return ValueType.Invalid;
+                    return ValueType.IsInvalid;
             }
             bool AnyValueXHeads()
             {
@@ -183,7 +184,7 @@ namespace ModelGraphLibrary
                 case CompuType.RowValue:
 
                     var vx = ComputeX_QueryX.GetChild(cx) as QueryX;
-                    if (vx == null || vx.Select == null || vx.Select.ValueType == ValueType.Invalid)
+                    if (vx == null || vx.Select == null || vx.Select.ValueType == ValueType.IsInvalid)
                         cx.Values = ValuesInvalid;
                     else
                         AllocateCache(vx);
@@ -193,7 +194,7 @@ namespace ModelGraphLibrary
 
                     var qx = ComputeX_QueryX.GetChild(cx) as QueryX;
                     while(QueryX_QueryX.HasChildLink(qx)) { qx = QueryX_QueryX.GetChild(qx); }
-                    if (qx == null || qx.Select == null || qx.Select.ValueType == ValueType.Invalid)
+                    if (qx == null || qx.Select == null || qx.Select.ValueType == ValueType.IsInvalid)
                         cx.Values = ValuesInvalid;
                     else
                         AllocateCache(qx);
@@ -222,9 +223,9 @@ namespace ModelGraphLibrary
                     cx.Values = Value.Create(type);
                 else if (type == ValueType.None)
                     cx.Values = ValuesNone;
-                else if (type == ValueType.Circular)
+                else if (type == ValueType.IsCircular)
                     cx.Values = ValuesCircular;
-                else if (type == ValueType.Unresolved)
+                else if (type == ValueType.IsUnresolved)
                     cx.Values = ValuesUnresolved;
                 else
                     cx.Values = ValuesInvalid;
@@ -635,7 +636,7 @@ namespace ModelGraphLibrary
                                     }
                                     else
                                     {
-                                        qx.Select.Validate(st);
+                                        qx.Select.TryValidate(st);
                                         anyChange = true;
                                     }
                                 }

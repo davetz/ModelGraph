@@ -38,7 +38,7 @@ namespace ModelGraphUnitTest
                 var w = new WhereSelect(text);
                 Assert.IsTrue(w.IsValid);
 
-                w.Validate(null);
+                w.TryValidate(null);
                 Assert.IsTrue(w.IsValid);
 
                 var txt = w.InputString;
@@ -76,7 +76,7 @@ namespace ModelGraphUnitTest
                 var w = new WhereSelect(text);
                 Assert.IsTrue(w.IsValid);
 
-                w.Validate(null);
+                w.TryValidate(null);
                 Assert.IsTrue(w.IsValid);
 
                 var txt = w.InputString;
@@ -109,7 +109,7 @@ namespace ModelGraphUnitTest
                 var w = new WhereSelect(inText);
                 Assert.IsTrue(w.IsValid);
 
-                w.Validate(tbl);
+                w.TryValidate(tbl);
                 Assert.IsTrue(w.IsValid);
 
                 var txt = w.InputString;
@@ -160,7 +160,7 @@ namespace ModelGraphUnitTest
                 var w = new WhereSelect(inText);
                 Assert.IsTrue(w.IsValid);
 
-                w.Validate(tbl);
+                w.TryValidate(tbl);
                 Assert.IsTrue(w.IsValid);
 
                 var txt = w.InputString;
@@ -175,7 +175,7 @@ namespace ModelGraphUnitTest
                 var w = new WhereSelect(inText);
                 Assert.IsTrue(w.IsValid);
 
-                w.Validate(tbl);
+                w.TryValidate(tbl);
                 Assert.IsTrue(w.IsValid);
 
                 var txt = w.InputString;
@@ -190,7 +190,7 @@ namespace ModelGraphUnitTest
                 var w = new WhereSelect(inText);
                 Assert.IsTrue(w.IsValid);
 
-                w.Validate(tbl);
+                w.TryValidate(tbl);
                 Assert.IsTrue(w.IsValid);
 
                 var txt = w.InputString;
@@ -205,7 +205,7 @@ namespace ModelGraphUnitTest
                 var w = new WhereSelect(inText);
                 Assert.IsTrue(w.IsValid);
 
-                w.Validate(tbl);
+                w.TryValidate(tbl);
                 Assert.IsTrue(w.IsValid);
 
                 var txt = w.InputString;
