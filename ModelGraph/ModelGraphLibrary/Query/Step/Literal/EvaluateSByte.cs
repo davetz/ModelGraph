@@ -3,7 +3,7 @@
     internal class EvaluateSByte : EvaluateBase
     {
         private sbyte _value;
-        internal EvaluateSByte(ComputeStep step, double val) :base(step) { _value = (sbyte)val; }
+        internal EvaluateSByte(double val) { _value = (sbyte)val; }
 
         sbyte GetVal(ComputeStep step) => step.IsNegated ? (sbyte)-_value : _value;
         internal override ValueType ValueType => ValueType.SByte;

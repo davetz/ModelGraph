@@ -15,7 +15,5 @@ namespace ModelGraphLibrary
         HasNewLine = 0x8, // start subexpression with a newLine
 
         ParseAborted = 0x10, // the parser abort because of invalid syntax 
-        IsUnresolved = 0x20,  // this step references a property
-        IsPropertyRef = 0x40,  // this step references a property
     }
 }

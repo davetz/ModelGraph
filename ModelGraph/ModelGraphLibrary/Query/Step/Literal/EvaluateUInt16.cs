@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class EvaluateUInt16 : EvaluateBase
     {
         private ushort _value;
-        internal EvaluateUInt16(ComputeStep step, ulong val) :base(step) { _value = (ushort)val; }
+        internal EvaluateUInt16(ulong val) { _value = (ushort)val; }
 
         ushort GetVal(ComputeStep step) => step.IsNegated ? (ushort)~_value : _value;
         internal override ValueType ValueType => ValueType.UInt16;

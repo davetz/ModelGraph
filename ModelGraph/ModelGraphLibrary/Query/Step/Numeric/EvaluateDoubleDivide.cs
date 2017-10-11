@@ -4,8 +4,6 @@ namespace ModelGraphLibrary
 {
     internal class EvaluateDoubleDivide : EvaluateBase
     {
-        internal EvaluateDoubleDivide(ComputeStep step) : base(step) { }
-
         double GetVal(ComputeStep step)
         {
             var N = step.Count;

@@ -4,8 +4,6 @@ namespace ModelGraphLibrary
 {
     internal class EvaluateOr2 : EvaluateBase
     {
-        internal EvaluateOr2(ComputeStep step) : base(step) { }
-
         bool GetVal(ComputeStep step)
         {
             var N = step.Count;

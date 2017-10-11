@@ -12,6 +12,7 @@ namespace ModelGraphLibrary
         internal ComputeStep Step;
         internal EvaluateParse Evaluate;
         internal List<Parser> Children = new List<Parser>(4);
+        internal StepType ParseType; // need to have the original stepType, because Step may be replaced 
         internal bool IsDone; // keep track of which parser nodes have already been processed
 
         public static ComputeStep CreateExpressionTree(string text)
@@ -33,6 +34,7 @@ namespace ModelGraphLibrary
         {
             Evaluate = new EvaluateParse(text);
             Step = new ComputeStep(Evaluate);
+            ParseType = StepType.Parse;
 
             if (Evaluate.IsEmpty)
             {
@@ -58,6 +60,7 @@ namespace ModelGraphLibrary
         {
             Step = new ComputeStep(stepType);
             Evaluate = new EvaluateParse(text);
+            ParseType = stepType;
 
             Step.HasParens = hasParens;
             Step.HasNewLine = hasNewLine;
@@ -75,7 +78,7 @@ namespace ModelGraphLibrary
                     break;
 
                 case StepType.String:
-                    Step.Evaluate = new EvaluateString(Step, text);
+                    Step.Evaluate = new EvaluateString(text);
                     break;
 
                 case StepType.Double:
@@ -92,7 +95,6 @@ namespace ModelGraphLibrary
 
                 case StepType.Property:
                     Step.Evaluate = Evaluate; // the property name is needed by Step.TryValidate() 
-                    Step.IsPropertyRef = true;
                     break;
 
                 default:
@@ -106,20 +108,20 @@ namespace ModelGraphLibrary
                 {
                     if (hasDecimalPoint)
                     {
-                        Step.Evaluate = new EvaluateDouble(Step, val);
+                        Step.Evaluate = new EvaluateDouble(val);
                     }
                     else
                     {
                         if (val <= sbyte.MaxValue)
-                            Step.Evaluate = new EvaluateSByte(Step, val);
+                            Step.Evaluate = new EvaluateSByte(val);
                         else if (val <= short.MaxValue)
-                            Step.Evaluate = new EvaluateInt16(Step, val);
+                            Step.Evaluate = new EvaluateInt16(val);
                         else if (val <= int.MaxValue)
-                            Step.Evaluate = new EvaluateInt32(Step, val);
+                            Step.Evaluate = new EvaluateInt32(val);
                         else if (val <= long.MaxValue)
-                            Step.Evaluate = new EvaluateInt64(Step, val);
+                            Step.Evaluate = new EvaluateInt64(val);
                         else
-                            Step.Evaluate = new EvaluateDouble(Step, val);
+                            Step.Evaluate = new EvaluateDouble(val);
                     }
                     return true;
                 }
@@ -173,13 +175,13 @@ namespace ModelGraphLibrary
                 }
 
                 if (val <= byte.MaxValue)
-                    Step.Evaluate = new EvaluateByte(Step, val);
+                    Step.Evaluate = new EvaluateByte(val);
                 else if (val <= ushort.MaxValue)
-                    Step.Evaluate = new EvaluateUInt16(Step, val);
+                    Step.Evaluate = new EvaluateUInt16(val);
                 else if (val <= uint.MaxValue)
-                    Step.Evaluate = new EvaluateUInt32(Step, val);
+                    Step.Evaluate = new EvaluateUInt32(val);
                 else
-                    Step.Evaluate = new EvaluateUInt64(Step, val);
+                    Step.Evaluate = new EvaluateUInt64(val);
 
                 return true;
             }
@@ -200,7 +202,7 @@ namespace ModelGraphLibrary
                 var c = Children[i];
                 Children[i] = c.RemoveRedundantParens(); //<- - - recursive depth-first traversal
             }
-            if (Step.StepType != StepType.Parse || Children.Count != 1) return this;
+            if (ParseType != StepType.Parse || Children.Count != 1 || Step.Error != StepError.None) return this;
 
             // propagate the flags to next generation
 
@@ -281,7 +283,7 @@ namespace ModelGraphLibrary
 
                 else if (operatorString.Contains(c))
                 {// - - - - - - - - - - - - - - - - - - - - ->  Operator
-                    e.SetNextHeadTail();
+                    e.SetTail();
                     while (e.CanGetTail)
                     {//- - - - - - - - - - - - - - - - - - find the end
                         var t = e.TailChar;
@@ -309,7 +311,7 @@ namespace ModelGraphLibrary
                 else if (char.IsLetter(c))
                 {// - - - - - - - - - - - - - - - - - - - - ->  Function or Property
                     e.SetTail();
-                    while (e.CanGetHead)
+                    while (e.CanGetTail)
                     {//- - - - - - - - - - - - - - - - - - find the end
                         var t = e.TailChar;
                         if (!(char.IsLetterOrDigit(t) || t == '.' || t == '_')) break;
@@ -433,15 +435,15 @@ namespace ModelGraphLibrary
         #endregion
 
         #region TryAssignInputs  ==============================================
-        bool TryAssignInputs()
+        void TryAssignInputs()
         {
-            if (Children.Count == 0) return true;
+            if (Children.Count == 0) return;
 
             ResolveNagation();
 
             foreach (var child in Children)
             {
-                if (!child.TryAssignInputs()) return false;
+                if (child.Children.Count > 0) child.TryAssignInputs();
             }
 
             var hitList = new List<Parser>(4);
@@ -452,17 +454,18 @@ namespace ModelGraphLibrary
                 var p = Children[index];
                 p.IsDone = true;
 
-                var type = StepTypeParm[p.Step.StepType];
+                var type = StepTypeParm[p.ParseType]; // need the original type because Step may have been replaced
                 if (type.HasLHS && index < 1)
                 {
                     p.Step.Error = StepError.MissingArgLHS;
-                    return false;
+                    Step.Error = StepError.InvalidSyntax;
                 }
                 if (type.HasRHS && index >= (Children.Count - 1))
                 {
                     p.Step.Error = StepError.MissingArgRHS;
-                    return false;
+                    Step.Error = StepError.InvalidSyntax;
                 }
+                if (Step.Error != StepError.None) break;
 
                 hitList.Clear();
                 inputList.Clear();
@@ -498,7 +501,21 @@ namespace ModelGraphLibrary
                 if (inputList.Count > 0) p.Step.Inputs = inputList.ToArray();
                 foreach (var hit in hitList) { Children.Remove(hit); }
             }
-            return true;
+
+            if (ParseType == StepType.Parse && Step.Error == StepError.None && Children.Count == 1)
+            {
+                var child = Children[0].Step;
+
+                // propagate flags to child
+
+                child.IsNegated |= Step.IsNegated;
+                child.HasParens |= Step.HasParens;
+                child.HasNewLine |= Step.HasNewLine;
+
+                Step = child; // replace the parse step with the Children[0].Step
+            }
+
+            return;
 
             #region ResolveNegation  ==============================================
             void ResolveNagation()
@@ -695,9 +712,9 @@ namespace ModelGraphLibrary
         };
         static Dictionary<string, StepType> functionParseType = new Dictionary<string, StepType>
         {
-            ["has"] = StepType.Contains,
-            ["ends"] = StepType.EndsWith,
-            ["starts"] = StepType.StartsWith,
+            ["contains"] = StepType.Contains,
+            ["endswith"] = StepType.EndsWith,
+            ["startswith"] = StepType.StartsWith,
         };
         static string operatorString = "!~|&+-/*<>=";
         static string newLineString = Environment.NewLine;

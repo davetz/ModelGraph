@@ -4,8 +4,6 @@ namespace ModelGraphLibrary
 {
     internal class EvaluateRemove : EvaluateBase
     {
-        internal EvaluateRemove(ComputeStep step) : base(step) { }
-
         string GetVal(ComputeStep step)
         {
             var N = step.Count;

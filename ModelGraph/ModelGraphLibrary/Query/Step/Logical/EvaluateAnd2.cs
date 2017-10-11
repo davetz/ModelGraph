@@ -4,8 +4,6 @@ namespace ModelGraphLibrary
 {
     internal class EvaluateAnd2 : EvaluateBase
     {
-        internal EvaluateAnd2(ComputeStep step) : base(step) { }
-
         bool GetVal(ComputeStep step)
         {
             var N = step.Count;

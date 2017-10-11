@@ -7,9 +7,7 @@ namespace ModelGraphLibrary
     /// </summary>
     internal class EvaluateUnresolved : EvaluateBase
     {
-        internal EvaluateUnresolved(ComputeStep step) :base(step) { }
-
-        internal override ValueType ValueType => ValueType.Byte;
+        internal override ValueType ValueType => ValueType.IsUnresolved;
         internal override string Text => "????";
 
         #region EvaluateBase-v1 (Specialized)  ================================

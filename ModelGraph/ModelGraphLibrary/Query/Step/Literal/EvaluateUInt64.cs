@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class EvaluateUInt64 : EvaluateBase
     {
         private ulong _value;
-        internal EvaluateUInt64(ComputeStep step, ulong val) :base(step) { _value = val; }
+        internal EvaluateUInt64(ulong val) { _value = val; }
 
         ulong GetVal(ComputeStep step) => step.IsNegated ? ~_value : _value;
         internal override ValueType ValueType => ValueType.Int64;

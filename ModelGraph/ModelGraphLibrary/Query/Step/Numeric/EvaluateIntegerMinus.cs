@@ -4,8 +4,6 @@ namespace ModelGraphLibrary
 {
     internal class EvaluateIntegerMinus : EvaluateBase
     {
-        internal EvaluateIntegerMinus(ComputeStep step) : base(step) { }
-
         int GetVal(ComputeStep step)
         {
             var N = step.Count;

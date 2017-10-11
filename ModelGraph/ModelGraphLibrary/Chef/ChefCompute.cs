@@ -16,7 +16,7 @@ namespace ModelGraphLibrary
         static internal ValueInvalid ValuesInvalid = new ValueInvalid();
         static internal ValueCircular ValuesCircular = new ValueCircular();
         static internal ValueUnresolved ValuesUnresolved = new ValueUnresolved();
-        static internal EvaluateUnresolved EvaluateUnresolved = new EvaluateUnresolved(null);
+        static internal EvaluateUnresolved EvaluateUnresolved = new EvaluateUnresolved();
 
         #region ResetCacheValues  =============================================
         private void ResetCacheValues()
@@ -136,7 +136,7 @@ namespace ModelGraphLibrary
             if (qx != null)
             {
                 qx.WhereString = value;
-                ValidateValueX(qx);
+                ValidateQueryX(qx);
             }
             cx.Values.Clear();
             return true;
@@ -147,7 +147,7 @@ namespace ModelGraphLibrary
             if (qx != null)
             {
                 qx.SelectString = value;
-                ValidateValueX(qx);
+                ValidateQueryX(qx);
             }
             cx.Values.Clear();
             return true;
@@ -157,7 +157,7 @@ namespace ModelGraphLibrary
         #region ValidateValueXChange  =========================================
         private void ValidateValueXChange(QueryX qx)
         {
-            ValidateValueX(qx);
+            ValidateQueryX(qx);
 
             while (qx != null)
             {

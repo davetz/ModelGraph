@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class EvaluateByte : EvaluateBase
     {
         private byte _value;
-        internal EvaluateByte(ComputeStep step, ulong val) :base(step) { _value = (byte)val; }
+        internal EvaluateByte(ulong val) { _value = (byte)val; }
 
         byte GetVal(ComputeStep step) => step.IsNegated ? (byte)~_value : _value;
         internal override ValueType ValueType => ValueType.Byte;

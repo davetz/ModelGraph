@@ -18,6 +18,7 @@ namespace ModelGraphLibrary
         InvalidArgsRHS,
 
         InvalidText,
+        InvalidSyntax,
         InvalidNumber,
         InvalidOperator,
 

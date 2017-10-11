@@ -10,8 +10,7 @@ namespace ModelGraphLibrary
         private Func<Item> _getItem;
         private int _index;
 
-        internal EvaluateProperty(ComputeStep step, Property property, int index, Func<Item> getItem)
-            :base(step)
+        internal EvaluateProperty(Property property, int index, Func<Item> getItem)
         {
             _property = property;
             _getItem = getItem;

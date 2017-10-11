@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class EvaluateString : EvaluateBase
     {
         private string _value;
-        internal EvaluateString(ComputeStep step, string val) :base(step) { _value = val; }
+        internal EvaluateString(string val) { _value = val; }
 
         string GetVal(ComputeStep step) => _value;
         internal override ValueType ValueType => ValueType.String;

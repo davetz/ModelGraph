@@ -4,8 +4,6 @@ namespace ModelGraphLibrary
 {
     internal class EvaluateDoublePlus : EvaluateBase
     {
-        internal EvaluateDoublePlus(ComputeStep step) : base(step) { }
-
         double GetVal(ComputeStep step)
         {
             var N = step.Count;

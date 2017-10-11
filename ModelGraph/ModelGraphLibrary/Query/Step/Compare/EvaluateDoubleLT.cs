@@ -4,8 +4,6 @@ namespace ModelGraphLibrary
 {
     internal class EvaluateDoubleLT : EvaluateBase
     {
-        internal EvaluateDoubleLT(ComputeStep step) : base(step) { }
-
         bool GetVal(ComputeStep step)
         {
             step.Inputs[0].GetValue(out double v1);

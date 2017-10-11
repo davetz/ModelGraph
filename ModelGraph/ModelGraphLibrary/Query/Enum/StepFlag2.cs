@@ -11,15 +11,18 @@ namespace ModelGraphLibrary
         None = 0,
 
         AnyChange = 0x1, // bubble-up any Evaluate instance changed or any IsUnresoved changed
-        AnyInvalid = 0x2, // bubble-up any step is invalid
-        AnyUnresolved = 0x4, // bubble-up any step is unresolved
+        AnyUnresolved = 0x2, // bubble-up any step is unresolved
 
-        AnyUInt = 0x8, // some input is unsigned integer
-        AnyULong = 0x10, // some input is unsigned long integer
+        AnyUInt = 0x4, // some input is unsigned integer
+        AnyULong = 0x8, // some input is unsigned long integer
 
-        AnyInt = 0x20,    // some input is integer
-        AnyDouble = 0x40, // some input is double 
+        AnyInt = 0x10,    // some input is integer
+        AnyDouble = 0x20, // some input is double 
 
-        AnyNonNumeric = 80, // some input is not numeric
+        AnyString = 0x40, // some input is a string
+
+        AnyOtherType = 0x80, // some input is something else 
+
+        AnyNumber = AnyUInt | AnyULong | AnyInt | AnyDouble,
     }
 }

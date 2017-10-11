@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class EvaluateInt32 : EvaluateBase
     {
         private int _value;
-        internal EvaluateInt32(ComputeStep step, double val) :base(step) { _value = (int)val; }
+        internal EvaluateInt32(double val) { _value = (int)val; }
 
         int GetVal(ComputeStep step) => step.IsNegated ? -_value : _value;
         internal override ValueType ValueType => ValueType.Int32;

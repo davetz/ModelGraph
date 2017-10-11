@@ -4,8 +4,6 @@ namespace ModelGraphLibrary
 {
     internal class EvaluateULongOr1 : EvaluateBase
     {
-        internal EvaluateULongOr1(ComputeStep step) : base(step) { }
-
         ulong GetVal(ComputeStep step)
         {
             var N = step.Count;

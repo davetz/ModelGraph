@@ -57,45 +57,7 @@ namespace ModelGraphLibrary
             {
                 qx.Select.TryValidate(sto);
             }
-
-            GetHeadTail(qx, out Store head, out Store tail);
-            if (tail == null)
-            {
-                qx.Where = null;
-                return false;
-            }
-
-            var prevNativeType = qx.Where.ValueType;
-            qx.Where.TryValidate(tail);
-
-            return (prevNativeType != qx.Where.ValueType);
-        }
-        private bool ValidateValueX(QueryX vx)
-        {
-            if ((vx.Where == null || vx.Where.IsValid) && (vx.Select == null || vx.Select.IsValid)) return false;
-
-            GetHeadTail(vx, out Store head, out Store tail);
-            if (tail == null)
-            {
-                vx.Where = null;
-                vx.Select = null;
-                return false;
-            }
-
-            var anyChange = false;
-            if (vx.Where != null)
-            {
-                var prevNativeType = vx.Where.ValueType;
-                vx.Where.TryValidate(tail);
-                anyChange = (prevNativeType != vx.Where.ValueType);
-            }
-            if (vx.Select != null)
-            {
-                var prevNativeType = vx.Select.ValueType;
-                vx.Select.TryValidate(tail);
-                anyChange |= (prevNativeType != vx.Select.ValueType);
-            }
-            return anyChange;
+            return false;
         }
         #endregion
 

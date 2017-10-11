@@ -2,7 +2,6 @@
 {
     internal abstract class EvaluateBase // version - v1
     {
-        internal EvaluateBase(ComputeStep step) { if (step != null) step.AnyChange = true; }
         internal abstract string Text { get; }
         internal abstract ValueType ValueType { get; }
 

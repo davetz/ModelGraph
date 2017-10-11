@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class EvaluateInt64 : EvaluateBase
     {
         private long _value;
-        internal EvaluateInt64(ComputeStep step, double val) :base(step) { _value = (long)val; }
+        internal EvaluateInt64(double val) { _value = (long)val; }
 
         long GetVal(ComputeStep step) => step.IsNegated ? -_value : _value;
         internal override ValueType ValueType => ValueType.Int64;

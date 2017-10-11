@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class EvaluateDouble : EvaluateBase
     {
         private double _value;
-        internal EvaluateDouble(ComputeStep step, double val) :base(step) { _value = val; }
+        internal EvaluateDouble(double val) { _value = val; }
 
         double GetVal(ComputeStep step) => step.IsNegated ? -_value : _value;
         internal override ValueType ValueType => ValueType.Double;

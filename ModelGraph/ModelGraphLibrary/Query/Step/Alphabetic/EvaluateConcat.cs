@@ -4,8 +4,6 @@ namespace ModelGraphLibrary
 {
     internal class EvaluateConcat : EvaluateBase
     {
-        internal EvaluateConcat(ComputeStep step) : base(step) { }
-
         string GetVal(ComputeStep step)
         {
             var N = step.Count;

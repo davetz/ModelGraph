@@ -6,7 +6,7 @@ namespace ModelGraphLibrary
     internal class EvaluateDateTime : EvaluateBase
     {
         private DateTime _value;
-        internal EvaluateDateTime(ComputeStep step, DateTime val) :base(step) { _value = val; }
+        internal EvaluateDateTime(DateTime val) { _value = val; }
 
         DateTime GetVal(ComputeStep step) => _value;
         internal override ValueType ValueType => ValueType.DateTime;

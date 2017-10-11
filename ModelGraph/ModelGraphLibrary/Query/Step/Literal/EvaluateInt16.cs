@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class EvaluateInt16 : EvaluateBase
     {
         private short _value;
-        internal EvaluateInt16(ComputeStep step, double val) :base(step) { _value = (short)val; }
+        internal EvaluateInt16(double val) { _value = (short)val; }
 
         short GetVal(ComputeStep step) => step.IsNegated ? (short)-_value : _value;
         internal override ValueType ValueType => ValueType.Int16;

@@ -45,24 +45,60 @@ namespace ModelGraphLibrary
         internal bool HasParens { get { return GetF1(StepFlag1.HasParens); } set { SetF1(value, StepFlag1.HasParens); } }
         internal bool HasNewLine { get { return GetF1(StepFlag1.HasNewLine); } set { SetF1(value, StepFlag1.HasNewLine); } }
         internal bool ParseAborted { get { return GetF1(StepFlag1.ParseAborted); } set { SetF1(value, StepFlag1.ParseAborted); } }
-        internal bool IsUnresolved { get { return GetF1(StepFlag1.IsUnresolved); } set { SetF1(value, StepFlag1.IsUnresolved); } }
-        internal bool IsPropertyRef { get { return GetF1(StepFlag1.IsPropertyRef); } set { SetF1(value, StepFlag1.IsPropertyRef); } }
         #endregion
 
         #region Flags2  =======================================================
-        bool GetF2(StepFlag2 flag) => (_flags2 & flag) != 0;
-        void SetF2(bool val, StepFlag2 flag) { if (val) _flags2 |= flag; else _flags2 &= ~flag; }
+        internal bool AnyChange => (_flags2 & StepFlag2.AnyChange) != 0;
 
-        internal bool AnyChange { get { return GetF2(StepFlag2.AnyChange); } set { SetF2(value, StepFlag2.AnyChange); } }
-        internal bool AnyInvalid { get { return GetF2(StepFlag2.AnyInvalid); } set { SetF2(value, StepFlag2.AnyInvalid); } }
-        internal bool AnyUnresolved { get { return GetF2(StepFlag2.AnyUnresolved); } set { SetF2(value, StepFlag2.AnyUnresolved); } }
-        internal bool AnyUInt { get { return GetF2(StepFlag2.AnyUInt); } set { SetF2(value, StepFlag2.AnyUInt); } }
-        internal bool AnyULong { get { return GetF2(StepFlag2.AnyULong); } set { SetF2(value, StepFlag2.AnyULong); } }
-        internal bool AnyInt { get { return GetF2(StepFlag2.AnyInt); } set { SetF2(value, StepFlag2.AnyInt); } }
-        internal bool AnyDouble { get { return GetF2(StepFlag2.AnyDouble); } set { SetF2(value, StepFlag2.AnyDouble); } }
-        internal bool AnyNonNumeric { get { return GetF2(StepFlag2.AnyNonNumeric); } set { SetF2(value, StepFlag2.AnyNonNumeric); } }
+        internal bool AnyUnresolved => (_flags2 & StepFlag2.AnyUnresolved) != 0;
 
-        internal void ResetFlags2() => _flags2 = StepFlag2.None;
+        internal bool AnyInt => (_flags2 & StepFlag2.AnyInt) != 0;
+        internal bool AnyUInt => (_flags2 & StepFlag2.AnyUInt) != 0;
+        internal bool AnyULong => (_flags2 & StepFlag2.AnyULong) != 0;
+        internal bool AnyDouble => (_flags2 & StepFlag2.AnyDouble) != 0;
+        internal bool AnyString => (_flags2 & StepFlag2.AnyString) != 0;
+        internal bool AnyOtherType => (_flags2 & StepFlag2.AnyOtherType) != 0;
+
+        internal void UpdateResolveState()
+        {
+            var previous = _flags2 & ~StepFlag2.AnyChange;  // previous state minus the AnyChange flag
+            _flags2 = StepFlag2.None;                       // clear the current state
+
+            if (ValueType > ValueType.MaximumType) _flags2 |= StepFlag2.AnyUnresolved;
+
+            var N = Count;
+            for (int i = 0; i < N; i++)
+            {
+                if (Inputs[i].AnyChange) _flags2 |= StepFlag2.AnyChange; // bubble-up any step has changed
+                if (Inputs[i].AnyUnresolved) _flags2 |= StepFlag2.AnyUnresolved; // bubble-up any step is unresoved
+
+                var valType = Inputs[i].ValueType;
+
+                if (valType > ValueType.MaximumType) _flags2 = StepFlag2.AnyUnresolved;
+
+                else if (valType == ValueType.String) _flags2 |= StepFlag2.AnyString;
+
+                else if (valType == ValueType.SByte) _flags2 |= StepFlag2.AnyInt;
+                else if (valType == ValueType.Int16) _flags2 |= StepFlag2.AnyInt;
+                else if (valType == ValueType.Int32) _flags2 |= StepFlag2.AnyInt;
+
+                else if (valType == ValueType.Int64) _flags2 |= StepFlag2.AnyDouble;
+                else if (valType == ValueType.Single) _flags2 |= StepFlag2.AnyDouble;
+                else if (valType == ValueType.Double) _flags2 |= StepFlag2.AnyDouble;
+                else if (valType == ValueType.Decimal) _flags2 |= StepFlag2.AnyDouble;
+
+                else if (valType == ValueType.Byte) _flags2 |= StepFlag2.AnyUInt;
+                else if (valType == ValueType.UInt16) _flags2 |= StepFlag2.AnyUInt;
+                else if (valType == ValueType.UInt32) _flags2 |= StepFlag2.AnyUInt;
+
+                else if (valType == ValueType.UInt64) _flags2 |= StepFlag2.AnyULong;
+
+                else _flags2 |= StepFlag2.AnyOtherType;
+            }
+
+            var current = _flags2 & ~StepFlag2.AnyChange; //current state minus the AnyChange flag
+            if (previous != current) _flags2 |= StepFlag2.AnyChange;
+        }
         #endregion
 
         #region IsValid  ======================================================
@@ -79,7 +115,7 @@ namespace ModelGraphLibrary
                     if (step.IsValid) continue; // recursive depth-first traversal
                     return false;
                 }
-            }            
+            }
             return true;
         }
         #endregion
@@ -88,12 +124,12 @@ namespace ModelGraphLibrary
         internal bool TryValidate(Store sto, Func<Item> getItem)
         {
             bool result = true;
-            if (IsPropertyRef && StepType == StepType.Parse && Evaluate is EvaluateParse e)
+            if (StepType == StepType.Property && Evaluate is EvaluateParse e)
             {
                 if (sto.TryLookUpProperty(e.Text, out Property property, out int index))
                 {
                     StepType = StepType.Property;
-                    Evaluate = new EvaluateProperty(this, property, index, getItem);
+                    Evaluate = new EvaluateProperty(property, index, getItem);
                 }
                 else
                 {
@@ -116,9 +152,9 @@ namespace ModelGraphLibrary
         /// <summary>
         /// Depth-First traversal of the expression tree
         /// </summary>
-        internal bool TryResolve ()
+        internal bool TryResolve()
         {
-            if (Inputs != null) foreach (var step in Inputs) { TryResolve(); } // recursive depth-first traversal
+            if (Inputs != null) foreach (var step in Inputs) { step.TryResolve(); } // recursive depth-first traversal
 
             if (StepTypeResolve.TryGetValue(StepType, out Action<ComputeStep> resolve)) resolve(this);
 
@@ -132,16 +168,16 @@ namespace ModelGraphLibrary
         internal ValueType ValueType => Evaluate.ValueType;
 
         internal void GetValue(out bool value) => Evaluate.GetValue(this, out value);
-        internal  void GetValue(out byte value) => Evaluate.GetValue(this, out value);
-        internal  void GetValue(out sbyte value) => Evaluate.GetValue(this, out value);
-        internal  void GetValue(out uint value) => Evaluate.GetValue(this, out value);
-        internal  void GetValue(out int value) => Evaluate.GetValue(this, out value);
-        internal  void GetValue(out ushort value) => Evaluate.GetValue(this, out value);
-        internal  void GetValue(out short value) => Evaluate.GetValue(this, out value);
-        internal  void GetValue(out ulong value) => Evaluate.GetValue(this, out value);
-        internal  void GetValue(out long value) => Evaluate.GetValue(this, out value);
-        internal  void GetValue(out double value) => Evaluate.GetValue(this, out value);
-        internal  void GetValue(out string value) => Evaluate.GetValue(this, out value);
+        internal void GetValue(out byte value) => Evaluate.GetValue(this, out value);
+        internal void GetValue(out sbyte value) => Evaluate.GetValue(this, out value);
+        internal void GetValue(out uint value) => Evaluate.GetValue(this, out value);
+        internal void GetValue(out int value) => Evaluate.GetValue(this, out value);
+        internal void GetValue(out ushort value) => Evaluate.GetValue(this, out value);
+        internal void GetValue(out short value) => Evaluate.GetValue(this, out value);
+        internal void GetValue(out ulong value) => Evaluate.GetValue(this, out value);
+        internal void GetValue(out long value) => Evaluate.GetValue(this, out value);
+        internal void GetValue(out double value) => Evaluate.GetValue(this, out value);
+        internal void GetValue(out string value) => Evaluate.GetValue(this, out value);
         #endregion
 
         #region GetText  ======================================================
@@ -176,11 +212,24 @@ namespace ModelGraphLibrary
 
             // Text  ==========================================================
 
-            Inputs[0].GetText(sb); //<- - - - - recursive call
-            for (int i = 1; i < Count; i++)
+            var N = Count;
+            if (N == 0)
             {
                 sb.Append(Evaluate.Text);
-                Inputs[i].GetText(sb); //<- - - recursive call
+            }
+            else if (N == 1)
+            {
+                sb.Append(Evaluate.Text);
+                Inputs[0].GetText(sb); //<- - - - - recursive call
+            }
+            else
+            {
+                Inputs[0].GetText(sb); //<- - - - - recursive call
+                for (int i = 1; i < N; i++)
+                {
+                    sb.Append(Evaluate.Text);
+                    Inputs[i].GetText(sb); //<- - - recursive call
+                }
             }
 
             // Suffix  ========================================================
@@ -203,8 +252,8 @@ namespace ModelGraphLibrary
                 [StepType.Minus] = ResolveMinus,
                 [StepType.Equals] = ResolveFails,
                 [StepType.Negate] = ResolveFails,
-                [StepType.Divide] = ResolveFails,
-                [StepType.Multiply] = ResolveFails,
+                [StepType.Divide] = ResolveDivide,
+                [StepType.Multiply] = ResolveMultiply,
                 [StepType.LessThan] = ResolveFails,
                 [StepType.GreaterThan] = ResolveFails,
                 [StepType.NotLessThan] = ResolveFails,
@@ -224,20 +273,19 @@ namespace ModelGraphLibrary
         #region ResolvePlus  ==================================================
         static void ResolvePlus(ComputeStep step)
         {
-            GetStepFlags2(step);
-            if (step.AnyInvalid) return;
+            step.UpdateResolveState();
 
             if (step.Inputs[0].Evaluate.ValueType == ValueType.String && step.Evaluate.ValueType != ValueType.String)
-                step.Evaluate = new EvaluateConcat(step);
+                step.Evaluate = new EvaluateConcat();
             else if (step.Inputs[0].Evaluate.ValueType == ValueType.Bool && step.Evaluate.ValueType != ValueType.Bool)
-                step.Evaluate = new EvaluateOr2(step);
+                step.Evaluate = new EvaluateOr2();
             else
             {
-                if (step.AnyNonNumeric && step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoublePlus(step);
-                else if (step.AnyDouble && step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoublePlus(step);
-                else if (step.AnyInt && step.ValueType != ValueType.Int32) step.Evaluate = new EvaluateIntegerPlus(step);
-                else if (step.AnyULong && step.ValueType != ValueType.UInt64) step.Evaluate = new EvaluateULongOr1(step);
-                else if (step.AnyUInt && step.ValueType != ValueType.UInt32) step.Evaluate = new EvaluateUIntOr1(step);
+                if (step.AnyOtherType) { if (step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoublePlus(); }
+                else if (step.AnyDouble) { if (step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoublePlus(); }
+                else if (step.AnyInt) { if (step.ValueType != ValueType.Int32) step.Evaluate = new EvaluateIntegerPlus(); }
+                else if (step.AnyULong) { if (step.ValueType != ValueType.UInt64) step.Evaluate = new EvaluateULongOr1(); }
+                else if (step.AnyUInt) { if (step.ValueType != ValueType.UInt32) step.Evaluate = new EvaluateUIntOr1(); }
             }
         }
         #endregion
@@ -245,61 +293,36 @@ namespace ModelGraphLibrary
         #region ResolveMinus  =================================================
         static void ResolveMinus(ComputeStep step)
         {
-            GetStepFlags2(step);
-            if (step.AnyInvalid) return;
+            step.UpdateResolveState();
 
             if (step.Inputs[0].Evaluate.ValueType == ValueType.String && step.Evaluate.ValueType != ValueType.String)
-                step.Evaluate = new EvaluateRemove(step);
+                step.Evaluate = new EvaluateRemove();
             else if (step.Inputs[0].Evaluate.ValueType == ValueType.Bool && step.Evaluate.ValueType != ValueType.Bool)
-                step.Evaluate = new EvaluateAnd2(step);
+                step.Evaluate = new EvaluateAnd2();
             else
             {
-                if (step.AnyNonNumeric && step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoubleMinus(step);
-                else if (step.AnyDouble && step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoubleMinus(step);
-                else if (step.AnyInt && step.ValueType != ValueType.Int32) step.Evaluate = new EvaluateIntegerMinus(step);
-                else if (step.AnyULong && step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoubleMinus(step);
-                else if (step.AnyUInt && step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoubleMinus(step);
+                if (step.AnyOtherType) { if (step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoubleMinus(); }
+                else if (step.AnyDouble) { if (step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoubleMinus(); }
+                else if (step.AnyInt) { if (step.ValueType != ValueType.Int32) step.Evaluate = new EvaluateIntegerMinus(); }
+                else if (step.AnyULong) { if (step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoubleMinus(); }
+                else if (step.AnyUInt) { if (step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoubleMinus(); }
             }
         }
         #endregion
 
-        #region GetStepFlags2  =================================================
-        /// <summary>
-        /// Get aggregate of numeric types for all inputs
-        /// </summary>
-        static void GetStepFlags2(ComputeStep step)
+        #region ResolveDivide  ================================================
+        static void ResolveDivide(ComputeStep step)
         {
-            step.ResetFlags2();
+            step.UpdateResolveState();
+            if (step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoubleDivide();
+        }
+        #endregion
 
-            var N = step.Count;
-            for (int i = 0; i < N; i++)
-            {
-                if (step.Inputs[i].AnyChange) step.AnyChange = true; // bubble-up any step changed
-                if (step.Inputs[i].AnyInvalid) step.AnyInvalid = true; // bubble-up any step is invalid
-                if (step.Inputs[i].AnyUnresolved) step.AnyUnresolved = true; // bubble-up any step is unresoved
-
-                if (step.Inputs[i].ValueType > ValueType.MaximumType)
-                {
-                    if (step.Inputs[i].ValueType == ValueType.IsInvalid) step.AnyInvalid = true;
-
-                    step.AnyChange = !step.IsUnresolved;
-                    step.IsUnresolved = true;
-                    step.AnyUnresolved = true;
-                    break;
-                }
-                else if (step.Inputs[i].ValueType == ValueType.Byte) step.AnyUInt = true;
-                else if (step.Inputs[i].ValueType == ValueType.UInt16) step.AnyUInt = true;
-                else if (step.Inputs[i].ValueType == ValueType.UInt32) step.AnyUInt = true;
-                else if (step.Inputs[i].ValueType == ValueType.UInt64) step.AnyULong = true;
-                else if (step.Inputs[i].ValueType == ValueType.SByte) step.AnyInt = true;
-                else if (step.Inputs[i].ValueType == ValueType.Int16) step.AnyInt = true;
-                else if (step.Inputs[i].ValueType == ValueType.Int32) step.AnyInt = true;
-                else if (step.Inputs[i].ValueType == ValueType.Int64) step.AnyDouble = true;
-                else if (step.Inputs[i].ValueType == ValueType.Single) step.AnyDouble = true;
-                else if (step.Inputs[i].ValueType == ValueType.Double) step.AnyDouble = true;
-                else if (step.Inputs[i].ValueType == ValueType.Decimal) step.AnyDouble = true;
-                else step.AnyNonNumeric = true;
-            }
+        #region ResolveMultiply  ==============================================
+        static void ResolveMultiply(ComputeStep step)
+        {
+            step.UpdateResolveState();
+            if (step.ValueType != ValueType.Double) step.Evaluate = new EvaluateDoubleMultiply();
         }
         #endregion
 

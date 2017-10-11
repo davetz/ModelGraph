@@ -5,7 +5,7 @@ namespace ModelGraphLibrary
     internal class EvaluateBool : EvaluateBase
     {
         private bool _value;
-        internal EvaluateBool(ComputeStep step, bool val) :base(step) { _value = val; }
+        internal EvaluateBool(bool val) { _value = val; }
 
         bool GetVal(ComputeStep step) => step.IsNegated ? !_value : _value;
         internal override ValueType ValueType => ValueType.Bool;

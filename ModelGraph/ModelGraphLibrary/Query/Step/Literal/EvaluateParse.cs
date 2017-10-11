@@ -11,11 +11,9 @@ namespace ModelGraphLibrary
         internal int Index1;
         internal int Index2;
         internal EvaluateParse(string text)
-            :base(null)
         {
             _text = string.IsNullOrWhiteSpace(text) ? string.Empty : text;
-            Index1 = 0;
-            Index2 = (text ==null) ? 0 : text.Length;
+            Index1 = Index2 = 0;
         }
 
         #region Head / Tail  ==================================================
@@ -52,7 +50,10 @@ namespace ModelGraphLibrary
             Index1 = last;
             Index2 = last + 1;
 
-            return isOn;
+            if (isOn) return true; // has error
+
+            Index1 = Index2 = 0; // no error, reset indices
+            return false;
         }
         #endregion
 
@@ -82,7 +83,10 @@ namespace ModelGraphLibrary
             Index1 = (first >= 0) ? first : 0;
             Index2 = _text.Length;
 
-            return (count != 0);
+            if (count != 0) return true; // has error
+
+            Index1 = Index2 = 0; // no error, reset indices
+            return false;
         }
 
         #endregion
