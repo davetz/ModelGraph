@@ -67,7 +67,5 @@ namespace ModelGraph.Internals
         IsInvalid = 65,     // computed values that failed validation
         IsCircular = 66,    // indicates a circular references
         IsUnresolved = 67,  // indicates an unresolved dependancy
-
-        InternalEnum = 70,  // for application internal use
     }
 }

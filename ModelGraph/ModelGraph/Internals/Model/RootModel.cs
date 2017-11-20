@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.UI.Xaml;
 
 namespace ModelGraph.Internals
 {/*
-    Data flow and control between ModelGraph.Internals <--> ModelGraph App
+    Data flow and control between ModelGraph.Internals <--> ModelGraph
 
     The ModelGraph.Internals has no direct knowledge of the UI controls, however, it does 
     initiates UI action through the interfaces IPageControl and IModelControl.
@@ -12,11 +11,8 @@ namespace ModelGraph.Internals
     The UI controls, on the other hand, do have direct access to the public methods and
     properties of ModelGraph.Internals objects. This is especially important for the case
     of the ModelGraphControl.
-    
-    The ModelGraphUnitTest tests the ModelGraph.Internals's essential function
-    independant of the UI controls.    
  */
-    public class RootModel : ItemModel
+    public class RootModel : TreeModel
     {
         public Chef Chef;
         public IPageControl PageControl { get; set; } // reference the UI PageControl
@@ -39,20 +35,20 @@ namespace ModelGraph.Internals
         public List<ModelCommand> ButtonCommands = new List<ModelCommand>();
         public List<ModelCommand> AppButtonCommands = new List<ModelCommand>();
 
-        public Func<ItemModel, ItemModel, bool, DropAction> ModelDrop;
-        public Func<ItemModel, ItemModel, bool, DropAction> ReorderItems;
+        public Func<TreeModel, TreeModel, bool, DropAction> ModelDrop;
+        public Func<TreeModel, TreeModel, bool, DropAction> ReorderItems;
 
         public int ViewIndex1; //index of first visible model
         public int ViewIndex2; //index one beyond the last visible model
         public int ViewCapacity; //max number of visible models
-        public ItemModel ViewSelectModel; //currently selected model
-        public ItemModel[] ViewModels; //flattend list of itemModel tree
+        public TreeModel ViewSelectModel; //currently selected model
+        public TreeModel[] ViewModels; //flattend list of itemModel tree
         public Dictionary<object, string> ViewFilter = new Dictionary<object, string>();
 
         public ModelAction ModelAction;
 
-        private ItemModel[] _modelList;
-        public ItemModel[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
+        private TreeModel[] _modelList;
+        public TreeModel[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
         public int Capacity { get; set; } = 100;
 
         public bool ModelIsChecked;
@@ -103,7 +99,7 @@ namespace ModelGraph.Internals
         #region ModelData  ====================================================
 
         // ModelAction.DragOver  ==============================================
-        public void GetDragOverData(ItemModel model)
+        public void GetDragOverData(TreeModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -114,7 +110,7 @@ namespace ModelGraph.Internals
         }
 
         // ModelAction.PointerOver  ===========================================
-        public void GetPointerOverData(ItemModel model)
+        public void GetPointerOverData(TreeModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -128,7 +124,7 @@ namespace ModelGraph.Internals
         }
 
         // ModelAction.ModelSelect  ===========================================
-        public void GetModelSelectData(ItemModel model)
+        public void GetModelSelectData(TreeModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -144,7 +140,7 @@ namespace ModelGraph.Internals
         }
 
         // ModelAction.ModelRefresh  ==========================================
-        public void GetModelItemData(ItemModel model)
+        public void GetModelItemData(TreeModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -165,7 +161,7 @@ namespace ModelGraph.Internals
             if (string.IsNullOrEmpty(ModelName)) ModelName = "???";
         }
 
-        public void PostModelDrop(ItemModel model)
+        public void PostModelDrop(TreeModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -177,14 +173,14 @@ namespace ModelGraph.Internals
             else
                 Chef.PostDataAction(this, () => { ModelDrop?.Invoke(model, drop, true); });
         }
-        public void SetDragDropSource(ItemModel model)
+        public void SetDragDropSource(TreeModel model)
         {
             if (model == null | model.IsInvalid) return;
 
             Chef.DragDropSource = model;
         }
 
-        public DropAction CanModelAcceptDrop(ItemModel model)
+        public DropAction CanModelAcceptDrop(TreeModel model)
         {
             if (model == null | model.IsInvalid) return DropAction.None;
 
@@ -225,15 +221,15 @@ namespace ModelGraph.Internals
 
         public void PostModelRefresh() { Chef.PostModelRefresh(this); }
 
-        public void PostSetValue(ItemModel model, string value)
+        public void PostSetValue(TreeModel model, string value)
         {
             Chef.PostModelSetValue(model, value);
         }
-        public void PostSetIsChecked(ItemModel model, bool value)
+        public void PostSetIsChecked(TreeModel model, bool value)
         {
             Chef.PostModelSetIsChecked(model, value);
         }
-        public void PostSetValueIndex(ItemModel model, int value)
+        public void PostSetValueIndex(TreeModel model, int value)
         {
             model.GetData(this);
             Chef.PostModelSetValueIndex(model, value);

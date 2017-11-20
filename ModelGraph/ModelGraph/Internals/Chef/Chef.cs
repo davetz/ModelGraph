@@ -61,12 +61,12 @@ namespace ModelGraph.Internals
         #endregion
 
         #region DragDrop  =====================================================
-        internal ItemModel DragDropSource
+        internal TreeModel DragDropSource
         {
             get { return GetRootChef().DragDropModel; }
             set { GetRootChef().DragDropModel = value; }
         }
-        protected ItemModel DragDropModel;
+        protected TreeModel DragDropModel;
 
         private Chef GetRootChef()
         {

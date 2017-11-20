@@ -111,6 +111,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activation\ActivationHandler.cs" />
+    <Compile Include="Controls\ModelControl\IModelControl.cs" />
+    <Compile Include="Controls\ModelTree\ModelTreeControl.xaml.cs" />
+    <Compile Include="Controls\ModelTree\ModelTreeUICache.cs" />
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
     <Compile Include="Helpers\Json.cs" />
     <Compile Include="Helpers\SettingsStorageExtensions.cs" />
@@ -196,7 +199,7 @@
     <Compile Include="Internals\Model\Enum\ControlType.cs" />
     <Compile Include="Internals\Model\Enum\DropAction.cs" />
     <Compile Include="Internals\Model\Enum\ModelAction.cs" />
-    <Compile Include="Internals\Model\ItemModel.cs" />
+    <Compile Include="Internals\Model\TreeModel.cs" />
     <Compile Include="Internals\Model\ModelCommand.cs" />
     <Compile Include="Internals\Model\RootModel.cs" />
     <Compile Include="Internals\Model\UIRequest\IPageControl.cs" />
@@ -360,6 +363,9 @@
     <Compile Include="Views\ShellPage.xaml.cs">
       <DependentUpon>ShellPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TabbedPage.xaml.cs">
+      <DependentUpon>TabbedPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -368,6 +374,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\ModelTree\ModelTreeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Styles\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -404,6 +414,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\TabbedPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -415,6 +429,8 @@
     <Compile Include="Helpers\Singleton.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Controls\ModelGraph\" />
+    <Folder Include="Controls\SymbolEdit\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>

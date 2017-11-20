@@ -7,15 +7,15 @@ namespace ModelGraph.Internals
     public class ModelCommand
     {
         public Chef Chef;
-        public ItemModel Model;
-        public Action<ItemModel> Action;
-        public Action<ItemModel, Object> Action1;
+        public TreeModel Model;
+        public Action<TreeModel> Action;
+        public Action<TreeModel, Object> Action1;
         public Object Parameter1;
         public string Name;
         public string Summary;
         internal Trait Trait;
 
-        public ModelCommand(Chef chef, ItemModel model, Trait trait, Action<ItemModel> action)
+        public ModelCommand(Chef chef, TreeModel model, Trait trait, Action<TreeModel> action)
         {
             Chef = chef;
             Model = model;
@@ -24,7 +24,7 @@ namespace ModelGraph.Internals
             Name = chef.GetName(trait);
             Summary = chef.GetSummary(trait); ;
         }
-        public ModelCommand(Chef chef, ItemModel model, Trait trait, Action<ItemModel, Object> action)
+        public ModelCommand(Chef chef, TreeModel model, Trait trait, Action<TreeModel, Object> action)
         {
             Chef = chef;
             Model = model;

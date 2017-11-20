@@ -2,7 +2,7 @@
 
 namespace ModelGraph.Internals
 {/*
-    This is how the ModelGraphLibray requests a UI control action.
+    This is how the ModelGraph.Internals requests UI control action.
   
     rootModel.PageControl.Dispatch( UIRequest.Refresh(rootModel) );
  */
@@ -16,7 +16,7 @@ namespace ModelGraph.Internals
         public Item Item2 { get; private set; }
         public Item Item3 { get; private set; }
         public ControlType Type { get; private set; }
-        public Action<ItemModel, RootModel> GetData { get; private set; }
+        public Action<TreeModel, RootModel> GetData { get; private set; }
         public Trait Trait { get; private set; }
 
         public bool DoRefresh { get; private set; }
@@ -31,7 +31,7 @@ namespace ModelGraph.Internals
         {
             RootModel = model;
         }
-        private UIRequest(ControlType type, Trait trait, Chef chef, Item item1, Item item2 = null, Item item3 = null, Action<ItemModel, RootModel> getData = null, bool openInNewPage = false)
+        private UIRequest(ControlType type, Trait trait, Chef chef, Item item1, Item item2 = null, Item item3 = null, Action<TreeModel, RootModel> getData = null, bool openInNewPage = false)
         {
             Chef = chef;
             Type = type;
@@ -47,29 +47,33 @@ namespace ModelGraph.Internals
 
         public static UIRequest Refresh(RootModel model)
         {
-            var req = new UIRequest(model);
-            req.DoRefresh = true;
-            return req;
+            return new UIRequest(model)
+            {
+                DoRefresh = true
+            };
         }
         public static UIRequest SaveModel(RootModel model)
         {
-            var req = new UIRequest(model);
-            req.DoSaveModel = true;
-            return req;
+            return new UIRequest(model)
+            {
+                DoSaveModel = true
+            };
         }
         public static UIRequest CloseModel(RootModel model)
         {
-            var req = new UIRequest(model);
-            req.DoCloseModel = true;
-            return req;
+            return new UIRequest(model)
+            {
+                DoCloseModel = true
+            };
         }
         public static UIRequest ReloadModel(RootModel model)
         {
-            var req = new UIRequest(model);
-            req.DoReloadModel = true;
-            return req;
+            return new UIRequest(model)
+            {
+                DoReloadModel = true
+            };
         }
-        public static UIRequest CreateNewView(ControlType type, Trait trait, Chef chef, Item item1, Item item2 = null, Item item3 = null, Action<ItemModel, RootModel> getData = null, bool openInNewPage = false)
+        public static UIRequest CreateNewView(ControlType type, Trait trait, Chef chef, Item item1, Item item2 = null, Item item3 = null, Action<TreeModel, RootModel> getData = null, bool openInNewPage = false)
         {
             return new UIRequest(type, trait, chef, item1, item2, item3, getData, openInNewPage);
         }

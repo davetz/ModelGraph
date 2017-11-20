@@ -1,7 +1,7 @@
 ﻿namespace ModelGraph.Internals
 {/*
     ControlType used to communicate which type of control to create.
-    ModelGraph.Internals --> IPage --> ModelGragph App
+    ModelGraph.Internals --> IPage --> ModelGragph
  */
     /// <summary>
     ///  ControlType used to communicate which type of control to create.

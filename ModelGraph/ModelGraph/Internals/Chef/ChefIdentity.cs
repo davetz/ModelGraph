@@ -655,7 +655,7 @@ namespace ModelGraph.Internals
             var inx = tbl.IndexOf(row);
             return $"#{inx.ToString()}";
         }
-        internal string RowSummary(ItemModel model)
+        internal string RowSummary(TreeModel model)
         {
             return RowSummary(model.Item1 as RowX);
         }
