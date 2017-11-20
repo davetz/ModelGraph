@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.ApplicationModel.Resources;
+using ModelGraph.Helpers;
 using Windows.Storage;
 
 namespace ModelGraph.Internals
@@ -13,22 +13,18 @@ namespace ModelGraph.Internals
         static int _newChefCount;
         private int _newChefNumber;
 
-        private ResourceLoader _resourceLoader;
         private object _executionLock = new object(); // only one thread may modify the data
 
         #region RootChef  =====================================================
         internal Chef() : base(null, Trait.RootChef, Guid.Empty, 10)
         {
-            _resourceLoader = ResourceLoader.GetForViewIndependentUse("ModelGraph.Internals/Resources"); //GetForCurrentView("ModelGraph.Internals/Resources");
             Owner = this;
         }
-        internal ResourceLoader GetLoader => _resourceLoader;
         #endregion
 
         #region DataChef  =====================================================
         internal Chef(Chef rootChef, StorageFile file = null) : base(rootChef, Trait.DataChef, Guid.Empty, 0)
         {
-            _resourceLoader = rootChef.GetLoader;
             _selfReferenceModel = new RootModel(this);
 
             Initialize();
@@ -132,7 +128,7 @@ namespace ModelGraph.Internals
             if (index < 0) return name;
             return name.Substring(0, index);
         }
-        private string NullStorageFileName => $"{_resourceLoader.GetString(GetNameKey(Trait.NewModel))} #{_newChefNumber}";
+        private string NullStorageFileName => $"{GetNameKey(Trait.NewModel).GetLocalized()} #{_newChefNumber}";
         #endregion
     }
 }

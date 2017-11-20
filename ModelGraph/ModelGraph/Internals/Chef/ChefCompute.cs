@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using ModelGraph.Helpers;
 
 namespace ModelGraph.Internals
 {/*
@@ -243,7 +243,7 @@ namespace ModelGraph.Internals
         #region GetSelectorName  ==============================================
         string GetSelectorName(ComputeX item)
         {
-            var text = _resourceLoader.GetString("SelectClause"); //<=================== FIX THIS
+            var text = "SelectClause".GetLocalized(); //<=================== FIX THIS
             var tbl = Store_ComputeX.GetParent(item);
             var tblName = GetIdentity(tbl, IdentityStyle.Single);
             if (tbl != null) return $"{tblName} {text}";

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Windows.Storage;
+using ModelGraph.Helpers;
 
 namespace ModelGraph.Internals
 {/*
@@ -552,7 +553,7 @@ namespace ModelGraph.Internals
 
                 case ControlType.PrimaryTree:
                     if (_modelingFile == null)
-                        return _resourceLoader.GetString(GetNameKey(Trait.NewModel));
+                        return GetNameKey(Trait.NewModel).GetLocalized();
 
                     var name = _modelingFile.Name;
                     var index = name.LastIndexOf(".");
@@ -612,7 +613,7 @@ namespace ModelGraph.Internals
 
                 case ControlType.PrimaryTree:
                     if (_modelingFile == null)
-                        return _resourceLoader.GetString(GetNameKey(Trait.NewModel));
+                        return GetNameKey(Trait.NewModel).GetLocalized();
 
                     var name = _modelingFile.Name;
                     var index = name.LastIndexOf(".");
@@ -740,7 +741,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelSelect:
@@ -790,7 +791,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
                         
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
 
                         model.CanExpandLeft = true;
                         break;
@@ -1029,15 +1030,15 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(pro.SummaryKey);
+                        root.ModelSummary = pro.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
                         if (pro.HasItemName)
-                            root.ModelName = $"{pro.GetItemName(itm)} {_resourceLoader.GetString(pro.NameKey)}";
+                            root.ModelName = $"{pro.GetItemName(itm)} {pro.NameKey.GetLocalized()}";
                         else
-                            root.ModelName = _resourceLoader.GetString(pro.NameKey);
+                            root.ModelName = pro.NameKey.GetLocalized();
 
                         root.ModelValue = pro.Value.GetString(itm);
                         if (root.ModelValue == null) root.ModelValue = string.Empty;
@@ -1045,7 +1046,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = _resourceLoader.GetString(pro.DescriptionKey);
+                        root.ModelDescription = pro.DescriptionKey.GetLocalized();
                         break;
                 }
             }
@@ -1067,18 +1068,18 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(pro.SummaryKey);
+                        root.ModelSummary = pro.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(pro.NameKey);
+                        root.ModelName = pro.NameKey.GetLocalized();
                         root.ModelIsChecked = pro.Value.GetBool(itm);
                         break;
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = _resourceLoader.GetString(pro.DescriptionKey);
+                        root.ModelDescription = pro.DescriptionKey.GetLocalized();
                         break;
                 }
             }
@@ -1101,19 +1102,19 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(pro.SummaryKey);
+                        root.ModelSummary = pro.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(pro.NameKey);
+                        root.ModelName = pro.NameKey.GetLocalized();
                         root.ModelValueList = GetEnumDisplayValues(enu);
                         root.ValueIndex = GetComboSelectedIndex(itm, pro, enu);
                         break;
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = _resourceLoader.GetString(pro.DescriptionKey);
+                        root.ModelDescription = pro.DescriptionKey.GetLocalized();
                         break;
                 }
             }
@@ -1131,7 +1132,7 @@ namespace ModelGraph.Internals
                 for (int i = 0; i < count; i++)
                 {
                     var p = items[i];
-                    values[i] = _resourceLoader.GetString(p.NameKey);
+                    values[i] = p.NameKey.GetLocalized();
                 }
             }
             return values;
@@ -1147,7 +1148,7 @@ namespace ModelGraph.Internals
                 if (index >= 0 && index < count)
                 {
                     var p = items[index];
-                    value = _resourceLoader.GetString(p.NameKey);
+                    value = p.NameKey.GetLocalized();
                 }
             }
             return value;
@@ -1217,7 +1218,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = store.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -1275,7 +1276,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         if (model.IsExpandedLeft)
                         {
                             _changeRootInfoItem = null;
@@ -1339,7 +1340,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
 
                         model.CanExpandLeft = true;
                         break;
@@ -1411,7 +1412,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
 
                         model.CanExpandLeft = true;
                         break;
@@ -1481,7 +1482,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
 
                         model.CanExpandLeft = true;
                         break;
@@ -1532,12 +1533,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(item.SummaryKey);
+                        root.ModelSummary = item.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(item.NameKey);
+                        root.ModelName = item.NameKey.GetLocalized();
                         root.ModelCount = item.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -1670,7 +1671,7 @@ namespace ModelGraph.Internals
         private string GetChangeSetName(ChangeSet chg)
         {
             if (chg.IsCongealed)
-                return _resourceLoader.GetString(chg.NameKey);
+                return chg.NameKey.GetLocalized();
             else
                 return chg.Name;
         }
@@ -1710,7 +1711,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(chg.KindKey);
+                        root.ModelKind = chg.KindKey.GetLocalized();
                         root.ModelName = chg.Name;
                         break;
 
@@ -1742,7 +1743,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
 
                         var views = _viewXStore.Items;
                         var count = 0;
@@ -2022,7 +2023,7 @@ namespace ModelGraph.Internals
                         var rel = Relation_QueryX.GetParent(qx);
                         if (rel != null)
                         {
-                            root.ModelKind = _resourceLoader.GetString(qx.KindKey);
+                            root.ModelKind = qx.KindKey.GetLocalized();
                             root.ModelName = GetIdentity(qx, IdentityStyle.Single);
                         }
                         else
@@ -2046,7 +2047,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = _resourceLoader.GetString(model.DescriptionKey);
+                        root.ModelDescription = model.DescriptionKey.GetLocalized();
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, ViewXQuery_M_Insert));
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -2233,12 +2234,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         var views = _viewXStore.Items;
                         var count = 0;
                         foreach (var vx in views) { if (ViewX_ViewX.HasNoParent(vx)) count++; }
@@ -2532,7 +2533,7 @@ namespace ModelGraph.Internals
                     case ModelAction.ModelRefresh:
                         var count = TryGetQueryItems(query, out Item[] items, key) ? items.Length : 0;
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = GetIdentity(query, IdentityStyle.Single);
                         root.ModelCount = count;
 
@@ -2592,7 +2593,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = _enumXStore.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -2651,12 +2652,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = _tableXStore.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -2716,12 +2717,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = _graphXStore.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -2783,12 +2784,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = GraphX_SymbolX.ChildCount(gd);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -2869,12 +2870,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = _tableXStore.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -2927,12 +2928,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = _graphXStore.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -3508,12 +3509,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = TableX_ColumnX.ChildCount(model.Item1);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -3573,12 +3574,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = TableX_ChildRelationX.ChildCount(model.Item1);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -3638,12 +3639,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = TableX_ParentRelationX.ChildCount(model.Item1);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -3704,12 +3705,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = item.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -3770,12 +3771,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = EnumX_ColumnX.ChildCount(item);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -3844,12 +3845,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = Store_ComputeX.ChildCount(sto);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -4051,12 +4052,12 @@ namespace ModelGraph.Internals
                         break;
 
                     case ModelAction.PointerOver:
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = TableX_NameProperty.ChildCount(model.Item1);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -4119,12 +4120,12 @@ namespace ModelGraph.Internals
                         break;
 
                     case ModelAction.PointerOver:
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = TableX_SummaryProperty.ChildCount(model.Item1);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -4264,12 +4265,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = GraphX_ColorColumnX.ChildCount(gd);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -4277,7 +4278,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = _resourceLoader.GetString(model.DescriptionKey);
+                        root.ModelDescription = model.DescriptionKey.GetLocalized();
                         break;
                 }
             }
@@ -4330,12 +4331,12 @@ namespace ModelGraph.Internals
                         break;
 
                     case ModelAction.PointerOver:
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = GraphX_QueryX.ChildCount(model.Item1);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -4343,7 +4344,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = _resourceLoader.GetString(model.DescriptionKey);
+                        root.ModelDescription = model.DescriptionKey.GetLocalized();
                         break;
                 }
             }
@@ -4417,7 +4418,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = GetNodeOwners(gx).Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -4483,7 +4484,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = item.Name;
                         root.ModelCount = GetSymbolQueryXCount(gx, sto);
 
@@ -4553,13 +4554,13 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = $"{tbl.Name} : {col.Name}";
                         break;
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = _resourceLoader.GetString(model.DescriptionKey);
+                        root.ModelDescription = model.DescriptionKey.GetLocalized();
                         break;
                 }
             }
@@ -4586,7 +4587,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.NameKey);
+                        root.ModelKind = model.NameKey.GetLocalized();
                         root.ModelName = QueryXRootName(model);
                         root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
 
@@ -4597,7 +4598,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = _resourceLoader.GetString(model.DescriptionKey);
+                        root.ModelDescription = model.DescriptionKey.GetLocalized();
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
                 }
@@ -4726,7 +4727,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryXLinkName(model);
                         root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
 
@@ -4911,7 +4912,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryXHeadName(model);
                         root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
 
@@ -5013,7 +5014,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryXLinkName(model);
                         root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
 
@@ -5097,7 +5098,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryXHeadName(model);
                         root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
 
@@ -5176,7 +5177,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryXLinkName(model);
                         root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
 
@@ -5261,7 +5262,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryXHeadName(model);
                         root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
 
@@ -5340,7 +5341,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryXLinkName(model);
                         root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
 
@@ -5425,7 +5426,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryXNodeSymbolName(model);
 
                         model.CanDrag = true;
@@ -5484,7 +5485,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryXLinkName(model);
                         root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
 
@@ -5557,7 +5558,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryXLinkName(model);
                         root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
 
@@ -5889,7 +5890,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = g.Name;
 
                         model.CanExpandLeft = true;
@@ -5965,7 +5966,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = graph.Name;
                         break;
 
@@ -6002,7 +6003,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = GetRelationName(rel);
                         root.ModelCount = model.Relation.ChildCount(model.Item1);
 
@@ -6085,7 +6086,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = GetRelationName(rel);
                         root.ModelCount = model.Relation.ParentCount(model.Item1);
 
@@ -6317,7 +6318,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = $"{tbl.Name}: {col.Name}";
                         break;
 
@@ -6357,7 +6358,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         GetColumnCount(model.Item1, out root.ModelCount, out n);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -6416,7 +6417,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         GetChildRelationCount(model.Item1, out root.ModelCount, out n);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -6475,7 +6476,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         GetParentRelationCount(model.Item1, out root.ModelCount, out n);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -6534,7 +6535,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         GetColumnCount(model.Item1, out n, out root.ModelCount);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -6593,7 +6594,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         GetChildRelationCount(model.Item1, out n, out root.ModelCount);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -6652,7 +6653,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         GetParentRelationCount(model.Item1, out n, out root.ModelCount);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -6712,7 +6713,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = Store_ComputeX.ChildCount(sto);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -6770,7 +6771,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
@@ -6831,7 +6832,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
@@ -6869,7 +6870,7 @@ namespace ModelGraph.Internals
                     case ModelAction.ModelRefresh:
 
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
@@ -6937,7 +6938,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
@@ -6973,7 +6974,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
@@ -7041,7 +7042,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
@@ -7077,7 +7078,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
@@ -7232,7 +7233,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = $"{_resourceLoader.GetString(model.KindKey)} {(row.Owner as TableX).Name}";
+                        root.ModelKind = $"{model.KindKey.GetLocalized()} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
                         root.ModelCount = seg.QueryCount(model.Item1);
 
@@ -7291,7 +7292,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = $"{_resourceLoader.GetString(model.KindKey)} {(row.Owner as TableX).Name}";
+                        root.ModelKind = $"{model.KindKey.GetLocalized()} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
                         root.ModelCount = seg.QueryCount(model.Item1);
 
@@ -7325,7 +7326,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = $"{_resourceLoader.GetString(KindKey)} {(row.Owner as TableX).Name}";
+                        root.ModelKind = $"{KindKey.GetLocalized()} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
                         root.ModelCount = seg.QueryCount(model.Item1);
 
@@ -7384,7 +7385,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = $"{_resourceLoader.GetString(model.KindKey)} {(row.Owner as TableX).Name}";
+                        root.ModelKind = $"{model.KindKey.GetLocalized()} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
                         root.ModelCount = seg.QueryCount(model.Item1);
 
@@ -7418,7 +7419,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = $"{_resourceLoader.GetString(model.KindKey)} {(row.Owner as TableX).Name}";
+                        root.ModelKind = $"{model.KindKey.GetLocalized()} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
                         root.ModelCount = seg.QueryCount(model.Item1);
 
@@ -7477,7 +7478,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = $"{_resourceLoader.GetString(model.KindKey)} {(row.Owner as TableX).Name}";
+                        root.ModelKind = $"{model.KindKey.GetLocalized()} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
                         root.ModelCount = seg.QueryCount(model.Item1);
 
@@ -7611,12 +7612,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = model.Graph.NodeCount;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -7669,12 +7670,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = model.Graph.EdgeCount;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -7727,12 +7728,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = model.Graph.QueryCount;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -7787,12 +7788,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = item.Levels.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -7851,7 +7852,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = item.Name;
                         root.ModelCount = item.Count;
 
@@ -7961,8 +7962,8 @@ namespace ModelGraph.Internals
         }
         private string GetPathKind(Path path)
         {
-            var name = _resourceLoader.GetString(path.NameKey);
-            var kind = path.IsRadial ? _resourceLoader.GetString(GetKindKey(Trait.RadialPath)) : _resourceLoader.GetString(GetKindKey(Trait.LinkPath));
+            var name = path.NameKey.GetLocalized();
+            var kind = path.IsRadial ? GetKindKey(Trait.RadialPath).GetLocalized() : GetKindKey(Trait.LinkPath).GetLocalized();
             return $"{name}{kind}";
         }
         #endregion
@@ -8048,7 +8049,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = GetIdentity(nd.Item, IdentityStyle.Double);
                         root.ModelCount = g.Node_Edges.TryGetValue(nd, out edges) ? edges.Count : 0;
 
@@ -8119,7 +8120,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = GetEdgeName(edge);
 
                         model.CanExpandRight = true;
@@ -8169,12 +8170,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = model.Graph.OpenQuerys.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -8270,12 +8271,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(GetSummaryKey(Trait.PrimeCompute_M));
+                        root.ModelSummary = GetSummaryKey(Trait.PrimeCompute_M).GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(GetNameKey(Trait.PrimeCompute_M));
+                        root.ModelName = GetNameKey(Trait.PrimeCompute_M).GetLocalized();
                         root.ModelCount = GetPrimeComputeCount();
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -8285,7 +8286,7 @@ namespace ModelGraph.Internals
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = _resourceLoader.GetString(GetDescriptionKey(Trait.PrimeCompute_M));
+                        root.ModelDescription = GetDescriptionKey(Trait.PrimeCompute_M).GetLocalized();
                         break;
                 }
             }
@@ -8408,19 +8409,19 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(GetSummaryKey(Trait.InternalStore_ZM));
+                        root.ModelSummary = GetSummaryKey(Trait.InternalStore_ZM).GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(GetNameKey(Trait.InternalStore_ZM));
+                        root.ModelName = GetNameKey(Trait.InternalStore_ZM).GetLocalized();
 
                         model.CanExpandLeft = true;
                         break;
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = _resourceLoader.GetString(GetDescriptionKey(Trait.InternalStore_ZM));
+                        root.ModelDescription = GetDescriptionKey(Trait.InternalStore_ZM).GetLocalized();
                         break;
                 }
             }
@@ -8501,12 +8502,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(store.NameKey);
+                        root.ModelName = store.NameKey.GetLocalized();
                         root.ModelCount = store.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -8648,12 +8649,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = store.Count;
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -8707,12 +8708,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = rel.GetLinksCount();
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -8766,12 +8767,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = GetChildRelationCount(item, SubsetType.Used);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -8824,12 +8825,12 @@ namespace ModelGraph.Internals
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = _resourceLoader.GetString(model.SummaryKey);
+                        root.ModelSummary = model.SummaryKey.GetLocalized();
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = _resourceLoader.GetString(model.NameKey);
+                        root.ModelName = model.NameKey.GetLocalized();
                         root.ModelCount = GetParentRelationCount(item, SubsetType.Used);
 
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -8886,7 +8887,7 @@ namespace ModelGraph.Internals
                         break;
 
                     case ModelAction.ModelRefresh:
-                        root.ModelKind = _resourceLoader.GetString(item.KindKey);
+                        root.ModelKind = item.KindKey.GetLocalized();
                         root.ModelName = GetIdentity(item, IdentityStyle.Double);
                         break;
 
@@ -8919,7 +8920,7 @@ namespace ModelGraph.Internals
                         break;
 
                     case ModelAction.ModelRefresh:
-                        root.ModelKind = _resourceLoader.GetString(model.KindKey);
+                        root.ModelKind = model.KindKey.GetLocalized();
                         root.ModelName = $"({GetIdentity(parent, IdentityStyle.Double)}) --> ({GetIdentity(child, IdentityStyle.Double)})";
                         break;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using ModelGraph.Helpers;
 
 namespace ModelGraph.Internals
 {/*
@@ -32,7 +33,7 @@ namespace ModelGraph.Internals
                 {
                     var p = items[i];
                     v[i] = (int)(p.Trait & Trait.EnumMask);
-                    s[i] = _resourceLoader.GetString(p.NameKey);
+                    s[i] = p.NameKey.GetLocalized();
                 }
                 return (s, v);
             }

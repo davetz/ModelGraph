@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ModelGraph.Helpers;
+using System.Collections.Generic;
 
 namespace ModelGraph.Internals
 {/*
@@ -54,7 +55,7 @@ namespace ModelGraph.Internals
             if (_changeSet.Count > 0)
             {
                 var item = _changeSet.Items[_changeSet.Count - 1];
-                var changeText = $"{_resourceLoader.GetString(item.KindKey)}  {item.Name}";
+                var changeText = $"{item.KindKey.GetLocalized()}  {item.Name}";
                 if (_changeRootInfoItem != null && item.Trait == _changeRootInfoItem.Trait)
                     _changeRootInfoCount += 1;
                 else

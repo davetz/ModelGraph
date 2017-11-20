@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ModelGraph.Helpers;
 using System.Collections.Generic;
 
 namespace ModelGraph.Internals
@@ -570,7 +570,7 @@ namespace ModelGraph.Internals
                 {
                     foreach (var pr in props)
                     {
-                        if (string.Compare(name, _resourceLoader.GetString(pr.NameKey), true) == 0) { prop = pr; return true; }
+                        if (string.Compare(name, pr.NameKey.GetLocalized(), true) == 0) { prop = pr; return true; }
                     }
                 }
             }

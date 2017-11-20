@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
+using ModelGraph.Helpers;
 
 namespace ModelGraph.Internals
 {/*
@@ -72,10 +72,10 @@ namespace ModelGraph.Internals
                 var ix = pa.IndexOf(itm);
 
                 string name = (nc == null) ? null : nc.Value.GetString(itm);
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}";
+                if (string.IsNullOrWhiteSpace(name)) name = $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}";
 
                 var parent = pa.Name;
-                if (string.IsNullOrWhiteSpace(parent)) parent = $"_resourceLoader.GetString(tbl.KindKey) {Index_Identity(pa)}";
+                if (string.IsNullOrWhiteSpace(parent)) parent = $"{pa.KindKey.GetLocalized()} {Index_Identity(pa)}";
 
                 switch (style)
                 {
@@ -87,10 +87,10 @@ namespace ModelGraph.Internals
                         return $"{parent} {ix}:  {name}";
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}: {parent} : {name}";
+                        return $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}: {parent} : {name}";
 
                     case IdentityStyle.Kind:
-                        return _resourceLoader.GetString(itm.KindKey);
+                        return itm.KindKey.GetLocalized();;
 
                     case IdentityStyle.Summary:
                         var ns = TableX_SummaryProperty.GetChild(pa);
@@ -110,11 +110,11 @@ namespace ModelGraph.Internals
             if (item is PairX itm)
             {
                 var name = itm.DisplayValue;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}";
+                if (string.IsNullOrWhiteSpace(name)) name = $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}";
 
                 var pa = itm.Owner as EnumX;
                 var parent = pa.Name;
-                if (string.IsNullOrWhiteSpace(parent)) parent = $"{_resourceLoader.GetString(pa.KindKey)} {Index_Identity(pa)}";
+                if (string.IsNullOrWhiteSpace(parent)) parent = $"{pa.KindKey.GetLocalized()} {Index_Identity(pa)}";
 
                 switch (style)
                 {
@@ -126,10 +126,10 @@ namespace ModelGraph.Internals
                         return $"{parent} : {name}";
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}: {parent} : {name}";
+                        return $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}: {parent} : {name}";
 
                     case IdentityStyle.Kind:
-                        return _resourceLoader.GetString(itm.KindKey);
+                        return itm.KindKey.GetLocalized();;
 
                     case IdentityStyle.Summary:
                         return itm.ActualValue;
@@ -148,7 +148,7 @@ namespace ModelGraph.Internals
             if (item is ViewX itm)
             {
                 var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}";
+                if (string.IsNullOrWhiteSpace(name)) name = $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}";
 
                 switch (style)
                 {
@@ -158,10 +158,10 @@ namespace ModelGraph.Internals
                         return name;
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}: {name}";
+                        return $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}: {name}";
 
                     case IdentityStyle.Kind:
-                        return _resourceLoader.GetString(itm.KindKey);
+                        return itm.KindKey.GetLocalized();;
 
                     case IdentityStyle.Summary:
                         return itm.Summary;
@@ -180,7 +180,7 @@ namespace ModelGraph.Internals
             if (item is EnumX itm)
             {
                 var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}";
+                if (string.IsNullOrWhiteSpace(name)) name = $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}";
 
                 switch (style)
                 {
@@ -190,10 +190,10 @@ namespace ModelGraph.Internals
                         return name;
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}: {name}";
+                        return $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}: {name}";
 
                     case IdentityStyle.Kind:
-                        return _resourceLoader.GetString(itm.KindKey);
+                        return itm.KindKey.GetLocalized();;
 
                     case IdentityStyle.Summary:
                         return itm.Summary;
@@ -212,7 +212,7 @@ namespace ModelGraph.Internals
             if (item is TableX itm)
             {
                 var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}";
+                if (string.IsNullOrWhiteSpace(name)) name = $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}";
 
                 switch (style)
                 {
@@ -224,10 +224,10 @@ namespace ModelGraph.Internals
                         return $"{GetIdentity(item, IdentityStyle.Kind)} : {name}";
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}: {name}";
+                        return $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}: {name}";
 
                     case IdentityStyle.Kind:
-                        return _resourceLoader.GetString(itm.KindKey);
+                        return itm.KindKey.GetLocalized();;
 
                     case IdentityStyle.Summary:
                         return itm.Summary;
@@ -246,7 +246,7 @@ namespace ModelGraph.Internals
             if (item is GraphX itm)
             {
                 var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}";
+                if (string.IsNullOrWhiteSpace(name)) name = $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}";
 
                 switch (style)
                 {
@@ -256,10 +256,10 @@ namespace ModelGraph.Internals
                         return name;
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}: {name}";
+                        return $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}: {name}";
 
                     case IdentityStyle.Kind:
-                        return _resourceLoader.GetString(itm.KindKey);
+                        return itm.KindKey.GetLocalized();;
 
                     case IdentityStyle.Summary:
                         return itm.Summary;
@@ -324,7 +324,7 @@ namespace ModelGraph.Internals
                         trait = Trait.QueryNodeSymbol;
                         break;
                 }
-                var kind = _resourceLoader.GetString(GetKindKey(trait));
+                var kind = GetKindKey(trait).GetLocalized();
                 var name = string.Empty;
                 if (qx.IsRoot)
                 {
@@ -377,10 +377,10 @@ namespace ModelGraph.Internals
                         return kind;
 
                     case IdentityStyle.Summary:
-                        return _resourceLoader.GetString(GetSummaryKey(trait));
+                        return GetSummaryKey(trait).GetLocalized();
 
                     case IdentityStyle.Description:
-                        return _resourceLoader.GetString(GetDescriptionKey(trait));
+                        return GetDescriptionKey(trait).GetLocalized();
                 }
             }
             return $"{BlankName} {item.Trait.ToString()}";
@@ -393,11 +393,11 @@ namespace ModelGraph.Internals
             if (item is SymbolX itm)
             {
                 var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}";
+                if (string.IsNullOrWhiteSpace(name)) name = $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}";
 
                 var pa = GraphX_SymbolX.GetParent(itm);
                 var parent = (pa == null) ? BlankName : pa.Name;
-                if (string.IsNullOrWhiteSpace(parent)) parent = $"{_resourceLoader.GetString(pa.KindKey)} {Index_Identity(pa)}";
+                if (string.IsNullOrWhiteSpace(parent)) parent = $"{pa.KindKey.GetLocalized()} {Index_Identity(pa)}";
 
                 switch (style)
                 {
@@ -409,10 +409,10 @@ namespace ModelGraph.Internals
                         return $"{parent} : {name}";
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}: {parent} : {name}";
+                        return $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}: {parent} : {name}";
 
                     case IdentityStyle.Kind:
-                        return _resourceLoader.GetString(itm.KindKey);
+                        return itm.KindKey.GetLocalized();;
 
                     case IdentityStyle.Summary:
                         return itm.Summary;
@@ -431,11 +431,11 @@ namespace ModelGraph.Internals
             if (item is ColumnX itm)
             {
                 var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}";
+                if (string.IsNullOrWhiteSpace(name)) name = $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}";
 
                 var pa = TableX_ColumnX.GetParent(itm);
                 var parent = (pa == null) ? BlankName : pa.Name;
-                if (string.IsNullOrWhiteSpace(parent)) parent = $"{_resourceLoader.GetString(pa.KindKey)} {Index_Identity(pa)}";
+                if (string.IsNullOrWhiteSpace(parent)) parent = $"{pa.KindKey.GetLocalized()} {Index_Identity(pa)}";
 
                 switch (style)
                 {
@@ -447,10 +447,10 @@ namespace ModelGraph.Internals
                         return $"{parent} : {name}";
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}: {parent} : {name}";
+                        return $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}: {parent} : {name}";
 
                     case IdentityStyle.Kind:
-                        return _resourceLoader.GetString(itm.KindKey);
+                        return itm.KindKey.GetLocalized();;
 
                     case IdentityStyle.Summary:
                         return itm.Summary;
@@ -469,7 +469,7 @@ namespace ModelGraph.Internals
             if (item is ComputeX itm)
             {
                 var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}";
+                if (string.IsNullOrWhiteSpace(name)) name = $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}";
 
                 var pa = Store_ComputeX.GetParent(itm);
                 var parent = (pa == null) ? BlankName : GetIdentity(pa, IdentityStyle.Single);
@@ -484,10 +484,10 @@ namespace ModelGraph.Internals
                         return $"{parent} : {name}";
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)} : {parent} : {name}";
+                        return $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)} : {parent} : {name}";
 
                     case IdentityStyle.Kind:
-                        return _resourceLoader.GetString(itm.KindKey);
+                        return itm.KindKey.GetLocalized();;
 
                     case IdentityStyle.Summary:
                         return itm.Summary;
@@ -506,7 +506,7 @@ namespace ModelGraph.Internals
             if (item is RelationX itm)
             {
                 var name = string.IsNullOrWhiteSpace(itm.Name) ? string.Empty : $"({itm.Name})";
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_resourceLoader.GetString(itm.KindKey)} {Index_Identity(itm)}";
+                if (string.IsNullOrWhiteSpace(name)) name = $"{itm.KindKey.GetLocalized()} {Index_Identity(itm)}";
 
                 var ch = TableX_ParentRelationX.GetParent(itm);
                 var pa = TableX_ChildRelationX.GetParent(itm);
@@ -522,10 +522,10 @@ namespace ModelGraph.Internals
 
                     case IdentityStyle.Double:
                     case IdentityStyle.ChangeLog:
-                        return $"{_resourceLoader.GetString(itm.KindKey)}:  {parent} --> {child}    ({name})";
+                        return $"{itm.KindKey.GetLocalized()}:  {parent} --> {child}    ({name})";
 
                     case IdentityStyle.Kind:
-                        return _resourceLoader.GetString(itm.KindKey);
+                        return itm.KindKey.GetLocalized();;
 
                     case IdentityStyle.Summary:
                         return itm.Summary;
@@ -543,8 +543,8 @@ namespace ModelGraph.Internals
         {
             if (item is Relation itm)
             {
-                var kind = _resourceLoader.GetString(GetKindKey(Trait.Relation));
-                var name = _resourceLoader.GetString(itm.NameKey);
+                var kind = GetKindKey(Trait.Relation).GetLocalized();
+                var name = itm.NameKey.GetLocalized();
 
                 var parts = name.Split("_".ToCharArray());
                 var child = parts[1];
@@ -564,10 +564,10 @@ namespace ModelGraph.Internals
                         return kind;
 
                     case IdentityStyle.Summary:
-                        return _resourceLoader.GetString(itm.SummaryKey);
+                        return itm.SummaryKey.GetLocalized();
 
                     case IdentityStyle.Description:
-                        return _resourceLoader.GetString(itm.DescriptionKey);
+                        return itm.DescriptionKey.GetLocalized();
                 }
             }
             return $"{BlankName} {item.Trait.ToString()}";
@@ -579,12 +579,12 @@ namespace ModelGraph.Internals
         {
             if (item is Property itm)
             {
-                var kind = _resourceLoader.GetString(GetKindKey(Trait.Property));
-                var name = _resourceLoader.GetString(itm.NameKey);
+                var kind = GetKindKey(Trait.Property).GetLocalized();
+                var name = itm.NameKey.GetLocalized();
 
                 var pa = Store_Property.GetParent(itm);
                 if (pa == null) pa = item.Owner as Store;
-                var parent = (pa == null) ? BlankName : _resourceLoader.GetString(pa.NameKey);
+                var parent = (pa == null) ? BlankName : pa.NameKey.GetLocalized();
 
                 switch (style)
                 {
@@ -602,10 +602,10 @@ namespace ModelGraph.Internals
                         return kind;
 
                     case IdentityStyle.Summary:
-                        return _resourceLoader.GetString(itm.SummaryKey);
+                        return itm.SummaryKey.GetLocalized();
 
                     case IdentityStyle.Description:
-                        return _resourceLoader.GetString(itm.DescriptionKey);
+                        return itm.DescriptionKey.GetLocalized();
                 }
             }
             return $"{BlankName} {item.Trait.ToString()}";
@@ -617,8 +617,8 @@ namespace ModelGraph.Internals
         {
             if (item is Store itm)
             {
-                var kind = _resourceLoader.GetString(item.KindKey);
-                var name = _resourceLoader.GetString(itm.NameKey);
+                var kind = item.KindKey.GetLocalized();
+                var name = itm.NameKey.GetLocalized();
 
                 switch (style)
                 {
@@ -632,10 +632,10 @@ namespace ModelGraph.Internals
                         return kind;
 
                     case IdentityStyle.Summary:
-                        return _resourceLoader.GetString(itm.SummaryKey);
+                        return itm.SummaryKey.GetLocalized();
 
                     case IdentityStyle.Description:
-                        return _resourceLoader.GetString(itm.DescriptionKey);
+                        return itm.DescriptionKey.GetLocalized();
                 }
             }
             return $"{BlankName} {item.Trait.ToString()}";
@@ -674,19 +674,19 @@ namespace ModelGraph.Internals
         #region GetName  ======================================================
         internal string GetKind(Trait trait)
         {
-            return _resourceLoader.GetString(GetKindKey(trait));
+            return GetKindKey(trait).GetLocalized();
         }
         internal string GetName(Trait trait)
         {
-            return _resourceLoader.GetString(GetNameKey(trait));
+            return GetNameKey(trait).GetLocalized();
         }
         internal string GetSummary(Trait trait)
         {
-            return _resourceLoader.GetString(GetSummaryKey(trait));
+            return GetSummaryKey(trait).GetLocalized();
         }
         internal string GetDescription(Trait trait)
         {
-            return _resourceLoader.GetString(GetDescriptionKey(trait));
+            return GetDescriptionKey(trait).GetLocalized();
         }
         #endregion
     }
