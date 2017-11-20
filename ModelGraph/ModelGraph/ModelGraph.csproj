@@ -429,7 +429,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
-    <None Include="Internals\Strings\en-US\Resources.resw" />
     <None Include="ModelGraph_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
