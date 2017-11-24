@@ -29,7 +29,7 @@ namespace ModelGraph.Services
 
             ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
 
-            CreateModelPage(_rootModel);
+            CreateModelPage(_rootModel, true);
         }
         private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
         {
@@ -59,7 +59,7 @@ namespace ModelGraph.Services
         }
 
 
-        internal async void CreateModelPage(RootModel model)
+        internal async void CreateModelPage(RootModel model, bool showStandAlone = false)
         {
             // Set up the secondary view, but don't show it yet
             ModelPageControl pageControl = null;
@@ -69,7 +69,6 @@ namespace ModelGraph.Services
                 model.PageControl = pageControl;
                 _modelPages.TryAdd(pageControl, null);
 
-                // Increment the ref count because we just created the view and we have a reference to it                
                 pageControl.StartViewInUse();
 
                 var frame = new Frame();
@@ -78,21 +77,22 @@ namespace ModelGraph.Services
                 Window.Current.Activate();
             });
 
-            try
+            if (showStandAlone)
             {
-                // Prevent the view from closing while switching to it
-                pageControl.StartViewInUse();
+                try
+                {
+                    pageControl.StartViewInUse();
 
-                var viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(
-                    pageControl.Id, ViewSizePreference.UseMinimum);
+                    var viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(
+                        pageControl.Id, ViewSizePreference.UseMinimum);
 
-                // Signal that switching has completed and let the view close
-                pageControl.StopViewInUse();
-            }
-            catch (InvalidOperationException)
-            {
-                // The view could be in the process of closing, and
-                // this thread just hasn't updated. As part of being closed,
+                    pageControl.StopViewInUse();
+                }
+                catch (InvalidOperationException)
+                {
+                    // The view could be in the process of closing, and
+                    // this thread just hasn't updated. As part of being closed,
+                }
             }
         }
     }
