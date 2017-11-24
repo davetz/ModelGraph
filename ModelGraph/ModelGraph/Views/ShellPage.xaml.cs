@@ -10,6 +10,9 @@ using ModelGraph.Services;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using System.Collections.Generic;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 
 namespace ModelGraph.Views
 {
@@ -22,6 +25,11 @@ namespace ModelGraph.Views
         private const double PanoramicStateMinWindowWidth = 1024;
 
         private bool _isPaneOpen;
+
+        private int _mainViewId;
+        private CoreDispatcher _dispatcher;
+        private List<ModelPageControl> _modelPages;
+
 
         public bool IsPaneOpen
         {
@@ -69,6 +77,15 @@ namespace ModelGraph.Views
             PopulateNavItems();
 
             InitializeState(Window.Current.Bounds.Width);
+
+            InitializeModelPageControl();
+        }
+
+        private void InitializeModelPageControl()
+        {
+            _modelPages = new List<ModelPageControl>();
+            _dispatcher = Window.Current.Dispatcher;
+            _mainViewId = ApplicationView.GetForCurrentView().Id;
         }
 
         private void InitializeState(double windowWith)
@@ -98,7 +115,6 @@ namespace ModelGraph.Views
             // Edit String/en-US/Resources.resw: Add a menu item title for each page
             _primaryItems.Add(ShellNavigationItem.FromType<MainPage>("Shell_Main".GetLocalized(), Symbol.Document));
             _secondaryItems.Add(ShellNavigationItem.FromType<SettingsPage>("Shell_Settings".GetLocalized(), Symbol.Setting));
-            _primaryItems.Add(ShellNavigationItem.FromType<TabbedPage>("Shell_Tabbed".GetLocalized(), Symbol.Document));
         }
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
@@ -176,6 +192,7 @@ namespace ModelGraph.Views
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
 
         private void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
         {

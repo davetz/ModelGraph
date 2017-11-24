@@ -15,7 +15,7 @@ namespace ModelGraph.Internals
     public class RootModel : TreeModel
     {
         public Chef Chef;
-        public IPageControl PageControl { get; set; } // reference the UI PageControl
+        internal ModelPageControl PageControl { get; set; } // reference the UI PageControl
         public IViewControl ViewControl { get; set; } // created and used exclusively by PageControl
 
         public int ModelCount;
@@ -55,11 +55,9 @@ namespace ModelGraph.Internals
 
         #region Constructors  =================================================
         // AppRootChef: Created by App.xaml
-        public RootModel(IPageControl pageControl)
+        public RootModel()
             : base(null, Trait.RootChef_M, 0, new Chef())
         {
-            PageControl = pageControl;
-
             Chef = Item1 as Chef;
             Chef.AddRootModel(this);
 
@@ -69,7 +67,7 @@ namespace ModelGraph.Internals
         }
 
         // (Primary & Secondary) RootModels: Created by PrimaryRoot
-        public RootModel(IPageControl pageControl, UIRequest rq)
+        public RootModel(ModelPageControl pageControl, UIRequest rq)
             : base(null, rq.Trait, 0, rq.Item1, rq.Item2, rq.Item3, rq.GetData)
         {
             PageControl = pageControl;

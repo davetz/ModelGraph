@@ -11,6 +11,9 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.ViewManagement;
+using Windows.ApplicationModel.Core;
+using ModelGraph.Views;
 
 namespace ModelGraph.Services
 {
@@ -77,7 +80,7 @@ namespace ModelGraph.Services
             }
         }
 
-        private async Task InitializeAsync()
+    private async Task InitializeAsync()
         {
             await ThemeSelectorService.InitializeAsync();
             await Task.CompletedTask;
@@ -91,7 +94,7 @@ namespace ModelGraph.Services
 
         private IEnumerable<ActivationHandler> GetActivationHandlers()
         {
-            yield return Singleton<SuspendAndResumeService>.Instance;
+            yield break;
         }
 
         private bool IsInteractive(object args)

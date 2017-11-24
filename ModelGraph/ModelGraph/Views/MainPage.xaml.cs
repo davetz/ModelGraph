@@ -1,7 +1,9 @@
-﻿using System;
+﻿using ModelGraph.Services;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace ModelGraph.Views
@@ -27,5 +29,11 @@ namespace ModelGraph.Views
         }
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private void Button_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            var ps = app.ModelPageService;
+        }
     }
 }

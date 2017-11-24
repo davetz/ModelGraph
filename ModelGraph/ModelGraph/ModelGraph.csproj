@@ -112,6 +112,7 @@
   <ItemGroup>
     <Compile Include="Activation\ActivationHandler.cs" />
     <Compile Include="Controls\ModelControl\IModelControl.cs" />
+    <Compile Include="Controls\ModelControl\ModelPageControl.cs" />
     <Compile Include="Controls\ModelTree\ModelTreeControl.xaml.cs" />
     <Compile Include="Controls\ModelTree\ModelTreeUICache.cs" />
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
@@ -348,10 +349,8 @@
     <Compile Include="Internals\Value\ValueStore\ValueDictionary.cs" />
     <Compile Include="Services\ActivationService.cs" />
     <Compile Include="Activation\DefaultLaunchActivationHandler.cs" />
+    <Compile Include="Services\ModelPageService.cs" />
     <Compile Include="Services\NavigationService.cs" />
-    <Compile Include="Services\OnBackgroundEnteringEventArgs.cs" />
-    <Compile Include="Services\SuspendAndResumeService.cs" />
-    <Compile Include="Services\SuspensionState.cs" />
     <Compile Include="Services\ThemeSelectorService.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -363,8 +362,8 @@
     <Compile Include="Views\ShellPage.xaml.cs">
       <DependentUpon>ShellPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\TabbedPage.xaml.cs">
-      <DependentUpon>TabbedPage.xaml</DependentUpon>
+    <Compile Include="Views\ModelPage.xaml.cs">
+      <DependentUpon>ModelPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -414,7 +413,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\TabbedPage.xaml">
+    <Page Include="Views\ModelPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
