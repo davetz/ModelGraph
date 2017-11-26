@@ -62,7 +62,7 @@ namespace ModelGraph.Internals
         #endregion
 
         #region ConvertQueryType  =============================================
-        private void MakeRootLink(TreeModel model)
+        private void MakeRootLink(ModelTree model)
         {
             var qx = model.Item1 as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
@@ -70,7 +70,7 @@ namespace ModelGraph.Internals
                 foreach (var qxi in list) { qxi.QueryKind = QueryType.Graph; qxi.IsHead = false; qxi.IsTail = false; }
             }
         }
-        private void MakePathtHead(TreeModel model)
+        private void MakePathtHead(ModelTree model)
         {
             var qx = model.Item1 as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
@@ -81,7 +81,7 @@ namespace ModelGraph.Internals
                 list[tail].IsTail = true;
             }
         }
-        private void MakeGroupHead(TreeModel model)
+        private void MakeGroupHead(ModelTree model)
         {
             var qx = model.Item1 as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
@@ -92,7 +92,7 @@ namespace ModelGraph.Internals
                 list[tail].IsTail = true;
             }
         }
-        private void MakeBridgeHead(TreeModel model)
+        private void MakeBridgeHead(ModelTree model)
         {
             var qx = model.Item1 as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
@@ -104,7 +104,7 @@ namespace ModelGraph.Internals
             }
         }
 
-        internal bool CanConvertQueryType(TreeModel model)
+        internal bool CanConvertQueryType(ModelTree model)
         {
             var qx = model.Item1 as QueryX;
             var prev = QueryX_QueryX.GetParent(qx);

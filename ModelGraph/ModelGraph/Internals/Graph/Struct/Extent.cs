@@ -255,15 +255,15 @@ namespace ModelGraph.Internals
 
         public int Width { get { return (Xmax - Xmin); } }
         public int Hieght { get { return (Ymax - Ymin); } }
-        //public Rect Rect { get { return new Rect(Xmin, Ymin, Width, Hieght); } }
-        //public Rect GetRect(int x, int y, float z)
-        //{
-        //    var r = Rect;
-        //    return new Rect(z * (r.X - x), z * (r.Y - y), z * r.Width, z * r.Height);
-        //}
+        public Rect Rect { get { return new Rect(Xmin, Ymin, Width, Hieght); } }
+        public Rect GetRect(int x, int y, float z)
+        {
+            var r = Rect;
+            return new Rect(z * (r.X - x), z * (r.Y - y), z * r.Width, z * r.Height);
+        }
 
-        //public Vector2 UpperLeft { get { return new Vector2(Xmin, Ymin); } }
-        //public Vector2 LowerRight { get { return new Vector2(Xmax, Xmax); } }
+        public Vector2 UpperLeft { get { return new Vector2(Xmin, Ymin); } }
+        public Vector2 LowerRight { get { return new Vector2(Xmax, Xmax); } }
         public XYPoint TopLeft { get { return new XYPoint(Xmin, Ymin); } }
         public XYPoint TopRight { get { return new XYPoint(Xmax, Ymin); } }
         public XYPoint BottomLeft { get { return new XYPoint(Xmin, Ymax); } }

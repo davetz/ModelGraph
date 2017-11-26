@@ -2,7 +2,7 @@
 {/*
     Control interface between ModelGraph.Internals --> ModelGraph App
 
-    Isolate the ModelGraphLibray from the UI plumbing.
+    Isolate the ModelGraph.Internals from the UI plumbing.
  */
     public interface IPageControl
     {

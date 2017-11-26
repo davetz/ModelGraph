@@ -25,7 +25,7 @@ namespace ModelGraph.Internals
         #region DataChef  =====================================================
         internal Chef(Chef rootChef, StorageFile file = null) : base(rootChef, Trait.DataChef, Guid.Empty, 0)
         {
-            _selfReferenceModel = new RootModel(this);
+            _selfReferenceModel = new ModelRoot(this);
 
             Initialize();
 
@@ -41,16 +41,16 @@ namespace ModelGraph.Internals
         #endregion
 
         #region RootModels  ===================================================
-        private List<RootModel> _rootModels = new List<RootModel>(10);
-        private RootModel _selfReferenceModel;
-        internal void AddRootModel(RootModel root)
+        private List<ModelRoot> _rootModels = new List<ModelRoot>(10);
+        private ModelRoot _selfReferenceModel;
+        internal void AddRootModel(ModelRoot root)
         {
             var g = root.Item1 as Graph;
             if (g != null) g.AddRootModel(root);
             MajorDelta += 1;
             _rootModels.Add(root);
         }
-        internal void RemoveRootModel(RootModel root)
+        internal void RemoveRootModel(ModelRoot root)
         {
             var g = root.Item1 as Graph;
             if (g != null) g.RemoveRootModel(root);
@@ -61,12 +61,12 @@ namespace ModelGraph.Internals
         #endregion
 
         #region DragDrop  =====================================================
-        internal TreeModel DragDropSource
+        internal ModelTree DragDropSource
         {
             get { return GetRootChef().DragDropModel; }
             set { GetRootChef().DragDropModel = value; }
         }
-        protected TreeModel DragDropModel;
+        protected ModelTree DragDropModel;
 
         private Chef GetRootChef()
         {

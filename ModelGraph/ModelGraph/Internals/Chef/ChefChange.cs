@@ -41,7 +41,7 @@ namespace ModelGraph.Internals
         #endregion
 
         #region Expand All  ===================================================
-        private void ExpandAllChangeSets(TreeModel model)
+        private void ExpandAllChangeSets(ModelTree model)
         {
             if (_changeRoot == null) return;
             _changeRoot.AutoExpandChanges();
@@ -240,7 +240,7 @@ namespace ModelGraph.Internals
         #endregion
 
         #region ItemUpdated  ==================================================
-        private void SetValue(TreeModel model, string newValue)
+        private void SetValue(ModelTree model, string newValue)
         {
             MinorDelta += 1;
 
@@ -459,7 +459,7 @@ namespace ModelGraph.Internals
         /// <summary>
         /// Remove and Unlink the target item and all of its dependents 
         /// </summary>
-        internal void RemoveItem(TreeModel model)
+        internal void RemoveItem(ModelTree model)
         {
             RemoveItem(model.Item1);
         }

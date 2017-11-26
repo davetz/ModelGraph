@@ -20,7 +20,7 @@ namespace ModelGraph.Internals
                 PostRequest(model, () => { command.Action1(model, command.Parameter1); });
         }
 
-        internal void PostDataAction(TreeModel model, Action action)
+        internal void PostDataAction(ModelTree model, Action action)
         {
             if (model.IsInvalid) return;
 
@@ -28,7 +28,7 @@ namespace ModelGraph.Internals
         }
         // Model refresh runs after each execution. We only
         // need to invoke an execution on the background thread.
-        public void PostModelRefresh(TreeModel model)
+        public void PostModelRefresh(ModelTree model)
         {
             if (model == null || model.IsInvalid) return;
 
@@ -36,7 +36,7 @@ namespace ModelGraph.Internals
         }
         private void DoNothing() { }
 
-        internal void PostModelSetValue(TreeModel model, string value)
+        internal void PostModelSetValue(ModelTree model, string value)
         {
             if (model.IsInvalid) return;
 
@@ -47,13 +47,13 @@ namespace ModelGraph.Internals
 
             PostRequest(model, () => { SetValue(model, value); });
         }
-        internal void PostModelSetIsChecked(TreeModel model, bool value)
+        internal void PostModelSetIsChecked(ModelTree model, bool value)
         {
             if (model.IsInvalid) return;
 
             PostModelSetValue(model, value.ToString());
         }
-        internal void PostModelSetValueIndex(TreeModel model, int index)
+        internal void PostModelSetValueIndex(ModelTree model, int index)
         {
             if (index < 0) return;
             if (model.IsInvalid) return;
@@ -77,7 +77,7 @@ namespace ModelGraph.Internals
         #region PostRequest ===================================================
         //  Called from the ui thread and runs on a background thred
 
-        private async void PostRequest(TreeModel requestingModel, Action requestedDataAction)
+        private async void PostRequest(ModelTree requestingModel, Action requestedDataAction)
         {
             if (requestingModel.IsInvalid) return;
 
@@ -120,14 +120,14 @@ namespace ModelGraph.Internals
         private class ActionRequest
         {
             Action _action;
-            TreeModel _model;
-            internal ActionRequest(TreeModel model, Action action)
+            ModelTree _model;
+            internal ActionRequest(ModelTree model, Action action)
             {
                 _action = action;
                 _model = model;
             }
 
-            internal TreeModel Model { get { return _model; } }
+            internal ModelTree Model { get { return _model; } }
             internal void Execute() { _action(); _action = null; _model = null; }
             internal bool IsValid { get { return (_action != null && _model != null && !_model.IsInvalid); } }
         }

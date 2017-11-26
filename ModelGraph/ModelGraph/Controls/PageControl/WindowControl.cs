@@ -1,65 +1,54 @@
-﻿using ModelGraph.Internals;
+﻿using System;
+using ModelGraph.Internals;
 using ModelGraph.Services;
-using System;
-using System.ComponentModel;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 
 namespace ModelGraph
 {
-    // A custom event that fires whenever the secondary view is ready to be closed. You should
-    // clean up any state (including deregistering for events) then close the window in this handler
+    // A custom event that fires whenever the secondary view is ready to be closed.
     public delegate void ViewReleasedHandler(Object sender, EventArgs e);
 
-    // A ModelPageControl is instantiated for every secondary view. ModelPageControl's reference count
-    // keeps track of when the secondary view thinks it's in usem and when the main view is interacting with the secondary view (about to show
-    // it to the user, etc.) When the reference count drops to zero, the secondary view is closed.
-    public sealed class ModelPageControl
+    // A ModelPageControl is instantiated for every secondary view window. 
+    // (StartInUse) increments _refCount, (StopInUse) decrements it.
+    // When the reference count drops to zero, the secondary window is closed.
+    public sealed class WindowControl
     {
+        event ViewReleasedHandler _viewReleasedHandler;
         ModelPageService _pageService;
         CoreDispatcher _dispatcher;
         CoreWindow _window;
         int _refCount = 0;
         int _viewId;
         bool _released = false;
-        RootModel _model;
+        ModelRoot _rootModel;
 
-        internal static ModelPageControl CreateForCurrentView(ModelPageService pageService, RootModel model)
+        public int Id => _viewId;
+        public ModelRoot RootModel => _rootModel;
+
+        internal static WindowControl CreateForCurrentView(ModelPageService pageService, ModelRoot model)
         {
-            return new ModelPageControl(pageService, CoreWindow.GetForCurrentThread(), model);
+            return new WindowControl(pageService, CoreWindow.GetForCurrentThread(), model);
         }
 
+        internal void CloseModelPages(Chef chef) => _pageService.CloseModelPages(chef);
+        internal void CreateModelPage(ModelRoot model) => _pageService.CreateModelPage(model);
+
         #region Constructor  ==================================================
-        private ModelPageControl(ModelPageService pageService, CoreWindow window, RootModel model)
+        private WindowControl(ModelPageService pageService, CoreWindow window, ModelRoot rootModel)
         {
             _pageService = pageService;
             _dispatcher = window.Dispatcher;
             _window = window;
-            _model = model;
-            _model.PageControl = this;
+            _rootModel = rootModel;
             _viewId = ApplicationView.GetApplicationViewIdForWindow(_window);
 
             RegisterForEvents();
         }
         #endregion
 
-        #region Dispatch  =====================================================
-        internal void Dispatch(UIRequest req)
-        {
-
-        }
-        #endregion
-
-        #region Property  =====================================================
-        public int Id => _viewId;
-        public CoreDispatcher Dispatcher => _dispatcher;
-        internal object Owner => _model.Chef;
-        #endregion
-
         #region ViewReleasedHandler  ==========================================
         // Used to store pubicly registered events under the protection of a lock
-        event ViewReleasedHandler _viewReleasedHandler;
-
         public event ViewReleasedHandler Released
         {
             add
@@ -101,7 +90,7 @@ namespace ModelGraph
         }
         private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs e)
         {
-            StopViewInUse();
+            StopInUse();
         }
         private void FinalizeRelease()
         {
@@ -125,8 +114,8 @@ namespace ModelGraph
         }
         #endregion
 
-        #region StartViewInUse  ===============================================
-        internal int StartViewInUse()
+        #region StartInUse  ===================================================
+        internal int StartInUse()
         {
             bool releasedCopy = false;
             int refCountCopy = 0;
@@ -135,7 +124,7 @@ namespace ModelGraph
             // (each view lives on its own thread)
             lock (this)
             {
-                releasedCopy = this._released;
+                releasedCopy = _released;
                 if (!_released)
                 {
                     refCountCopy = ++_refCount;
@@ -151,15 +140,15 @@ namespace ModelGraph
         }
         #endregion
 
-        #region StopViewInUse  ================================================
-        internal int StopViewInUse()
+        #region StopInUse  ====================================================
+        internal int StopInUse()
         {
             int refCountCopy = 0;
             bool releasedCopy = false;
 
             lock (this)
             {
-                releasedCopy = this._released;
+                releasedCopy = _released;
                 if (!_released)
                 {
                     refCountCopy = --_refCount;
@@ -178,6 +167,5 @@ namespace ModelGraph
             return refCountCopy;
         }
         #endregion
-
     }
 }

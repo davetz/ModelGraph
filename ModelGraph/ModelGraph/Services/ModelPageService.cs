@@ -16,32 +16,32 @@ namespace ModelGraph.Services
     internal class ModelPageService
     {
         private readonly App _app;
-        private readonly RootModel _rootModel;
-        private readonly ConcurrentDictionary<ModelPageControl, Chef> _modelPages;
+        private readonly ModelRoot _rootModel;
+        private readonly WindowControl _rootWindowControl;
+        private readonly ConcurrentDictionary<WindowControl, Chef> _modelPages;
 
-
+        internal WindowControl RootWindowControl => _rootWindowControl;
 
         internal ModelPageService(App app)
         {
             _app = app;
-            _rootModel = new RootModel();
-            _modelPages = new ConcurrentDictionary<ModelPageControl, Chef>();
+            _rootModel = new ModelRoot();
+            _modelPages = new ConcurrentDictionary<WindowControl, Chef>();
+            _rootWindowControl = WindowControl.CreateForCurrentView(this, _rootModel);
 
             ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
-
-            CreateModelPage(_rootModel, true);
         }
         private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
         {
-            _app.Exit(); //(don't save anything) just kill off all ModelPage instances
+            _app.Exit(); // don't save anything, kill off all ModelPage instances
         }
 
 
 
 
-        internal void CloseModelPages(object key)
+        internal void CloseModelPages(Chef key)
         {
-            var hitList = new List<ModelPageControl>();
+            var hitList = new List<WindowControl>();
 
             foreach (var e in _modelPages)
             {
@@ -49,50 +49,46 @@ namespace ModelGraph.Services
             }
             foreach (var ctrl in hitList)
             {
+                ctrl.StopInUse();
                 RemoveModelPage(ctrl);
             }
         }
 
-        internal void RemoveModelPage(ModelPageControl ctrl)
+        internal void RemoveModelPage(WindowControl ctrl)
         {
             _modelPages.TryRemove(ctrl, out Chef owner);
         }
 
 
-        internal async void CreateModelPage(RootModel model, bool showStandAlone = false)
+        internal async void CreateModelPage(ModelRoot model)
         {
-            // Set up the secondary view, but don't show it yet
-            ModelPageControl pageControl = null;
+            WindowControl windowControl = null;
             await CoreApplication.CreateNewView().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                pageControl = ModelPageControl.CreateForCurrentView(this, model);
-                model.PageControl = pageControl;
-                _modelPages.TryAdd(pageControl, null);
+                windowControl = WindowControl.CreateForCurrentView(this, model);
+                _modelPages.TryAdd(windowControl, null);
 
-                pageControl.StartViewInUse();
+                windowControl.StartInUse();
 
                 var frame = new Frame();
-                frame.Navigate(typeof(ModelPage), pageControl);
+                frame.Navigate(typeof(PageControl), windowControl);
                 Window.Current.Content = frame;
                 Window.Current.Activate();
             });
 
-            if (showStandAlone)
+            try
             {
-                try
-                {
-                    pageControl.StartViewInUse();
+                windowControl.StartInUse();
 
-                    var viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(
-                        pageControl.Id, ViewSizePreference.UseMinimum);
+                var viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(
+                    windowControl.Id, ViewSizePreference.UseMinimum);
 
-                    pageControl.StopViewInUse();
-                }
-                catch (InvalidOperationException)
-                {
-                    // The view could be in the process of closing, and
-                    // this thread just hasn't updated. As part of being closed,
-                }
+                windowControl.StopInUse();
+            }
+            catch (InvalidOperationException)
+            {
+                // The view could be in the process of closing, and
+                // this thread just hasn't updated. As part of being closed,
             }
         }
     }

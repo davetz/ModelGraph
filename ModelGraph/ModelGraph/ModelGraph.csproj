@@ -111,10 +111,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activation\ActivationHandler.cs" />
-    <Compile Include="Controls\ModelControl\IModelControl.cs" />
-    <Compile Include="Controls\ModelControl\ModelPageControl.cs" />
+    <Compile Include="Controls\PageControl\IModelControl.cs" />
+    <Compile Include="Controls\PageControl\WindowControl.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControl.xaml.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlDrawing.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlEventActions.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlInputEvents.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlMoveItems.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlVisualAids.cs" />
     <Compile Include="Controls\ModelTree\ModelTreeControl.xaml.cs" />
     <Compile Include="Controls\ModelTree\ModelTreeUICache.cs" />
+    <Compile Include="Controls\SymbolEdit\SymbolEditControl.xaml.cs" />
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
     <Compile Include="Helpers\Json.cs" />
     <Compile Include="Helpers\SettingsStorageExtensions.cs" />
@@ -200,9 +207,9 @@
     <Compile Include="Internals\Model\Enum\ControlType.cs" />
     <Compile Include="Internals\Model\Enum\DropAction.cs" />
     <Compile Include="Internals\Model\Enum\ModelAction.cs" />
-    <Compile Include="Internals\Model\TreeModel.cs" />
+    <Compile Include="Internals\Model\ModelTree.cs" />
     <Compile Include="Internals\Model\ModelCommand.cs" />
-    <Compile Include="Internals\Model\RootModel.cs" />
+    <Compile Include="Internals\Model\ModelRoot.cs" />
     <Compile Include="Internals\Model\UIRequest\IPageControl.cs" />
     <Compile Include="Internals\Model\UIRequest\IViewControl.cs" />
     <Compile Include="Internals\Model\UIRequest\UIRequest.cs" />
@@ -352,18 +359,11 @@
     <Compile Include="Services\ModelPageService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\ThemeSelectorService.cs" />
-    <Compile Include="Views\MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="Controls\PageControl\PageControl.xaml.cs">
+      <DependentUpon>PageControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ShellNavigationItem.cs" />
-    <Compile Include="Views\ShellPage.xaml.cs">
-      <DependentUpon>ShellPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModelPage.xaml.cs">
-      <DependentUpon>ModelPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -373,7 +373,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\ModelGraph\ModelGraphControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\ModelTree\ModelTreeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\SymbolEdit\SymbolEditControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -401,19 +409,11 @@
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
-    <Page Include="Views\MainPage.xaml">
+    <Page Include="Controls\PageControl\PageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SettingsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ShellPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ModelPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -428,8 +428,6 @@
     <Compile Include="Helpers\Singleton.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controls\ModelGraph\" />
-    <Folder Include="Controls\SymbolEdit\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>

@@ -12,10 +12,10 @@ namespace ModelGraph.Internals
     properties of ModelGraph.Internals objects. This is especially important for the case
     of the ModelGraphControl.
  */
-    public class RootModel : TreeModel
+    public class ModelRoot : ModelTree
     {
         public Chef Chef;
-        internal ModelPageControl PageControl { get; set; } // reference the UI PageControl
+        internal IPageControl PageControl { get; set; } // reference the UI PageControl
         public IViewControl ViewControl { get; set; } // created and used exclusively by PageControl
 
         public int ModelCount;
@@ -35,27 +35,27 @@ namespace ModelGraph.Internals
         public List<ModelCommand> ButtonCommands = new List<ModelCommand>();
         public List<ModelCommand> AppButtonCommands = new List<ModelCommand>();
 
-        public Func<TreeModel, TreeModel, bool, DropAction> ModelDrop;
-        public Func<TreeModel, TreeModel, bool, DropAction> ReorderItems;
+        public Func<ModelTree, ModelTree, bool, DropAction> ModelDrop;
+        public Func<ModelTree, ModelTree, bool, DropAction> ReorderItems;
 
         public int ViewIndex1; //index of first visible model
         public int ViewIndex2; //index one beyond the last visible model
         public int ViewCapacity; //max number of visible models
-        public TreeModel ViewSelectModel; //currently selected model
-        public TreeModel[] ViewModels; //flattend list of itemModel tree
+        public ModelTree ViewSelectModel; //currently selected model
+        public ModelTree[] ViewModels; //flattend list of itemModel tree
         public Dictionary<object, string> ViewFilter = new Dictionary<object, string>();
 
         public ModelAction ModelAction;
 
-        private TreeModel[] _modelList;
-        public TreeModel[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
+        private ModelTree[] _modelList;
+        public ModelTree[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
         public int Capacity { get; set; } = 100;
 
         public bool ModelIsChecked;
 
         #region Constructors  =================================================
         // AppRootChef: Created by App.xaml
-        public RootModel()
+        public ModelRoot()
             : base(null, Trait.RootChef_M, 0, new Chef())
         {
             Chef = Item1 as Chef;
@@ -67,11 +67,9 @@ namespace ModelGraph.Internals
         }
 
         // (Primary & Secondary) RootModels: Created by PrimaryRoot
-        public RootModel(ModelPageControl pageControl, UIRequest rq)
+        public ModelRoot(UIRequest rq)
             : base(null, rq.Trait, 0, rq.Item1, rq.Item2, rq.Item3, rq.GetData)
         {
-            PageControl = pageControl;
-
             Chef = rq.Chef;
             Chef.AddRootModel(this);
 
@@ -79,7 +77,7 @@ namespace ModelGraph.Internals
         }
 
         // Created by dataChef used for GetModelData
-        public RootModel(Chef owner) : base(null, Trait.MockChef_M, 0, owner) { Chef = owner; }
+        public ModelRoot(Chef owner) : base(null, Trait.MockChef_M, 0, owner) { Chef = owner; }
         #endregion
 
         #region Properties/Methods  ===========================================
@@ -97,7 +95,7 @@ namespace ModelGraph.Internals
         #region ModelData  ====================================================
 
         // ModelAction.DragOver  ==============================================
-        public void GetDragOverData(TreeModel model)
+        public void GetDragOverData(ModelTree model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -108,7 +106,7 @@ namespace ModelGraph.Internals
         }
 
         // ModelAction.PointerOver  ===========================================
-        public void GetPointerOverData(TreeModel model)
+        public void GetPointerOverData(ModelTree model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -122,7 +120,7 @@ namespace ModelGraph.Internals
         }
 
         // ModelAction.ModelSelect  ===========================================
-        public void GetModelSelectData(TreeModel model)
+        public void GetModelSelectData(ModelTree model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -138,7 +136,7 @@ namespace ModelGraph.Internals
         }
 
         // ModelAction.ModelRefresh  ==========================================
-        public void GetModelItemData(TreeModel model)
+        public void GetModelItemData(ModelTree model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -159,7 +157,7 @@ namespace ModelGraph.Internals
             if (string.IsNullOrEmpty(ModelName)) ModelName = "???";
         }
 
-        public void PostModelDrop(TreeModel model)
+        public void PostModelDrop(ModelTree model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -171,14 +169,14 @@ namespace ModelGraph.Internals
             else
                 Chef.PostDataAction(this, () => { ModelDrop?.Invoke(model, drop, true); });
         }
-        public void SetDragDropSource(TreeModel model)
+        public void SetDragDropSource(ModelTree model)
         {
             if (model == null | model.IsInvalid) return;
 
             Chef.DragDropSource = model;
         }
 
-        public DropAction CanModelAcceptDrop(TreeModel model)
+        public DropAction CanModelAcceptDrop(ModelTree model)
         {
             if (model == null | model.IsInvalid) return DropAction.None;
 
@@ -219,15 +217,15 @@ namespace ModelGraph.Internals
 
         public void PostModelRefresh() { Chef.PostModelRefresh(this); }
 
-        public void PostSetValue(TreeModel model, string value)
+        public void PostSetValue(ModelTree model, string value)
         {
             Chef.PostModelSetValue(model, value);
         }
-        public void PostSetIsChecked(TreeModel model, bool value)
+        public void PostSetIsChecked(ModelTree model, bool value)
         {
             Chef.PostModelSetIsChecked(model, value);
         }
-        public void PostSetValueIndex(TreeModel model, int value)
+        public void PostSetValueIndex(ModelTree model, int value)
         {
             model.GetData(this);
             Chef.PostModelSetValueIndex(model, value);

@@ -29,7 +29,7 @@ namespace ModelGraph
 
         private ActivationService CreateActivationService()
         {
-            return new ActivationService(this, typeof(Views.MainPage), new Views.ShellPage());
+            return new ActivationService(this, typeof(PageControl));//, new Views.ShellPage());
         }
 
         private ModelPageService CreateModelPageService()
@@ -37,7 +37,7 @@ namespace ModelGraph
             return new ModelPageService(this);
         }
 
-
+        internal WindowControl RootWindowControl => ModelPageService.RootWindowControl;
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
