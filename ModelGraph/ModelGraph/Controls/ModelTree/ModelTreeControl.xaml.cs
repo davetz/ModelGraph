@@ -9,18 +9,17 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Input;
 using ModelGraph.Internals;
 using System.Threading.Tasks;
+using ModelGraph.Helpers;
 
 namespace ModelGraph
 {
-    public sealed partial class ModelTreeControl : UserControl, IViewControl, IModelControl
+    public sealed partial class ModelTreeControl : UserControl, IModelControl
     {
-        private ControlType _controlType;
-        public ControlType ControlType => _controlType;
-
-        public ModelTreeControl(ModelRoot root, ControlType controlType)
+        public ModelTreeControl(ModelRoot root)
         {
             _root = root;
-            _controlType = ControlType;
+            _root.ModelControl = this;
+
             InitializeComponent();
 
             ApplicationView.GetForCurrentView().TryResizeView(new Size(320, 320));
@@ -157,15 +156,14 @@ namespace ModelGraph
             _modelIdentityStyle = Resources["ModelIdentityStyle"] as Style;
             _propertyBorderStyle = Resources["PropertyBorderStyle"] as Style;
 
-            _resourceLoader = ResourceLoader.GetForViewIndependentUse("ModelGraph.Internals/Resources");
-            _sortModeTip = _resourceLoader.GetString("005S");
-            _usageModeTip = _resourceLoader.GetString("00ES");///
-            _leftExpandTip = _resourceLoader.GetString("006S");
-            _totalCountTip = _resourceLoader.GetString("007S");
-            _filterTextTip = _resourceLoader.GetString("008S");
-            _filterCountTip = _resourceLoader.GetString("009S");
-            _rightExpandTip = _resourceLoader.GetString("00AS");
-            _filterExpandTip = _resourceLoader.GetString("00BS");
+            _sortModeTip = "005S".GetLocalized();
+            _usageModeTip = "00ES".GetLocalized();
+            _leftExpandTip = "006S".GetLocalized();
+            _totalCountTip = "007S".GetLocalized();
+            _filterTextTip = "008S".GetLocalized();
+            _filterCountTip = "009S".GetLocalized();
+            _rightExpandTip = "00AS".GetLocalized();
+            _filterExpandTip = "00BS".GetLocalized();
 
             _itemButtons = new Button[]
             {

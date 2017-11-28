@@ -7,7 +7,6 @@ namespace ModelGraph.Internals
     internal abstract class ValueOfType<T> : Value
     {
         protected IValueStore<T> _valueStore;
-        protected T _default = default(T);
 
         internal override int Count => _valueStore.Count;
         internal override void Clear() => _valueStore.Clear();

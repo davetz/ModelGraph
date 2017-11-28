@@ -35,8 +35,8 @@ namespace ModelGraph.Internals
 
             if (file == null)
                 _newChefNumber = (_newChefCount += 1);
-            //else
-            //    ReadModelDataFile(file);
+            else
+                ReadModelDataFile(file);
         }
         #endregion
 
@@ -100,7 +100,7 @@ namespace ModelGraph.Internals
         {
             if (_modelingFile != null)
             {
-                //WriteModelDataFile(_modelingFile);
+                WriteModelDataFile(_modelingFile);
                 CongealChanges();
             }
         }
@@ -109,7 +109,7 @@ namespace ModelGraph.Internals
             _modelingFile = file;
             if (_modelingFile != null)
             {
-                //WriteModelDataFile(_modelingFile);
+                WriteModelDataFile(_modelingFile);
                 CongealChanges();
             }
         }

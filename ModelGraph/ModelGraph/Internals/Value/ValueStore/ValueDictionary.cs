@@ -6,10 +6,11 @@ namespace ModelGraph.Internals
     internal class ValueDictionary<T> : IValueStore<T>
     {
         Dictionary<Item, T> _values;
-        protected T _default = default(T);
+        protected T _default;
 
-        internal ValueDictionary(int capacity)
+        internal ValueDictionary(int capacity, T defaultValue)
         {
+            _default = defaultValue;
             if (capacity > 0) _values = new Dictionary<Item, T>(capacity);
         }
 
@@ -25,6 +26,11 @@ namespace ModelGraph.Internals
             if (_values != null)
                 _values.Remove(key);
         }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        internal IEnumerable<Item> GetKeys() => (Count == 0) ? null : _values.Keys;
+        internal IEnumerable<T> GetValues() => (Count == 0) ? null : _values.Values;
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 

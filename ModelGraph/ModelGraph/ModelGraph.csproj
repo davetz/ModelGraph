@@ -111,8 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activation\ActivationHandler.cs" />
-    <Compile Include="Controls\PageControl\IModelControl.cs" />
-    <Compile Include="Controls\PageControl\WindowControl.cs" />
+    <Compile Include="Internals\Model\UIRequest\IModelControl.cs" />
     <Compile Include="Controls\ModelGraph\ModelGraphControl.xaml.cs" />
     <Compile Include="Controls\ModelGraph\ModelGraphControlDrawing.cs" />
     <Compile Include="Controls\ModelGraph\ModelGraphControlEventActions.cs" />
@@ -211,7 +210,6 @@
     <Compile Include="Internals\Model\ModelCommand.cs" />
     <Compile Include="Internals\Model\ModelRoot.cs" />
     <Compile Include="Internals\Model\UIRequest\IPageControl.cs" />
-    <Compile Include="Internals\Model\UIRequest\IViewControl.cs" />
     <Compile Include="Internals\Model\UIRequest\UIRequest.cs" />
     <Compile Include="Internals\Property\ColumnX.cs" />
     <Compile Include="Internals\Property\ComputeX.cs" />

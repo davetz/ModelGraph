@@ -12,12 +12,11 @@ using ModelGraph.Internals;
 
 namespace ModelGraph
 {
-    public sealed partial class SymbolEditControl : UserControl, IViewControl, IModelControl
+    public sealed partial class SymbolEditControl : UserControl, IModelControl
     {
         private Chef _chef;
         private ModelRoot _rootModel;
         private SymbolX _symbol;
-        public ControlType ControlType => ControlType.SymbolEditor;
 
         #region Constructor  ==================================================
         public SymbolEditControl(ModelRoot root)
@@ -25,6 +24,7 @@ namespace ModelGraph
             InitializeComponent();
 
             _rootModel = root;
+            _rootModel.ModelControl = this;
             _chef = root.Chef;
             _symbol = root.Item1 as SymbolX;
             UnpackSymbolData(_symbol.Data);

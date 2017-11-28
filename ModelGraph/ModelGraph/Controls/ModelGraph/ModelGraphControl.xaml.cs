@@ -7,17 +7,17 @@ using ModelGraph.Internals;
 
 namespace ModelGraph
 {
-    public sealed partial class ModelGraphControl : UserControl, IViewControl, IModelControl
+    public sealed partial class ModelGraphControl : UserControl, IModelControl
     {
         private Chef _chef;
         private Graph _graph;
         private ModelRoot _rootModel;
-        public ControlType ControlType => ControlType.GraphDisplay;
 
         public ModelGraphControl(ModelRoot root)
         {
             _chef = root.Chef;
             _rootModel = root;
+            _rootModel.ModelControl = this;
             _graph = root.Item1 as Graph;
             _selector = new Selector(_graph);
 

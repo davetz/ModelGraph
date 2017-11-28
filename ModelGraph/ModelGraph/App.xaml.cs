@@ -37,7 +37,7 @@ namespace ModelGraph
             return new ModelPageService(this);
         }
 
-        internal WindowControl RootWindowControl => ModelPageService.RootWindowControl;
+        internal ModelPageService PageService => ModelPageService;
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {

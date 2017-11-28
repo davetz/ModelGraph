@@ -528,7 +528,7 @@ namespace ModelGraph.Internals
         #region GetAppTabName  ================================================
         internal string GetAppTabName(ModelRoot root)
         {
-            switch (root.ViewControl.ControlType)
+            switch (root.ControlType)
             {
                 case ControlType.AppRootChef:
                     return GetName(Trait.AppRootModelTab);
@@ -546,7 +546,7 @@ namespace ModelGraph.Internals
         #region GetAppTabSummary  =============================================
         internal string GetAppTabSummary(ModelRoot root)
         {
-            switch (root.ViewControl.ControlType)
+            switch (root.ControlType)
             {
                 case ControlType.AppRootChef:
                     return null;
@@ -576,7 +576,7 @@ namespace ModelGraph.Internals
         #region GetAppTitleName  ==============================================
         internal string GetAppTitleName(ModelRoot root)
         {
-            switch (root.ViewControl.ControlType)
+            switch (root.ControlType)
             {
                 case ControlType.AppRootChef:
                     return $"{GetName(Trait.ModelGraphTitle)} - {GetName(Trait.AppRootModelTab)}";
@@ -606,7 +606,7 @@ namespace ModelGraph.Internals
         #region GetAppTitleSummary  ===========================================
         internal string GetAppTitleSummary(ModelRoot root)
         {
-            switch (root.ViewControl.ControlType)
+            switch (root.ControlType)
             {
                 case ControlType.AppRootChef:
                     return null;
@@ -636,7 +636,7 @@ namespace ModelGraph.Internals
         #region GetAppCommands  ===============================================
         internal void GetAppCommands(ModelRoot root)
         {
-            switch (root.ViewControl.ControlType)
+            switch (root.ControlType)
             {
                 case ControlType.AppRootChef:
                     root.AppButtonCommands.Add(new ModelCommand(this, root, Trait.NewCommand, AppRootNewModel));

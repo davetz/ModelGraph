@@ -16,8 +16,8 @@ namespace ModelGraph.Internals
     {
         public Chef Chef;
         internal IPageControl PageControl { get; set; } // reference the UI PageControl
-        public IViewControl ViewControl { get; set; } // created and used exclusively by PageControl
-
+        internal IModelControl ModelControl { get; set; }
+        
         public int ModelCount;
         public int ValueIndex;
         public int MinorDelta;
@@ -53,6 +53,8 @@ namespace ModelGraph.Internals
 
         public bool ModelIsChecked;
 
+        internal ControlType ControlType;
+
         #region Constructors  =================================================
         // AppRootChef: Created by App.xaml
         public ModelRoot()
@@ -62,6 +64,7 @@ namespace ModelGraph.Internals
             Chef.AddRootModel(this);
 
             _getData = Chef.RootChef_M;
+            ControlType = ControlType.AppRootChef;
 
             IsExpandedLeft = true;
         }
@@ -71,6 +74,8 @@ namespace ModelGraph.Internals
             : base(null, rq.Trait, 0, rq.Item1, rq.Item2, rq.Item3, rq.GetData)
         {
             Chef = rq.Chef;
+            ControlType = rq.Type;
+
             Chef.AddRootModel(this);
 
             IsExpandedLeft = true;
@@ -81,7 +86,7 @@ namespace ModelGraph.Internals
         #endregion
 
         #region Properties/Methods  ===========================================
-        public bool IsAppRootChef => (ViewControl.ControlType == ControlType.AppRootChef);
+        public bool IsAppRootChef => (ControlType == ControlType.AppRootChef);
         public string TabName => Chef.GetAppTabName(this);
         public string TitleName => Chef.GetAppTitleName(this);
         public string TabSummary => Chef.GetAppTabSummary(this);
@@ -231,7 +236,7 @@ namespace ModelGraph.Internals
             Chef.PostModelSetValueIndex(model, value);
         }
 
-        public UIRequest BuildViewRequest() => UIRequest.CreateNewView(ViewControl.ControlType, Trait, Chef, Item1, Item2, Item3, _getData, true);
+        public UIRequest BuildViewRequest() => UIRequest.CreateNewView(ControlType, Trait, Chef, Item1, Item2, Item3, _getData, true);
 
         #endregion
     }

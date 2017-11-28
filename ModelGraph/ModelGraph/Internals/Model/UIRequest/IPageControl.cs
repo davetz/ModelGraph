@@ -1,6 +1,6 @@
 ﻿namespace ModelGraph.Internals
 {/*
-    Control interface between ModelGraph.Internals --> ModelGraph App
+    interface between ModelGraph.Internals --> ModelGraph
 
     Isolate the ModelGraph.Internals from the UI plumbing.
  */

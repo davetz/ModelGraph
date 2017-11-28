@@ -16,80 +16,68 @@ namespace ModelGraph.Services
     internal class ModelPageService
     {
         private readonly App _app;
-        private readonly ModelRoot _rootModel;
-        private readonly WindowControl _rootWindowControl;
-        private readonly ConcurrentDictionary<WindowControl, Chef> _modelPages;
+        private readonly ConcurrentDictionary<PageControl, Chef> _modelPages;
 
-        internal WindowControl RootWindowControl => _rootWindowControl;
+        //=====================================================================
 
         internal ModelPageService(App app)
         {
             _app = app;
-            _rootModel = new ModelRoot();
-            _modelPages = new ConcurrentDictionary<WindowControl, Chef>();
-            _rootWindowControl = WindowControl.CreateForCurrentView(this, _rootModel);
+            _modelPages = new ConcurrentDictionary<PageControl, Chef>();
 
             ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
         }
         private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
         {
-            _app.Exit(); // don't save anything, kill off all ModelPage instances
+            _app.Exit(); // all ModelPage will close
         }
 
+        //=====================================================================
 
-
-
-        internal void CloseModelPages(Chef key)
+        internal void AddModelPage(PageControl page)
         {
-            var hitList = new List<WindowControl>();
+            _modelPages.TryAdd(page, page.Model.Chef);
+        }
+        internal void RemoveModelPage(PageControl page)
+        {
+            _modelPages.TryRemove(page, out Chef owner);
+        }
+
+        //=====================================================================
+
+        internal async void CloseModelPages(Chef key)
+        {
+            var hitList = new List<PageControl>();
 
             foreach (var e in _modelPages)
             {
                 if (key == null || e.Value == key) hitList.Add(e.Key);
             }
-            foreach (var ctrl in hitList)
+            foreach (var page in hitList)
             {
-                ctrl.StopInUse();
-                RemoveModelPage(ctrl);
+               await page.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+               {
+                   Window.Current.Close();
+               });
             }
         }
 
-        internal void RemoveModelPage(WindowControl ctrl)
-        {
-            _modelPages.TryRemove(ctrl, out Chef owner);
-        }
+        //=====================================================================
 
-
-        internal async void CreateModelPage(ModelRoot model)
+        internal async void CreatePage(ModelRoot model)
         {
-            WindowControl windowControl = null;
-            await CoreApplication.CreateNewView().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            CoreApplicationView newView = CoreApplication.CreateNewView();
+            int newViewId = 0;
+            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                windowControl = WindowControl.CreateForCurrentView(this, model);
-                _modelPages.TryAdd(windowControl, null);
-
-                windowControl.StartInUse();
-
                 var frame = new Frame();
-                frame.Navigate(typeof(PageControl), windowControl);
+                frame.Navigate(typeof(PageControl), model);
                 Window.Current.Content = frame;
                 Window.Current.Activate();
+                newViewId = ApplicationView.GetForCurrentView().Id;
             });
-
-            try
-            {
-                windowControl.StartInUse();
-
-                var viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(
-                    windowControl.Id, ViewSizePreference.UseMinimum);
-
-                windowControl.StopInUse();
-            }
-            catch (InvalidOperationException)
-            {
-                // The view could be in the process of closing, and
-                // this thread just hasn't updated. As part of being closed,
-            }
+            await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId, ViewSizePreference.UseMinimum);
         }
+
     }
 }
