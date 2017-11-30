@@ -32,6 +32,7 @@ namespace ModelGraph.Internals
             _modelingFile = file;
 
             rootChef.Append(this);
+            rootChef.MajorDelta += 1;
 
             if (file == null)
                 _newChefNumber = (_newChefCount += 1);

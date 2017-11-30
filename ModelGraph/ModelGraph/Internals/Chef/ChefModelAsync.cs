@@ -31,7 +31,7 @@ namespace ModelGraph.Internals
         public void PostModelRefresh(ModelTree model)
         {
             if (model == null || model.IsInvalid) return;
-
+ 
             PostRequest(model, () => { DoNothing(); });
         }
         private void DoNothing() { }
@@ -88,7 +88,8 @@ namespace ModelGraph.Internals
             //(some time later the worker task completes and signals the ui thread)
 
             //===> the ui thread returns here and continues executing the following code            
-            foreach (var child in _rootModels) { child.PageDispatch(); }
+            foreach (var model in _rootModels) { model.PageDispatch(); }
+            
         }
 
         private void ExecuteRequest(ActionRequest action)

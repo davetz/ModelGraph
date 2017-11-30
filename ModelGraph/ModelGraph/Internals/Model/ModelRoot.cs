@@ -203,12 +203,22 @@ namespace ModelGraph.Internals
         
         internal void PageDispatch()
         {
-            if (_uiRequest != null)
+            if (PageControl != null)
             {
-                var request = _uiRequest;
-                _uiRequest = null;
+                if (_uiRequest == null)
+                {
+                    if (MajorDelta != Chef.MajorDelta || MinorDelta != Chef.MinorDelta)
+                    {
+                        PageControl.Dispatch(UIRequest.Refresh(this));
+                    }
+                }
+                else
+                {
+                    var request = _uiRequest;
+                    _uiRequest = null;
 
-                PageControl.Dispatch(request);
+                    PageControl.Dispatch(request);
+                }
             }
         }
         #endregion

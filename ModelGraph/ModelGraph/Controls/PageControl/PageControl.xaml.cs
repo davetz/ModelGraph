@@ -23,6 +23,7 @@ namespace ModelGraph
         public PageControl()
         {
             InitializeComponent();
+            
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -44,10 +45,11 @@ namespace ModelGraph
             ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
         }
 
+
         private void PageControl_Loaded(object sender, RoutedEventArgs e)
         {
             Loaded -= PageControl_Loaded;
-            _model.PostModelRefresh();
+            ModelRefresh();
         }
 
         private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
@@ -151,16 +153,7 @@ namespace ModelGraph
         #region IPageControl  =================================================
         public async void Dispatch(UIRequest rq)
         {
-            if (rq.DoRefresh)
-            {
-                var ctrl = rq.RootModel.ModelControl;
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-                {
-                    if (!(ctrl is ModelTreeControl) || rq.RootModel.Chef.ValidateModelTree(rq.RootModel))
-                        ctrl.Refresh();
-                });
-            }
-            else if (rq.DoSaveModel)
+            if (rq.DoSaveModel)
             {
                 if (rq.RootModel.ControlType == ControlType.SymbolEditor)
                 {
@@ -187,6 +180,20 @@ namespace ModelGraph
             else if (rq.DoCreateNewView)
             {
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => _pageService.CreatePage(new ModelRoot(rq)));
+            }
+
+            ModelRefresh();
+        }
+        async void ModelRefresh()
+        {
+            if (_model != null && _model.ModelControl != null)
+            {
+                var ctrl = _model.ModelControl;
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+                {
+                    if (!(ctrl is ModelTreeControl) || _model.Chef.ValidateModelTree(_model))
+                        ctrl.Refresh();
+                });
             }
         }
 
