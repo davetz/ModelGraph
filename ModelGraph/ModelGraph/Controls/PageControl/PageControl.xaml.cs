@@ -197,14 +197,16 @@ namespace ModelGraph
             }
         }
 
-        private void ReloadModel(ModelRoot rootModel)
+        private void ReloadModel(ModelRoot model)
         {
             throw new NotImplementedException();
         }
 
-        private void CloseModel(ModelRoot rootModel)
+        private void CloseModel(ModelRoot model)
         {
-            throw new NotImplementedException();
+            var chef = model.Chef;
+            chef.Close();
+            _pageService.CloseModelPages(chef);
         }
         #endregion
     }

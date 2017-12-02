@@ -25,8 +25,6 @@ namespace ModelGraph.Internals
         #region DataChef  =====================================================
         internal Chef(Chef rootChef, StorageFile file = null) : base(rootChef, Trait.DataChef, Guid.Empty, 0)
         {
-            _selfReferenceModel = new ModelRoot(this);
-
             Initialize();
 
             _modelingFile = file;
@@ -41,13 +39,31 @@ namespace ModelGraph.Internals
         }
         #endregion
 
+        #region Close  ========================================================
+        internal void Close()
+        {
+            var rootChef = Owner as Chef;
+            if (rootChef != null && rootChef != this)
+            {
+                rootChef.Remove(this);
+                rootChef.MajorDelta += 1;
+
+                rootChef.PrimaryRootModel.PageDispatch();
+                _rootModels.Clear();
+            }
+        }
+        #endregion
+
         #region RootModels  ===================================================
+        private ModelRoot PrimaryRootModel;
         private List<ModelRoot> _rootModels = new List<ModelRoot>(10);
-        private ModelRoot _selfReferenceModel;
         internal void AddRootModel(ModelRoot root)
         {
+            if (PrimaryRootModel == null) PrimaryRootModel = root;
+
             var g = root.Item1 as Graph;
             if (g != null) g.AddRootModel(root);
+
             MajorDelta += 1;
             _rootModels.Add(root);
         }
@@ -56,8 +72,9 @@ namespace ModelGraph.Internals
             var g = root.Item1 as Graph;
             if (g != null) g.RemoveRootModel(root);
             MajorDelta += 1;
+
             _rootModels.Remove(root);
-            PostModelRefresh(_selfReferenceModel);
+            PostModelRefresh(PrimaryRootModel);
         }
         #endregion
 

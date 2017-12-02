@@ -56,7 +56,7 @@ namespace ModelGraph.Internals
         internal ControlType ControlType;
 
         #region Constructors  =================================================
-        // AppRootChef: Created by App.xaml
+        // AppRootChef: Created by PageControl.xaml.cs
         public ModelRoot()
             : base(null, Trait.RootChef_M, 0, new Chef())
         {
@@ -80,9 +80,6 @@ namespace ModelGraph.Internals
 
             IsExpandedLeft = true;
         }
-
-        // Created by dataChef used for GetModelData
-        public ModelRoot(Chef owner) : base(null, Trait.MockChef_M, 0, owner) { Chef = owner; }
         #endregion
 
         #region Properties/Methods  ===========================================
@@ -245,9 +242,6 @@ namespace ModelGraph.Internals
             model.GetData(this);
             Chef.PostModelSetValueIndex(model, value);
         }
-
-        public UIRequest BuildViewRequest() => UIRequest.CreateNewView(ControlType, Trait, Chef, Item1, Item2, Item3, _getData, true);
-
         #endregion
     }
 }

@@ -555,7 +555,15 @@ namespace ModelGraph
             _insertCommand = _removeCommand = null;
 
             var select = _root.ViewSelectModel;
-            if (Count == 0 || select == null) return;
+            if (Count == 0 || select == null)
+            {
+                // hide leftover buttons
+                foreach (var btn in _itemButtons)
+                {
+                    btn.Visibility = Visibility.Collapsed;
+                }
+                return;
+            }
 
             //find stackPanel index of selected model
             var index = -1;

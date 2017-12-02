@@ -32,7 +32,7 @@ namespace ModelGraph.Internals
 
         internal override bool SetValue(Item key, DateTime value) => SetVal(key, value.ToString());
 
-        internal override bool SetValue(Item key, string value) => SetString(key, value);
+        internal override bool SetValue(Item key, string value) => SetVal(key, value);
         #endregion
     }
 }

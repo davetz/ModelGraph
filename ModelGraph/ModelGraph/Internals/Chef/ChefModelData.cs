@@ -422,7 +422,7 @@ namespace ModelGraph.Internals
         }
         private string GetFilterSortName(ModelTree model)
         {
-            var refRoot = _selfReferenceModel;
+            var refRoot = PrimaryRootModel;
             refRoot.GetModelItemData(model);
             var kind = string.IsNullOrEmpty(refRoot.ModelKind) ? " " : refRoot.ModelKind;
             var name = string.IsNullOrEmpty(refRoot.ModelName) ? " " : refRoot.ModelName;

@@ -55,10 +55,10 @@ namespace ModelGraph.Services
             }
             foreach (var page in hitList)
             {
-               await page.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-               {
+                await page.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
                    Window.Current.Close();
-               });
+                });
             }
         }
 
