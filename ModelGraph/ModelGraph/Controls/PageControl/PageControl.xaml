@@ -38,7 +38,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" x:Name="ButtonGrid" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
-            <TextBlock x:Name="ModelTitle" Style="{StaticResource TitleStyle}" />
+            <TextBlock x:Name="ModelTitle" Style="{StaticResource TitleStyle}"/>
             <StackPanel x:Name="ButtonPanel" Style="{StaticResource PanelStyle}">
                 <Button x:Name="Button1" Style="{StaticResource ButtonStyle}" Click="AppButton_Click"/>
                 <Button x:Name="Button2" Style="{StaticResource ButtonStyle}" Click="AppButton_Click"/>

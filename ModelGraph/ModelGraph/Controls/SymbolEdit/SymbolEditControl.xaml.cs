@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Microsoft.Graphics.Canvas.Geometry;
 using System.Linq;
 using ModelGraph.Internals;
+using Windows.Foundation;
 
 namespace ModelGraph
 {
@@ -439,6 +440,7 @@ namespace ModelGraph
         public CanvasDashStyle DashStyle { get; set; }
         public CanvasCapStyle DashCap { get; set; }
         public CanvasLineJoin LineJoin { get; set; }
+
         CanvasStrokeStyle strokeStyle = new CanvasStrokeStyle();
         CanvasStrokeStyle hitLineStyle = new CanvasStrokeStyle();
         #endregion
@@ -1210,6 +1212,9 @@ namespace ModelGraph
         #endregion
 
         #region ViewEvents  ===================================================
+        public Size PreferredMinSize => new Size() { Width = 320, Height = 320 };
+
+
         public void SetSize(double width, double hieght)
         {
         }

@@ -12,10 +12,7 @@ namespace ModelGraph.Internals
         internal string Initial;
         internal string Description;
 
-        internal bool IsSpecific(Item key)
-        {
-            throw new NotImplementedException();
-        }
+        internal bool IsSpecific(Item key) => false;
 
 
         #region Constructors  =================================================
@@ -25,6 +22,8 @@ namespace ModelGraph.Internals
             Trait = Trait.ColumnX;
             Guid = Guid.NewGuid();
             AutoExpandRight = true;
+
+            Value = Value.Create(ValType.String);
 
             owner.Append(this);
         }

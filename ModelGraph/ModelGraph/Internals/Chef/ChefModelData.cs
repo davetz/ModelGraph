@@ -579,7 +579,7 @@ namespace ModelGraph.Internals
             switch (root.ControlType)
             {
                 case ControlType.AppRootChef:
-                    return $"{GetName(Trait.ModelGraphTitle)} - {GetName(Trait.AppRootModelTab)}";
+                    return GetName(Trait.AppRootModelTab);
 
                 case ControlType.PrimaryTree:
                     return GetShortStorageFileName();
@@ -1108,7 +1108,7 @@ namespace ModelGraph.Internals
                     case ModelAction.ModelRefresh:
 
                         root.ModelName = pro.NameKey.GetLocalized();
-                        root.ModelValueList = GetEnumDisplayValues(enu);
+                        root.ModelValueList = GetEnumZNames(enu);
                         root.ValueIndex = GetComboSelectedIndex(itm, pro, enu);
                         break;
 
@@ -1120,47 +1120,10 @@ namespace ModelGraph.Internals
             }
         }
         //=====================================================================
-        private string[] GetEnumDisplayValues(EnumZ e)
+        private int GetComboSelectedIndex(Item itm, Property pro, EnumZ e)
         {
-            string[] values = null;
-            if (e != null && e.IsValid)
-            {
-                var items = e.Items;
-                var count = e.Count;
-                values = new string[count];
-
-                for (int i = 0; i < count; i++)
-                {
-                    var p = items[i];
-                    values[i] = p.NameKey.GetLocalized();
-                }
-            }
-            return values;
-        }
-        //=====================================================================
-        private string GetEnumDisplayValue(EnumZ e, int index)
-        {
-            string value = InvalidItem;
-            if (e != null && e.IsValid)
-            {
-                var items = e.Items;
-                var count = e.Count;
-                if (index >= 0 && index < count)
-                {
-                    var p = items[index];
-                    value = p.NameKey.GetLocalized();
-                }
-            }
-            return value;
-        }
-        //=====================================================================
-        private int GetComboSelectedIndex(Item itm, Property pro, EnumZ enu)
-        {
-            //var value = pro.Value.GetValue(itm);
-            var values = GetEnumDisplayValues(enu);
-            var len = (values == null) ? 0 : values.Length;
-            //for (int i = 0; i < len; i++) { if (value == values[i]) return i; }
-            return 0;
+            pro.Value.GetValue(itm, out int v);
+            return GetEnumZIndex(e, v);
         }
         #endregion
 

@@ -22,12 +22,11 @@ namespace ModelGraph
 
             InitializeComponent();
 
-            ApplicationView.GetForCurrentView().TryResizeView(new Size(320, 320));
-
             Initialize();
         }
 
         #region SetSize  ======================================================
+        public Size PreferredMinSize => new Size() { Width = 400, Height = 320 };
         public void SetSize(double width, double height)
         {
             TreeCanvas.Width = Width = width;

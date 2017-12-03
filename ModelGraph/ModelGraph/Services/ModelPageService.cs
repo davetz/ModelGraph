@@ -55,9 +55,11 @@ namespace ModelGraph.Services
             }
             foreach (var page in hitList)
             {
+                RemoveModelPage(page);
+
                 await page.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                   Window.Current.Close();
+                    Window.Current.Close();
                 });
             }
         }

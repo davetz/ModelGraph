@@ -2,6 +2,7 @@
 using ModelGraph.Services;
 using System;
 using System.Collections.Generic;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Core;
@@ -23,7 +24,6 @@ namespace ModelGraph
         public PageControl()
         {
             InitializeComponent();
-            
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -38,18 +38,37 @@ namespace ModelGraph
             _pageService = ((App)Application.Current).PageService;
             _pageService.AddModelPage(this);
 
-            CreateControl(_model);
-
             Loaded += PageControl_Loaded;
-
             ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
         }
-
 
         private void PageControl_Loaded(object sender, RoutedEventArgs e)
         {
             Loaded -= PageControl_Loaded;
+            GotFocus += PageControl_GotFocus;
+
+            CreateControl(_model);
+        }
+
+        private void PageControl_GotFocus(object sender, RoutedEventArgs e)
+        {
+            GotFocus -= PageControl_GotFocus;
+
+            SizeChanged += PageControl_SizeChanged;
+
+            var sz = _model.ModelControl.PreferredMinSize;
+
+            var view = ApplicationView.GetForCurrentView();
+            view.SetPreferredMinSize(sz);
+            view.TryResizeView(sz);
+
             ModelRefresh();
+        }
+
+        private void PageControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var bounds = Window.Current.Bounds;
+            _model.ModelControl.SetSize(bounds.Width, bounds.Height);
         }
 
         private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)

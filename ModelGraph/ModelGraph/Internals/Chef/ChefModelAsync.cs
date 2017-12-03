@@ -60,17 +60,16 @@ namespace ModelGraph.Internals
 
 
             string[] values;
-            if (model.Item3.IsEnumX)
+            if (model.Item3 is EnumX x)
             {
-                values = GetEnumActualValues(model.Item3 as EnumX);
+                values = GetEnumActualValues(x);
                 if (index < values.Length) PostModelSetValue(model, values[index]);
             }
-            else
+            else if (model.Item3 is EnumZ z)
             {
-                string value = (model.Item3 as EnumZ).ActualValue(index);
-                PostModelSetValue(model, value);
+                var zvals = GetEnumZNames(z);
+                if (index < zvals.Length) PostModelSetValue(model, zvals[index]);
             }
-
         }
         #endregion
 

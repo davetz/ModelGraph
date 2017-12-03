@@ -242,8 +242,6 @@ namespace ModelGraph.Internals
         #region ItemUpdated  ==================================================
         private void SetValue(ModelTree model, string newValue)
         {
-            MinorDelta += 1;
-
             var itm1 = model.Item1;
             var itm2 = model.Item2;
             var prop = itm2 as Property;
@@ -253,6 +251,7 @@ namespace ModelGraph.Internals
 
 
             if (IsSameValue(oldValue, newValue)) return;
+            MinorDelta += 1;
 
             if (prop.Value.SetString(itm1, newValue))
             {
