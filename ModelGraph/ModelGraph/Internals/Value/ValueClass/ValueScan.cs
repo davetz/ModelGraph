@@ -44,7 +44,7 @@ namespace ModelGraph.Internals
                 var anySpace = false;
                 for (int j = i, k = 0; j < N; j++)
                 {
-                    var t = input[i];
+                    var t = input[j];
                     if (char.IsWhiteSpace(t))
                         anySpace = true;
                     else

@@ -3897,8 +3897,8 @@ namespace ModelGraph.Internals
             {
                 if (model.IsExpandedRight)
                 {
-                    var sp1 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty, _relationXIsLimitedProperty };
-                    var sp2 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty, _relationXIsLimitedProperty, _relationXMinOccuranceProperty, _relationXMaxOccuranceProperty };
+                    var sp1 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty};
+                    var sp2 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty};
 
                     var item = model.Item1 as RelationX;
                     var sp = item.IsLimited ? sp2 : sp1;
