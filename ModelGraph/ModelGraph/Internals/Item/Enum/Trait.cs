@@ -515,34 +515,49 @@ namespace ModelGraph.Internals
 
         ValueType_Bool = 0x800,
         ValueType_Char = 0x801,
+
         ValueType_Byte = 0x802,
         ValueType_SByte = 0x803,
+
         ValueType_Int16 = 0x804,
-        ValueType_Int32 = 0x805,
-        ValueType_Int64 = 0x806,
-        ValueType_UInt16 = 0x807,
-        ValueType_UInt32 = 0x808,
+        ValueType_UInt16 = 0x805,
+
+        ValueType_Int32 = 0x806,
+        ValueType_UInt32 = 0x807,
+
+        ValueType_Int64 = 0x808,
         ValueType_UInt64 = 0x809,
+
         ValueType_Single = 0x80A,
         ValueType_Double = 0x80B,
+
         ValueType_Decimal = 0x80C,
-        ValueType_Guid = 0x80D,
-        ValueType_DateTime = 0x80E,
-        ValueType_TimeSpan = 0x80F,
-        ValueType_String = 0x810,
-        ValueType_CharArray = 0x811,
-        ValueType_HexArray = 0x812,
-        ValueType_ByteArray = 0x813,
-        ValueType_SByteArray = 0x814,
-        ValueType_Int16Array = 0x815,
-        ValueType_Int32Array = 0x816,
+        ValueType_DateTime = 0x80D,
+
+        ValueType_String = 0x80E,
+
+        ValueType_BoolArray = 0x80F,
+        ValueType_CharArray = 0x810,
+
+        ValueType_ByteArray = 0x811,
+        ValueType_SByteArray = 0x812,
+
+        ValueType_Int16Array = 0x813,
+        ValueType_UInt16Array = 0x814,
+
+        ValueType_Int32Array = 0x815,
+        ValueType_UInt32Array = 0x816,
+
         ValueType_Int64Array = 0x817,
-        ValueType_UInt16Array = 0x818,
-        ValueType_UInt32Array = 0x819,
-        ValueType_UInt64Array = 0x81A,
-        ValueType_SingleArray = 0x81B,
-        ValueType_DoubleArray = 0x81C,
-        ValueType_DecimalArray = 0x81D,
+        ValueType_UInt64Array = 0x818,
+
+        ValueType_SingleArray = 0x819,
+        ValueType_DoubleArray = 0x81A,
+
+        ValueType_DecimalArray = 0x81B,
+        ValueType_DateTimeArray = 0x81C,
+
+        ValueType_StringArray = 0x81D,
         ValueTypeEnum = 0x83F,
 
         xxValueType_None = 0x840,

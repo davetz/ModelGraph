@@ -177,28 +177,28 @@ namespace ModelGraph
                 if (rq.RootModel.ControlType == ControlType.SymbolEditor)
                 {
                     var editor = rq.RootModel.ModelControl as SymbolEditControl;
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => { editor.Save(); });
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.Save(); });
                 }
             }
             else if (rq.DoCloseModel)
             {
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => { CloseModel(rq.RootModel); });
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { CloseModel(rq.RootModel); });
             }
             else if (rq.DoReloadModel)
             {
                 if (rq.RootModel.ControlType == ControlType.SymbolEditor)
                 {
                     var editor = rq.RootModel.ModelControl as SymbolEditControl;
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => { editor.Save(); });
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.Save(); });
                 }
                 else
                 {
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => { ReloadModel(rq.RootModel); });
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ReloadModel(rq.RootModel); });
                 }
             }
             else if (rq.DoCreateNewView)
             {
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => _pageService.CreatePage(new ModelRoot(rq)));
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreatePage(new ModelRoot(rq)));
             }
 
             ModelRefresh();
@@ -208,7 +208,7 @@ namespace ModelGraph
             if (_model != null && _model.ModelControl != null)
             {
                 var ctrl = _model.ModelControl;
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     if (!(ctrl is ModelTreeControl) || _model.Chef.ValidateModelTree(_model))
                         ctrl.Refresh();

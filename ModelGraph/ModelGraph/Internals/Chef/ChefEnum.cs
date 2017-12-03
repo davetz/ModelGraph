@@ -25,9 +25,6 @@ namespace ModelGraph.Internals
                 var items = e.Items;
                 var N = e.Count;
 
-                var s = new string[N];
-                var v = new int[N];
-
                 for (int i = 0; i < N; i++)
                 {
                     var p = items[i];
@@ -40,7 +37,7 @@ namespace ModelGraph.Internals
         #endregion
 
         #region GetEnumZIndex  ================================================
-        int GetEnumZIndex(EnumZ e, int key)
+        int GetEnumZIndex(EnumZ e, string name)
         {
             if (e != null && e.Count > 0)
             {
@@ -50,7 +47,7 @@ namespace ModelGraph.Internals
                 for (int i = 0; i < N; i++)
                 {
                     var p = items[i];
-                    if (p.EnumKey == key)
+                    if (name == p.NameKey.GetLocalized())
                         return i;
                 }
             }

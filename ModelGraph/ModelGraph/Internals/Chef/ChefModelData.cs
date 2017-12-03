@@ -1109,7 +1109,7 @@ namespace ModelGraph.Internals
 
                         root.ModelName = pro.NameKey.GetLocalized();
                         root.ModelValueList = GetEnumZNames(enu);
-                        root.ValueIndex = GetComboSelectedIndex(itm, pro, enu);
+                        root.ValueIndex = GetEnumZIndex(enu, pro.Value.GetString(itm));
                         break;
 
                     case ModelAction.ModelSelect:
@@ -1118,12 +1118,6 @@ namespace ModelGraph.Internals
                         break;
                 }
             }
-        }
-        //=====================================================================
-        private int GetComboSelectedIndex(Item itm, Property pro, EnumZ e)
-        {
-            pro.Value.GetValue(itm, out int v);
-            return GetEnumZIndex(e, v);
         }
         #endregion
 

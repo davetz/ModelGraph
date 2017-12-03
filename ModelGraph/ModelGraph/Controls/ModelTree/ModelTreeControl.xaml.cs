@@ -1008,7 +1008,7 @@ namespace ModelGraph
 
         async Task RefreshTree(ChangeType change)
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
                 if (_root.Chef.ValidateModelTree(_root, change)) Refresh();
             });
