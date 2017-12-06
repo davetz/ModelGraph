@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.ViewManagement;
 using Windows.Foundation;
 using Windows.UI.Xaml.Input;
-using ModelGraph.Internals;
+using ModelGraphLibrary;
 using System.Threading.Tasks;
 using ModelGraph.Helpers;
 
@@ -26,7 +26,7 @@ namespace ModelGraph
         }
 
         #region SetSize  ======================================================
-        public Size PreferredMinSize => new Size() { Width = 400, Height = 320 };
+        public (int Width, int Height) PreferredMinSize => (400, 320);
         public void SetSize(double width, double height)
         {
             TreeCanvas.Width = Width = width;
@@ -115,7 +115,6 @@ namespace ModelGraph
         private string _filterCountTip;
         private string _rightExpandTip;
         private string _filterExpandTip;
-        private ResourceLoader _resourceLoader;
         #endregion
 
         #region Close  ========================================================
@@ -849,7 +848,6 @@ namespace ModelGraph
         #endregion
 
         #region UsageMode  ====================================================
-        private TextBlock _usageControl;
         private void UsageMode_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             if (_previousModel == PointerModel(e))

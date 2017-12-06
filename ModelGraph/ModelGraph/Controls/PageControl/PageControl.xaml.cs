@@ -1,4 +1,4 @@
-﻿using ModelGraph.Internals;
+﻿using ModelGraphLibrary;
 using ModelGraph.Services;
 using System;
 using System.Collections.Generic;
@@ -10,6 +10,8 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using ModelGraphStorageFile;
+using ModelGraph.Helpers;
 
 namespace ModelGraph
 {
@@ -34,6 +36,7 @@ namespace ModelGraph
                 _model = new ModelRoot();
 
             _model.PageControl = this;
+            _model.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
 
             _pageService = ((App)Application.Current).PageService;
             _pageService.AddModelPage(this);
@@ -56,7 +59,8 @@ namespace ModelGraph
 
             SizeChanged += PageControl_SizeChanged;
 
-            var sz = _model.ModelControl.PreferredMinSize;
+            (var w, var h) = _model.ModelControl.PreferredMinSize;
+            var sz = new Size() {Width = w, Height = h };
 
             var view = ApplicationView.GetForCurrentView();
             view.SetPreferredMinSize(sz);
@@ -94,7 +98,7 @@ namespace ModelGraph
                     StorageFile file = await savePicker.PickSaveFileAsync();
                     if (file != null)
                     {
-                        cmd.Parameter1 = file;
+                        cmd.Parameter1 = new RepositoryStorageFile(file);
                         cmd.Execute();
                         //ReloadModelView();
                     }
@@ -108,7 +112,7 @@ namespace ModelGraph
                     StorageFile file = await openPicker.PickSingleFileAsync();
                     if (file != null)
                     {
-                        cmd.Parameter1 = file;
+                        cmd.Parameter1 = new RepositoryStorageFile(file);
                         cmd.Execute();
                     }
                 }

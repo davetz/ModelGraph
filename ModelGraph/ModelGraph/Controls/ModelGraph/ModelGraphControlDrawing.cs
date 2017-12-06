@@ -1,7 +1,7 @@
 ﻿using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas;
-using ModelGraph.Internals;
+using ModelGraphLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,7 +94,8 @@ namespace ModelGraph
                     pen.Initialize();
                     for (int j = 0; j < len; j++)
                     {
-                        pen.DrawLine(points[j].Vector2);
+                        (var fx, var fy) = points[j].FloatXY;
+                        pen.DrawLine(new Vector2(fx,fy));
                     }
                 }
             }
@@ -116,7 +117,7 @@ namespace ModelGraph
                     }
                     pen.Initialize();
                     if (node.Core.IsPointNode)
-                        pen.DrawPoint(node.Core.Center.Vector2, node.Core.Radius);
+                        pen.DrawPoint(node.Core);
                     else
                         pen.DrawBusBar(node.Core.X, node.Core.Y, node.Core.DX, node.Core.DY);
                 }
@@ -135,14 +136,14 @@ namespace ModelGraph
             if (_traceRegion != null)
             {
                 pen.Color = (_traceRegion.IsPolygon) ? Colors.DimGray : Colors.LightGray;
-                pen.DrawRectangle(_traceRegion.Normal.GetRect(x, y, z));
+                pen.DrawRectangle(_traceRegion.Normal, x, y, z);
 
                 var points = _traceRegion.Points;
                 pen.Color = (_traceRegion.IsPolygon) ? Colors.LightGray : Colors.DimGray;
                 pen.Initialize();
                 for (int i = 0; i < points.Count; i++)
                 {
-                    pen.DrawLine(points[i].Vector2);
+                    pen.DrawLine(points[i]);
                 }
             }
             #endregion
@@ -159,13 +160,13 @@ namespace ModelGraph
                         pen.Initialize();
                         for (int i = 0; i < points.Count; i++)
                         {
-                            pen.DrawLine(points[i].Vector2);
+                            pen.DrawLine(points[i]);
                         }
-                        pen.DrawLine(points[0].Vector2);
+                        pen.DrawLine(points[0]);
                     }
                     else
                     {
-                        pen.DrawRectangle(region.Normal.GetRect(x, y, z));
+                        pen.DrawRectangle(region.Normal, x, y, z);
                     }
                 }
             }
@@ -232,7 +233,7 @@ namespace ModelGraph
                 _firstItteration = true;
                 return index + 9;
             }
-
+            internal void DrawLine(XYPoint pxy) => DrawLine(new Vector2(pxy.X, pxy.Y));
             internal void DrawLine(Vector2 point)
             {
                 Vector2 p2 = (point - _offset) * _zoom;
@@ -243,14 +244,22 @@ namespace ModelGraph
                     _session.DrawLine(_p1, p2, Color, Width, Style);
                 _p1 = p2;
             }
+            internal void DrawRectangle(Extent e) => DrawRectangle(new Rect(e.Xmin, e.Ymin, e.Width, e.Hieght));
+            internal void DrawRectangle(Extent e, int x, int y, float z)
+            {
+                var r = new Rect(e.Xmin, e.Ymin, e.Width, e.Hieght);
 
+                DrawRectangle(new Rect(z * (r.X - x), z * (r.Y - y), z * r.Width, z * r.Height));
+            }
             internal void DrawRectangle(Rect rect)
             {
                 _session.DrawRectangle(rect, Color, Width);
             }
 
-            internal void DrawPoint(Vector2 center, float radius)
+            internal void DrawPoint(NodeX core)
             {
+                var center = new Vector2(core.X, core.Y);
+                var radius = core.Radius;
                 Vector2 p = (center - _offset) * _zoom;
                 _session.DrawLine(p, p, Color, (radius * 2 * _zoom), Style);
             }

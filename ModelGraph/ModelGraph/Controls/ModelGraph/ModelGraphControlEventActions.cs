@@ -1,4 +1,4 @@
-﻿using ModelGraph.Internals;
+﻿using ModelGraphLibrary;
 using System;
 using System.Diagnostics;
 using System.Numerics;
@@ -37,12 +37,12 @@ namespace ModelGraph
         }
         private bool _enableHitTest;
 
-        private Extent _rootDelta; // rolling point1, point2 delta (RoodCanvas)
-        private Extent _drawDelta; // rolling point1, point2 delta (DrawCanvas)
-        private Extent _dragDelta; // rolling point1, point2 delta (DrawCanvas)
+        private Extent _rootDelta = new Extent(); // rolling point1, point2 delta (RoodCanvas)
+        private Extent _drawDelta = new Extent(); // rolling point1, point2 delta (DrawCanvas)
+        private Extent _dragDelta = new Extent(); // rolling point1, point2 delta (DrawCanvas)
 
-        private Extent _rootRef; // point1 pointerPressed, point2 = poinnterMoved, pointerReleased (RoodCanvas)
-        private Extent _drawRef; // point1 pointerPressed, point2 = poinnterMoved, pointerReleased (DrawCanvas)
+        private Extent _rootRef = new Extent(); // point1 pointerPressed, point2 = poinnterMoved, pointerReleased (RoodCanvas)
+        private Extent _drawRef = new Extent(); // point1 pointerPressed, point2 = poinnterMoved, pointerReleased (DrawCanvas)
 
         private Modifier _modifier;
         private string _keyName;

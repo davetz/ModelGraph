@@ -1,6 +1,6 @@
 ﻿using System;
 using Windows.UI.Xaml.Controls;
-using ModelGraph.Internals;
+using ModelGraphLibrary;
 
 namespace ModelGraph
 {

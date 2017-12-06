@@ -8,7 +8,7 @@ using Microsoft.Graphics.Canvas;
 using System.Collections.Generic;
 using Microsoft.Graphics.Canvas.Geometry;
 using System.Linq;
-using ModelGraph.Internals;
+using ModelGraphLibrary;
 using Windows.Foundation;
 
 namespace ModelGraph
@@ -253,7 +253,7 @@ namespace ModelGraph
         private Action BeginAction;
 
         private XYPoint _rawRef;
-        private Extent _drawRef;
+        private Extent _drawRef = new Extent();
         private bool _pointerIsPressed;
 
         private readonly LineStyle _prevStyle = new LineStyle();
@@ -1212,7 +1212,7 @@ namespace ModelGraph
         #endregion
 
         #region ViewEvents  ===================================================
-        public Size PreferredMinSize => new Size() { Width = 320, Height = 320 };
+        public (int Width, int Height) PreferredMinSize => (504, 360);
 
 
         public void SetSize(double width, double hieght)

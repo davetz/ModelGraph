@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using ModelGraph.Internals;
+using ModelGraphLibrary;
 using Windows.Foundation;
 
 namespace ModelGraph
@@ -43,7 +43,7 @@ namespace ModelGraph
             Shift = 4,
         }
 
-        public Size PreferredMinSize => new Size() { Width = 320, Height = 320 };
+        public (int Width, int Height) PreferredMinSize => (400, 320);
 
 
         public void SetSize(double width, double hieght)
