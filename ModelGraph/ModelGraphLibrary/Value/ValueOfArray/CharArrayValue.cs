@@ -8,6 +8,8 @@ namespace ModelGraphSTD
         internal CharArrayValue(IValueStore<char[]> store) { _valueStore = store; }
         internal override ValType ValType => ValType.CharArray;
 
+        internal ValueDictionary<char[]> ValueDictionary => _valueStore as ValueDictionary<char[]>;
+
         #region Required  =====================================================
         internal override bool GetValue(Item key, out string value)
         {

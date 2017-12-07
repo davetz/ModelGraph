@@ -7,6 +7,8 @@ namespace ModelGraphSTD
         internal DateTimeArrayValue(IValueStore<DateTime[]> store) { _valueStore = store; }
         internal override ValType ValType => ValType.DateTimeArray;
 
+        internal ValueDictionary<DateTime[]> ValueDictionary => _valueStore as ValueDictionary<DateTime[]>;
+
         #region Required  =====================================================
         internal override bool GetValue(Item key, out string value)
         {

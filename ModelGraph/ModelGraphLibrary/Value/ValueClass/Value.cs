@@ -11,7 +11,6 @@ namespace ModelGraphSTD
         internal abstract void Clear();
         internal abstract void Remove(Item key);
 
-
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
         // the following used by the UI to get/set property values
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =

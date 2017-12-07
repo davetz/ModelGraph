@@ -281,7 +281,6 @@ namespace RepositoryUWP
                 if (!string.IsNullOrWhiteSpace(cx.Initial)) b |= B4;
                 if (!string.IsNullOrWhiteSpace(cx.Description)) b |= B5;
                 if (cx.Value.ValType != ValType.String) b |= B6;
-                //if (cx.HasSpecificDefault) b |= B7;                      //*********************
 
                 w.WriteByte(b);
                 if ((b & B1) != 0) w.WriteUInt16(cx.GetFlags());
@@ -290,22 +289,8 @@ namespace RepositoryUWP
                 if ((b & B4) != 0) WriteString(w, cx.Initial);
                 if ((b & B5) != 0) WriteString(w, cx.Description);
                 if ((b & B6) != 0) w.WriteByte((byte)cx.Value.ValType);
-                if ((b & B7) != 0) WriteString(w, cx.Initial);
 
-                //if (cx.TryGetKeys(out Item[] rows))
-                //{
-                //    w.WriteInt32(rows.Length);
-                //    foreach (var rx in rows)
-                //    {
-                //        var val = cx.Value.GetString(rx);
-                //        w.WriteInt32(itemIndex[rx]);
-                //        WriteString(w, ((val != null) ? val : string.Empty));
-                //    }
-                //}
-                //else
-                //{
-                w.WriteInt32(0);
-                //}
+                WriteValueDictionary(w, cx, itemIndex);
             }
             w.WriteByte((byte)Mark.ColumnXEnding); // itegrity marker
         }
@@ -667,24 +652,28 @@ namespace RepositoryUWP
         #endregion
 
         #region Write String/Bytes  ===========================================
-        private void WriteString(DataWriter w, string text)
+        static void WriteString(DataWriter w, string str)
         {
-            var len = w.MeasureString(text);
+            var txt = str ?? string.Empty;
+            if (txt.Length == 0) txt = "^";
+
+
+            var len = w.MeasureString(txt);
             if (len > UInt16.MaxValue)
             {
                 var r = (double)len / (double)UInt16.MaxValue;
-                var n = (UInt16)((text.Length / r) - 2);
-                var trucated = text.Substring(0, n);
+                var n = (UInt16)((txt.Length / r) - 2);
+                var trucated = txt.Substring(0, n);
                 w.WriteUInt16((UInt16)w.MeasureString(trucated));
                 w.WriteString(trucated);
             }
             else
             {
                 w.WriteUInt16((UInt16)len);
-                w.WriteString(text);
+                w.WriteString(txt);
             }
         }
-        private void WriteBytes(DataWriter w, byte[] data)
+        static void WriteBytes(DataWriter w, byte[] data)
         {
             var len = data.Length;
             w.WriteInt32(len);

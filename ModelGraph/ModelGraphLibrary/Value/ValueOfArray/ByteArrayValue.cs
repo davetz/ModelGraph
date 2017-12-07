@@ -6,6 +6,8 @@ namespace ModelGraphSTD
         internal ByteArrayValue(IValueStore<byte[]> store) { _valueStore = store; }
         internal override ValType ValType => ValType.ByteArray;
 
+        internal ValueDictionary<byte[]> ValueDictionary => _valueStore as ValueDictionary<byte[]>;
+
         #region Required  =====================================================
         internal override bool GetValue(Item key, out string value)
         {

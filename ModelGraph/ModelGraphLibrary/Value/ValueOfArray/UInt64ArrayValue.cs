@@ -7,6 +7,8 @@ namespace ModelGraphSTD
         internal UInt64ArrayValue(IValueStore<ulong[]> store) { _valueStore = store; }
         internal override ValType ValType => ValType.UInt64Array;
 
+        internal ValueDictionary<ulong[]> ValueDictionary => _valueStore as ValueDictionary<ulong[]>;
+
         #region Required  =====================================================
         internal override bool GetValue(Item key, out string value)
         {

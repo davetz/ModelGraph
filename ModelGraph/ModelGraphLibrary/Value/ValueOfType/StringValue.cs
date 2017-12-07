@@ -7,6 +7,8 @@ namespace ModelGraphSTD
         internal StringValue(IValueStore<string> store) { _valueStore = store; }
         internal override ValType ValType => ValType.String;
 
+        internal ValueDictionary<string> ValueDictionary => _valueStore as ValueDictionary<string>;
+
         #region GetValue  =====================================================
         internal override bool GetValue(Item key, out bool value) => (GetVal(key, out string v) && bool.TryParse(v, out value)) ? true : NoValue(out value);
 

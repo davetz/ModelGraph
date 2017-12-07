@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 using System.Collections.Generic;
 
 namespace ModelGraphSTD
@@ -29,6 +29,7 @@ namespace ModelGraphSTD
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+        internal T DefaultValue => _default;
         internal IEnumerable<Item> GetKeys() => (Count == 0) ? null : _values.Keys;
         internal IEnumerable<T> GetValues() => (Count == 0) ? null : _values.Values;
 

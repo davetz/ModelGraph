@@ -7,6 +7,8 @@ namespace ModelGraphSTD
         internal DecimalArrayValue(IValueStore<decimal[]> store) { _valueStore = store; }
         internal override ValType ValType => ValType.DecimalArray;
 
+        internal ValueDictionary<decimal[]> ValueDictionary => _valueStore as ValueDictionary<decimal[]>;
+
         #region Required  =====================================================
         internal override bool GetValue(Item key, out string value)
         {

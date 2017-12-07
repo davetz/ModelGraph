@@ -6,6 +6,8 @@ namespace ModelGraphSTD
         internal DoubleArrayValue(IValueStore<double[]> store) { _valueStore = store; }
         internal override ValType ValType => ValType.DoubleArray;
 
+        internal ValueDictionary<double[]> ValueDictionary => _valueStore as ValueDictionary<double[]>;
+
         #region Required  =====================================================
         internal override bool GetValue(Item key, out string value)
         {

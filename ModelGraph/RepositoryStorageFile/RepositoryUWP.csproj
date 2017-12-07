@@ -110,6 +110,7 @@
     <Compile Include="Repository.cs" />
     <Compile Include="RepositoryRead.cs" />
     <Compile Include="RepositoryWrite.cs" />
+    <Compile Include="WriteValueDictionary.cs" />
     <EmbeddedResource Include="Properties\RepositoryStorageFile.rd.xml" />
   </ItemGroup>
   <ItemGroup>

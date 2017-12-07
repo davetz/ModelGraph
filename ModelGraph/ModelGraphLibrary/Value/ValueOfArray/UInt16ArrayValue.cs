@@ -7,6 +7,8 @@ namespace ModelGraphSTD
         internal UInt16ArrayValue(IValueStore<ushort[]> store) { _valueStore = store; }
         internal override ValType ValType => ValType.UInt16Array;
 
+        internal ValueDictionary<ushort[]> ValueDictionary => _valueStore as ValueDictionary<ushort[]>;
+
         #region Required  =====================================================
         internal override bool GetValue(Item key, out string value)
         {

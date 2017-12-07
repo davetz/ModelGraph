@@ -7,6 +7,8 @@ namespace ModelGraphSTD
         internal StringArrayValue(IValueStore<string[]> store) { _valueStore = store; }
         internal override ValType ValType => ValType.StringArray;
 
+        internal ValueDictionary<string[]> ValueDictionary => _valueStore as ValueDictionary<string[]>;
+
         #region Required  =====================================================
         internal override bool GetValue(Item key, out string value) => throw new NotImplementedException();
         internal override bool SetValue(Item key, string value) => throw new NotImplementedException();

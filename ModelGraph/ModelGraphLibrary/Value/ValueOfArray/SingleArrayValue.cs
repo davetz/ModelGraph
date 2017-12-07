@@ -6,6 +6,8 @@ namespace ModelGraphSTD
         internal SingleArrayValue(IValueStore<float[]> store) { _valueStore = store; }
         internal override ValType ValType => ValType.SingleArray;
 
+        internal ValueDictionary<float[]> ValueDictionary => _valueStore as ValueDictionary<float[]>;
+
         #region Required  =====================================================
         internal override bool GetValue(Item key, out string value)
         {

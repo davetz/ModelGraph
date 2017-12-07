@@ -7,6 +7,8 @@ namespace ModelGraphSTD
         internal SingleValue(IValueStore<float> store) { _valueStore = store; }
         internal override ValType ValType => ValType.Single;
 
+        internal ValueDictionary<float> ValueDictionary => _valueStore as ValueDictionary<float>;
+
         #region GetValue  =====================================================
         internal override bool GetValue(Item key, out bool value)
         {

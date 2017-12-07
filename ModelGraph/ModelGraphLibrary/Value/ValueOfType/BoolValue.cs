@@ -7,6 +7,8 @@ namespace ModelGraphSTD
         internal BoolValue(IValueStore<bool> store) { _valueStore = store; }
         internal override ValType ValType => ValType.Bool;
 
+        internal ValueDictionary<bool> ValueDictionary => _valueStore as ValueDictionary<bool>;
+
         #region GetValue  =====================================================
         internal override bool GetValue(Item key, out bool value) => GetVal(key, out value);
 

@@ -7,6 +7,8 @@ namespace ModelGraphSTD
         internal Int32Value(IValueStore<int> store) { _valueStore = store; }
         internal override ValType ValType => ValType.Int32;
 
+        internal ValueDictionary<int> ValueDictionary => _valueStore as ValueDictionary<int>;
+
         #region GetValue  =====================================================
         internal override bool GetValue(Item key, out bool value)
         {

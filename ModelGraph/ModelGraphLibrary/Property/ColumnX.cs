@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModelGraphSTD
 {
@@ -13,7 +11,6 @@ namespace ModelGraphSTD
         internal string Description;
 
         internal bool IsSpecific(Item key) => false;
-
 
         #region Constructors  =================================================
         internal ColumnX(StoreOf<ColumnX> owner)
@@ -36,7 +33,6 @@ namespace ModelGraphSTD
             owner.Add(this);
         }
         #endregion
-
 
         #region Property  =====================================================
         internal override bool HasItemName => false;

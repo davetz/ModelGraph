@@ -12,18 +12,7 @@ namespace ModelGraphSTD
 
         public XYPoint(int x, int y) { X = x; Y = y; }
 
-        //public XYPoint(Vector2 val) { X = (int)val.X; Y = (int)val.X; }
-
         public XYPoint(double x, double y) { X = (int)x; Y = (int)y; }
-
-        public (float X, float Y) FloatXY => (X, Y);
-
-        //public Vector2 Vector2 { get { return new Vector2(X, Y); } }
-
-        //public Vector2 GetVector2(int x, int y, float z)
-        //{
-        //    return new Vector2(z * (X - x), z * (Y - y));
-        //}
 
         public XYPoint Move(XYPoint delta)
         {

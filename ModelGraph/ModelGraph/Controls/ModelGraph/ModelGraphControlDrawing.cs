@@ -94,8 +94,7 @@ namespace ModelGraph
                     pen.Initialize();
                     for (int j = 0; j < len; j++)
                     {
-                        (var fx, var fy) = points[j].FloatXY;
-                        pen.DrawLine(new Vector2(fx,fy));
+                        pen.DrawLine(points[j]);
                     }
                 }
             }

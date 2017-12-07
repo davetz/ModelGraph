@@ -8,6 +8,8 @@ namespace ModelGraphSTD
         internal SByteValue(IValueStore<sbyte> store) { _valueStore = store; }
         internal override ValType ValType => ValType.SByte;
 
+        internal ValueDictionary<sbyte> ValueDictionary => _valueStore as ValueDictionary<sbyte>;
+
         #region GetValue  =====================================================
         internal override bool GetValue(Item key, out bool value)
         {

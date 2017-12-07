@@ -816,12 +816,13 @@ namespace RepositoryUWP
         #endregion
 
         #region Read String/Bytes  ============================================
-        private string ReadString(DataReader r)
+        static string ReadString(DataReader r)
         {
             var len = (UInt32)r.ReadUInt16();
-            return r.ReadString(len);
+            var str = r.ReadString(len);
+            return (str == "^") ? string.Empty : str;
         }
-        private byte[] ReadBytes(DataReader r)
+        static byte[] ReadBytes(DataReader r)
         {
             var len = r.ReadInt32();
             var data = new byte[len];
