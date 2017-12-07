@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     public class StoreOf<T> : Store where T: Item
     {

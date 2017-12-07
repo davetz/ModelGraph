@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     [Flags]
     public enum HitLocation

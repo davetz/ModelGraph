@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
-    interface between ModelGraphLibrary --> ModelGraph
+    interface between ModelGraphSTD --> ModelGraph
 
-    Isolate the ModelGraphLibrary from the UI plumbing.
+    Isolate the ModelGraphSTD from the UI plumbing.
  */
     public interface IPageControl
     {

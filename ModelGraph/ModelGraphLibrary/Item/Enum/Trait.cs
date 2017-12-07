@@ -1,5 +1,5 @@
 ﻿
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     /// <summary>
     /// Complete catalog all items, models, and commands 

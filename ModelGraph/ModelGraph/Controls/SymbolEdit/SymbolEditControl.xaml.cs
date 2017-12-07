@@ -8,7 +8,7 @@ using Microsoft.Graphics.Canvas;
 using System.Collections.Generic;
 using Microsoft.Graphics.Canvas.Geometry;
 using System.Linq;
-using ModelGraphLibrary;
+using ModelGraphSTD;
 using Windows.Foundation;
 
 namespace ModelGraph

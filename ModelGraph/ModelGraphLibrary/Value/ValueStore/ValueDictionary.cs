@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     internal class ValueDictionary<T> : IValueStore<T>
     {

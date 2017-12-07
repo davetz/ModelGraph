@@ -1,5 +1,5 @@
 ﻿
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     public abstract class Store : Item
     {

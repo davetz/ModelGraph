@@ -5,11 +5,11 @@ VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelGraph", "ModelGraph\ModelGraph.csproj", "{2CB02992-E9F6-4D1B-84B8-19B48B433B8A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelGraphLibrary", "ModelGraphLibrary\ModelGraphLibrary.csproj", "{25E0A552-01B0-4A2F-8DE3-10E79AF12862}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelGraphSTD", "ModelGraphLibrary\ModelGraphSTD.csproj", "{25E0A552-01B0-4A2F-8DE3-10E79AF12862}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModelGraphLibrary", "TestModelGraphLibrary\TestModelGraphLibrary.csproj", "{085A4E51-6E0D-4B3E-98F3-223EADBB7C28}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModelGraphSTD", "TestModelGraphLibrary\TestModelGraphSTD.csproj", "{085A4E51-6E0D-4B3E-98F3-223EADBB7C28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryStorageFile", "RepositoryStorageFile\RepositoryStorageFile.csproj", "{D47FC5F4-0439-492C-8730-6A652E1D1D3A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryUWP", "RepositoryStorageFile\RepositoryUWP.csproj", "{D47FC5F4-0439-492C-8730-6A652E1D1D3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

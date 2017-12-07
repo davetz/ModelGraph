@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     /// <summary>
     /// The default ComputeStep.Evaluate function set by the ComputeStep constructor

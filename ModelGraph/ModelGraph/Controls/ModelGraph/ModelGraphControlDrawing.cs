@@ -1,7 +1,7 @@
 ﻿using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas;
-using ModelGraphLibrary;
+using ModelGraphSTD;
 using System;
 using System.Collections.Generic;
 using System.Linq;

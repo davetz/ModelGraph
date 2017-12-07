@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
     Relation is the abstract base class for RelationOf<T1, T2>   
  */

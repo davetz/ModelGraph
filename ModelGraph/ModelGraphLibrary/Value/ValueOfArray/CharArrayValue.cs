@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     internal class CharArrayValue : ValueOfArray<char>
     {

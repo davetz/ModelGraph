@@ -1,5 +1,5 @@
 ﻿
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
     The current types and associated numeric values must never be modified 
     because the numeric value is (saved-to/loaded-from) model repositories.

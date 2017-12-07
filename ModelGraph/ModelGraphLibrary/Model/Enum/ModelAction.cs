@@ -1,6 +1,6 @@
-﻿namespace ModelGraphLibrary
+﻿namespace ModelGraphSTD
 {/*
-    Data Interface between ModelGraphLibrary <--> ModelGraph App
+    Data Interface between ModelGraphSTD <--> ModelGraph App
  */
     public enum ModelAction
     {

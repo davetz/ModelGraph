@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     internal class UInt64ArrayValue : ValueOfArray<ulong>
     {

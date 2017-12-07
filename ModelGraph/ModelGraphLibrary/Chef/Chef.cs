@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
     Chef is the data coordinator of this application.
     It is the owner of the data and orchastrates all changes.

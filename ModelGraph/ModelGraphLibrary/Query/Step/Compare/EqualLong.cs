@@ -1,5 +1,5 @@
 ﻿
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     internal class EqualLong : ValueOfBool
     {

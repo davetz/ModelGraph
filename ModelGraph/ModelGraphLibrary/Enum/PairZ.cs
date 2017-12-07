@@ -1,6 +1,6 @@
 ﻿
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
  */
     public class PairZ : Item

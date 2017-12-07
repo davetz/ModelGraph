@@ -221,13 +221,13 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ModelGraphLibrary\ModelGraphLibrary.csproj">
+    <ProjectReference Include="..\ModelGraphLibrary\ModelGraphSTD.csproj">
       <Project>{25e0a552-01b0-4a2f-8de3-10e79af12862}</Project>
-      <Name>ModelGraphLibrary</Name>
+      <Name>ModelGraphSTD</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RepositoryStorageFile\RepositoryStorageFile.csproj">
+    <ProjectReference Include="..\RepositoryStorageFile\RepositoryUWP.csproj">
       <Project>{d47fc5f4-0439-492c-8730-6a652e1d1d3a}</Project>
-      <Name>RepositoryStorageFile</Name>
+      <Name>RepositoryUWP</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

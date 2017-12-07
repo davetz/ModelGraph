@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ModelGraphLibrary;
+using ModelGraphSTD;
 
-namespace TestModelGraphLibrary
+namespace TestModelGraphSTD
 {
     [TestClass]
     public class UnitTest1

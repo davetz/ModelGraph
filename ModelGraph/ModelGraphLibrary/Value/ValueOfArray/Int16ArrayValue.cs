@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     internal class Int16ArrayValue : ValueOfArray<short>
     {

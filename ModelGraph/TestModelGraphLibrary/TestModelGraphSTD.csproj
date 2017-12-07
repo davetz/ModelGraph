@@ -7,8 +7,8 @@
     <ProjectGuid>{085A4E51-6E0D-4B3E-98F3-223EADBB7C28}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestModelGraphLibrary</RootNamespace>
-    <AssemblyName>TestModelGraphLibrary</AssemblyName>
+    <RootNamespace>TestModelGraphSTD</RootNamespace>
+    <AssemblyName>TestModelGraphSTD</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -55,9 +55,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ModelGraphLibrary\ModelGraphLibrary.csproj">
+    <ProjectReference Include="..\ModelGraphLibrary\ModelGraphSTD.csproj">
       <Project>{25e0a552-01b0-4a2f-8de3-10e79af12862}</Project>
-      <Name>ModelGraphLibrary</Name>
+      <Name>ModelGraphSTD</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

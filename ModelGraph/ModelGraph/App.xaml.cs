@@ -2,7 +2,7 @@
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 using ModelGraph.Services;
-using ModelGraphLibrary;
+using ModelGraphSTD;
 using Windows.UI.ViewManagement;
 using Windows.Foundation;
 

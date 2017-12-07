@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     public struct XYPoint
     {

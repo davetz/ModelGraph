@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
     Construct an optimumly ordered line list for the given node.
     Consider the given node is at the center of a circle and the

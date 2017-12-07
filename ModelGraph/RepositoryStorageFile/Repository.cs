@@ -1,9 +1,8 @@
 ﻿using System;
-using ModelGraphLibrary;
+using ModelGraphSTD;
 using Windows.Storage;
-using Windows.Storage.Streams;
 
-namespace ModelGraphStorageFile
+namespace RepositoryUWP
 {
     public partial class RepositoryStorageFile : IRepository
     {

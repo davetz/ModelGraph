@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Controls;
 
 using ModelGraph.Views;
 using System.Collections.Concurrent;
-using ModelGraphLibrary;
+using ModelGraphSTD;
 
 namespace ModelGraph.Services
 {

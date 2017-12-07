@@ -1,4 +1,4 @@
-﻿namespace ModelGraphLibrary
+﻿namespace ModelGraphSTD
 {
     /// <summary>
     /// An expression's step type, as determined by the Parser

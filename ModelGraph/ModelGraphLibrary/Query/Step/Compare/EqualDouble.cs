@@ -1,7 +1,7 @@
 ﻿
 using System.Text;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     internal class EqualDouble : ValueOfBool
     {

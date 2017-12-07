@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     public class Query : Item
     {

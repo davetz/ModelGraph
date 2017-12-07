@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     /// <summary>
     /// Parse a string and create an expession tree

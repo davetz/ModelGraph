@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
  */
     public class ParallelPath : Path

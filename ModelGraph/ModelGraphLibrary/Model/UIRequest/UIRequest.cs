@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
-    This is how the ModelGraphLibrary requests UI control action.
+    This is how the ModelGraphSTD requests UI control action.
   
     rootModel.PageControl.Dispatch( UIRequest.Refresh(rootModel) );
  */

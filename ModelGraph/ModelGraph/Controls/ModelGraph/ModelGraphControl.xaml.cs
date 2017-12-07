@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using ModelGraphLibrary;
+using ModelGraphSTD;
 using Windows.Foundation;
 
 namespace ModelGraph

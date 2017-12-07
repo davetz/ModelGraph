@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
     ComputeStep is a node in an expression tree. The expression tree is used in
     a query's where/select clause. When employed in a select clause, it computes

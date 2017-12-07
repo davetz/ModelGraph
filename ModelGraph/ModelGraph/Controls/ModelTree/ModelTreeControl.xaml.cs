@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.ViewManagement;
 using Windows.Foundation;
 using Windows.UI.Xaml.Input;
-using ModelGraphLibrary;
+using ModelGraphSTD;
 using System.Threading.Tasks;
 using ModelGraph.Helpers;
 

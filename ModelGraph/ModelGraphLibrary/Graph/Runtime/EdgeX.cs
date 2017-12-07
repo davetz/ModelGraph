@@ -1,4 +1,4 @@
-﻿namespace ModelGraphLibrary
+﻿namespace ModelGraphSTD
 {
     public class EdgeX
     {

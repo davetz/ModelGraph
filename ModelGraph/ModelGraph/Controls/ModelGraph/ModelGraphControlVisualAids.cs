@@ -1,4 +1,4 @@
-﻿using ModelGraphLibrary;
+﻿using ModelGraphSTD;
 using Windows.UI.Xaml.Controls;
 
 namespace ModelGraph

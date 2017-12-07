@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     internal abstract partial class Value
     {

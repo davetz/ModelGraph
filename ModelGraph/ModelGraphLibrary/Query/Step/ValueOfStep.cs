@@ -1,5 +1,5 @@
 ﻿
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     internal abstract class ValueOfStep<T> : EvaluateStep
     {

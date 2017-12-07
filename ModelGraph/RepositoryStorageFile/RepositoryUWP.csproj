@@ -7,8 +7,8 @@
     <ProjectGuid>{D47FC5F4-0439-492C-8730-6A652E1D1D3A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RepositoryStorageFile</RootNamespace>
-    <AssemblyName>RepositoryStorageFile</AssemblyName>
+    <RootNamespace>RepositoryUWP</RootNamespace>
+    <AssemblyName>RepositoryUWP</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16299.0</TargetPlatformVersion>
@@ -118,9 +118,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ModelGraphLibrary\ModelGraphLibrary.csproj">
+    <ProjectReference Include="..\ModelGraphLibrary\ModelGraphSTD.csproj">
       <Project>{25E0A552-01B0-4A2F-8DE3-10E79AF12862}</Project>
-      <Name>ModelGraphLibrary</Name>
+      <Name>ModelGraphSTD</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

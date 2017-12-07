@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {
     public class ColumnX : Property
     {

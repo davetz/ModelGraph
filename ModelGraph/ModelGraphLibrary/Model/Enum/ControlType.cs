@@ -1,7 +1,7 @@
-﻿namespace ModelGraphLibrary
+﻿namespace ModelGraphSTD
 {/*
     ControlType used to communicate which type of control to create.
-    ModelGraphLibrary --> IPage --> ModelGragph
+    ModelGraphSTD --> IPage --> ModelGragph
  */
     /// <summary>
     ///  ControlType used to communicate which type of control to create.

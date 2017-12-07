@@ -1,4 +1,4 @@
-﻿namespace ModelGraphLibrary
+﻿namespace ModelGraphSTD
 {
     // facilitate undo redo by recording the state of node core before and after
     // modifications to position and orientation

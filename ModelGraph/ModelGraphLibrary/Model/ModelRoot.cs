@@ -2,15 +2,15 @@
 using System;
 using System.Collections.Generic;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
-    Data flow and control between ModelGraphLibrary <--> ModelGraph
+    Data flow and control between ModelGraphSTD <--> ModelGraph
 
-    The ModelGraphLibrary has no direct knowledge of the UI controls, however, it does 
+    The ModelGraphSTD has no direct knowledge of the UI controls, however, it does 
     initiates UI action through the interfaces IPageControl and IModelControl.
 
     The UI controls, on the other hand, do have direct access to the public methods and
-    properties of ModelGraphLibrary objects. This is especially important for the case
+    properties of ModelGraphSTD objects. This is especially important for the case
     of the ModelGraphControl.
  */
     public class ModelRoot : ModelTree

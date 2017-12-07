@@ -2,7 +2,7 @@
 using System.Numerics;
 using System.Windows;
 
-namespace ModelGraphLibrary
+namespace ModelGraphSTD
 {/*
  */
     public static class GraphParm
