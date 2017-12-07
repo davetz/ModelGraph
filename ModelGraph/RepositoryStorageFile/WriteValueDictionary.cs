@@ -70,21 +70,23 @@ namespace RepositoryUWP
         static void WriteBoolValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((BoolValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteBoolean(d.DefaultValue);
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    w.WriteBoolean(d.DefaultValue);
+
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteBoolean(val);
                 }
             }
@@ -95,21 +97,22 @@ namespace RepositoryUWP
         static void WriteCharValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((CharValue)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteInt16((short)d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    w.WriteInt16((short)d.DefaultValue);
+
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteInt16((short)val);
                 }
             }
@@ -120,21 +123,22 @@ namespace RepositoryUWP
         static void WriteByteValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((ByteValue)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteByte(d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteByte(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteByte(val);
                 }
             }
@@ -145,21 +149,22 @@ namespace RepositoryUWP
         static void WriteSByteValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((SByteValue)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteByte((byte)d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteByte((byte)d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteByte((byte)val);
                 }
             }
@@ -170,21 +175,22 @@ namespace RepositoryUWP
         static void WriteInt16ValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((Int16Value)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteInt16(d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteInt16(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteInt16(val);
                 }
             }
@@ -195,21 +201,22 @@ namespace RepositoryUWP
         static void WriteUInt16ValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((UInt16Value)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteUInt16(d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteUInt16(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteUInt16(val);
                 }
             }
@@ -220,21 +227,22 @@ namespace RepositoryUWP
         static void WriteInt32ValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((Int32Value)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteInt32(d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteInt32(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteInt32(val);
                 }
             }
@@ -245,21 +253,22 @@ namespace RepositoryUWP
         static void WriteUInt32ValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((UInt32Value)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteUInt32(d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteUInt32(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteUInt32(val);
                 }
             }
@@ -270,21 +279,22 @@ namespace RepositoryUWP
         static void WriteInt64ValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((Int32Value)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteInt64(d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteInt64(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteInt64(val);
                 }
             }
@@ -295,21 +305,22 @@ namespace RepositoryUWP
         static void WriteUInt64ValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((UInt64Value)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteUInt64(d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteUInt64(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteUInt64(val);
                 }
             }
@@ -320,21 +331,22 @@ namespace RepositoryUWP
         static void WriteSingleValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((SingleValue)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteSingle(d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteSingle(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteSingle(val);
                 }
             }
@@ -345,21 +357,22 @@ namespace RepositoryUWP
         static void WriteDoubleValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((DoubleValue)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteDouble(d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteDouble(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteDouble(val);
                 }
             }
@@ -370,21 +383,22 @@ namespace RepositoryUWP
         static void WriteDecimalValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((DecimalValue)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            WriteString(w, d.DefaultValue.ToString());
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                WriteString(w, d.DefaultValue.ToString());
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     WriteString(w, val.ToString());
                 }
             }
@@ -395,21 +409,22 @@ namespace RepositoryUWP
         static void WriteDateTimeValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((DateTimeValue)cx.Value).ValueDictionary;
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            w.WriteDateTime(d.DefaultValue);
-            w.WriteInt32(d.Count);
-
-            if (d.Count > 0)
+            if (N > 0)
             {
+                w.WriteDateTime(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     w.WriteDateTime(val);
                 }
             }
@@ -420,20 +435,22 @@ namespace RepositoryUWP
         static void WriteStringValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((StringValue)cx.Value).ValueDictionary;
-            WriteString(w, d.DefaultValue);
-            w.WriteInt32(d.Count);
+            var N = d.Count;
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
+                WriteString(w, d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
+                    var val = vals[i];
+
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
                     WriteString(w, val);
                 }
             }
@@ -445,20 +462,21 @@ namespace RepositoryUWP
         static void WriteBoolArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((BoolArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 

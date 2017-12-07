@@ -30,10 +30,11 @@ namespace RepositoryUWP
         #region FileFormat  ===================================================
         static Guid _fileFormat_1 = new Guid("D8CA7983-98BC-49CC-B821-432BDA6BADE6");
         static Guid _fileFormat_2 = new Guid("7DD885AE-7004-4ECC-9B9F-B84330326129");
+        static Guid _fileFormat_3 = new Guid("069890CE-A832-4BDD-9D7A-54000F88C5C3");
         #endregion
 
         #region Mark  =========================================================
-        private enum Mark : byte
+    private enum Mark : byte
         {
             ViewXBegin = 1,
             EnumXBegin = 2,

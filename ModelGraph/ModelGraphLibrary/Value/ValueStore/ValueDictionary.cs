@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ModelGraphSTD
 {
@@ -30,8 +31,8 @@ namespace ModelGraphSTD
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
         internal T DefaultValue => _default;
-        internal IEnumerable<Item> GetKeys() => (Count == 0) ? null : _values.Keys;
-        internal IEnumerable<T> GetValues() => (Count == 0) ? null : _values.Values;
+        internal Item[] GetKeys() => (Count == 0) ? null : _values.Keys.ToArray();
+        internal T[] GetValues() => (Count == 0) ? null : _values.Values.ToArray();
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -65,5 +66,8 @@ namespace ModelGraphSTD
             }
             return true;
         }
+
+        // LoadValue() should only be used by RepositoryRead
+        public void LoadValue(Item key, T value) => _values[key] = value;
     }
 }

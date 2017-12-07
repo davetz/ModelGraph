@@ -48,7 +48,26 @@ namespace RepositoryUWP
 
             if (header == 0)
             {
-                if (fileFormat == _fileFormat_2)
+                if (fileFormat == _fileFormat_3)
+                {
+                    vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
+                    {
+                        null,               // 0
+                        ReadViewX_1,        // 1 ViewX
+                        ReadEnumX_1,        // 2 EnumX
+                        ReadTableX_1,       // 3 TableX
+                        ReadGraphX_1,       // 4 GraphX
+                        ReadQueryX_2,       // 5 QueryX
+                        ReadSymbolX_1,      // 6 SymbolX
+                        ReadColumnX_3,      // 7 ColumnX
+                        ReadComputeX_2,     // 8 ComputeX 
+                        null,               // 9 CommandX
+                        ReadRelationX_2,    // 10 RelationX
+                        ReadGraphParm_1,    // 11 GraphParam
+                        ReadRelationLink_1, // 12 RelationLink
+                    };
+                }
+                else if (fileFormat == _fileFormat_2)
                 {
                     vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
                     {
@@ -461,6 +480,36 @@ namespace RepositoryUWP
         static ValType NewValType(byte v) => (ValType)_newValType[v];
         static byte[] _newValType = { 0, 1, 2, 3, 4, 6, 8, 5, 7, 9, 10, 11, 12, 14, 13, 14, 14, 16, 17, 17, 18, 19, 21, 23, 20, 22, 24, 25, 26, 27 };
         //            _oldValType = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29}; 
+        #endregion
+
+        #region ReadColumnX_3  ================================================
+        private void ReadColumnX_3(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            var store = chef.T_ColumnXStore;
+            var count = r.ReadInt32();
+            if (count < 0) throw new Exception($"Invalid count {count}");
+
+            for (int i = 0; i < count; i++)
+            {
+                var index = r.ReadInt32();
+                if (index < 0 || index >= items.Length) throw new Exception($"Invalid column index {index}");
+
+                var cx = new ColumnX(store, guids[index]);
+                items[index] = cx;
+
+                var b = r.ReadByte();
+                if ((b & B1) != 0) cx.SetFlags(r.ReadUInt16());
+                if ((b & B2) != 0) cx.Name = ReadString(r);
+                if ((b & B3) != 0) cx.Summary = ReadString(r);
+                if ((b & B5) != 0) cx.Description = ReadString(r);
+
+                var t = (ValType)r.ReadByte();
+
+                ReadValueDictionary(r, t, cx, items);
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.ColumnXEnding) throw new Exception($"Expected ColumnXEnding marker, instead got {mark}");
+        }
         #endregion
 
         #region ReadComputeX_1  ===============================================

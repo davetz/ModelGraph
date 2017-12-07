@@ -40,7 +40,7 @@ namespace RepositoryUWP
             var relationList = chef.GetRelationList();
 
             w.WriteInt32(0);
-            w.WriteGuid(_fileFormat_2);
+            w.WriteGuid(_fileFormat_3);
 
             WriteGuids(w, guids);
 
@@ -58,7 +58,7 @@ namespace RepositoryUWP
             if (relationList.Count > 0) WriteRelationLink(chef, w, relationList, itemIndex);
 
             w.WriteByte((byte)Mark.StorageFileEnding);
-            w.WriteGuid(_fileFormat_2);
+            w.WriteGuid(_fileFormat_3);
             w.WriteInt32(0);
         }
         #endregion
@@ -278,17 +278,15 @@ namespace RepositoryUWP
                 if (cx.HasFlags()) b |= B1;
                 if (!string.IsNullOrWhiteSpace(cx.Name)) b |= B2;
                 if (!string.IsNullOrWhiteSpace(cx.Summary)) b |= B3;
-                if (!string.IsNullOrWhiteSpace(cx.Initial)) b |= B4;
-                if (!string.IsNullOrWhiteSpace(cx.Description)) b |= B5;
-                if (cx.Value.ValType != ValType.String) b |= B6;
+                if (!string.IsNullOrWhiteSpace(cx.Description)) b |= B4;
 
                 w.WriteByte(b);
                 if ((b & B1) != 0) w.WriteUInt16(cx.GetFlags());
                 if ((b & B2) != 0) WriteString(w, cx.Name);
                 if ((b & B3) != 0) WriteString(w, cx.Summary);
-                if ((b & B4) != 0) WriteString(w, cx.Initial);
                 if ((b & B5) != 0) WriteString(w, cx.Description);
-                if ((b & B6) != 0) w.WriteByte((byte)cx.Value.ValType);
+
+                w.WriteByte((byte)cx.Value.ValType);
 
                 WriteValueDictionary(w, cx, itemIndex);
             }
