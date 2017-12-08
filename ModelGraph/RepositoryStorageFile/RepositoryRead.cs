@@ -14,15 +14,17 @@ namespace RepositoryUWP
         {
             try
             {
-                var stream = await _storageFile.OpenAsync(FileAccessMode.Read);
-                using (DataReader r = new DataReader(stream))
+                using (var stream = await _storageFile.OpenAsync(FileAccessMode.Read))
                 {
-                    r.ByteOrder = ByteOrder.LittleEndian;
-                    UInt64 size = stream.Size;
-                    if (size < UInt32.MaxValue)
+                    using (DataReader r = new DataReader(stream))
                     {
-                        var byteCount = await r.LoadAsync((UInt32)size);
-                        Read(chef, r);
+                        r.ByteOrder = ByteOrder.LittleEndian;
+                        UInt64 size = stream.Size;
+                        if (size < UInt32.MaxValue)
+                        {
+                            var byteCount = await r.LoadAsync((UInt32)size);
+                            Read(chef, r);
+                        }
                     }
                 }
                 chef.PostReadValidation();
@@ -721,8 +723,8 @@ namespace RepositoryUWP
 
                     if (msLen > 0)
                     {
-                        Node ndParm, ndParm1, ndParm2;
-                        Edge edParm;
+                        Node node, node1, node2;
+                        Edge edge;
 
                         if (ms == chef.T_Dummy)
                         {
@@ -735,25 +737,25 @@ namespace RepositoryUWP
                                 var nd = items[ndIndex];
                                 if (nd == null) throw new Exception($"Expected node object, got null {ndIndex}");
 
-                                if (!itemNodeParms.TryGetValue(nd, out ndParm))
+                                if (!itemNodeParms.TryGetValue(nd, out node))
                                 {
-                                    ndParm = new Node(cp);
-                                    ndParm.Item = nd;
+                                    node = new Node(cp);
+                                    node.Item = nd;
 
-                                    itemNodeParms.Add(nd, ndParm);
-                                    Parms.Add(ndParm);
+                                    itemNodeParms.Add(nd, node);
+                                    Parms.Add(node);
                                 }
 
-                                ndParm.Core.X = r.ReadInt32() + cp;
-                                ndParm.Core.Y = r.ReadInt32() + cp;
-                                ndParm.Core.DX = r.ReadByte();
-                                ndParm.Core.DY = r.ReadByte();
-                                ndParm.Core.Symbol = r.ReadByte();
-                                ndParm.Core.Orientation = (Orientation)r.ReadByte();
-                                ndParm.Core.FlipRotate = (FlipRotate)r.ReadByte();
-                                ndParm.Core.Labeling = (Labeling)r.ReadByte();
-                                ndParm.Core.Resizing = (Resizing)r.ReadByte();
-                                ndParm.Core.BarWidth = (BarWidth)r.ReadByte();
+                                node.Core.X = r.ReadInt32() + cp;
+                                node.Core.Y = r.ReadInt32() + cp;
+                                node.Core.DX = r.ReadByte();
+                                node.Core.DY = r.ReadByte();
+                                node.Core.Symbol = r.ReadByte();
+                                node.Core.Orientation = (Orientation)r.ReadByte();
+                                node.Core.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.Core.Labeling = (Labeling)r.ReadByte();
+                                node.Core.Resizing = (Resizing)r.ReadByte();
+                                node.Core.BarWidth = (BarWidth)r.ReadByte();
                             }
                             #endregion
                         }
@@ -774,32 +776,32 @@ namespace RepositoryUWP
                                 var nd2 = items[nd2Index];
                                 if (nd2 == null) throw new Exception($"Expected node object, got null {nd2Index}");
 
-                                if (!itemNodeParms.TryGetValue(nd1, out ndParm1)) throw new Exception("Could not Finde NodeParm1");
-                                if (!itemNodeParms.TryGetValue(nd2, out ndParm2)) throw new Exception("Could not Finde NodeParm2");
+                                if (!itemNodeParms.TryGetValue(nd1, out node1)) throw new Exception("Could not Finde NodeParm1");
+                                if (!itemNodeParms.TryGetValue(nd2, out node2)) throw new Exception("Could not Finde NodeParm2");
 
-                                edParm = new Edge(ms);
-                                Parms.Add(edParm);
+                                edge = new Edge(ms);
+                                Parms.Add(edge);
 
-                                edParm.Node1 = ndParm1;
-                                edParm.Node2 = ndParm2;
+                                edge.Node1 = node1;
+                                edge.Node2 = node2;
 
-                                edParm.Core.Face1.Side = (Side)r.ReadByte();
-                                edParm.Core.Face1.Index = r.ReadByte();
-                                edParm.Core.Face1.Count = r.ReadByte();
-                                edParm.Core.Face2.Side = (Side)r.ReadByte();
-                                edParm.Core.Face2.Index = r.ReadByte();
-                                edParm.Core.Face2.Count = r.ReadByte();
-                                edParm.Core.Facet1 = (FacetOf)r.ReadByte();
-                                edParm.Core.Facet2 = (FacetOf)r.ReadByte();
+                                edge.Core.Face1.Side = (Side)r.ReadByte();
+                                edge.Core.Face1.Index = r.ReadByte();
+                                edge.Core.Face1.Count = r.ReadByte();
+                                edge.Core.Face2.Side = (Side)r.ReadByte();
+                                edge.Core.Face2.Index = r.ReadByte();
+                                edge.Core.Face2.Count = r.ReadByte();
+                                edge.Core.Facet1 = (FacetOf)r.ReadByte();
+                                edge.Core.Facet2 = (FacetOf)r.ReadByte();
 
                                 var pnCount = r.ReadUInt16();
                                 if (pnCount > 0)
                                 {
-                                    edParm.Core.Bends = new XYPoint[pnCount];
+                                    edge.Core.Bends = new XYPoint[pnCount];
                                     for (int n = 0; n < pnCount; n++)
                                     {
-                                        edParm.Core.Bends[n].X = r.ReadInt32();
-                                        edParm.Core.Bends[n].Y = r.ReadInt32();
+                                        edge.Core.Bends[n].X = r.ReadInt32();
+                                        edge.Core.Bends[n].Y = r.ReadInt32();
                                     }
                                 }
                             }
@@ -809,7 +811,7 @@ namespace RepositoryUWP
                 }
             }
             var mark = (Mark)r.ReadByte();
-            //if (mark != Mark.GraphParamEnding) throw new Exception($"Expected GraphParamEnding marker, instead got {mark}");
+            if (mark != Mark.GraphParamEnding) throw new Exception($"Expected GraphParamEnding marker, instead got {mark}");
         }
         #endregion
 

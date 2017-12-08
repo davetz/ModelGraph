@@ -6,15 +6,6 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        bool IsValidEnumValue(Type type, int val)
-        {
-            var vals = Enum.GetValues(type);
-            foreach (var item in vals)
-            {
-                if ((int)item == val) return true;
-            }
-            return false;
-        }
 
         #region GetEnumZKey  ==================================================
         int GetEnumZKey(EnumZ e, string name)

@@ -213,14 +213,14 @@ namespace ModelGraphSTD
             }
             {
                 var p = _computeXCompuTypeProperty = new PropertyOf<ComputeX, string>(_propertyStore, Trait.ComputeXCompuType_P, _computeTypeEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Value.ValType);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).CompuType);
                 p.SetValFunc = (item, value) => TrySetComputeTypeProperty(p.Cast(item), GetEnumZKey(p.EnumZ, value));
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _computeXNumericSetProperty = new PropertyOf<ComputeX, string>(_propertyStore, Trait.ComputeXNumericSet_P, _numericSetEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Value.ValType);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).NumericSet);
                 p.SetValFunc = (item, value) => TrySetNumericSetProperty(p.Cast(item), GetEnumZKey(p.EnumZ, value));
                 p.Value = new StringValue(p);
                 props.Add(p);

@@ -480,8 +480,7 @@ namespace RepositoryUWP
                     if (e2.Value.Count > 0)
                     {
                         #region WriteRoots  ===================================
-                        int x0, y0;
-                        GetOffset(chef, e2.Value, out x0, out y0);
+                        GetOffset(chef, e2.Value, out int x0, out int y0);
 
                         foreach (var e3 in e2.Value)//SG
                         {
@@ -560,7 +559,7 @@ namespace RepositoryUWP
         #region TryGetOffset  =================================================
         private void GetOffset(Chef chef, Dictionary<Item, List<Item>> sgParams, out int x0, out int y0)
         {
-            int x, y, x1, y1, x2, y2;
+            int x1, y1, x2, y2;
             x1 = y1 = int.MaxValue;
             x2 = y2 = int.MinValue;
             foreach (var e3 in sgParams)//SG
@@ -570,7 +569,7 @@ namespace RepositoryUWP
                     foreach (var gp in e3.Value)//GP
                     {
                         var nd = gp as Node;
-                        if (nd.Core.TryGetCenter(out x, out y))
+                        if (nd.Core.TryGetCenter(out int x, out int y))
                         {
                             if (x < x1) x1 = x;
                             if (y < y1) y1 = y;

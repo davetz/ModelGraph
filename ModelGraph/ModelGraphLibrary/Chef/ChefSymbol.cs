@@ -6,41 +6,29 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        bool TrySetSymbolTopContact(SymbolX sx,  int val)
+        bool TrySetSymbolTopContact(SymbolX sx, int val)
         {
-            if (IsValidEnumValue(typeof(Contact), val))
-            {
-                sx.TopContact = (Contact)val;
-                RefreshDrawing(sx);
-            }
-            return false;
+            sx.TopContact = (Contact)val;
+            RefreshDrawing(sx);
+            return true;
         }
         bool TrySetSymbolLeftContact(SymbolX sx, int val)
         {
-            if (IsValidEnumValue(typeof(Contact), val))
-            {
-                sx.LeftContact = (Contact)val;
-                RefreshDrawing(sx);
-            }
-            return false;
+            sx.LeftContact = (Contact)val;
+            RefreshDrawing(sx);
+            return true;
         }
         bool TrySetSymbolRightContact(SymbolX sx, int val)
         {
-            if (IsValidEnumValue(typeof(Contact), val))
-            {
-                sx.RightContact = (Contact)val;
-                RefreshDrawing(sx);
-            }
-            return false;
+            sx.RightContact = (Contact)val;
+            RefreshDrawing(sx);
+            return true;
         }
         bool TrySetSymbolBottomContact(SymbolX sx, int val)
         {
-            if (IsValidEnumValue(typeof(Contact), val))
-            {
-                sx.BottomContact = (Contact)val;
-                RefreshDrawing(sx);
-            }
-            return false;
+            sx.BottomContact = (Contact)val;
+            RefreshDrawing(sx);
+            return true;
         }
     }
 }

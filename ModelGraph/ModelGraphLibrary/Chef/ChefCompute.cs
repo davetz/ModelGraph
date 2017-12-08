@@ -106,14 +106,11 @@ namespace ModelGraphSTD
         #region TrySetComputeTypeProperty  ====================================
         private bool TrySetComputeTypeProperty(ComputeX cx, int val)
         {
-            if (IsValidEnumValue(typeof(CompuType), val))
+            var type = (CompuType)val;
+            if (cx.CompuType != type)
             {
-                var type = (CompuType)val;
-                if (cx.CompuType != type)
-                {
-                    cx.CompuType = type;
-                    cx.Value.Clear();
-                }
+                cx.CompuType = type;
+                cx.Value.Clear();
             }
             return true;
         }
@@ -122,14 +119,11 @@ namespace ModelGraphSTD
         #region TrySetNumericSetProperty  =====================================
         private bool TrySetNumericSetProperty(ComputeX cx, int val)
         {
-            if (IsValidEnumValue(typeof(NumericSet), val))
+            var type = (NumericSet)val;
+            if (cx.NumericSet != type)
             {
-                var type = (NumericSet)val;
-                if (cx.NumericSet != type)
-                {
-                    cx.NumericSet = type;
-                    cx.Value.Clear();
-                }
+                cx.NumericSet = type;
+                cx.Value.Clear();
             }
             return true;
         }
