@@ -76,13 +76,13 @@ namespace RepositoryUWP
 
             if (N > 0)
             {
+                w.WriteBoolean(d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
                 for (int i = 0; i < N; i++)
                 {
-                    w.WriteBoolean(d.DefaultValue);
-
                     var key = keys[i];
                     var val = vals[i];
 
@@ -102,13 +102,13 @@ namespace RepositoryUWP
 
             if (N > 0)
             {
+                w.WriteInt16((short)d.DefaultValue);
+
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
                 for (int i = 0; i < N; i++)
                 {
-                    w.WriteInt16((short)d.DefaultValue);
-
                     var key = keys[i];
                     var val = vals[i];
 
@@ -496,20 +496,21 @@ namespace RepositoryUWP
         static void WriteCharArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((CharArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -519,7 +520,7 @@ namespace RepositoryUWP
                         {
                             w.WriteInt16((short)v);
                         }
-                    }                    
+                    }
                 }
             }
         }
@@ -529,20 +530,21 @@ namespace RepositoryUWP
         static void WriteByteArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((ByteArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -562,20 +564,21 @@ namespace RepositoryUWP
         static void WriteSByteArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((SByteArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -595,20 +598,21 @@ namespace RepositoryUWP
         static void WriteInt16ArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((Int16ArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -628,20 +632,21 @@ namespace RepositoryUWP
         static void WriteUInt16ArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((UInt16ArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -661,20 +666,21 @@ namespace RepositoryUWP
         static void WriteInt32ArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((Int32ArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -694,20 +700,21 @@ namespace RepositoryUWP
         static void WriteUInt32ArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((UInt32ArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -727,20 +734,21 @@ namespace RepositoryUWP
         static void WriteInt64ArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((Int64ArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -760,20 +768,21 @@ namespace RepositoryUWP
         static void WriteUInt64ArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((UInt64ArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -793,20 +802,21 @@ namespace RepositoryUWP
         static void WriteSingleArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((SingleArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -826,20 +836,21 @@ namespace RepositoryUWP
         static void WriteDoubleArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((DoubleArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -859,20 +870,21 @@ namespace RepositoryUWP
         static void WriteDecimalArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((DecimalArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -882,7 +894,7 @@ namespace RepositoryUWP
                         {
                             WriteString(w, v.ToString());
                         }
-                    }                    
+                    }
                 }
             }
         }
@@ -892,20 +904,21 @@ namespace RepositoryUWP
         static void WriteDateTimeArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((DateTimeArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 
@@ -925,20 +938,21 @@ namespace RepositoryUWP
         static void WriteStringArrayValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
             var d = ((StringArrayValue)cx.Value).ValueDictionary;
+            var N = d.Count;
 
-            w.WriteInt32(d.Count);
+            w.WriteInt32(N);
 
-            if (d.Count > 0)
+            if (N > 0)
             {
                 var keys = d.GetKeys();
                 var vals = d.GetValues();
 
-                foreach (var key in keys)
+                for (int i = 0; i < N; i++)
                 {
+                    var key = keys[i];
                     w.WriteInt32(itemIndex[key]);
-                }
-                foreach (var val in vals)
-                {
+
+                    var val = vals[i];
                     var len = (val == null) ? 0 : val.Length;
                     w.WriteUInt16((ushort)len);
 

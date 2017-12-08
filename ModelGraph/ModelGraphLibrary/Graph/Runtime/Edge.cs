@@ -14,13 +14,13 @@ namespace ModelGraphSTD
         public Node Node2;
 
         public XYPoint[] Points;
-        public Extent Extent; // all points are withing this extent
+        public Extent Extent = new Extent(); // all points are withing this extent
         public short Tm1; // index of terminal point 1
         public short Bp1; // index of closes bend point after Tm1 (to the right) 
         public short Bp2; // index of closes bend point after Tm2 (to the left)
         public short Tm2; // index of terminal point 2
 
-        public EdgeX Core;
+        public EdgeX Core = new EdgeX();
 
 
         #region Constructors  =================================================

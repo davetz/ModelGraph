@@ -171,7 +171,7 @@ namespace RepositoryUWP
             }
             else
             {
-                var def = r.ReadByte();
+                var def = (sbyte)r.ReadByte();
                 var dic = new ValueDictionary<sbyte>(count, def);
                 cx.Value = new SByteValue(dic);
 

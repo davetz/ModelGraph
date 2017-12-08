@@ -4,7 +4,7 @@ namespace ModelGraphSTD
     public class Node : Item
     {
         public Item Item;
-        public NodeX Core;
+        public NodeX Core = new NodeX();
         public int OpenPathIndex = -1;
 
         #region Constructor  ==================================================
