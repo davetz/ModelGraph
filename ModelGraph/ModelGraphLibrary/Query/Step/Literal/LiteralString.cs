@@ -10,7 +10,7 @@ namespace ModelGraphSTD
             _step = step;
             _value = value;
         }
-        internal override string Text => "\"{_value}\"";
+        internal override string Text => $"\"{_value}\"";
 
         protected override string GetVal() => _value;
     }

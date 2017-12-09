@@ -10,7 +10,7 @@ namespace ModelGraphSTD
     qualify specific relational paths based on the properties of the encountered rows
     while traversing the relational path.
 
-    The choice the evaluation function is set durring the where/select clause
+    The evaluation function is set durring the where/select clause
     validation. The actual value-types and choice of evaluation function
     ripple up from a depth-first traversal of the expression tree.
  */
@@ -61,6 +61,9 @@ namespace ModelGraphSTD
         internal bool AnyChange => (_flags2 & StepFlag2.AnyChange) != 0;
         internal bool AnyOverflow => (_flags2 & StepFlag2.AnyOverflow) != 0;
         internal bool AnyUnresolved => (_flags2 & StepFlag2.AnyUnresolved) != 0;
+
+        void InitResolveFlags() => _flags2 = StepFlag2.None;
+
 
         protected ValGroup ScanInputsAndReturnCompositeValueGroup()
         {
@@ -139,6 +142,8 @@ namespace ModelGraphSTD
         /// </summary>
         internal bool TryResolve()
         {
+            InitResolveFlags();
+
             if (Input != null) foreach (var step in Input) { step.TryResolve(); } // recursive depth-first traversal
 
             if (StepTypeResolve.TryGetValue(StepType, out Action<ComputeStep> resolve)) resolve(this);
@@ -216,7 +221,7 @@ namespace ModelGraphSTD
         static Dictionary<StepType, Action<ComputeStep>> StepTypeResolve =
             new Dictionary<StepType, Action<ComputeStep>>()
             {
-                [StepType.Or1] = ResolveFails,
+                [StepType.Or1] = ResolveOr1,
                 [StepType.Or2] = ResolveFails,
 
                 [StepType.And1] = ResolveFails,
@@ -244,6 +249,54 @@ namespace ModelGraphSTD
         static void ResolveFails(ComputeStep step)
         {
             step.Evaluate = Chef.EvaluateUnresolved;
+        }
+        #endregion
+
+        #region ResolveOr1  ===================================================
+        static void ResolveOr1(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+            var group = step.Input[0].Evaluate.ValueGroup;
+            var composite = step.ScanInputsAndReturnCompositeValueGroup();
+
+            switch (group)
+            {
+                case ValGroup.Bool:
+                    if ((composite & ~ValGroup.ScalarGroup) != 0)
+                        step.Error = StepError.InvalidArgsRHS;
+                    else if (type != typeof(Or2Bool))
+                        step.Evaluate = new Or2Bool(step);
+                    break;
+
+                case ValGroup.String:
+                    if ((composite & ~ValGroup.ScalarGroup) != 0)
+                        step.Error = StepError.InvalidArgsRHS;
+                    else if (type != typeof(ConcatString))
+                        step.Evaluate = new ConcatString(step);
+                    break;
+
+                case ValGroup.Long:
+                    if ((composite & ~ValGroup.ScalarGroup) != 0)
+                        step.Error = StepError.InvalidArgsRHS;
+                    else if ((composite & ValGroup.Double) != 0)
+                    {
+                        step.Error = StepError.InvalidArgsRHS;
+                    }
+                    else
+                    {
+                        if (type != typeof(Or1Long))
+                            step.Evaluate = new Or1Long(step);
+                    }
+                    break;
+
+                default:
+                    step.Error = StepError.InvalidArgsLHS;
+                    break;
+            }
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValueType == ValType.IsUnresolved);
         }
         #endregion
 
