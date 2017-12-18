@@ -16,7 +16,7 @@ namespace ModelGraphSTD
             _text = string.IsNullOrWhiteSpace(text) ? string.Empty : text;
             Index1 = Index2 = 0;
         }
-        internal override ValType ValueType => ValType.IsInvalid;
+        internal override ValType ValType => ValType.IsInvalid;
         internal override string Text => _text;
 
         #region Head / Tail  ==================================================

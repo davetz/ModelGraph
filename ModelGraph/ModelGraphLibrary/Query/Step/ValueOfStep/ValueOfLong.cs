@@ -4,7 +4,7 @@ namespace ModelGraphSTD
 {
     internal abstract class ValueOfLong : ValueOfStep<long>
     {
-        internal override ValType ValueType => ValType.Int64;
+        internal override ValType ValType => ValType.Int64;
 
         internal override bool AsBool() => (GetVal() != 0);
         internal override long AsLong() => GetVal();

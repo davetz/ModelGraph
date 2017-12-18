@@ -6,7 +6,7 @@ namespace ModelGraphSTD
 {
     internal abstract class ValueOfBool : ValueOfStep<bool>
     {
-        internal override ValType ValueType => ValType.Bool;
+        internal override ValType ValType => ValType.Bool;
 
         internal override bool AsBool() => GetVal();
         internal override long AsLong() => GetVal() ? 1 : 0;

@@ -4,7 +4,7 @@ namespace ModelGraphSTD
 {
     internal abstract class ValueOfString : ValueOfStep<string>
     {
-        internal override ValType ValueType => ValType.String;
+        internal override ValType ValType => ValType.String;
 
         internal override bool AsBool() => Convert.ToBoolean(GetVal());
         internal override long AsLong() => Convert.ToInt64(GetVal());

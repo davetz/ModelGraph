@@ -19,7 +19,7 @@ namespace ModelGraphSTD
         }
         internal Property Property => _property;
 
-        internal override ValType ValueType => _property.Value.ValType;
+        internal override ValType ValType => _property.Value.ValType;
         internal override string Text => (_property is ColumnX col) ? col.Name : ((_property is ComputeX cmp) ? cmp.Name : _property.GetChef().GetIdentity(_property, IdentityStyle.Single));
 
         internal override bool AsBool()

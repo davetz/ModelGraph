@@ -99,6 +99,7 @@ namespace ModelGraphSTD
         {
             var root = ComputeX_QueryX.GetChild(cx);
             if (root != null) root.SelectString = value;
+            
         }
         #endregion
 
@@ -238,7 +239,7 @@ namespace ModelGraphSTD
             var text = "Select"; //<=================== FIX THIS
             var tbl = Store_ComputeX.GetParent(item);
             var tblName = GetIdentity(tbl, IdentityStyle.Single);
-            if (tbl != null) return $"{tblName} {text}";
+            if (tbl != null) return $"{tblName} ";
 
             return text;
         }

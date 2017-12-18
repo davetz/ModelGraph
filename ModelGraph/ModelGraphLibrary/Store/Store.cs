@@ -18,8 +18,7 @@ namespace ModelGraphSTD
         {
             property = null;
             index = 0;
-            return false;
-            //return GetChef().TryLookUpProperty(this, name, out property, out index);
+            return GetChef().TryLookUpProperty(this, name, out property, out index);
         }
     }
 }

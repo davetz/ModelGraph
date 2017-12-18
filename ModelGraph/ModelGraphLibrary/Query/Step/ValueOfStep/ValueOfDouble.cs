@@ -4,7 +4,7 @@ namespace ModelGraphSTD
 {
     internal abstract class ValueOfDouble : ValueOfStep<double>
     {
-        internal override ValType ValueType => ValType.Double;
+        internal override ValType ValType => ValType.Double;
 
         internal override bool AsBool() => (GetVal() != 0);
         internal override long AsLong() => throw new NotImplementedException(); // failed type check

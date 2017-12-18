@@ -7,7 +7,7 @@ namespace ModelGraphSTD
         protected ComputeStep _step;
 
         abstract internal string Text { get; }
-        abstract internal ValType ValueType { get; }
+        abstract internal ValType ValType { get; }
 
         internal abstract bool AsBool();
         internal abstract long AsLong();
@@ -15,6 +15,6 @@ namespace ModelGraphSTD
         internal abstract string AsString();
         internal abstract DateTime AsDateTime();
 
-        internal ValGroup ValueGroup => Value.GetValGroup(ValueType);
+        internal ValGroup ValGroup => Value.GetValGroup(ValType);
     }
 }

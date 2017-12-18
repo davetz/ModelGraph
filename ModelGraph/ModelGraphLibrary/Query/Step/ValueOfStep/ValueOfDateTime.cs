@@ -4,7 +4,7 @@ namespace ModelGraphSTD
 {
     internal abstract class ValueOfDateTime : ValueOfStep<DateTime>
     {
-        internal override ValType ValueType => ValType.DateTime;
+        internal override ValType ValType => ValType.DateTime;
 
         internal override bool AsBool() => false;
         internal override long AsLong() => 0;

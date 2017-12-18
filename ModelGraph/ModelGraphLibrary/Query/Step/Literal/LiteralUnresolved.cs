@@ -7,7 +7,7 @@ namespace ModelGraphSTD
     /// </summary>
     internal class LiteralUnresolved : ValueOfString
     {
-        internal override ValType ValueType => ValType.IsUnresolved;
+        internal override ValType ValType => ValType.IsUnresolved;
         internal override string Text => "????";
         protected override string GetVal() => Text;
     }
