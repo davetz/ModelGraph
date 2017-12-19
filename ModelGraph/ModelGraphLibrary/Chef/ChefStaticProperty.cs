@@ -411,7 +411,7 @@ namespace ModelGraphSTD
             {
                 var p = _queryXWhereProperty = new PropertyOf<QueryX, string>(_propertyStore, Trait.QueryXWhere_P);
                 p.GetValFunc = (item) => p.Cast(item).WhereString;
-                p.SetValFunc = (item, value) => { p.Cast(item).WhereString = value; return ValidateQueryX(p.Cast(item)); };
+                p.SetValFunc = (item, value) => TrySetQueryXWhereProperty(p.Cast(item), value);
                 p.Value = new StringValue(p);
                 p.GetItemNameFunc = (item) => { return GetWhereName(p.Cast(item)); };
                 props.Add(p);
@@ -419,7 +419,7 @@ namespace ModelGraphSTD
             {
                 var p = _queryXSelectProperty = new PropertyOf<QueryX, string>(_propertyStore, Trait.ValueXSelect_P);
                 p.GetValFunc = (item) => p.Cast(item).SelectString;
-                p.SetValFunc = (item, value) => { p.Cast(item).SelectString = value; ValidateValueXChange(p.Cast(item)); return true; };
+                p.SetValFunc = (item, value) => TrySetQueryXSelectProperty(p.Cast(item), value);
                 p.Value = new StringValue(p);
                 p.GetItemNameFunc = (item) => { return GetSelectName(p.Cast(item)); };
                 props.Add(p);

@@ -13,14 +13,14 @@ namespace ModelGraphSTD
         static internal ValueInvalid ValuesInvalid = new ValueInvalid();
         static internal ValueCircular ValuesCircular = new ValueCircular();
         static internal ValueUnresolved ValuesUnresolved = new ValueUnresolved();
-        static internal LiteralUnresolved EvaluateUnresolved = new LiteralUnresolved();
+        static internal LiteralUnresolved LiteralUnresolved = new LiteralUnresolved();
 
         #region ResetCacheValues  =============================================
         private void ResetCacheValues()
         {
             foreach (var cx in _computeXStore.Items) { cx.Value.Clear(); }
         }
-        #endregion
+        #endregion 
 
         #region <Get/Set>SelectString  ========================================
         internal ValType GetValueType(ComputeX cx)
@@ -143,14 +143,7 @@ namespace ModelGraphSTD
         }
         private bool SetComputeXSelect(ComputeX cx, string value)
         {
-            var qx = ComputeX_QueryX.GetChild(cx) as QueryX;
-            if (qx != null)
-            {
-                qx.SelectString = value;
-                ValidateQueryX(qx);
-            }
-            cx.Value.Clear();
-            return true;
+            return(ComputeX_QueryX.TryGetChild(cx, out QueryX qx) && TrySetQueryXSelectProperty(qx, value));
         }
         #endregion
 
@@ -251,50 +244,15 @@ namespace ModelGraphSTD
         #endregion
 
         #region ValidateComputeXStore  ========================================
-        private void ValidateComputeXStore()
+        private void ValidateComputeX(ComputeX cx, QueryX qx)
         {
-            if (_computeXStore.Count > 0)
+            if (cx.Value.ValType == ValType.IsUnknown)
             {
-                var cxList = _computeXStore.Items;
-                var qxQueue = new Queue<QueryX>();
-                var cxList2 = new List<ComputeX>();
-                foreach (var cx in cxList) { cx.Value = ValuesNone; }
-                var anyChange = true;
-                while (anyChange)
+                if (cx.CompuType == CompuType.RowValue)
                 {
-                    anyChange = false;
-                    foreach (var cx in cxList)
+                    if (qx.Select != null && qx.Select.ValueType < ValType.MaximumType)
                     {
-                        if (cx.Value.ValType == ValType.IsUnknown)
-                        {
-                            var qx = ComputeX_QueryX.GetChild(cx);
-                            if (qx == null)
-                            {
-                                cx.Value = ValuesInvalid;
-                                anyChange = true;
-                            }
-                            else
-                            {
-                                qxQueue.Clear();
-                                qxQueue.Enqueue(qx);
-                                while(qxQueue.Count > 0)
-                                {
-                                    var qx2 = qxQueue.Dequeue();
-                                    //if (qx2.HasSelect && qx2.Select.HasUnresolvedComputeX()) continue;
-                                    var st = Store_ComputeX.GetParent(cx);
-                                    if (st == null)
-                                    {
-                                        cx.Value = ValuesInvalid;
-                                        anyChange = true;
-                                    }
-                                    else
-                                    {
-                                        qx.Select.TryValidate(st);
-                                        anyChange = true;
-                                    }
-                                }
-                            }
-                        }
+                        cx.Value = Value.Create(qx.Select.ValueType);
                     }
                 }
             }

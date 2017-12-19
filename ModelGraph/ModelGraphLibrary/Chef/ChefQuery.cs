@@ -49,15 +49,41 @@ namespace ModelGraphSTD
         private bool ValidateQueryX(QueryX qx)
         {
             var sto = GetQueryXTarget(qx);
-            if (qx.Where != null)
+            if (qx.Select != null && !qx.Select.TryValidate(sto)) return false;
+            if (qx.Where != null && !qx.Where.TryValidate(sto)) return false;
+            return true;
+        }
+        #endregion
+        #region ValidateDependants  ===========================================
+        void ValidateDependants(QueryX qx)
+        {
+            var qxList = new List<QueryX>();
+
+            var valid = true;
+            while (qx != null)
             {
-                qx.Where.TryValidate(sto);
+                valid &= ValidateQueryX(qx);
+                if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx) && !valid)
+                {
+                    cx.Value.Clear();
+                    cx.Value = ValuesInvalid;
+                }
+                qxList.Add(qx);
+                if (!QueryX_QueryX.TryGetParent(qx, out QueryX qp)) break;
+                qx = qp;
             }
-            if (qx.Select != null)
+            if (valid)
             {
-                qx.Select.TryValidate(sto);
+                foreach (var qt in qxList)
+                {
+                    if (ComputeX_QueryX.TryGetParent(qt, out ComputeX cx))
+                    {
+                        cx.Value.Clear();
+                        cx.Value = ValuesNone;
+                        ValidateComputeX(cx, qt);
+                    }
+                }
             }
-            return false;
         }
         #endregion
 
@@ -288,12 +314,14 @@ namespace ModelGraphSTD
         bool TrySetQueryXWhereProperty(QueryX qx, string val)
         {
             qx.WhereString = val;
-            return false;
+            ValidateDependants(qx);
+            return qx.IsValid;
         }
         bool TrySetQueryXSelectProperty(QueryX qx, string val)
         {
             qx.SelectString = val;
-            return false;
+            ValidateDependants(qx);
+            return qx.IsValid;
         }
     }
 }

@@ -52,7 +52,7 @@ namespace ModelGraphSTD
         /// <summary>
         /// Resolve the expression tree valueTypes, return true if any change
         /// </summary>
-        const int maxResolveLoopCount = 100;
+        const int maxResolveLoopCount = 100; // avoid infinite loops
         internal bool TryResolve()
         {
             if (!_isValid) return false;

@@ -6,7 +6,7 @@ namespace ModelGraphSTD
         Compute step flags.
     */
     [Flags]
-    public enum StepFlag1 : byte
+    public enum StepFlag : byte
     {
         None = 0,
         IsInverse = 0x1, // the step value should be inverted (ones complemnt)

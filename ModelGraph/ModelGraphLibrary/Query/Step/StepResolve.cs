@@ -48,7 +48,7 @@ namespace ModelGraphSTD
         #region ResolveFails  =================================================
         static void ResolveFails(ComputeStep step)
         {
-            step.Evaluate = Chef.EvaluateUnresolved;
+            step.Evaluate = Chef.LiteralUnresolved;
         }
         #endregion
 

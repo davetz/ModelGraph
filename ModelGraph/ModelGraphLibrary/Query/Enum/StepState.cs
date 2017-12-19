@@ -6,7 +6,7 @@ namespace ModelGraphSTD
         Compute step has changed.
     */
     [Flags]
-    public enum StepFlag2 : byte
+    public enum StepState : byte
     {
         None = 0,
         IsError = 0x1,

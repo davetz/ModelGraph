@@ -20,8 +20,8 @@ namespace ModelGraphSTD
         internal EvaluateStep Evaluate; // evaluate this step and produce a value
         internal StepType StepType;     // parser's initial clasification of this step
         internal StepError Error;       // keeps track of TryParse and TryResove errors
-        private StepFlag1 _flags1;      // used when creating the expression string
-        private StepFlag2 _flags2;      // used by TryResolve()
+        private StepFlag _flags1;      // used when creating the expression string
+        private StepState _flags2;     // used by TryResolve()
 
         #region Constructor  ==================================================
         internal ComputeStep(LiteralParse evaluate)
@@ -32,37 +32,37 @@ namespace ModelGraphSTD
         internal ComputeStep(StepType stepType)
         {
             StepType = stepType;
-            Evaluate = Chef.EvaluateUnresolved;
+            Evaluate = Chef.LiteralUnresolved;
         }
         #endregion
 
         #region Flags1  =======================================================
-        bool GetF1(StepFlag1 flag) => (_flags1 & flag) != 0;
-        void SetF1(bool val, StepFlag1 flag) { if (val) _flags1 |= flag; else _flags1 &= ~flag; }
+        bool GetF1(StepFlag flag) => (_flags1 & flag) != 0;
+        void SetF1(bool val, StepFlag flag) { if (val) _flags1 |= flag; else _flags1 &= ~flag; }
 
-        internal bool IsInverse { get { return GetF1(StepFlag1.IsInverse); } set { SetF1(value, StepFlag1.IsInverse); } }
-        internal bool IsNegated { get { return GetF1(StepFlag1.IsNegated); } set { SetF1(value, StepFlag1.IsNegated); } }
-        internal bool IsBatched { get { return GetF1(StepFlag1.IsBatched); } set { SetF1(value, StepFlag1.IsBatched); } }
-        internal bool HasParens { get { return GetF1(StepFlag1.HasParens); } set { SetF1(value, StepFlag1.HasParens); } }
-        internal bool HasNewLine { get { return GetF1(StepFlag1.HasNewLine); } set { SetF1(value, StepFlag1.HasNewLine); } }
-        internal bool ParseAborted { get { return GetF1(StepFlag1.ParseAborted); } set { SetF1(value, StepFlag1.ParseAborted); } }
+        internal bool IsInverse { get { return GetF1(StepFlag.IsInverse); } set { SetF1(value, StepFlag.IsInverse); } }
+        internal bool IsNegated { get { return GetF1(StepFlag.IsNegated); } set { SetF1(value, StepFlag.IsNegated); } }
+        internal bool IsBatched { get { return GetF1(StepFlag.IsBatched); } set { SetF1(value, StepFlag.IsBatched); } }
+        internal bool HasParens { get { return GetF1(StepFlag.HasParens); } set { SetF1(value, StepFlag.HasParens); } }
+        internal bool HasNewLine { get { return GetF1(StepFlag.HasNewLine); } set { SetF1(value, StepFlag.HasNewLine); } }
+        internal bool ParseAborted { get { return GetF1(StepFlag.ParseAborted); } set { SetF1(value, StepFlag.ParseAborted); } }
         #endregion
 
         #region Flags2  =======================================================
-        bool GetF2(StepFlag2 flag) => (_flags2 & flag) != 0;
-        void SetF2(bool val, StepFlag2 flag) { if (val) _flags2 |= flag; else _flags2 &= ~flag; }
+        bool GetF2(StepState flag) => (_flags2 & flag) != 0;
+        void SetF2(bool val, StepState flag) { if (val) _flags2 |= flag; else _flags2 &= ~flag; }
 
-        internal bool IsError { get { return GetF2(StepFlag2.IsError); } set { SetF2(value, StepFlag2.IsError); if (value) _flags2 |= StepFlag2.AnyError; } }
-        internal bool IsChanged { get { return GetF2(StepFlag2.IsChanged); } set { SetF2(value, StepFlag2.IsChanged); if (value) _flags2 |= StepFlag2.AnyChange; } }
-        internal bool IsOverflow { get { return GetF2(StepFlag2.IsOverflow); } set { SetF2(value, StepFlag2.IsOverflow); if (value) _flags2 |= StepFlag2.AnyOverflow; } }
-        internal bool IsUnresolved { get { return GetF2(StepFlag2.IsUnresolved); } set { SetF2(value, StepFlag2.IsUnresolved); if (value) _flags2 |= StepFlag2.AnyUnresolved; } }
+        internal bool IsError { get { return GetF2(StepState.IsError); } set { SetF2(value, StepState.IsError); if (value) _flags2 |= StepState.AnyError; } }
+        internal bool IsChanged { get { return GetF2(StepState.IsChanged); } set { SetF2(value, StepState.IsChanged); if (value) _flags2 |= StepState.AnyChange; } }
+        internal bool IsOverflow { get { return GetF2(StepState.IsOverflow); } set { SetF2(value, StepState.IsOverflow); if (value) _flags2 |= StepState.AnyOverflow; } }
+        internal bool IsUnresolved { get { return GetF2(StepState.IsUnresolved); } set { SetF2(value, StepState.IsUnresolved); if (value) _flags2 |= StepState.AnyUnresolved; } }
 
-        internal bool AnyError => (_flags2 & StepFlag2.AnyError) != 0;
-        internal bool AnyChange => (_flags2 & StepFlag2.AnyChange) != 0;
-        internal bool AnyOverflow => (_flags2 & StepFlag2.AnyOverflow) != 0;
-        internal bool AnyUnresolved => (_flags2 & StepFlag2.AnyUnresolved) != 0;
+        internal bool AnyError => (_flags2 & StepState.AnyError) != 0;
+        internal bool AnyChange => (_flags2 & StepState.AnyChange) != 0;
+        internal bool AnyOverflow => (_flags2 & StepState.AnyOverflow) != 0;
+        internal bool AnyUnresolved => (_flags2 & StepState.AnyUnresolved) != 0;
 
-        void InitResolveFlags() => _flags2 = StepFlag2.None;
+        void InitResolveFlags() => _flags2 = StepState.None;
 
 
         protected ValGroup ScanInputsAndReturnCompositeValueGroup()
@@ -82,7 +82,7 @@ namespace ModelGraphSTD
                 // bubble-up (IsError, IsChanged, IsOverflow, IsUnresolved)
 
                 var flags = input._flags2;
-                _flags2 |= (StepFlag2)((int)(flags & StepFlag2.LowerMask) << 4);
+                _flags2 |= (StepState)((int)(flags & StepState.LowerMask) << 4);
             }
             return result;
         }

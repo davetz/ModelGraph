@@ -204,7 +204,7 @@ namespace ModelGraphSTD
             AddIntegrityCheck(Relation_QueryX, _relationStore, _queryXStore);
 
 
-            ComputeX_QueryX = new RelationOf<ComputeX, QueryX>(_relationStore, Trait.ComputeX_QueryX, new Guid("3EFADD1B-28FF-4A84-90B1-A7948DB7FBBD"), Pairing.OneToMany, 25, 25, true);
+            ComputeX_QueryX = new RelationOf<ComputeX, QueryX>(_relationStore, Trait.ComputeX_QueryX, new Guid("3EFADD1B-28FF-4A84-90B1-A7948DB7FBBD"), Pairing.OneToOne, 25, 25, true);
             AddIntegrityCheck(ComputeX_QueryX, _computeXStore, _queryXStore);
         }
         /// <summary>
