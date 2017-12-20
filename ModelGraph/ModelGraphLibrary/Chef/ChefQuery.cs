@@ -48,41 +48,35 @@ namespace ModelGraphSTD
         }
         private bool ValidateQueryX(QueryX qx)
         {
+            var valid = true;
             var sto = GetQueryXTarget(qx);
-            if (qx.Select != null && !qx.Select.TryValidate(sto)) return false;
-            if (qx.Where != null && !qx.Where.TryValidate(sto)) return false;
+
+            if (qx.Select != null) valid &= qx.Select.TryValidate(sto);
+            if (qx.Where != null) valid &= qx.Where.TryValidate(sto);
+
+            if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
+            {
+                cx.Value.Clear();
+                if (valid)
+                {
+                    cx.Value = ValuesNone;
+                    ValidateComputeX(cx, qx);
+                }
+                else
+                {
+                    cx.Value = ValuesInvalid;
+                }
+            }
             return true;
         }
         #endregion
         #region ValidateDependants  ===========================================
         void ValidateDependants(QueryX qx)
         {
-            var qxList = new List<QueryX>();
-
-            var valid = true;
             while (qx != null)
             {
-                valid &= ValidateQueryX(qx);
-                if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx) && !valid)
-                {
-                    cx.Value.Clear();
-                    cx.Value = ValuesInvalid;
-                }
-                qxList.Add(qx);
-                if (!QueryX_QueryX.TryGetParent(qx, out QueryX qp)) break;
-                qx = qp;
-            }
-            if (valid)
-            {
-                foreach (var qt in qxList)
-                {
-                    if (ComputeX_QueryX.TryGetParent(qt, out ComputeX cx))
-                    {
-                        cx.Value.Clear();
-                        cx.Value = ValuesNone;
-                        ValidateComputeX(cx, qt);
-                    }
-                }
+                ValidateQueryX(qx);
+                if (!QueryX_QueryX.TryGetParent(qx, out qx)) return;
             }
         }
         #endregion
