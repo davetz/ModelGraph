@@ -82,6 +82,8 @@ namespace ModelGraphSTD
         internal bool HasWhere => (Where != null);
         internal bool HasSelect => (Select != null);
 
+        internal bool AnyChange => (HasWhere && Where.AnyChange) || (HasSelect && Select.AnyChange);
+
         internal string WhereString { get { return Where?.InputString; } set { SetWhereString(value); } }
         internal string SelectString { get { return Select?.InputString; } set { SetSelectString(value); } }
         private void SetWhereString(string value)

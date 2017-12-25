@@ -19,6 +19,8 @@ namespace ModelGraphSTD
 
         #region Property  =====================================================
         internal bool IsValid => _isValid;
+
+        internal bool AnyChange => _root != null && _root.AnyChange;
         internal string InputString => GetText();
         internal ValType ValueType => (_isValid) ? _root.ValueType : ValType.IsInvalid;
 

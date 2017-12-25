@@ -42,31 +42,26 @@ namespace ModelGraphSTD
                 anyChange = false;
                 foreach (var qx in _queryXStore.Items)
                 {
-                    anyChange |= ValidateQueryX(qx);
+                    if (ValidateQueryX(qx))
+                        anyChange |= qx.AnyChange;
+                }
+                foreach (var cx in _computeXStore.Items)
+                {
+                    if (ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
+                    {
+                        anyChange |= ValidateComputeX(cx, qx);
+                    }
+                    else
+                        cx.Value = ValuesInvalid;
                 }
             }
         }
         private bool ValidateQueryX(QueryX qx)
         {
-            var valid = true;
             var sto = GetQueryXTarget(qx);
 
-            if (qx.Select != null) valid &= qx.Select.TryValidate(sto);
-            if (qx.Where != null) valid &= qx.Where.TryValidate(sto);
-
-            if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
-            {
-                cx.Value.Clear();
-                if (valid)
-                {
-                    cx.Value = ValuesNone;
-                    ValidateComputeX(cx, qx);
-                }
-                else
-                {
-                    cx.Value = ValuesInvalid;
-                }
-            }
+            if (qx.Select != null && !qx.Select.TryValidate(sto)) return false;
+            if (qx.Where != null && !qx.Where.TryValidate(sto)) return false;
             return true;
         }
         #endregion
@@ -75,7 +70,23 @@ namespace ModelGraphSTD
         {
             while (qx != null)
             {
-                ValidateQueryX(qx);
+                if (ValidateQueryX(qx))
+                {
+                    if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
+                    {
+                        cx.Value.Clear();
+                        cx.Value = ValuesNone;
+                        ValidateComputeX(cx, qx);
+                    }
+                }
+                else
+                {
+                    if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
+                    {
+                        cx.Value.Clear();
+                        cx.Value = ValuesInvalid;
+                    }
+                }
                 if (!QueryX_QueryX.TryGetParent(qx, out qx)) return;
             }
         }

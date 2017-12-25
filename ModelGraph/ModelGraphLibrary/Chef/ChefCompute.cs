@@ -243,10 +243,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region ValidateComputeXStore  ========================================
-        private void ValidateComputeX(ComputeX cx, QueryX qx)
+        #region ValidateComputeX  =============================================
+        private bool ValidateComputeX(ComputeX cx, QueryX qx)
         {
-            if (cx.Value.ValType == ValType.IsUnknown)
+            var valType = cx.Value.ValType;
+            if (valType == ValType.IsUnknown)
             {
                 if (cx.CompuType == CompuType.RowValue)
                 {
@@ -256,6 +257,7 @@ namespace ModelGraphSTD
                     }
                 }
             }
+            return valType != cx.Value.ValType; // anyChange
         }
         #endregion
     }
