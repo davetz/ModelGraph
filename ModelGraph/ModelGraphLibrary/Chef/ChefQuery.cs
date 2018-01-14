@@ -37,13 +37,13 @@ namespace ModelGraphSTD
             Circular dependanies and invalid where/select clauses will be identified.
          */
             var anyChange = true;
+            var items = _queryXStore.Items;
             while (anyChange)
             {
                 anyChange = false;
-                foreach (var qx in _queryXStore.Items)
+                foreach (var qx in items)
                 {
-                    if (ValidateQueryX(qx))
-                        anyChange |= qx.AnyChange;
+                    anyChange |= ValidateQueryX(qx);
                 }
                 foreach (var cx in _computeXStore.Items)
                 {
@@ -59,12 +59,15 @@ namespace ModelGraphSTD
         private bool ValidateQueryX(QueryX qx)
         {
             var sto = GetQueryXTarget(qx);
+            var anyChange = false;
 
-            if (qx.Select != null && !qx.Select.TryValidate(sto)) return false;
-            if (qx.Where != null && !qx.Where.TryValidate(sto)) return false;
-            return true;
+            if (qx.Select != null && qx.Select.TryValidate(sto)) anyChange |= qx.Select.TryResolve();
+            if (qx.Where != null && qx.Where.TryValidate(sto)) anyChange |= qx.Where.TryResolve();
+
+            return anyChange;
         }
         #endregion
+
         #region ValidateDependants  ===========================================
         void ValidateDependants(QueryX qx)
         {

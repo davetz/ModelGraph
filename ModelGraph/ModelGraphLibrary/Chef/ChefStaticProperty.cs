@@ -227,16 +227,16 @@ namespace ModelGraphSTD
             }
             {
                 var p = _computeXWhereProperty = new PropertyOf<ComputeX, string>(_propertyStore, Trait.ComputeXWhere_P);
-                p.GetValFunc = (item) => p.Cast(item).SelectString;
-                p.SetValFunc = (item, value) => SetComputeXWhere(p.Cast(item), value);
+                p.GetValFunc = (item) => GetWhereString(p.Cast(item));
+                p.SetValFunc = (item, value) => SetWhereString(p.Cast(item), value);
                 p.Value = new StringValue(p);
                 p.GetItemNameFunc = (item) => GetSelectorName(p.Cast(item));
                 props.Add(p);
             }
             {
                 var p = _computeXSelectProperty = new PropertyOf<ComputeX, string>(_propertyStore, Trait.ComputeXSelect_P);
-                p.GetValFunc = (item) => p.Cast(item).SelectString;
-                p.SetValFunc = (item, value) => SetComputeXSelect(p.Cast(item), value);
+                p.GetValFunc = (item) => GetSelectString(p.Cast(item));
+                p.SetValFunc = (item, value) => SetSelectString(p.Cast(item), value);
                 p.Value = new StringValue(p);
                 p.GetItemNameFunc = (item) => { return GetSelectorName(p.Cast(item)); };
                 props.Add(p);

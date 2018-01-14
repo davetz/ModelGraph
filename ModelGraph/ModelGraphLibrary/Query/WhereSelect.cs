@@ -32,7 +32,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region TryResolve / TryValidate  =====================================
+        #region TryValidate  ==================================================
         /// <summary>
         /// Create the expression tree and validate all property name references
         /// </summary>
@@ -48,9 +48,11 @@ namespace ModelGraphSTD
         {
             _root.TryValidate(sto, () => _item);
             _isValid = _root.IsValid;
-            TryResolve();
             return _isValid;
         }
+        #endregion
+
+        #region TryResolve  ===================================================
         /// <summary>
         /// Resolve the expression tree valueTypes, return true if any change
         /// </summary>
@@ -74,6 +76,7 @@ namespace ModelGraphSTD
 
             return anyChange;
         }
+
         #endregion
 
         #region Matches / GetValue  ===========================================
@@ -83,6 +86,14 @@ namespace ModelGraphSTD
 
             _item = item;
             return _root.Evaluate.AsBool();
+        }
+
+        internal string GetValue(Item item)
+        {
+            if (_root == null) return string.Empty;
+
+            _item = item;
+            return _root.Evaluate.AsString();
         }
         #endregion
     }

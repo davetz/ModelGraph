@@ -1125,7 +1125,7 @@ namespace ModelGraphSTD
             if (root != null)  // get the data for this root.ModelAction
             {
                 var item = model.Item1;
-                var cd = model.Item2 as ComputeX;
+                var cx = model.Item2 as ComputeX;
                 switch (root.ModelAction)
                 {
                     case ModelAction.DragOver:
@@ -1134,19 +1134,19 @@ namespace ModelGraphSTD
 
                     case ModelAction.PointerOver:
 
-                        root.ModelSummary = cd.Summary;
+                        root.ModelSummary = cx.Summary;
                         break;
 
                     case ModelAction.ModelRefresh:
 
-                        root.ModelName = cd.Name;
-                        root.ModelValue = cd.Value.GetString(item);
+                        root.ModelName = cx.Name;
+                        root.ModelValue = GetValue(cx, item);
                         if (root.ModelValue == null) root.ModelValue = string.Empty;
                         break;
 
                     case ModelAction.ModelSelect:
 
-                        root.ModelDescription = cd.Description;
+                        root.ModelDescription = cx.Description;
                         break;
                 }
             }

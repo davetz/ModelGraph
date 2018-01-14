@@ -13,7 +13,6 @@ namespace ModelGraphSTD
         internal string Summary;
         internal string Description;
         internal string Separator = DefaultSeparator;
-        private Value value = Chef.ValuesNone; // provides default behavior prior to validation
 
         internal CompuType CompuType; // type of computation
         internal NumericSet NumericSet; //specify a numeric calculation
@@ -41,7 +40,6 @@ namespace ModelGraphSTD
         #region Property/Methods  =============================================
         internal override bool HasItemName => false;
         internal override string GetItemName(Item itm) { return null; }
-        internal string SelectString { get { return GetChef().GetSelectString(this); } set { GetChef().SetSelectString(this, value); } }
         #endregion
     }
 }

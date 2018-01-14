@@ -24,26 +24,31 @@ namespace ModelGraphSTD
 
         internal override bool AsBool()
         {
-            throw new NotImplementedException();
+            _property.Value.GetValue(_getItem(), out bool value);
+            return value;
         }
 
         internal override DateTime AsDateTime()
         {
-            throw new NotImplementedException();
+            _property.Value.GetValue(_getItem(), out DateTime value);
+            return value;
         }
 
         internal override double AsDouble()
         {
-            throw new NotImplementedException();
+            _property.Value.GetValue(_getItem(), out double value);
+            return value;
         }
         internal override long AsLong()
         {
-            throw new NotImplementedException();
+            _property.Value.GetValue(_getItem(), out long value);
+            return value;
         }
 
         internal override string AsString()
         {
-            throw new NotImplementedException();
+            _property.Value.GetValue(_getItem(), out string value);
+            return value;
         }
     }
 }

@@ -7,7 +7,6 @@ namespace ModelGraphSTD
         internal virtual ValType ValType => ValType.IsUnknown;
 
         internal abstract int Count { get; }
-
         internal abstract void Clear();
         internal abstract void Remove(Item key);
 

@@ -90,16 +90,37 @@ namespace ModelGraphSTD
                 }
             }
         }
+        internal string GetWhereString(ComputeX cx)
+        {
+            var qx = ComputeX_QueryX.GetChild(cx);
+            if (qx == null) return InvalidItem;
+
+            return (qx.HasWhere) ? qx.WhereString : null;
+        }
+        internal bool SetWhereString(ComputeX cx, string value)
+        {
+            var qx = ComputeX_QueryX.GetChild(cx);
+            if (qx == null) return false;
+
+            qx.WhereString = value;
+            ValidateComputeX(cx, qx);
+            return true;            
+        }
         internal string GetSelectString(ComputeX cx)
         {
-            var root = ComputeX_QueryX.GetChild(cx);
-            return (root != null && root.HasSelect) ? root.SelectString : null;
+            var qx = ComputeX_QueryX.GetChild(cx);
+            if (qx == null) return InvalidItem;
+
+            return (qx.HasSelect) ? qx.SelectString : null;
         }
-        internal void SetSelectString(ComputeX cx, string value)
+        internal bool SetSelectString(ComputeX cx, string value)
         {
-            var root = ComputeX_QueryX.GetChild(cx);
-            if (root != null) root.SelectString = value;
-            
+            var qx = ComputeX_QueryX.GetChild(cx);
+            if (qx == null) return false;
+
+            qx.SelectString = value;
+            ValidateComputeX(cx, qx);
+            return true;
         }
         #endregion
 
@@ -129,24 +150,6 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region SetComputeXProperty  ==========================================
-        private bool SetComputeXWhere(ComputeX cx, string value)
-        {
-            var qx = ComputeX_QueryX.GetChild(cx);
-            if (qx != null)
-            {
-                qx.WhereString = value;
-                ValidateQueryX(qx);
-            }
-            cx.Value.Clear();
-            return true;
-        }
-        private bool SetComputeXSelect(ComputeX cx, string value)
-        {
-            return(ComputeX_QueryX.TryGetChild(cx, out QueryX qx) && TrySetQueryXSelectProperty(qx, value));
-        }
-        #endregion
-
         #region ValidateValueXChange  =========================================
         private void ValidateValueXChange(QueryX qx)
         {
@@ -165,6 +168,50 @@ namespace ModelGraphSTD
                 }
                 qx = qx2;
             }
+        }
+        #endregion
+
+        #region GetValue  =====================================================
+        private string GetValue(ComputeX cx, Item key)
+        {
+            if (cx.Value == ValuesNone)
+                AllocateValueCache(cx);
+
+            if (cx.Value is ValueEmpty)
+                return cx.Value.GetString(key);
+
+            if (cx.Value.GetValue(key, out string value))
+                return value;
+
+            switch (cx.CompuType)
+            {
+                case CompuType.RowValue:
+                    return GetRowValue(cx, key);
+                case CompuType.RelatedValue:
+                    break;
+                case CompuType.NumericValueSet:
+                    break;
+                case CompuType.CompositeString:
+                    break;
+                case CompuType.CompositeReversed:
+                    break;
+            }
+            return cx.Value.GetString(key);
+        }
+        #endregion
+
+        #region GetRowValue  ==================================================
+        private string GetRowValue(ComputeX cx, Item key)
+        {
+            var vx = ComputeX_QueryX.GetChild(cx) as QueryX;
+            if (vx == null || vx.Select == null || vx.Select.ValueType == ValType.IsInvalid)
+            {
+                cx.Value = ValuesInvalid;
+                return cx.Value.GetString(key);
+            }
+            var value = vx.Select.GetValue(key);
+            cx.Value.SetString(key, value);
+            return value;
         }
         #endregion
 
