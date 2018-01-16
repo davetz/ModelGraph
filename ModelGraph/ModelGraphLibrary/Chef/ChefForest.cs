@@ -61,7 +61,7 @@ namespace ModelGraphSTD
         /// <summary>
         /// Return a ComputeX forest of query trees
         /// </summary>
-        private Query[] GetForest(ComputeX cx, Item seed, List<Query> tailSegs)
+        private Query[] GetForest(ComputeX cx, Item seed, List<Query> tails)
         {
             QueryX[] roots = ComputeX_QueryX.GetChildren(cx);
             if (roots == null) return null;
@@ -92,7 +92,7 @@ namespace ModelGraphSTD
                         {
                             var child = GetChildQuery(qx, q, item);
                             if (child == null) continue;
-                            if (child.IsTail) tailSegs.Add(child);
+                            if (child.IsTail) tails.Add(child);
 
                             qList.Add(child);
                             workQueue.Enqueue(child);

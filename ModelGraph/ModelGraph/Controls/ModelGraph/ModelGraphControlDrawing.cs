@@ -20,7 +20,7 @@ namespace ModelGraph
         private int _majorDelta; // incremented when the node or edge collection changes
 
         private float _zoomFactor;
-        private Extent _viewExtent;
+        private Extent _viewExtent = new Extent();
 
         private Color[] _groupColor;
         #endregion

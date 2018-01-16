@@ -175,39 +175,79 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region TryGetComputedValue  ==========================================
         internal bool TryGetComputedValue(ComputeX cx, Item key)
-        {
+        {/*
+            This method is called by valueDictionary when there is now existing 
+            key-value-pair for the callers key.
+         */
             var qx = ComputeX_QueryX.GetChild(cx);
-            if (qx == null || !qx.HasSelect || cx.Value.IsEmpty)
+            if (qx == null || cx.Value.IsEmpty)
                 return false;
 
             switch (cx.CompuType)
             {
-                case CompuType.RowValue:
-                    if (qx.Select.GetValue(key, out string val))
-                    {
-                        cx.Value.SetValue(key, val);
-                    }
-                    break;
-                case CompuType.RelatedValue:
-                    cx.Value.SetValue(key, "related");
-                    break;
-                case CompuType.NumericValueSet:
-                    cx.Value.SetValue(key, "numeric set");
-                    break;
-                case CompuType.CompositeString:
-                    cx.Value.SetValue(key, "composite");
-                    break;
-                case CompuType.CompositeReversed:
-                    cx.Value.SetValue(key, "composite rev");
-                    break;
+                case CompuType.RowValue: return TryGetRowValue();
+
+                case CompuType.RelatedValue: return TryGetRelated();
+
+                case CompuType.NumericValueSet: return TryGetNumericSet();
+
+                case CompuType.CompositeString: return TryGetCompositeString();
+
+                case CompuType.CompositeReversed: return TryGetCompositeReversed();
+            }
+            return false;
+
+            bool TryGetRowValue()
+            {
+                if (!qx.HasSelect || qx.Select.GetValue(key, out string val))
+                    return false;
+
+                cx.Value.SetValue(key, val);
+                return true;
             }
 
-            return true;
+            bool TryGetRelated()
+            {
+                var tails = new List<Query>();
+                var forest = GetForest(cx, key, tails);
+                if (tails.Count == 0)
+                    return false;
+
+                var q = tails[0];
+                var s = q.QueryX.Select;
+                if (s == null)
+                    return false;
+
+                if (q.Items == null || q.Items.Length < 1)
+                    return false;
+                
+                if (!s.GetValue(q.Items[0], out string val))
+                    return false;
+
+                return cx.Value.SetValue(key, val);
+            }
+
+            bool TryGetNumericSet()
+            {
+                return cx.Value.SetValue(key, "0, 1, 0, 1");
+            }
+
+            bool TryGetCompositeString()
+            {
+                return cx.Value.SetValue(key, "composite");
+            }
+
+            bool TryGetCompositeReversed()
+            {
+                return cx.Value.SetValue(key, "composite rev");
+            }
         }
+        #endregion
 
         #region AllocateValueCache  ===========================================
-        // called when the compuDef needs to produce a value, but its ValueCache is null
+        // called when the computeX needs to produce a value, but its ValueCache is null
         internal void AllocateValueCache(ComputeX cx)
         {
             switch (cx.CompuType)
