@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {/*
@@ -115,10 +116,12 @@ namespace ModelGraphSTD
         }
         internal bool SetSelectString(ComputeX cx, string value)
         {
+            MajorDelta += 1;
             var qx = ComputeX_QueryX.GetChild(cx);
             if (qx == null) return false;
 
             qx.SelectString = value;
+            ValidateQueryX(qx);
             ValidateComputeX(cx, qx);
             return true;
         }
@@ -127,6 +130,7 @@ namespace ModelGraphSTD
         #region TrySetComputeTypeProperty  ====================================
         private bool TrySetComputeTypeProperty(ComputeX cx, int val)
         {
+            MajorDelta += 1;
             var type = (CompuType)val;
             if (cx.CompuType != type)
             {
@@ -171,49 +175,36 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region GetValue  =====================================================
-        private string GetValue(ComputeX cx, Item key)
+        internal bool TryGetComputedValue(ComputeX cx, Item key)
         {
-            if (cx.Value == ValuesNone)
-                AllocateValueCache(cx);
-
-            if (cx.Value is ValueEmpty)
-                return cx.Value.GetString(key);
-
-            if (cx.Value.GetValue(key, out string value))
-                return value;
+            var qx = ComputeX_QueryX.GetChild(cx);
+            if (qx == null || !qx.HasSelect || cx.Value.IsEmpty)
+                return false;
 
             switch (cx.CompuType)
             {
                 case CompuType.RowValue:
-                    return GetRowValue(cx, key);
+                    if (qx.Select.GetValue(key, out string val))
+                    {
+                        cx.Value.SetValue(key, val);
+                    }
+                    break;
                 case CompuType.RelatedValue:
+                    cx.Value.SetValue(key, "related");
                     break;
                 case CompuType.NumericValueSet:
+                    cx.Value.SetValue(key, "numeric set");
                     break;
                 case CompuType.CompositeString:
+                    cx.Value.SetValue(key, "composite");
                     break;
                 case CompuType.CompositeReversed:
+                    cx.Value.SetValue(key, "composite rev");
                     break;
             }
-            return cx.Value.GetString(key);
-        }
-        #endregion
 
-        #region GetRowValue  ==================================================
-        private string GetRowValue(ComputeX cx, Item key)
-        {
-            var vx = ComputeX_QueryX.GetChild(cx) as QueryX;
-            if (vx == null || vx.Select == null || vx.Select.ValueType == ValType.IsInvalid)
-            {
-                cx.Value = ValuesInvalid;
-                return cx.Value.GetString(key);
-            }
-            var value = vx.Select.GetValue(key);
-            cx.Value.SetString(key, value);
-            return value;
+            return true;
         }
-        #endregion
 
         #region AllocateValueCache  ===========================================
         // called when the compuDef needs to produce a value, but its ValueCache is null
@@ -255,6 +246,7 @@ namespace ModelGraphSTD
                     cx.Value = Value.Create(ValType.String);
                     break;
             }
+            cx.Value.SetOwner(cx);
 
             void AllocateCache(QueryX vx)
             {
@@ -295,15 +287,7 @@ namespace ModelGraphSTD
         {
             var valType = cx.Value.ValType;
             if (valType == ValType.IsUnknown)
-            {
-                if (cx.CompuType == CompuType.RowValue)
-                {
-                    if (qx.Select != null && qx.Select.ValueType < ValType.MaximumType)
-                    {
-                        cx.Value = Value.Create(qx.Select.ValueType);
-                    }
-                }
-            }
+                AllocateValueCache(cx);
             return valType != cx.Value.ValType; // anyChange
         }
         #endregion

@@ -1140,7 +1140,8 @@ namespace ModelGraphSTD
                     case ModelAction.ModelRefresh:
 
                         root.ModelName = cx.Name;
-                        root.ModelValue = GetValue(cx, item);
+
+                        root.ModelValue = cx.Value.GetString(item);
                         if (root.ModelValue == null) root.ModelValue = string.Empty;
                         break;
 
@@ -3347,8 +3348,8 @@ namespace ModelGraphSTD
                     case ModelAction.ModelRefresh:
 
                         root.ModelName = cpd.Name;
-                        var sd = ComputeX_QueryX.GetChild(cpd);
-                        if (sd != null) root.ModelCount = QueryX_QueryX.ChildCount(sd);
+                        var qx = ComputeX_QueryX.GetChild(cpd);
+                        if (qx != null) root.ModelCount = QueryX_QueryX.ChildCount(qx);
 
                         model.CanDrag = true;
                         model.CanExpandLeft = (root.ModelCount > 0);
@@ -3366,6 +3367,7 @@ namespace ModelGraphSTD
                 if (model.IsExpanded)
                 {
                     var cx = model.Item1 as ComputeX;
+                    var qx = ComputeX_QueryX.GetChild(cx);
 
                     int R = 0;
                     Property[] sp = null;
@@ -3374,7 +3376,8 @@ namespace ModelGraphSTD
                         switch (cx.CompuType)
                         {
                             case CompuType.RowValue:
-                                sp = new Property[] { _computeXNameProperty, _computeXSummaryProperty, _computeXCompuTypeProperty, _computeXSelectProperty, _computeXValueTypeProperty };
+                                sp = qx.HasSelect ? new Property[] { _computeXNameProperty, _computeXSummaryProperty, _computeXCompuTypeProperty, _computeXSelectProperty, _computeXValueTypeProperty } :
+                                                    new Property[] { _computeXNameProperty, _computeXSummaryProperty, _computeXCompuTypeProperty, _computeXSelectProperty };
                                 break;
                             case CompuType.RelatedValue:
                                 sp = new Property[] { _computeXNameProperty, _computeXSummaryProperty, _computeXCompuTypeProperty, _computeXValueTypeProperty };
@@ -3389,8 +3392,7 @@ namespace ModelGraphSTD
                         }
                         R = sp.Length;
                     }
-                    var sd = ComputeX_QueryX.GetChild(cx);
-                    var L = (model.IsExpandedLeft && sd != null) ? QueryX_QueryX.ChildCount(sd) : 0;
+                    var L = (model.IsExpandedLeft && qx != null) ? QueryX_QueryX.ChildCount(qx) : 0;
 
                     var N = L + R;
                     if (N > 0)
@@ -3404,7 +3406,7 @@ namespace ModelGraphSTD
                         }
                         if (L > 0)
                         {
-                            var items = QueryX_QueryX.GetChildren(sd);
+                            var items = QueryX_QueryX.GetChildren(qx);
                             var level = (byte)(model.Level + 1);
                             for (int i = R, j = 0; i < N; i++, j++)
                             {
@@ -5457,16 +5459,18 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty, _queryXValueTypeProperty };
+                var qx = model.Item1 as QueryX;
+                var sp1 = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty};
+                var sp2 = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty, _queryXValueTypeProperty };
+                var sp = qx.HasSelect ? sp2 : sp1;
                 var R = model.IsExpandedRight ? sp.Length : 0;
 
-                var vd = model.Item1 as QueryX;
-                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(vd) : 0;
+                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(qx) : 0;
 
                 var N = L + R;
                 if (N > 0)
                 {
-                    var items = QueryX_QueryX.GetChildren(vd);
+                    var items = QueryX_QueryX.GetChildren(qx);
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;

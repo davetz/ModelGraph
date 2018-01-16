@@ -24,31 +24,33 @@ namespace ModelGraphSTD
 
         internal override bool AsBool()
         {
-            _property.Value.GetValue(_getItem(), out bool value);
-            return value;
-        }
-
-        internal override DateTime AsDateTime()
-        {
-            _property.Value.GetValue(_getItem(), out DateTime value);
-            return value;
-        }
-
-        internal override double AsDouble()
-        {
-            _property.Value.GetValue(_getItem(), out double value);
-            return value;
+            if (!_property.Value.GetValue(_getItem(), out bool val))
+                val = false;
+            return val;
         }
         internal override long AsLong()
         {
-            _property.Value.GetValue(_getItem(), out long value);
-            return value;
+            if (!_property.Value.GetValue(_getItem(), out long val))
+                val = 0;
+            return val;
         }
-
+        internal override double AsDouble()
+        {
+            if (!_property.Value.GetValue(_getItem(), out double val))
+                val = 0;
+            return val;
+        }
         internal override string AsString()
         {
-            _property.Value.GetValue(_getItem(), out string value);
-            return value;
+            if (!_property.Value.GetValue(_getItem(), out string val))
+                val = string.Empty;
+            return val;
+        }
+        internal override DateTime AsDateTime()
+        {
+            if (!_property.Value.GetValue(_getItem(), out DateTime val))
+                val = default(DateTime);
+            return val;
         }
     }
 }

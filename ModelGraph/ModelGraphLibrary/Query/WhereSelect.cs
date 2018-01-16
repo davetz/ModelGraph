@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace ModelGraphSTD
 {/*
@@ -88,12 +89,45 @@ namespace ModelGraphSTD
             return _root.Evaluate.AsBool();
         }
 
-        internal string GetValue(Item item)
+        internal bool GetValue(Item item, out bool value)
         {
-            if (_root == null) return string.Empty;
+            var isValid = (_root != null && _isValid);
 
             _item = item;
-            return _root.Evaluate.AsString();
+            value = (isValid) ? _root.Evaluate.AsBool() : false;
+            return isValid;
+        }
+        internal bool GetValue(Item item, out long value)
+        {
+            var isValid = (_root != null && _isValid);
+
+            _item = item;
+            value = (isValid) ? _root.Evaluate.AsLong() : 0;
+            return isValid;
+        }
+        internal bool GetValue(Item item, out double value)
+        {
+            var isValid = (_root != null && _isValid);
+
+            _item = item;
+            value = (isValid) ? _root.Evaluate.AsDouble() : 0;
+            return isValid;
+        }
+        internal bool GetValue(Item item, out string value)
+        {
+            var isValid = (_root != null && _isValid);
+
+            _item = item;
+            value = (isValid) ? _root.Evaluate.AsString() : string.Empty;
+            return isValid;
+        }
+        internal bool GetValue(Item item, out DateTime value)
+        {
+            var isValid = (_root != null && _isValid);
+
+            _item = item;
+            value = (isValid) ? _root.Evaluate.AsDateTime() : default(DateTime);
+            return isValid;
         }
         #endregion
     }

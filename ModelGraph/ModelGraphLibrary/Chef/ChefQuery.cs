@@ -327,6 +327,7 @@ namespace ModelGraphSTD
         }
         bool TrySetQueryXSelectProperty(QueryX qx, string val)
         {
+            MajorDelta += 1;
             qx.SelectString = val;
             ValidateDependants(qx);
             return qx.IsValid;

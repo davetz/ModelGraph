@@ -36,6 +36,8 @@ namespace ModelGraphSTD
         public int Count => 0;
         public void Clear() { }
         public void Remove(Item key) { }
+        public void SetOwner(ComputeX cx) { }
+
         public bool GetVal(Item key, out T2 val) { if (GetValFunc == null) return Value.NoValue(out val); val = GetValFunc(key); return true; }
         public bool SetVal(Item key, T2 value) => (SetValFunc is null) ? false : SetValFunc(key, value);
         #endregion

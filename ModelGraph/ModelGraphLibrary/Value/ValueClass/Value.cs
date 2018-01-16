@@ -5,11 +5,12 @@ namespace ModelGraphSTD
     internal abstract partial class Value
     {
         internal virtual ValType ValType => ValType.IsUnknown;
+        internal virtual void SetOwner(ComputeX cx) { }
+        internal bool IsEmpty => ValType > ValType.MaximumType;
 
         internal abstract int Count { get; }
         internal abstract void Clear();
         internal abstract void Remove(Item key);
-
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
         // the following used by the UI to get/set property values
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =

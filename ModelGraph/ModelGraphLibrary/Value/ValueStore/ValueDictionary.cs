@@ -6,6 +6,7 @@ namespace ModelGraphSTD
 {
     internal class ValueDictionary<T> : IValueStore<T>
     {
+        ComputeX _owner;
         Dictionary<Item, T> _values;
         protected T _default;
 
@@ -27,6 +28,7 @@ namespace ModelGraphSTD
             if (_values != null)
                 _values.Remove(key);
         }
+        public void SetOwner(ComputeX cx) => _owner = cx;
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -38,12 +40,22 @@ namespace ModelGraphSTD
 
         public bool GetVal(Item key, out T val)
         {
-            if (_values == null)
+            if (_values != null && _values.TryGetValue(key, out val))
+                return true;
+
+            if (_owner == null)
             {
                 val = _default;
                 return false;
             }
-            return _values.TryGetValue(key, out val);
+
+            if (_owner.GetChef().TryGetComputedValue(_owner, key))
+                return _values.TryGetValue(key, out val);
+            else
+            {
+                val = _default;
+                return false;
+            }
         }
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
