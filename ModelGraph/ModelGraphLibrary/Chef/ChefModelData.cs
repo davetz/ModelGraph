@@ -3380,7 +3380,10 @@ namespace ModelGraphSTD
                                                     new Property[] { _computeXNameProperty, _computeXSummaryProperty, _computeXCompuTypeProperty, _computeXSelectProperty };
                                 break;
                             case CompuType.RelatedValue:
-                                sp = new Property[] { _computeXNameProperty, _computeXSummaryProperty, _computeXCompuTypeProperty, _computeXValueTypeProperty };
+                                if (cx.Results == Results.LimitedSet)
+                                    sp = new Property[] { _computeXNameProperty, _computeXSummaryProperty, _computeXCompuTypeProperty, _computeXSortingProperty, _computeXResultsProperty, _computeXTakeSetProperty, _computeXTakeLimitProperty, _computeXValueTypeProperty };
+                                else
+                                    sp = new Property[] { _computeXNameProperty, _computeXSummaryProperty, _computeXCompuTypeProperty, _computeXSortingProperty, _computeXResultsProperty, _computeXValueTypeProperty };
                                 break;
                             case CompuType.NumericValueSet:
                                 sp = new Property[] { _computeXNameProperty, _computeXSummaryProperty, _computeXCompuTypeProperty, _computeXNumericSetProperty, _computeXValueTypeProperty };

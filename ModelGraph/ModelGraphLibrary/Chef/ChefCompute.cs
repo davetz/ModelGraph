@@ -144,10 +144,51 @@ namespace ModelGraphSTD
         #region TrySetNumericSetProperty  =====================================
         private bool TrySetNumericSetProperty(ComputeX cx, int val)
         {
+            MajorDelta += 1;
             var type = (NumericSet)val;
             if (cx.NumericSet != type)
             {
                 cx.NumericSet = type;
+                cx.Value.Clear();
+            }
+            return true;
+        }
+        #endregion
+
+        #region TrySetResultsProperty  =====================================
+        private bool TrySetResultsProperty(ComputeX cx, int val)
+        {
+            MajorDelta += 1;
+            var type = (Results)val;
+            if (cx.Results != type)
+            {
+                cx.Results = type;
+                cx.Value.Clear();
+            }
+            return true;
+        }
+        #endregion
+        #region TrySetNumericSetProperty  =====================================
+        private bool TrySetSortingProperty(ComputeX cx, int val)
+        {
+            MajorDelta += 1;
+            var type = (Sorting)val;
+            if (cx.Sorting != type)
+            {
+                cx.Sorting = type;
+                cx.Value.Clear();
+            }
+            return true;
+        }
+        #endregion
+        #region TrySetTakeSetProperty  =====================================
+        private bool TrySetTakeSetProperty(ComputeX cx, int val)
+        {
+            MajorDelta += 1;
+            var type = (TakeSet)val;
+            if (cx.TakeSet != type)
+            {
+                cx.TakeSet = type;
                 cx.Value.Clear();
             }
             return true;

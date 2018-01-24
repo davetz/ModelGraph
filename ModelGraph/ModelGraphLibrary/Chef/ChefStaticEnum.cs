@@ -20,6 +20,9 @@
         EnumZ _numericSetEnum;
         EnumZ _numericTermEnum;
         EnumZ _computeTypeEnum;
+        EnumZ _computeResultsEnum;
+        EnumZ _computeSortingEnum;
+        EnumZ _computeTakeSetEnum;
 
         private void InitializeEnums()
         {
@@ -161,6 +164,21 @@
             new PairZ(_computeTypeEnum, Trait.CompuType_NumericValueSet);
             new PairZ(_computeTypeEnum, Trait.CompuType_CompositeString);
             new PairZ(_computeTypeEnum, Trait.CompuType_CompositeReversed);
+
+            _computeResultsEnum = new EnumZ(_enumZStore, Trait.ResultsEnum);
+            new PairZ(_computeResultsEnum, Trait.Results_OneValue);
+            new PairZ(_computeResultsEnum, Trait.Results_AllValues);
+            new PairZ(_computeResultsEnum, Trait.Results_LimitedSet);
+
+            _computeSortingEnum = new EnumZ(_enumZStore, Trait.SortingEnum);
+            new PairZ(_computeSortingEnum, Trait.Sorting_Unsorted);
+            new PairZ(_computeSortingEnum, Trait.Sorting_Ascending);
+            new PairZ(_computeSortingEnum, Trait.Sorting_Descending);
+
+            _computeTakeSetEnum = new EnumZ(_enumZStore, Trait.TakeSetEnum);
+            new PairZ(_computeTakeSetEnum, Trait.TakeSet_First);
+            new PairZ(_computeTakeSetEnum, Trait.TakeSet_Last);
+            new PairZ(_computeTakeSetEnum, Trait.TakeSet_Both);
         }
     }
 }

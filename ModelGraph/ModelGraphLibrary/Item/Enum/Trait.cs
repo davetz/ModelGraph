@@ -339,7 +339,10 @@ namespace ModelGraphSTD
         ComputeXSeparator_P = 0x4B6,
         ComputeXValueType_P = 0x4B7 | IsReadOnly,
         ComputeXNumericSet_P = 0x4B8,
-
+        ComputeXResults_P = 0x4B9,
+        ComputeXSorting_P = 0x4BA,
+        ComputeXTakeSet_P = 0x4BB,
+        ComputeXTakeLimit_P = 0x4BC,
         #endregion
 
         #region Model ================================================(600-7FF)
@@ -690,14 +693,20 @@ namespace ModelGraphSTD
         EndLine_Triangle = 0xC43,
         EndLineEnum = 0xC7F,
 
-        StaticPairC80 = 0xC80,
-        StaticEnumCBF = 0xCBF,
+        Results_OneValue = 0xC80,
+        Results_AllValues = 0xC81,
+        Results_LimitedSet = 0xC82,
+        ResultsEnum = 0xCBF,
 
-        StaticPairCC0 = 0xCC0,
-        StaticEnumCFF = 0xCFF,
+        Sorting_Unsorted = 0xCC0,
+        Sorting_Ascending = 0xCC1,
+        Sorting_Descending = 0xCC2,
+        SortingEnum = 0xCFF,
 
-        StaticPairD00 = 0xD00,
-        StaticEnumD3F = 0xD3F,
+        TakeSet_First = 0xD00,
+        TakeSet_Last = 0xD01,
+        TakeSet_Both = 0xD02,
+        TakeSetEnum = 0xD3F,
 
         StaticPairD40 = 0xD40,
         StaticEnumD7F = 0xD7F,

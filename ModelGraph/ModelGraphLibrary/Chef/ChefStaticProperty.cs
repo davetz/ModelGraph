@@ -32,6 +32,10 @@ namespace ModelGraphSTD
         private PropertyOf<ComputeX, string> _computeXCompuTypeProperty;
         private PropertyOf<ComputeX, string> _computeXNumericSetProperty;
         private PropertyOf<ComputeX, string> _computeXValueTypeProperty;
+        private PropertyOf<ComputeX, string> _computeXResultsProperty;
+        private PropertyOf<ComputeX, string> _computeXSortingProperty;
+        private PropertyOf<ComputeX, string> _computeXTakeSetProperty;
+        private PropertyOf<ComputeX, byte> _computeXTakeLimitProperty;
 
         private PropertyOf<RelationX, string> _relationXNameProperty;
         private PropertyOf<RelationX, string> _relationXSummaryProperty;
@@ -252,6 +256,34 @@ namespace ModelGraphSTD
                 var p = _computeXValueTypeProperty = new PropertyOf<ComputeX, string>(_propertyStore, Trait.ComputeXValueType_P, _valueTypeEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Value.ValType);
                 p.Value = new StringValue(p);
+                props.Add(p);
+            }
+            {
+                var p = _computeXResultsProperty = new PropertyOf<ComputeX, string>(_propertyStore, Trait.ComputeXResults_P, _computeResultsEnum);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Results);
+                p.SetValFunc = (item, value) => TrySetResultsProperty(p.Cast(item), GetEnumZKey(p.EnumZ, value));
+                p.Value = new StringValue(p);
+                props.Add(p);
+            }
+            {
+                var p = _computeXSortingProperty = new PropertyOf<ComputeX, string>(_propertyStore, Trait.ComputeXSorting_P, _computeSortingEnum);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Sorting);
+                p.SetValFunc = (item, value) => TrySetSortingProperty(p.Cast(item), GetEnumZKey(p.EnumZ, value));
+                p.Value = new StringValue(p);
+                props.Add(p);
+            }
+            {
+                var p = _computeXTakeSetProperty = new PropertyOf<ComputeX, string>(_propertyStore, Trait.ComputeXTakeSet_P, _computeTakeSetEnum);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).TakeSet);
+                p.SetValFunc = (item, value) => TrySetTakeSetProperty(p.Cast(item), GetEnumZKey(p.EnumZ, value));
+                p.Value = new StringValue(p);
+                props.Add(p);
+            }
+            {
+                var p = _computeXTakeLimitProperty = new PropertyOf<ComputeX, byte>(_propertyStore, Trait.ComputeXTakeLimit_P);
+                p.GetValFunc = (item) => p.Cast(item).TakeLimit;
+                p.SetValFunc = (item, value) => { p.Cast(item).TakeLimit = (byte)value; return true; };
+                p.Value = new ByteValue(p);
                 props.Add(p);
             }
             Store_Property.SetLink(_computeXStore, props.ToArray());

@@ -1987,4 +1987,49 @@ These are the behind the scene internal collections. They are listed here so tha
     <value>Tabbed</value>
     <comment>Navigation view item name for Tabbed</comment>
   </data>
+  <data name="C80N" xml:space="preserve">
+    <value>OneValue</value>
+  </data>
+  <data name="C81N" xml:space="preserve">
+    <value>AllValues</value>
+  </data>
+  <data name="C82N" xml:space="preserve">
+    <value>LimitedSet</value>
+  </data>
+  <data name="CBFN" xml:space="preserve">
+    <value>Results</value>
+  </data>
+  <data name="CBFS" xml:space="preserve">
+    <value>Query results (scalar / array)? </value>
+  </data>
+  <data name="CC0N" xml:space="preserve">
+    <value>Unsorted</value>
+  </data>
+  <data name="CC1N" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="CC2N" xml:space="preserve">
+    <value>Descending</value>
+  </data>
+  <data name="CEFN" xml:space="preserve">
+    <value>Sorting</value>
+  </data>
+  <data name="CEFS" xml:space="preserve">
+    <value>Sort the results</value>
+  </data>
+  <data name="D00N" xml:space="preserve">
+    <value>First</value>
+  </data>
+  <data name="D01N" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="D02N" xml:space="preserve">
+    <value>Both</value>
+  </data>
+  <data name="D3FN" xml:space="preserve">
+    <value>TakeSet</value>
+  </data>
+  <data name="D3FS" xml:space="preserve">
+    <value>Take a limited number of result items </value>
+  </data>
 </root>
