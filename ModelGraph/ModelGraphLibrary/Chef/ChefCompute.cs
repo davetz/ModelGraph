@@ -127,7 +127,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region TrySetComputeTypeProperty  ====================================
+        #region TrySet...Property  ============================================
         private bool TrySetComputeTypeProperty(ComputeX cx, int val)
         {
             MajorDelta += 1;
@@ -139,9 +139,6 @@ namespace ModelGraphSTD
             }
             return true;
         }
-        #endregion
-
-        #region TrySetNumericSetProperty  =====================================
         private bool TrySetNumericSetProperty(ComputeX cx, int val)
         {
             MajorDelta += 1;
@@ -153,9 +150,6 @@ namespace ModelGraphSTD
             }
             return true;
         }
-        #endregion
-
-        #region TrySetResultsProperty  =====================================
         private bool TrySetResultsProperty(ComputeX cx, int val)
         {
             MajorDelta += 1;
@@ -167,8 +161,6 @@ namespace ModelGraphSTD
             }
             return true;
         }
-        #endregion
-        #region TrySetNumericSetProperty  =====================================
         private bool TrySetSortingProperty(ComputeX cx, int val)
         {
             MajorDelta += 1;
@@ -180,8 +172,6 @@ namespace ModelGraphSTD
             }
             return true;
         }
-        #endregion
-        #region TrySetTakeSetProperty  =====================================
         private bool TrySetTakeSetProperty(ComputeX cx, int val)
         {
             MajorDelta += 1;
@@ -192,27 +182,6 @@ namespace ModelGraphSTD
                 cx.Value.Clear();
             }
             return true;
-        }
-        #endregion
-
-        #region ValidateValueXChange  =========================================
-        private void ValidateValueXChange(QueryX qx)
-        {
-            ValidateQueryX(qx);
-
-            while (qx != null)
-            {
-                var qx2 = QueryX_QueryX.GetParent(qx);
-                if (qx2 == null)
-                {
-                    var cx = ComputeX_QueryX.GetParent(qx);
-                    if (cx != null)
-                    {
-                        cx.Value.Clear();
-                    }
-                }
-                qx = qx2;
-            }
         }
         #endregion
 
@@ -343,6 +312,67 @@ namespace ModelGraphSTD
                 else
                     cx.Value = ValuesInvalid;
             }
+        }
+        #endregion
+
+        #region GetRelatedValueType  ==========================================
+        ValType GetRelatedValueType(ComputeX cx)
+        {
+            var qx = ComputeX_QueryX.GetChild(cx);
+            if (qx == null)
+                return ValType.IsInvalid; //computeX must have q root QueryX reference
+
+            var children = QueryX_QueryX.GetChildren(qx);
+            if (children == null || children.Length == 0)
+                return ValType.IsInvalid; //computeX must have atleast one QueryX reference
+
+            var workQueue = new Queue<QueryX>(children);
+            var isMultiple = children.Length > 1;
+
+            var vTypes = new HashSet<ValType>();
+
+            while(workQueue.Count > 0)
+            {/*
+                deapth first traversal of queryX true
+             */
+                var qt = workQueue.Dequeue();
+
+                if (qt.HasSelect && qt.Select.IsValid && qt.Select.ValueType < ValType.MaximumType)
+                {
+                    vTypes.Add(qt.Select.ValueType);
+                }
+
+                children = QueryX_QueryX.GetChildren(qt);
+                if (children != null)
+                {
+                    isMultiple |= children.Length > 1;
+                    foreach (var child in children) { workQueue.Enqueue(child); }
+                }                
+            }
+
+            if (vTypes.Count == 0)
+                return ValType.IsInvalid; //computeX must have atleast valid related value
+
+            var vType = ValType.IsInvalid;
+            var vGroup = ValGroup.None;
+            foreach (var vt in vTypes)
+            {
+                vGroup |= Value.GetValGroup(vt); // compose aggregate value group
+                if (vType == ValType.IsInvalid) vType = vt; // get the first valType
+            }
+            if (vGroup == ValGroup.None)
+                return ValType.IsInvalid; //computeX must have atleast valid related value
+
+            if (cx.Results == Results.OneValue)
+                isMultiple = false;
+            else
+                isMultiple |= vGroup.HasFlag(ValGroup.ArrayGroup);
+
+
+
+
+
+            return vType;
         }
         #endregion
 

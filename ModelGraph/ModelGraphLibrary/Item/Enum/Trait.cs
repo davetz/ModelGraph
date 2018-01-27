@@ -517,49 +517,48 @@ namespace ModelGraphSTD
         // facilitates text localization for static enums/pairs
 
         ValueType_Bool = 0x800,
-        ValueType_Char = 0x801,
+        ValueType_BoolArray = 0x801,
 
-        ValueType_Byte = 0x802,
-        ValueType_SByte = 0x803,
+        ValueType_Char = 0x802,
+        ValueType_CharArray = 0x803,
 
-        ValueType_Int16 = 0x804,
-        ValueType_UInt16 = 0x805,
+        ValueType_Byte = 0x804,
+        ValueType_ByteArray = 0x805,
 
-        ValueType_Int32 = 0x806,
-        ValueType_UInt32 = 0x807,
+        ValueType_SByte = 0x806,
+        ValueType_SByteArray = 0x807,
 
-        ValueType_Int64 = 0x808,
-        ValueType_UInt64 = 0x809,
+        ValueType_Int16 = 0x808,
+        ValueType_Int16Array = 0x809,
 
-        ValueType_Single = 0x80A,
-        ValueType_Double = 0x80B,
+        ValueType_UInt16 = 0x80A,
+        ValueType_UInt16Array = 0x80B,
 
-        ValueType_Decimal = 0x80C,
-        ValueType_DateTime = 0x80D,
+        ValueType_Int32 = 0x80C,
+        ValueType_Int32Array = 0x80D,
 
-        ValueType_String = 0x80E,
+        ValueType_UInt32 = 0x80E,
+        ValueType_UInt32Array = 0x80F,
 
-        ValueType_BoolArray = 0x80F,
-        ValueType_CharArray = 0x810,
+        ValueType_Int64 = 0x810,
+        ValueType_Int64Array = 0x811,
 
-        ValueType_ByteArray = 0x811,
-        ValueType_SByteArray = 0x812,
+        ValueType_UInt64 = 0x812,
+        ValueType_UInt64Array = 0x813,
 
-        ValueType_Int16Array = 0x813,
-        ValueType_UInt16Array = 0x814,
+        ValueType_Single = 0x814,
+        ValueType_SingleArray = 0x815,
 
-        ValueType_Int32Array = 0x815,
-        ValueType_UInt32Array = 0x816,
+        ValueType_Double = 0x816,
+        ValueType_DoubleArray = 0x817,
 
-        ValueType_Int64Array = 0x817,
-        ValueType_UInt64Array = 0x818,
+        ValueType_Decimal = 0x818,
+        ValueType_DecimalArray = 0x819,
 
-        ValueType_SingleArray = 0x819,
-        ValueType_DoubleArray = 0x81A,
+        ValueType_DateTime = 0x81A,
+        ValueType_DateTimeArray = 0x81B,
 
-        ValueType_DecimalArray = 0x81B,
-        ValueType_DateTimeArray = 0x81C,
-
+        ValueType_String = 0x81C,
         ValueType_StringArray = 0x81D,
         ValueTypeEnum = 0x83F,
 

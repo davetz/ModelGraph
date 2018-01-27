@@ -19,49 +19,48 @@ namespace RepositoryUWP
         static Action<DataWriter, ColumnX, Dictionary<Item, int>>[] _writeValueDictionary =
         {
             WriteBoolValueDictionary, // 0
-            WriteCharValueDictionary, // 1
+            WriteBoolArrayValueDictionary, // 1
 
-            WriteByteValueDictionary, // 2
-            WriteSByteValueDictionary, //3
+            WriteCharValueDictionary, // 2
+            WriteCharArrayValueDictionary, // 3
 
-            WriteInt16ValueDictionary, // 4
-            WriteUInt16ValueDictionary, // 5
+            WriteByteValueDictionary, // 4
+            WriteByteArrayValueDictionary, // 5
 
-            WriteInt32ValueDictionary, // 6
-            WriteUInt32ValueDictionary, // 7
+            WriteSByteValueDictionary, // 6
+            WriteSByteArrayValueDictionary, // 7
 
-            WriteInt64ValueDictionary, // 8
-            WriteUInt64ValueDictionary, // 9
+            WriteInt16ValueDictionary, // 8
+            WriteInt16ArrayValueDictionary, // 9
 
-            WriteSingleValueDictionary, // 10
-            WriteDoubleValueDictionary, // 11
+            WriteUInt16ValueDictionary, // 10
+            WriteUInt16ArrayValueDictionary, // 11
 
-            WriteDecimalValueDictionary, // 12
-            WriteDateTimeValueDictionary, //13
+            WriteInt32ValueDictionary, // 12
+            WriteInt32ArrayValueDictionary, // 13
 
-            WriteStringValueDictionary, // 14
+            WriteUInt32ValueDictionary, // 14
+            WriteUInt32ArrayValueDictionary, // 15
 
-            WriteBoolArrayValueDictionary, // 15
-            WriteCharArrayValueDictionary, // 16
+            WriteInt64ValueDictionary, // 16
+            WriteInt64ArrayValueDictionary, // 17
 
-            WriteByteArrayValueDictionary, // 17
-            WriteSByteArrayValueDictionary, // 18
+            WriteUInt64ValueDictionary, // 18
+            WriteUInt64ArrayValueDictionary, // 19
 
-            WriteInt16ArrayValueDictionary, // 19
-            WriteUInt16ArrayValueDictionary, // 20
+            WriteSingleValueDictionary, // 20
+            WriteSingleArrayValueDictionary, // 21
 
-            WriteInt32ArrayValueDictionary, // 21
-            WriteUInt32ArrayValueDictionary, // 22
+            WriteDoubleValueDictionary, // 22
+            WriteDoubleArrayValueDictionary, // 23
 
-            WriteInt64ArrayValueDictionary, // 23
-            WriteUInt64ArrayValueDictionary, // 24
+            WriteDecimalValueDictionary, // 24
+            WriteDecimalArrayValueDictionary, // 25
 
-            WriteSingleArrayValueDictionary, // 25
-            WriteDoubleArrayValueDictionary, // 26
+            WriteDateTimeValueDictionary, //26
+            WriteDateTimeArrayValueDictionary, // 27
 
-            WriteDecimalArrayValueDictionary, // 27
-            WriteDateTimeArrayValueDictionary, // 28
-
+            WriteStringValueDictionary, // 28
             WriteStringArrayValueDictionary, // 29
         };
         #endregion

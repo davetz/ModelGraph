@@ -11,6 +11,7 @@ namespace ModelGraphSTD
         internal Func<Item, T2, bool> SetValFunc;
         internal Func<Item, string> GetItemNameFunc;
 
+
         #region Constructor  ==================================================
         internal PropertyOf(Store owner, Trait trait, EnumZ enumZ = null)
         {

@@ -61,7 +61,7 @@ namespace RepositoryUWP
                         ReadGraphX_1,       // 4 GraphX
                         ReadQueryX_2,       // 5 QueryX
                         ReadSymbolX_1,      // 6 SymbolX
-                        ReadColumnX_3,      // 7 ColumnX
+                        ReadColumnX_4,      // 7 ColumnX
                         ReadComputeX_3,     // 8 ComputeX 
                         null,               // 9 CommandX
                         ReadRelationX_2,    // 10 RelationX
@@ -425,7 +425,7 @@ namespace RepositoryUWP
                 if ((b & B3) != 0) cx.Initial = ReadString(r);
                 if ((b & B4) != 0) cx.Description = ReadString(r);
 
-                var type = ((b & B5) != 0) ? NewValType(r.ReadByte()) : ValType.String;
+                var type = ((b & B5) != 0) ? NewValType1(r.ReadByte()) : ValType.String;
                 var defaultVal = ((b & B6) != 0) ? ReadString(r) : null;
 
                 var rowCount = r.ReadInt32();
@@ -473,7 +473,7 @@ namespace RepositoryUWP
                 if ((b & B4) != 0) cx.Initial = ReadString(r);
                 if ((b & B5) != 0) cx.Description = ReadString(r);
 
-                var type = ((b & B6) != 0) ? NewValType(r.ReadByte()) : ValType.String;
+                var type = ((b & B6) != 0) ? NewValType1(r.ReadByte()) : ValType.String;
                 var defaultVal = ((b & B7) != 0) ? ReadString(r) : null;
 
                 var rowCount = r.ReadInt32();
@@ -498,13 +498,46 @@ namespace RepositoryUWP
             if (mark != Mark.ColumnXEnding) throw new Exception($"Expected ColumnXEnding marker, instead got {mark}");
         }
 
-        static ValType NewValType(byte v) => (ValType)_newValType[v];
-        static byte[] _newValType = { 0, 1, 2, 3, 4, 6, 8, 5, 7, 9, 10, 11, 12, 14, 13, 14, 14, 16, 17, 17, 18, 19, 21, 23, 20, 22, 24, 25, 26, 27 };
-        //            _oldValType = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29}; 
+        static ValType NewValType1(byte v) => (ValType)_newValType1[v];
+        static byte[] _newValType1 = { 0, 2, 4, 6, 8, 10, 16, 10, 14, 18, 20, 22, 24, 28, 26, 28, 28,  3,  5,  5,  7,  9, 13, 17, 11, 15, 19, 21, 23, 25};
+        //            _oldValType1 = { 0, 1, 2, 3, 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29}; 
+        static ValType NewValType2(byte v) => (ValType)_newValType2[v];
+        static byte[] _newValType2 = {  0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28,  1,  3,  5,  7,  9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29};
+        //            _oldValType2 = {  0, 1, 2, 3, 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29}; 
         #endregion
 
         #region ReadColumnX_3  ================================================
         private void ReadColumnX_3(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            var store = chef.T_ColumnXStore;
+            var count = r.ReadInt32();
+            if (count < 0) throw new Exception($"Invalid count {count}");
+
+            for (int i = 0; i < count; i++)
+            {
+                var index = r.ReadInt32();
+                if (index < 0 || index >= items.Length) throw new Exception($"Invalid column index {index}");
+
+                var cx = new ColumnX(store, guids[index]);
+                items[index] = cx;
+
+                var b = r.ReadByte();
+                if ((b & B1) != 0) cx.SetFlags(r.ReadUInt16());
+                if ((b & B2) != 0) cx.Name = ReadString(r);
+                if ((b & B3) != 0) cx.Summary = ReadString(r);
+                if ((b & B5) != 0) cx.Description = ReadString(r);
+
+                var t = NewValType2(r.ReadByte());
+
+                ReadValueDictionary(r, t, cx, items);
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.ColumnXEnding) throw new Exception($"Expected ColumnXEnding marker, instead got {mark}");
+        }
+        #endregion
+
+        #region ReadColumnX_4  ================================================
+        private void ReadColumnX_4(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
             var store = chef.T_ColumnXStore;
             var count = r.ReadInt32();

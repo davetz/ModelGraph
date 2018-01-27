@@ -19,49 +19,48 @@ namespace RepositoryUWP
         static Action<DataReader, ValType, ColumnX, Item[]>[] _readValueDictionary =
         {
             ReadBoolValueDictionary, // 0
-            ReadCharValueDictionary, // 1
+            ReadBoolArrayValueDictionary, // 1
 
-            ReadByteValueDictionary, // 2
-            ReadSByteValueDictionary, //3
+            ReadCharValueDictionary, // 2
+            ReadCharArrayValueDictionary, // 3
 
-            ReadInt16ValueDictionary, // 4
-            ReadUInt16ValueDictionary, // 5
+            ReadByteValueDictionary, // 4
+            ReadByteArrayValueDictionary, // 5
 
-            ReadInt32ValueDictionary, // 6
-            ReadUInt32ValueDictionary, // 7
+            ReadSByteValueDictionary, // 6
+            ReadSByteArrayValueDictionary, // 7
 
-            ReadInt64ValueDictionary, // 8
-            ReadUInt64ValueDictionary, // 9
+            ReadInt16ValueDictionary, // 8
+            ReadInt16ArrayValueDictionary, // 9
 
-            ReadSingleValueDictionary, // 10
-            ReadDoubleValueDictionary, // 11
+            ReadUInt16ValueDictionary, // 10
+            ReadUInt16ArrayValueDictionary, // 11
 
-            ReadDecimalValueDictionary, // 12
-            ReadDateTimeValueDictionary, //13
+            ReadInt32ValueDictionary, // 12
+            ReadInt32ArrayValueDictionary, // 13
 
-            ReadStringValueDictionary, // 14
+            ReadUInt32ValueDictionary, // 14
+            ReadUInt32ArrayValueDictionary, // 15
 
-            ReadBoolArrayValueDictionary, // 15
-            ReadCharArrayValueDictionary, // 16
+            ReadInt64ValueDictionary, // 16
+            ReadInt64ArrayValueDictionary, // 17
 
-            ReadByteArrayValueDictionary, // 17
-            ReadSByteArrayValueDictionary, // 18
+            ReadUInt64ValueDictionary, // 18
+            ReadUInt64ArrayValueDictionary, // 19
 
-            ReadInt16ArrayValueDictionary, // 19
-            ReadUInt16ArrayValueDictionary, // 20
+            ReadSingleValueDictionary, // 20
+            ReadSingleArrayValueDictionary, // 21
 
-            ReadInt32ArrayValueDictionary, // 21
-            ReadUInt32ArrayValueDictionary, // 22
+            ReadDoubleValueDictionary, // 22
+            ReadDoubleArrayValueDictionary, // 23
 
-            ReadInt64ArrayValueDictionary, // 23
-            ReadUInt64ArrayValueDictionary, // 24
+            ReadDecimalValueDictionary, // 24
+            ReadDecimalArrayValueDictionary, // 25
 
-            ReadSingleArrayValueDictionary, // 25
-            ReadDoubleArrayValueDictionary, // 26
+            ReadDateTimeValueDictionary, // 26
+            ReadDateTimeArrayValueDictionary, // 27
 
-            ReadDecimalArrayValueDictionary, // 27
-            ReadDateTimeArrayValueDictionary, // 28
-
+            ReadStringValueDictionary, // 28
             ReadStringArrayValueDictionary, // 29
         };
         #endregion

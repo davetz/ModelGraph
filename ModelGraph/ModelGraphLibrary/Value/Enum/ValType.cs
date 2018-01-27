@@ -4,57 +4,57 @@ namespace ModelGraphSTD
     The current types and associated numeric values must never be modified 
     because the numeric value is (saved-to/loaded-from) model repositories.
 
-    However, if needed, a new type could be added as indicated below.
+    However, if needed, a new type pair could be added as indicated below.
  */
     public enum ValType : byte
     {
-        Bool = 0,
-        Char = 1,
+        Bool = 0, //0,
+        IsArray = 1, // flag bit to indicate an array
+        BoolArray = 1, //15,
 
-        Byte = 2,
-        SByte = 3,
+        Char = 2, //1,
+        CharArray = 3, //16,
 
-        Int16 = 4,
-        UInt16 = 5,
+        Byte = 4, //2,
+        ByteArray = 5, //17,
 
-        Int32 = 6,
-        UInt32 = 7,
+        SByte = 6, //3,
+        SByteArray = 7, //18,
 
-        Int64 = 8,
-        UInt64 = 9,
+        Int16 = 8, //4,
+        Int16Array = 9, //19,
 
-        Single = 10,
-        Double = 11,
+        UInt16 = 10, //5,
+        UInt16Array = 11, //20,
 
-        Decimal = 12,
-        DateTime = 13,
+        Int32 = 12, //6,
+        Int32Array = 13, //21,
 
-        String = 14,
+        UInt32 = 14, //7,
+        UInt32Array = 15, //22,
 
-        BoolArray = 15,
-        CharArray = 16,
+        Int64 = 16, //8,
+        Int64Array = 17, //23,
 
-        ByteArray = 17,
-        SByteArray = 18,
+        UInt64 = 18, //9,
+        UInt64Array = 19, //24,
 
-        Int16Array = 19,
-        UInt16Array = 20,
+        Single = 20, //10,
+        SingleArray = 21, //25,
 
-        Int32Array = 21,
-        UInt32Array = 22,
+        Double = 22, //11,
+        DoubleArray = 23, //26,
 
-        Int64Array = 23,
-        UInt64Array = 24,
+        Decimal = 24, //12,
+        DecimalArray = 25, //27,
 
-        SingleArray = 25,
-        DoubleArray = 26,
+        DateTime = 26, //13,
+        DateTimeArray = 27, //28,
 
-        DecimalArray = 27,
-        DateTimeArray = 28,
+        String = 28, //14,
+        StringArray = 29, //29,
 
-        StringArray = 29,
-
-        //<- - - - - - - - - - a new type could be added here
+        //<- - - - - - - - - - a new type pair could be added here
 
         MaximumType = 30,   // used as integrity check durring load 
                             // MaximumType = last_valid_type + 1
