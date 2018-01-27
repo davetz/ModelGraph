@@ -36,11 +36,12 @@ namespace RepositoryUWP
         {
             Guid[] guids;
             Dictionary<Item, int> itemIndex;
+            var fileFormat = _fileFormat_4;
             var itemCount = chef.GetGuidItemIndex(out guids, out itemIndex);
             var relationList = chef.GetRelationList();
 
             w.WriteInt32(0);
-            w.WriteGuid(_fileFormat_3);
+            w.WriteGuid(fileFormat);
 
             WriteGuids(w, guids);
 
@@ -58,7 +59,7 @@ namespace RepositoryUWP
             if (relationList.Count > 0) WriteRelationLink(chef, w, relationList, itemIndex);
 
             w.WriteByte((byte)Mark.StorageFileEnding);
-            w.WriteGuid(_fileFormat_3);
+            w.WriteGuid(fileFormat);
             w.WriteInt32(0);
         }
         #endregion
@@ -304,21 +305,31 @@ namespace RepositoryUWP
             {
                 w.WriteInt32(itemIndex[cx]);
 
-                var b = BZ;
-                if (!string.IsNullOrWhiteSpace(cx.Name)) b |= B1;
-                if (!string.IsNullOrWhiteSpace(cx.Summary)) b |= B2;
-                if (!string.IsNullOrWhiteSpace(cx.Description)) b |= B3;
-                if (cx.Separator != ComputeX.DefaultSeparator) b |= B4;
-                if (cx.CompuType != CompuType.RowValue) b |= B5;
-                if (cx.NumericSet != NumericSet.Count) b |= B6;
+                var S = SZ;
+                if (!string.IsNullOrWhiteSpace(cx.Name)) S |= S1;
+                if (!string.IsNullOrWhiteSpace(cx.Summary)) S |= S2;
+                if (!string.IsNullOrWhiteSpace(cx.Description)) S |= S3;
+                if (cx.Separator != ComputeX.DefaultSeparator) S |= S4;
+                if (cx.CompuType != CompuType.RowValue) S |= S5;
+                if (cx.NumericSet != NumericSet.Count) S |= S6;
 
-                w.WriteByte(b);
-                if ((b & B1) != 0) WriteString(w, cx.Name);
-                if ((b & B2) != 0) WriteString(w, cx.Summary);
-                if ((b & B3) != 0) WriteString(w, cx.Description);
-                if ((b & B4) != 0) WriteString(w, ((cx.Separator != null) ? cx.Separator : string.Empty));
-                if ((b & B5) != 0) w.WriteByte((byte)cx.CompuType);
-                if ((b & B6) != 0) w.WriteByte((byte)cx.NumericSet);
+                if (cx.Results != Results.OneValue) S |= S7;        //01-27-2018 _fileFormat_4
+                if (cx.Sorting != Sorting.Unsorted) S |= S8;
+                if (cx.TakeSet != TakeSet.First) S |= S9;
+                if (cx.TakeLimit != 0) S |= S10;
+
+                w.WriteUInt16(S);                                   //01-27-2018 _fileFormat_4
+                if ((S & S1) != 0) WriteString(w, cx.Name);
+                if ((S & S2) != 0) WriteString(w, cx.Summary);
+                if ((S & S3) != 0) WriteString(w, cx.Description);
+                if ((S & S4) != 0) WriteString(w, ((cx.Separator != null) ? cx.Separator : string.Empty));
+                if ((S & S5) != 0) w.WriteByte((byte)cx.CompuType);
+                if ((S & S6) != 0) w.WriteByte((byte)cx.NumericSet);
+
+                if ((S & S7) != 0) w.WriteByte((byte)cx.Results);   //01-27-2018 _fileFormat_4
+                if ((S & S8) != 0) w.WriteByte((byte)cx.Sorting);
+                if ((S & S9) != 0) w.WriteByte((byte)cx.TakeSet);
+                if ((S & S10) != 0) w.WriteByte(cx.TakeLimit);
             }
             w.WriteByte((byte)Mark.ComputeXEnding); // itegrity marker
         }

@@ -50,7 +50,26 @@ namespace RepositoryUWP
 
             if (header == 0)
             {
-                if (fileFormat == _fileFormat_3)
+                if (fileFormat == _fileFormat_4)
+                {
+                    vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
+                    {
+                        null,               // 0
+                        ReadViewX_1,        // 1 ViewX
+                        ReadEnumX_1,        // 2 EnumX
+                        ReadTableX_1,       // 3 TableX
+                        ReadGraphX_1,       // 4 GraphX
+                        ReadQueryX_2,       // 5 QueryX
+                        ReadSymbolX_1,      // 6 SymbolX
+                        ReadColumnX_3,      // 7 ColumnX
+                        ReadComputeX_3,     // 8 ComputeX 
+                        null,               // 9 CommandX
+                        ReadRelationX_2,    // 10 RelationX
+                        ReadGraphParm_1,    // 11 GraphParam
+                        ReadRelationLink_1, // 12 RelationLink
+                    };
+                }
+                else if (fileFormat == _fileFormat_3)
                 {
                     vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
                     {
@@ -574,6 +593,39 @@ namespace RepositoryUWP
                 if ((b & B4) != 0) cx.Separator = ReadString(r);
                 if ((b & B5) != 0) cx.CompuType = (CompuType)r.ReadByte();
                 if ((b & B6) != 0) cx.NumericSet = (NumericSet)r.ReadByte();
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.ComputeXEnding) throw new Exception($"Expected ComputeXEnding marker, instead got {mark}");
+        }
+        #endregion
+
+        #region ReadComputeX_3  ===============================================
+        private void ReadComputeX_3(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            var store = chef.T_ComputeXStore;
+            var count = r.ReadInt32();
+            if (count < 0) throw new Exception($"Invalid count {count}");
+
+            for (int i = 0; i < count; i++)
+            {
+                var index = r.ReadInt32();
+                if (index < 0 || index >= items.Length) throw new Exception($"Invalid index {index}");
+
+                var cx = new ComputeX(store, guids[index]);
+                items[index] = cx;
+
+                var S = r.ReadUInt16();                                     //01-27-2018 _fileFormat_4
+                if ((S & S1) != 0) cx.Name = ReadString(r);
+                if ((S & S2) != 0) cx.Summary = ReadString(r);
+                if ((S & S3) != 0) cx.Description = ReadString(r);
+                if ((S & S4) != 0) cx.Separator = ReadString(r);
+                if ((S & S5) != 0) cx.CompuType = (CompuType)r.ReadByte();
+                if ((S & S6) != 0) cx.NumericSet = (NumericSet)r.ReadByte();
+
+                if ((S & S7) != 0) cx.Results = (Results)r.ReadByte();      //01-27-2018 _fileFormat_4
+                if ((S & S8) != 0) cx.Sorting = (Sorting)r.ReadByte();
+                if ((S & S9) != 0) cx.TakeSet = (TakeSet)r.ReadByte();
+                if ((S & S10) != 0) cx.TakeLimit = r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.ComputeXEnding) throw new Exception($"Expected ComputeXEnding marker, instead got {mark}");

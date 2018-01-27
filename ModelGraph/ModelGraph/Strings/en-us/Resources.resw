@@ -2032,4 +2032,28 @@ These are the behind the scene internal collections. They are listed here so tha
   <data name="D3FS" xml:space="preserve">
     <value>Take a limited number of result items </value>
   </data>
+  <data name="4B9N" xml:space="preserve">
+    <value>Results</value>
+  </data>
+  <data name="4B9S" xml:space="preserve">
+    <value>Query results (scalar / array)?</value>
+  </data>
+  <data name="4BAN" xml:space="preserve">
+    <value>Sorting</value>
+  </data>
+  <data name="4BAS" xml:space="preserve">
+    <value>Chose results sorting method</value>
+  </data>
+  <data name="4BBN" xml:space="preserve">
+    <value>TakeSet</value>
+  </data>
+  <data name="4BBS" xml:space="preserve">
+    <value>Which end of the results set to take from</value>
+  </data>
+  <data name="4BCN" xml:space="preserve">
+    <value>TakeLimit</value>
+  </data>
+  <data name="4BCS" xml:space="preserve">
+    <value>Take a limited number of elements form the full results set</value>
+  </data>
 </root>
