@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ModelGraphSTD
 {
@@ -44,8 +45,17 @@ namespace ModelGraphSTD
         #endregion
 
         #region Required  =====================================================
-        internal override bool GetValue(Item key, out string value) => throw new NotImplementedException();
-        internal override bool SetValue(Item key, string value) => throw new NotImplementedException();
+        internal override bool GetValue(Item key, out string value)
+        {
+            var b = (GetVal(key, out string[] v));
+            value = ArrayFormat(v, (i) => v[i]);
+            return b;
+        }
+        internal override bool SetValue(Item key, string value)
+        {
+            (var ok, string[] v) = ArrayParse(value, (s) => (true, s));
+            return ok ? SetVal(key, v) : false;
+        }
         #endregion
 
         #region GetValueAt  ===================================================

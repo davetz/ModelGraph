@@ -221,12 +221,12 @@ namespace ModelGraphSTD
 
             bool TryGetRelated()
             {
-                var tails = new List<Query>();
-                var forest = GetForest(cx, key, tails);
-                if (tails.Count == 0)
+                var selectors = new List<Query>();
+                var forest = GetForest(cx, key, selectors);
+                if (selectors.Count == 0)
                     return false;
 
-                return cx.Value.LoadCache(cx, key, tails);
+                return cx.Value.LoadCache(cx, key, selectors);
             }
 
             bool TryGetNumericSet()

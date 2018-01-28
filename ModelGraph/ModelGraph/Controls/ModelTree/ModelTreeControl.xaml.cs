@@ -431,7 +431,7 @@ namespace ModelGraph
         private void ValidateScroll()
         {
             if (_root.ViewIndex1 < 0) _root.ViewIndex1 = 0;
-            var max1 = 1 + Count -  (_root.ViewCapacity / 2);
+            var max1 = Count -  (_root.ViewCapacity / 2);
             if (max1 < 0) max1 = 0;
             if (_root.ViewIndex1 > max1) _root.ViewIndex1 = max1;
 
