@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {
@@ -11,6 +12,7 @@ namespace ModelGraphSTD
         internal abstract int Count { get; }
         internal abstract void Clear();
         internal abstract void Remove(Item key);
+
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
         // the following used by the UI to get/set property values
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -19,6 +21,12 @@ namespace ModelGraphSTD
 
         internal bool GetBool(Item key) { GetValue(key, out bool v); return v; }
         internal string GetString(Item key) { GetValue(key, out string v); return v; }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+        // the following used to transfer query results to the computeX's cache value
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        internal virtual bool LoadCache(ComputeX cx, Item key, List<Query> q) => false;
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
         // the following used to get the inputs for computed values

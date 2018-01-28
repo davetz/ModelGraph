@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {
@@ -9,6 +10,24 @@ namespace ModelGraphSTD
         internal override ValType ValType => ValType.Char;
 
         internal ValueDictionary<char> ValueDictionary => _valueStore as ValueDictionary<char>;
+
+        #region LoadCache  ====================================================
+        internal override bool LoadCache(ComputeX cx, Item key, List<Query> qList)
+        {
+            if (cx == null || qList == null || qList.Count == 0) return false;
+
+            var q = qList[0];
+            if (q.Items == null || q.Items.Length == 0) return false;
+
+            var qx = q.QueryX;
+            if (!qx.HasSelect) return false;
+
+            var k = q.Items[0];
+            if (k == null) return false;
+
+            return (qx.Select.GetValue(k, out string v)) ? SetValue(key, v) : false;
+        }
+        #endregion
 
         #region GetValue  =====================================================
         internal override bool GetValue(Item key, out bool value)

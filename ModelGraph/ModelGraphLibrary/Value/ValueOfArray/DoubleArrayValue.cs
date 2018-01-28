@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace ModelGraphSTD
 {
     internal class DoubleArrayValue : ValueOfArray<double>
@@ -7,6 +9,39 @@ namespace ModelGraphSTD
         internal override ValType ValType => ValType.DoubleArray;
 
         internal ValueDictionary<double[]> ValueDictionary => _valueStore as ValueDictionary<double[]>;
+
+        #region LoadCache  ====================================================
+        internal override bool LoadCache(ComputeX cx, Item key, List<Query> qList)
+        {
+            if (cx == null || qList == null || qList.Count == 0) return false;
+
+            var N = 0;
+            foreach (var q in qList)
+            {
+                if (q.Items == null) continue;
+                var qx = q.QueryX;
+                if (!qx.HasSelect) continue;
+                foreach (var k in q.Items) { if (k != null) N++; }
+            }
+            var v = new double[N];
+            var i = 0;
+
+            foreach (var q in qList)
+            {
+                if (q.Items == null) continue;
+                var qx = q.QueryX;
+                if (!qx.HasSelect) continue;
+                foreach (var k in q.Items)
+                {
+                    if (k != null)
+                    {
+                        qx.Select.GetValue(k, out v[i++]);
+                    }
+                }
+            }
+            return SetValue(key, v);
+        }
+        #endregion
 
         #region Required  =====================================================
         internal override bool GetValue(Item key, out string value)

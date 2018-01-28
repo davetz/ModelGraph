@@ -225,18 +225,7 @@ namespace ModelGraphSTD
                 if (tails.Count == 0)
                     return false;
 
-                var q = tails[0];
-                var s = q.QueryX.Select;
-                if (s == null)
-                    return false;
-
-                if (q.Items == null || q.Items.Length < 1)
-                    return false;
-                
-                if (!s.GetValue(q.Items[0], out string val))
-                    return false;
-
-                return cx.Value.SetValue(key, val);
+                return cx.Value.LoadCache(cx, key, tails);
             }
 
             bool TryGetNumericSet()
@@ -273,12 +262,7 @@ namespace ModelGraphSTD
 
                 case CompuType.RelatedValue:
 
-                    var qx = ComputeX_QueryX.GetChild(cx) as QueryX;
-                    while(QueryX_QueryX.HasChildLink(qx)) { qx = QueryX_QueryX.GetChild(qx); }
-                    if (qx == null || qx.Select == null || qx.Select.ValueType == ValType.IsInvalid)
-                        cx.Value = ValuesInvalid;
-                    else
-                        AllocateCache(qx);
+                    cx.Value = Value.Create(GetRelatedValueType(cx));
                     break;
 
                 case CompuType.NumericValueSet:
@@ -340,6 +324,9 @@ namespace ModelGraphSTD
                 if (qt.HasSelect && qt.Select.IsValid && qt.Select.ValueType < ValType.MaximumType)
                 {
                     vTypes.Add(qt.Select.ValueType);
+                    var r = Relation_QueryX.GetParent(qt);
+                    if (r != null && (r.Pairing == Pairing.ManyToMany || (!qt.IsReversed && r.Pairing == Pairing.OneToMany)))
+                        isMultiple = true;
                 }
 
                 children = QueryX_QueryX.GetChildren(qt);
@@ -363,14 +350,48 @@ namespace ModelGraphSTD
             if (vGroup == ValGroup.None)
                 return ValType.IsInvalid; //computeX must have atleast valid related value
 
-            if (cx.Results == Results.OneValue)
-                isMultiple = false;
+            if (vGroup.HasFlag(ValGroup.ArrayGroup))
+                isMultiple = true;
+
+            if (vTypes.Count == 1)
+            {
+                if (isMultiple)
+                    vType |= ValType.IsArray;
+                else
+                    vType &= ~ValType.IsArray;
+            }
             else
-                isMultiple |= vGroup.HasFlag(ValGroup.ArrayGroup);
-
-
-
-
+            {
+                if (vGroup == ValGroup.DateTime )
+                {
+                    vType = (isMultiple) ? ValType.DateTimeArray : ValType.DateTime;
+                }
+                else if (vGroup == ValGroup.DateTimeArray)
+                {
+                    vType = ValType.DateTimeArray;
+                }
+                else if (vGroup.HasFlag(ValGroup.DateTime) || vGroup.HasFlag(ValGroup.DateTimeArray))
+                {
+                    vType = ValType.StringArray;
+                }
+                else if (vGroup.HasFlag(ValGroup.ScalarGroup) && !vGroup.HasFlag(ValGroup.ArrayGroup))
+                {
+                    if (vGroup.HasFlag(ValGroup.String))
+                        vType = ValType.StringArray;
+                    else if (vGroup.HasFlag(ValGroup.Double))
+                        vType = ValType.DoubleArray;
+                    else if (vGroup.HasFlag(ValGroup.Long))
+                        vType = ValType.Int64Array;
+                    else if (vGroup.HasFlag(ValGroup.Int))
+                        vType = ValType.Int32Array;
+                    else if (vGroup.HasFlag(ValGroup.Bool))
+                        vType = ValType.BoolArray;
+                }
+                else
+                {
+                    vType = ValType.StringArray;
+                }
+            }
 
             return vType;
         }
