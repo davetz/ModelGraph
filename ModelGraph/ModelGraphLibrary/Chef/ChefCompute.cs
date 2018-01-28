@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ModelGraphSTD
 {/*
@@ -188,8 +189,8 @@ namespace ModelGraphSTD
         #region TryGetComputedValue  ==========================================
         internal bool TryGetComputedValue(ComputeX cx, Item key)
         {/*
-            This method is called by valueDictionary when there is now existing 
-            key-value-pair for the callers key.
+            This method is called by valueDictionary when a key-value-pair does
+            not exist for the callers key.
          */
             var qx = ComputeX_QueryX.GetChild(cx);
             if (qx == null || cx.Value.IsEmpty)
@@ -211,7 +212,7 @@ namespace ModelGraphSTD
 
             bool TryGetRowValue()
             {
-                if (!qx.HasSelect || qx.Select.GetValue(key, out string val))
+                if (!qx.HasSelect || !qx.Select.GetValue(key, out string val))
                     return false;
 
                 cx.Value.SetValue(key, val);
@@ -233,15 +234,44 @@ namespace ModelGraphSTD
                 return cx.Value.SetValue(key, "0, 1, 0, 1");
             }
 
-            bool TryGetCompositeString()
+            bool TryGetCompositeString(bool reverse = false)
             {
-                return cx.Value.SetValue(key, "composite");
+                var selectors = new List<Query>();
+                var forest = GetForest(cx, key, selectors);
+                if (forest == null || forest.Length == 0 || selectors.Count == 0)
+                    return false;
+
+                var sb = new StringBuilder(128);
+
+                if (reverse) selectors.Reverse();
+
+                var seperator = cx.Separator;
+                if (string.IsNullOrEmpty(seperator)) seperator = null;
+
+                foreach (var q in selectors)
+                {
+                    if (q.Items == null) continue;
+                    var qt = q.QueryX;
+
+                    foreach (var k in q.Items)
+                    {
+                        if (k == null) continue;
+                        if (!qt.Select.GetValue(k, out string text)) continue;
+                        if (string.IsNullOrEmpty(text)) text = " ? ";
+                        if (sb.Length > 0 && seperator != null)
+                            sb.Append(seperator);
+                        sb.Append(text);
+                    }
+                }
+
+                return cx.Value.SetValue(key, sb.ToString());
             }
 
             bool TryGetCompositeReversed()
             {
-                return cx.Value.SetValue(key, "composite rev");
+                return TryGetCompositeString(true);
             }
+
         }
         #endregion
 

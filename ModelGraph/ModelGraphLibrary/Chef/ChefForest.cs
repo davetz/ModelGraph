@@ -17,7 +17,7 @@ namespace ModelGraphSTD
             if (roots == null) return null;
 
             List<Query> segList = new List<Query>();
-            var forest = GetRoots(roots, seed, segList);
+            var forest = GetQueryRoots(roots, seed, segList);
             if (forest == null) return null;
 
             var keyPairs = new Dictionary<byte, List<ItemPair>>();
@@ -59,15 +59,16 @@ namespace ModelGraphSTD
 
         #region GetForest  ====================================================
         /// <summary>
-        /// Return a ComputeX forest of query trees
+        /// Return a query forest for the callers computeX.
+        /// Also return a list of query's who's parent queryX has a valid select clause. 
         /// </summary>
-        private Query[] GetForest(ComputeX cx, Item seed, List<Query> tails)
+        private Query[] GetForest(ComputeX cx, Item seed, List<Query> selectors)
         {
-            QueryX[] roots = ComputeX_QueryX.GetChildren(cx);
-            if (roots == null) return null;
+            QueryX[] qxRoots = ComputeX_QueryX.GetChildren(cx);
+            if (qxRoots == null) return null;
 
             List<Query> qList = new List<Query>();
-            var forest = GetRoots(roots, seed, qList);
+            var forest = GetQueryRoots(qxRoots, seed, qList);
             if (forest == null) return null;
 
             var workQueue = new Queue<Query>(forest);
@@ -92,8 +93,15 @@ namespace ModelGraphSTD
                         {
                             var child = GetChildQuery(qx, q, item);
                             if (child == null) continue;
-                            if (child.IsTail) tails.Add(child);
-
+                            if (child.IsTail && qx.HasSelect && qx.Select.IsValid)
+                            {
+                                var p = child.Parent;
+                                while(p.Parent != null) { p = p.Parent; }
+                                var qp = p.QueryX;
+                                if (qp.HasSelect && qp.Select.IsValid)
+                                    selectors.Add(p);
+                                selectors.Add(child);
+                            }
                             qList.Add(child);
                             workQueue.Enqueue(child);
                         }
@@ -106,28 +114,32 @@ namespace ModelGraphSTD
         #endregion
 
         #region GetRoots  =====================================================
-        Query[] GetRoots(QueryX[] roots, Item seed, List<Query> segList)
-        {
-            if (roots != null && roots.Length > 0)
+        Query[] GetQueryRoots(QueryX[] qxRoots, Item seed, List<Query> qList)
+        {/*
+            Create the roots of a query forest.
+         */
+            if (qxRoots != null && qxRoots.Length > 0)
             {
-                foreach (var root in roots)
+                foreach (var qx in qxRoots)
                 {
-                    var st = Store_QueryX.GetParent(root);
-                    if (seed == null || seed.Owner != st && st.Count > 0)
+                    var sto = Store_QueryX.GetParent(qx);
+                    if (seed == null || seed.Owner != sto && sto.Count > 0)
                     {
-                        var items = st.GetItems();
-                        if (root.HasWhere) items = ApplyFilter(root, items);
+                        var items = sto.GetItems();
+                        if (qx.HasWhere) items = ApplyFilter(qx, items);
 
-                        if (items != null) segList.Add(new Query(root, null, st, items));
+                        if (items != null) qList.Add(new Query(qx, null, sto, items));
                     }
-                    else if (seed != null && seed.Owner == st)
-                    {
-                        segList.Add(new Query(root, null, st, new Item[] { seed }));
+                    else if (seed != null && seed.Owner == sto)
+                    {/*
+
+                     */
+                        qList.Add(new Query(qx, null, sto, new Item[] { seed }));
                     }
                 }
             }
 
-            return (segList.Count > 0) ? segList.ToArray() : null;
+            return (qList.Count > 0) ? qList.ToArray() : null;
         }
         #endregion
 
