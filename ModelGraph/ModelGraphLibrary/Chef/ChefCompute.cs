@@ -210,9 +210,11 @@ namespace ModelGraphSTD
             }
             return false;
 
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
             bool TryGetRowValue()
             {
-                if (!qx.HasSelect || !qx.Select.GetValue(key, out string val))
+                if (!qx.HasValidSelect || !qx.Select.GetValue(key, out string val))
                     return false;
 
                 cx.Value.SetValue(key, val);
@@ -334,11 +336,11 @@ namespace ModelGraphSTD
         {
             var qx = ComputeX_QueryX.GetChild(cx);
             if (qx == null)
-                return ValType.IsInvalid; //computeX must have q root QueryX reference
+                return ValType.IsInvalid; //computeX must have a root queryX reference
 
             var children = QueryX_QueryX.GetChildren(qx);
             if (children == null || children.Length == 0)
-                return ValType.IsInvalid; //computeX must have atleast one QueryX reference
+                return ValType.IsInvalid; //computeX must have atleast one queryX reference
 
             var workQueue = new Queue<QueryX>(children);
             var isMultiple = children.Length > 1;
@@ -351,7 +353,7 @@ namespace ModelGraphSTD
              */
                 var qt = workQueue.Dequeue();
 
-                if (qt.HasSelect && qt.Select.IsValid && qt.Select.ValueType < ValType.MaximumType)
+                if (qt.HasValidSelect && qt.Select.ValueType < ValType.MaximumType)
                 {
                     vTypes.Add(qt.Select.ValueType);
                     var r = Relation_QueryX.GetParent(qt);
@@ -374,7 +376,7 @@ namespace ModelGraphSTD
             var vGroup = ValGroup.None;
             foreach (var vt in vTypes)
             {
-                vGroup |= Value.GetValGroup(vt); // compose aggregate value group
+                vGroup |= Value.GetValGroup(vt); // compose an aggregate of value group bit flags
                 if (vType == ValType.IsInvalid) vType = vt; // get the first valType
             }
             if (vGroup == ValGroup.None)

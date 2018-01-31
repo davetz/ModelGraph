@@ -81,6 +81,7 @@ namespace ModelGraphSTD
 
         internal bool HasWhere => (Where != null);
         internal bool HasSelect => (Select != null);
+        internal bool HasValidSelect => (Select != null && Select.IsValid);
 
         internal bool AnyChange => (HasWhere && Where.AnyChange) || (HasSelect && Select.AnyChange);
 

@@ -93,12 +93,12 @@ namespace ModelGraphSTD
                         {
                             var child = GetChildQuery(qx, q, item);
                             if (child == null) continue;
-                            if (child.IsTail && qx.HasSelect && qx.Select.IsValid)
+                            if (child.IsTail && qx.HasValidSelect)
                             {
                                 var p = child.Parent;
                                 while(p.Parent != null) { p = p.Parent; }
                                 var qp = p.QueryX;
-                                if (qp.HasSelect && qp.Select.IsValid)
+                                if (qp.HasValidSelect)
                                     selectors.Add(p);
                                 selectors.Add(child);
                             }

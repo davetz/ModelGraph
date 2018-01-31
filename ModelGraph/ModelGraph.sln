@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelGraph", "ModelGraph\ModelGraph.csproj", "{2CB02992-E9F6-4D1B-84B8-19B48B433B8A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelGraphSTD", "ModelGraphLibrary\ModelGraphSTD.csproj", "{25E0A552-01B0-4A2F-8DE3-10E79AF12862}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModelGraphSTD", "TestModelGraphLibrary\TestModelGraphSTD.csproj", "{085A4E51-6E0D-4B3E-98F3-223EADBB7C28}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelGraphSTD_Test", "TestModelGraphLibrary\ModelGraphSTD_Test.csproj", "{085A4E51-6E0D-4B3E-98F3-223EADBB7C28}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryUWP", "RepositoryStorageFile\RepositoryUWP.csproj", "{D47FC5F4-0439-492C-8730-6A652E1D1D3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestNewFeatures", "TestNewFeatures\TestNewFeatures.csproj", "{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelGraphUWP", "ModelGraphUWP\ModelGraphUWP.csproj", "{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,26 +93,26 @@ Global
 		{D47FC5F4-0439-492C-8730-6A652E1D1D3A}.Release|x64.Build.0 = Release|x64
 		{D47FC5F4-0439-492C-8730-6A652E1D1D3A}.Release|x86.ActiveCfg = Release|x86
 		{D47FC5F4-0439-492C-8730-6A652E1D1D3A}.Release|x86.Build.0 = Release|x86
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Debug|ARM.ActiveCfg = Debug|ARM
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Debug|ARM.Build.0 = Debug|ARM
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Debug|ARM.Deploy.0 = Debug|ARM
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Debug|x64.ActiveCfg = Debug|x64
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Debug|x64.Build.0 = Debug|x64
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Debug|x64.Deploy.0 = Debug|x64
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Debug|x86.ActiveCfg = Debug|x86
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Debug|x86.Build.0 = Debug|x86
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Debug|x86.Deploy.0 = Debug|x86
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Release|Any CPU.ActiveCfg = Release|x86
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Release|ARM.ActiveCfg = Release|ARM
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Release|ARM.Build.0 = Release|ARM
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Release|ARM.Deploy.0 = Release|ARM
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Release|x64.ActiveCfg = Release|x64
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Release|x64.Build.0 = Release|x64
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Release|x64.Deploy.0 = Release|x64
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Release|x86.ActiveCfg = Release|x86
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Release|x86.Build.0 = Release|x86
-		{CB09F31A-ADBD-4F6E-B4BE-EDE262149F0C}.Release|x86.Deploy.0 = Release|x86
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Debug|ARM.ActiveCfg = Debug|ARM
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Debug|ARM.Build.0 = Debug|ARM
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Debug|ARM.Deploy.0 = Debug|ARM
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Debug|x64.ActiveCfg = Debug|x64
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Debug|x64.Build.0 = Debug|x64
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Debug|x64.Deploy.0 = Debug|x64
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Debug|x86.ActiveCfg = Debug|x86
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Debug|x86.Build.0 = Debug|x86
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Debug|x86.Deploy.0 = Debug|x86
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Release|Any CPU.ActiveCfg = Release|x86
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Release|ARM.ActiveCfg = Release|ARM
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Release|ARM.Build.0 = Release|ARM
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Release|ARM.Deploy.0 = Release|ARM
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Release|x64.ActiveCfg = Release|x64
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Release|x64.Build.0 = Release|x64
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Release|x64.Deploy.0 = Release|x64
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Release|x86.ActiveCfg = Release|x86
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Release|x86.Build.0 = Release|x86
+		{F3FA84CE-7ECD-46A8-AEBF-988D5C78B82A}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
