@@ -65,21 +65,17 @@ namespace ModelGraphUWP.Views
             NavigationService.Navigated += Frame_Navigated;
 
             //draw into the title bar
-            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
-            CoreApplication.GetCurrentView().TitleBar.LayoutMetricsChanged += TitleBar_LayoutMetricsChanged;
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
+            //CoreApplication.GetCurrentView().TitleBar.LayoutMetricsChanged += TitleBar_LayoutMetricsChanged;
 
 
             //remove the solid-colored backgrounds behind the caption controls and system back button
-            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.ButtonBackgroundColor = Colors.Transparent;
-            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-            titleBar.ButtonForegroundColor = (Color)this.Resources["SystemBaseHighColor"];
+            //ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            //titleBar.ButtonBackgroundColor = Colors.Transparent;
+            //titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+            //titleBar.ButtonForegroundColor = (Color)this.Resources["SystemBaseHighColor"];
         }
 
-        private void TitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
-        {
-            AppTitle.Margin = new Thickness(CoreApplication.GetCurrentView().TitleBar.SystemOverlayLeftInset + 12, 8, 0, 0);
-        }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
@@ -207,5 +203,21 @@ namespace ModelGraphUWP.Views
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+        private async void AppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            var val = await Services.WindowManagerService.Current.TryShowAsViewModeAsync("BlankPage", typeof(Views.BlankPage), ApplicationViewMode.CompactOverlay);
+            val.Released += Val_Released;
+        }
+
+        private void Val_Released(object sender, EventArgs e)
+        {
+            var donothing = true;
+        }
+
+        private async void AppBarButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            var val = await Services.WindowManagerService.Current.TryShowAsViewModeAsync("BlankPage", typeof(Views.BlankPage), ApplicationViewMode.Default);
+            val.Released += Val_Released;
+        }
     }
 }

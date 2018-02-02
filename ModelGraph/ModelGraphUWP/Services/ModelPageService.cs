@@ -15,12 +15,14 @@ namespace ModelGraphUWP.Services
     {
         private readonly App _app;
         private readonly ConcurrentDictionary<PageControl, Chef> _modelPages;
+        private static ModelPageService _current;
 
+        public static ModelPageService Current => _current ?? (_current = new ModelPageService());
         //=====================================================================
 
-        internal ModelPageService(App app)
+        private ModelPageService()
         {
-            _app = app;
+            _app = (App)Application.Current;
             _modelPages = new ConcurrentDictionary<PageControl, Chef>();
 
             ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;

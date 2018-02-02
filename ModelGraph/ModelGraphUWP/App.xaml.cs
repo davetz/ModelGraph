@@ -12,9 +12,6 @@ namespace ModelGraphUWP
         private Lazy<ActivationService> _activationService;
         private ActivationService ActivationService => _activationService.Value;
 
-        private Lazy<ModelPageService> _modelPageService;
-        internal ModelPageService ModelPageService => _modelPageService.Value;
-
         public App()
         {
             InitializeComponent();
@@ -38,16 +35,8 @@ namespace ModelGraphUWP
 
         private ActivationService CreateActivationService()
         {
-            return new ActivationService(this, typeof(Views.MainPage), new Lazy<UIElement>(CreateShell));
+            return new ActivationService(this, typeof(PageControl), new Lazy<UIElement>(CreateShell));
         }
-
-        private ModelPageService CreateModelPageService()
-        {
-            return new ModelPageService(this);
-        }
-
-        internal ModelPageService PageService => ModelPageService;
-
         private UIElement CreateShell()
         {
             return new Views.ShellNavigationPage();

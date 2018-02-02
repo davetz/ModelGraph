@@ -12,19 +12,8 @@
         x:Name="ContentArea"
         Margin="{StaticResource MediumLeftRightMargin}">
 
-        <Grid.RowDefinitions>
-            <RowDefinition x:Name="TitleRow" Height="48"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <TextBlock
-            x:Name="TitlePage"
-            x:Uid="Blank_Title"
-            Text="Navigation Item 2"
-            Style="{StaticResource PageTitleStyle}" />
 
         <Grid 
-            Grid.Row="1" 
             Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
             <!--The SystemControlPageBackgroundChromeLowBrush background represents where you should place your content. 
                 Place your content here.-->

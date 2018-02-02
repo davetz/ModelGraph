@@ -38,7 +38,7 @@ namespace ModelGraphUWP
             _model.PageControl = this;
             _model.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
 
-            _pageService = ((App)Application.Current).PageService;
+            _pageService = ModelPageService.Current;
             _pageService.AddModelPage(this);
 
             Loaded += PageControl_Loaded;
@@ -64,15 +64,14 @@ namespace ModelGraphUWP
 
             var view = ApplicationView.GetForCurrentView();
             view.SetPreferredMinSize(sz);
-            view.TryResizeView(sz);
+            //view.TryResizeView(sz);
 
             ModelRefresh();
         }
 
         private void PageControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var bounds = Window.Current.Bounds;
-            _model.ModelControl.SetSize(bounds.Width, bounds.Height);
+            _model.ModelControl.SetSize(ActualWidth, ActualHeight);
         }
 
         private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)

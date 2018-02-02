@@ -2086,4 +2086,8 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
   <data name="U05" xml:space="preserve">
     <value>Symbol</value>
   </data>
+  <data name="AppTitle.Text" xml:space="preserve">
+    <value>ModelGraph</value>
+    <comment>Application's Title</comment>
+  </data>
 </root>
