@@ -18,12 +18,18 @@
                     Canvas.ZIndex="0">
 
         <NavigationView.MenuItems>
-            <NavigationViewItem x:Uid="HomeNavItem" Content="Home" Tag="home">
+            <NavigationViewItem x:Name="Home" x:Uid="HomeNavItem" Content="Home">
                 <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE10F;"/>
+                    <FontIcon Glyph="&#xE80F;"/>
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
             <NavigationViewItemSeparator/>
+            <NavigationViewItemSeparator x:Name="InsertionPoint"/>
+            <NavigationViewItem x:Name="Compare" x:Uid="CompareNavItem" Content="Compare">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE773;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
         </NavigationView.MenuItems>
 
         <Frame x:Name="ContentFrame" Margin="0,0,0,0">

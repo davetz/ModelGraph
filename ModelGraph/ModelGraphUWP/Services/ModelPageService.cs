@@ -16,16 +16,17 @@ namespace ModelGraphUWP.Services
     {
         PageControl _rootPage;
         ModelRoot _rootModel;
+        ModelRoot _compareModel;
         readonly ConcurrentDictionary<ModelRoot, PageControl> _modelPages;
         static ModelPageService _current;
 
         //=====================================================================
 
-        Action<ModelRoot, List<ModelRoot>> _updateNavigationPane;
-        internal void RegesterNavigaionPaneUpdateMethod(Action<ModelRoot, List<ModelRoot>> updater)
+        Action<ModelRoot, ModelRoot, List<ModelRoot>, ModelRoot> _updateNavigationPane;
+        internal void RegesterNavigaionPaneUpdateMethod(Action<ModelRoot, ModelRoot, List<ModelRoot>, ModelRoot> updater)
         {
             _updateNavigationPane = updater;
-            UpdateNavigationPane();
+            UpdateNavigationPane(_rootModel);
         }
 
         //=====================================================================
@@ -63,7 +64,10 @@ namespace ModelGraphUWP.Services
                 _rootPage = page;
                 _rootModel = model;
             }
-            await _rootPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, UpdateNavigationPane );
+            if (page == _rootPage)
+            {
+                await _rootPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { UpdateNavigationPane(model); });
+            }
         }
         internal async void RemoveModelPage(ModelRoot model, PageControl page)
         {
@@ -78,33 +82,41 @@ namespace ModelGraphUWP.Services
 
                 foreach (var e in hitList)
                 {
-                    _modelPages.TryRemove(e.model, out PageControl p);
-
-                    await e.page.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    if (_modelPages.TryRemove(e.model, out PageControl p))
                     {
-                        Window.Current.Close();
-                    });
+                        if (e.page != _rootPage)
+                        {
+                            await e.page.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                Window.Current.Close();
+                            });
+                        }
+                    }
                 }
             }
             else
             {
                 _modelPages.TryRemove(model, out PageControl p);
             }
-            await _rootPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, UpdateNavigationPane);
+
+            if (page == _rootPage)
+            {
+                await _rootPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { UpdateNavigationPane(_rootModel); });
+            }
         }
 
-        void UpdateNavigationPane()
+        void UpdateNavigationPane(ModelRoot selectedModed)
         {
             if (_rootModel == null || _updateNavigationPane == null)
                 return;
 
-            var models = new List<ModelRoot>(8);
+            var modelList = new List<ModelRoot>(8);
 
             foreach (var e in _modelPages)
             {
-                if (_rootPage == e.Value && e.Key != _rootModel) models.Add((e.Key));
+                if (_rootPage == e.Value && e.Key != _rootModel) modelList.Add((e.Key));
             }
-            _updateNavigationPane(_rootModel, models);
+            _updateNavigationPane(_rootModel, _compareModel, modelList, selectedModed);
         }
 
         //=====================================================================

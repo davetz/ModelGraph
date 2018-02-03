@@ -14,36 +14,8 @@ using Windows.UI.Xaml.Navigation;
 
 namespace ModelGraphUWP.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class ShellNavigationPage : Page, INotifyPropertyChanged
+    public sealed partial class ShellNavigationPage : Page
     {
-        private object _lastSelectedItem;
-
-        private ObservableCollection<ShellNavigationItem> _primaryItems = new ObservableCollection<ShellNavigationItem>();
-
-        public ObservableCollection<ShellNavigationItem> PrimaryItems
-        {
-            get { return _primaryItems; }
-            set { Set(ref _primaryItems, value); }
-        }
-
-        private ObservableCollection<ShellNavigationItem> _secondaryItems = new ObservableCollection<ShellNavigationItem>();
-
-        public ObservableCollection<ShellNavigationItem> SecondaryItems
-        {
-            get { return _secondaryItems; }
-            set { Set(ref _secondaryItems, value); }
-        }
-        private object _selected;
-
-        public object Selected
-        {
-            get { return _selected; }
-            set { Set(ref _selected, value); }
-        }
-
         public ShellNavigationPage()
         {
             this.InitializeComponent();
@@ -56,94 +28,99 @@ namespace ModelGraphUWP.Views
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
         }
 
-        internal void UpdateNavigationPane(ModelRoot root, List<ModelRoot> models)
+        #region UpdateNavigationPane  =========================================
+        internal void UpdateNavigationPane(ModelRoot root, ModelRoot compare, List<ModelRoot> modelList, ModelRoot select)
         {
+            object insertionPoint = null;
             var hitList = new List<NavigationViewItem>();
-            var first = true;
+            var canCompare = (modelList.Count < 2) ? false : true;
+
             foreach (var item in NavView.MenuItems)
             {
                 if (item is NavigationViewItem n)
                 {
-                    if (first)
+                    var model = n.Tag as ModelRoot;
+                    if (n.Name == "Home")
                     {
-                        first = false;
                         n.Tag = root;
                     }
-                    else if (n.Tag is ModelRoot)
+                    else if (n.Name == "Compare")
+                    {
+                        n.Tag = compare;
+                        n.IsEnabled = canCompare;                              
+                    }
+                    else if (!modelList.Contains(model))
                     {
                         hitList.Add(n);
                     }
+                    else
+                    {
+                        modelList.Remove(model);
+                    }
+                }
+                else if (item is NavigationViewItemSeparator s && s.Name == "InsertionPoint")
+                {
+                    insertionPoint = item;
                 }
             }
+
             foreach (var item in hitList)
             {
                 NavView.MenuItems.Remove(item);
             }
-            foreach (var model in models)
+
+            var i = NavView.MenuItems.IndexOf(insertionPoint);
+            if (i > 0)
             {
-                NavView.MenuItems.Add(new NavigationViewItem()
-                { Content = model.TitleName, Icon = new SymbolIcon(Symbol.AllApps), Tag = model });
+                foreach (var model in modelList)
+                {
+                    NavView.MenuItems.Insert(i++, new NavigationViewItem()
+                    { Content = model.TitleName, Icon = new SymbolIcon(Symbol.AllApps), Tag = model });
+                }
+            }
+            else
+            {
+                foreach (var model in modelList)
+                {
+                    NavView.MenuItems.Add(new NavigationViewItem()
+                    { Content = model.TitleName, Icon = new SymbolIcon(Symbol.AllApps), Tag = model });
+                }
+            }
+
+            foreach (var item in NavView.MenuItems)
+            {
+                NavView.SelectedItem = null;
+                if (item is NavigationViewItem n)
+                {
+                    if (n.Tag != select) continue;
+
+                    if (modelList.Contains(n.Tag))
+                        n.Loaded += NewNavItem_Loaded;  // for new navItems
+                    else
+                        n.IsSelected = true;            // for existing navItems
+
+                    break;
+                }
             }
         }
+        private void NewNavItem_Loaded(object sender, RoutedEventArgs e)
+        {/*
+            wait for navItem to load before setting the IsSelected property
+         */
+            var n = sender as NavigationViewItem;
+            n.Loaded -= NewNavItem_Loaded;
+            n.IsSelected = true;
+        }
+        #endregion
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
             ModelPageService.Current.RegesterNavigaionPaneUpdateMethod(UpdateNavigationPane);
         }
 
-        private void PopulateNavItems()
-        {
-            _primaryItems.Clear();
-            _secondaryItems.Clear();
-        }
-
         private void Frame_Navigated(object sender, NavigationEventArgs e)
         {
-            var navigationItem = PrimaryItems?.FirstOrDefault(i => i.PageType == e?.SourcePageType);
-            if (navigationItem == null)
-            {
-                navigationItem = SecondaryItems?.FirstOrDefault(i => i.PageType == e?.SourcePageType);
-            }
-
-            if (navigationItem != null)
-            {
-                ChangeSelected(_lastSelectedItem, navigationItem);
-                _lastSelectedItem = navigationItem;
-            }
         }
-
-        private void ChangeSelected(object oldValue, object newValue)
-        {
-            if (oldValue != null)
-            {
-                (oldValue as ShellNavigationItem).IsSelected = false;
-            }
-
-            if (newValue != null)
-            {
-                (newValue as ShellNavigationItem).IsSelected = true;
-                Selected = newValue;
-            }
-        }
-
-        private void Navigate(object item)
-        {
-            var navigationItem = item as ShellNavigationItem;
-            if (navigationItem != null)
-            {
-                NavigationService.Navigate(navigationItem.PageType);
-            }
-        }
-
-        //private void ItemInvoked(object sender, HamburgetMenuItemInvokedEventArgs e)
-        //{
-        //    if (DisplayMode == SplitViewDisplayMode.CompactOverlay || DisplayMode == SplitViewDisplayMode.Overlay)
-        //    {
-        //        IsPaneOpen = false;
-        //    }
-
-        //    Navigate(e.InvokedItem);
-        //}
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
@@ -175,37 +152,6 @@ namespace ModelGraphUWP.Views
 
                 ModelPageService.Current.ShowModelPage(model);
             }
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
-        {
-            if (Equals(storage, value))
-            {
-                return;
-            }
-
-            storage = value;
-            OnPropertyChanged(propertyName);
-        }
-
-        private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        private async void AppBarButton_Click(object sender, RoutedEventArgs e)
-        {
-            var val = await Services.WindowManagerService.Current.TryShowAsViewModeAsync("BlankPage", typeof(Views.BlankPage), ApplicationViewMode.CompactOverlay);
-            val.Released += Val_Released;
-        }
-
-        private void Val_Released(object sender, EventArgs e)
-        {
-            var donothing = true;
-        }
-
-        private async void AppBarButton_Click_1(object sender, RoutedEventArgs e)
-        {
-            var val = await Services.WindowManagerService.Current.TryShowAsViewModeAsync("BlankPage", typeof(Views.BlankPage), ApplicationViewMode.Default);
-            val.Released += Val_Released;
         }
     }
 }
