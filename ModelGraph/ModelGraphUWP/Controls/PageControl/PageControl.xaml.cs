@@ -17,15 +17,15 @@ namespace ModelGraphUWP
 {
     public sealed partial class PageControl : Page, IPageControl
     {
-        ModelPageService _pageService;
-        ModelRoot _model;  // primary model
-        ModelRoot _auxModel; // auxiliary model
+        readonly ModelPageService _pageService;
 
+        ModelRoot _model;  // primary model
         internal ModelRoot Model => _model;
 
         public PageControl()
         {
             InitializeComponent();
+            _pageService = ModelPageService.Current;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -35,15 +35,30 @@ namespace ModelGraphUWP
             else
                 _model = new ModelRoot();
 
-            _model.PageControl = this;
-            _model.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
+            InitializeModel(_model);
 
-            _pageService = ModelPageService.Current;
-            _pageService.AddModelPage(this);
+            _pageService.AddModelPage(_model, this);
 
             Loaded += PageControl_Loaded;
             ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
         }
+
+        internal void InitializeModel(ModelRoot model)
+        {
+            model.PageControl = this;
+            model.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
+        }
+        internal void ShowModelPage(ModelRoot model)
+        {
+            _model = model;
+            CreateControl(_model);
+        }
+        private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
+        {
+            sender.Consolidated -= ViewConsolidated;
+            _pageService.RemoveModelPage(_model, this);
+        }
+
 
         private void PageControl_Loaded(object sender, RoutedEventArgs e)
         {
@@ -56,8 +71,9 @@ namespace ModelGraphUWP
         private void PageControl_GotFocus(object sender, RoutedEventArgs e)
         {
             GotFocus -= PageControl_GotFocus;
-
             SizeChanged += PageControl_SizeChanged;
+
+            if (_model == null) return;
 
             (var w, var h) = _model.ModelControl.PreferredMinSize;
             var sz = new Size() {Width = w, Height = h };
@@ -72,12 +88,6 @@ namespace ModelGraphUWP
         private void PageControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             _model.ModelControl.SetSize(ActualWidth, ActualHeight);
-        }
-
-        private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
-        {
-            sender.Consolidated -= ViewConsolidated;
-            _pageService.RemoveModelPage(this);
         }
 
 
@@ -130,6 +140,9 @@ namespace ModelGraphUWP
 
         void CreateControl(ModelRoot model)
         {
+            ControlGrid.Children.Clear();
+            if (model == null) return;
+
             switch (model.ControlType)
             {
                 case ControlType.PrimaryTree:
@@ -205,7 +218,10 @@ namespace ModelGraphUWP
             }
             else if (rq.DoCreateNewView)
             {
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreatePage(new ModelRoot(rq)));
+                if (rq.DoCreateNewPage)
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreatePage(new ModelRoot(rq)));
+                else
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.AddNewPage(new ModelRoot(rq)));
             }
 
             ModelRefresh();
@@ -232,7 +248,7 @@ namespace ModelGraphUWP
         {
             var chef = model.Chef;
             chef.Close();
-            _pageService.CloseModelPages(chef);
+            _pageService.RemoveModelPage(model, this);
         }
         #endregion
     }

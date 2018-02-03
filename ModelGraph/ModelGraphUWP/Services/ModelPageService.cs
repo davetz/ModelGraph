@@ -8,63 +8,115 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using System.Collections.Concurrent;
 using ModelGraphSTD;
+using System.Threading.Tasks;
 
 namespace ModelGraphUWP.Services
 {
     internal class ModelPageService
     {
-        private readonly App _app;
-        private readonly ConcurrentDictionary<PageControl, Chef> _modelPages;
-        private static ModelPageService _current;
+        PageControl _rootPage;
+        ModelRoot _rootModel;
+        readonly ConcurrentDictionary<ModelRoot, PageControl> _modelPages;
+        static ModelPageService _current;
 
-        public static ModelPageService Current => _current ?? (_current = new ModelPageService());
         //=====================================================================
+
+        Action<ModelRoot, List<ModelRoot>> _updateNavigationPane;
+        internal void RegesterNavigaionPaneUpdateMethod(Action<ModelRoot, List<ModelRoot>> updater)
+        {
+            _updateNavigationPane = updater;
+            UpdateNavigationPane();
+        }
+
+        //=====================================================================
+        public static ModelPageService Current => _current ?? (_current = new ModelPageService());
 
         private ModelPageService()
         {
-            _app = (App)Application.Current;
-            _modelPages = new ConcurrentDictionary<PageControl, Chef>();
+            _modelPages = new ConcurrentDictionary<ModelRoot, PageControl>();
 
             ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
         }
         private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
         {
-            _app.Exit(); // all ModelPage will close
+            var app = (App)Application.Current;
+            app.Exit(); // all ModelPage will close
         }
 
         //=====================================================================
 
-        internal void AddModelPage(PageControl page)
+        internal void ShowModelPage(ModelRoot model)
         {
-            _modelPages.TryAdd(page, page.Model.Chef);
-        }
-        internal void RemoveModelPage(PageControl page)
-        {
-            _modelPages.TryRemove(page, out Chef owner);
+            if (_rootPage != null)
+            {
+                _rootPage.ShowModelPage(model);
+            }
         }
 
         //=====================================================================
 
-        internal async void CloseModelPages(Chef key)
+        internal async void AddModelPage(ModelRoot model, PageControl page)
         {
-            var hitList = new List<PageControl>();
+            _modelPages.TryAdd(model, page);
+            if (_rootPage == null)
+            {
+                _rootPage = page;
+                _rootModel = model;
+            }
+            await _rootPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, UpdateNavigationPane );
+        }
+        internal async void RemoveModelPage(ModelRoot model, PageControl page)
+        {
+            if (page == _rootPage)
+            {
+                var hitList = new List<(ModelRoot model, PageControl page)>();
+
+                foreach (var e in _modelPages)
+                {
+                    if (model.Chef == e.Key.Chef) hitList.Add((e.Key, e.Value));
+                }
+
+                foreach (var e in hitList)
+                {
+                    _modelPages.TryRemove(e.model, out PageControl p);
+
+                    await e.page.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        Window.Current.Close();
+                    });
+                }
+            }
+            else
+            {
+                _modelPages.TryRemove(model, out PageControl p);
+            }
+            await _rootPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, UpdateNavigationPane);
+        }
+
+        void UpdateNavigationPane()
+        {
+            if (_rootModel == null || _updateNavigationPane == null)
+                return;
+
+            var models = new List<ModelRoot>(8);
 
             foreach (var e in _modelPages)
             {
-                if (key == null || e.Value == key) hitList.Add(e.Key);
+                if (_rootPage == e.Value && e.Key != _rootModel) models.Add((e.Key));
             }
-            foreach (var page in hitList)
-            {
-                RemoveModelPage(page);
-
-                await page.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    Window.Current.Close();
-                });
-            }
+            _updateNavigationPane(_rootModel, models);
         }
 
         //=====================================================================
+
+        internal async void AddNewPage(ModelRoot model)
+        {
+            AddModelPage(model, _rootPage);
+            _rootPage.InitializeModel(model);
+
+            ShowModelPage(model);
+            await Task.CompletedTask;
+        }
 
         internal async void CreatePage(ModelRoot model)
         {

@@ -1,26 +1,16 @@
-﻿using ModelGraphUWP.Services;
+﻿using ModelGraphSTD;
+using ModelGraphUWP.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Core;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace ModelGraphUWP.Views
 {
@@ -63,51 +53,48 @@ namespace ModelGraphUWP.Views
         {
             NavigationService.Frame = ContentFrame;
             NavigationService.Navigated += Frame_Navigated;
-
-            //draw into the title bar
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
-            //CoreApplication.GetCurrentView().TitleBar.LayoutMetricsChanged += TitleBar_LayoutMetricsChanged;
-
-
-            //remove the solid-colored backgrounds behind the caption controls and system back button
-            //ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            //titleBar.ButtonBackgroundColor = Colors.Transparent;
-            //titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-            //titleBar.ButtonForegroundColor = (Color)this.Resources["SystemBaseHighColor"];
         }
 
+        internal void UpdateNavigationPane(ModelRoot root, List<ModelRoot> models)
+        {
+            var hitList = new List<NavigationViewItem>();
+            var first = true;
+            foreach (var item in NavView.MenuItems)
+            {
+                if (item is NavigationViewItem n)
+                {
+                    if (first)
+                    {
+                        first = false;
+                        n.Tag = root;
+                    }
+                    else if (n.Tag is ModelRoot)
+                    {
+                        hitList.Add(n);
+                    }
+                }
+            }
+            foreach (var item in hitList)
+            {
+                NavView.MenuItems.Remove(item);
+            }
+            foreach (var model in models)
+            {
+                NavView.MenuItems.Add(new NavigationViewItem()
+                { Content = model.TitleName, Icon = new SymbolIcon(Symbol.AllApps), Tag = model });
+            }
+        }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
-
-            // you can also add items in code behind
-            NavView.MenuItems.Add(new NavigationViewItemSeparator());
-            NavView.MenuItems.Add(new NavigationViewItem()
-            { Content = "ContentNavItem", Icon = new SymbolIcon(Symbol.Folder), Tag = "content" });
-
-            // set the initial SelectedItem 
-            foreach (NavigationViewItemBase item in NavView.MenuItems)
-            {
-                if (item is NavigationViewItem && item.Tag.ToString() == "apps")
-                {
-                    NavView.SelectedItem = item;
-                    break;
-                }
-            }
+            ModelPageService.Current.RegesterNavigaionPaneUpdateMethod(UpdateNavigationPane);
         }
 
         private void PopulateNavItems()
         {
             _primaryItems.Clear();
             _secondaryItems.Clear();
-
-            // TODO WTS: Change the symbols for each item as appropriate for your app
-            // More on Segoe UI Symbol icons: https://docs.microsoft.com/windows/uwp/style/segoe-ui-symbol-font
-            // Or to use an IconElement instead of a Symbol see https://github.com/Microsoft/WindowsTemplateStudio/blob/master/docs/projectTypes/navigationpane.md
-            // Edit String/en-US/Resources.resw: Add a menu item title for each page
-            //_primaryItems.Add(ShellNavigationItem.FromType<MainPage>("Shell_Main".GetLocalized(), Symbol.Document));
-            //_primaryItems.Add(ShellNavigationItem.FromType<BlankPage>("Shell_Blank".GetLocalized(), Symbol.Document));
-            //_secondaryItems.Add(ShellNavigationItem.FromType<SettingsPage>("Shell_Settings".GetLocalized(), Symbol.Setting));
         }
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
@@ -180,12 +167,13 @@ namespace ModelGraphUWP.Views
             }
             else
             {
+                var item = args.SelectedItem as NavigationViewItem;
+                if (item == null) return;
 
-                NavigationViewItem item = args.SelectedItem as NavigationViewItem;
+                var model = item.Tag as ModelRoot;
+                if (model == null) return;
 
-                switch (item.Tag)
-                {
-                }
+                ModelPageService.Current.ShowModelPage(model);
             }
         }
         public event PropertyChangedEventHandler PropertyChanged;
