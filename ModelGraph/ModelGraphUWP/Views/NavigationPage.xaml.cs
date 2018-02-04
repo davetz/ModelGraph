@@ -1,22 +1,17 @@
 ﻿using ModelGraphSTD;
 using ModelGraphUWP.Services;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Windows.ApplicationModel.Core;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace ModelGraphUWP.Views
 {
-    public sealed partial class ShellNavigationPage : Page
+    public sealed partial class NavigationPage : Page
     {
-        public ShellNavigationPage()
+        public NavigationPage()
         {
             this.InitializeComponent();
             Initialize();
@@ -29,7 +24,7 @@ namespace ModelGraphUWP.Views
         }
 
         #region UpdateNavigationPane  =========================================
-        internal void UpdateNavigationPane(ModelRoot root, ModelRoot compare, List<ModelRoot> modelList, ModelRoot select)
+        internal void UpdateNavigationPane(ModelRoot home, ModelRoot compare, List<ModelRoot> modelList, ModelRoot select)
         {
             object insertionPoint = null;
             var hitList = new List<NavigationViewItem>();
@@ -42,7 +37,7 @@ namespace ModelGraphUWP.Views
                     var model = n.Tag as ModelRoot;
                     if (n.Name == "Home")
                     {
-                        n.Tag = root;
+                        n.Tag = home;
                     }
                     else if (n.Name == "Compare")
                     {
@@ -87,9 +82,9 @@ namespace ModelGraphUWP.Views
                 }
             }
 
+            NavView.SelectedItem = null;
             foreach (var item in NavView.MenuItems)
             {
-                NavView.SelectedItem = null;
                 if (item is NavigationViewItem n)
                 {
                     if (n.Tag != select) continue;

@@ -37,11 +37,10 @@ namespace ModelGraphSTD
             Circular dependanies and invalid where/select clauses will be identified.
          */
             var anyChange = true;
-            var items = _queryXStore.Items;
             while (anyChange)
             {
                 anyChange = false;
-                foreach (var qx in items)
+                foreach (var qx in _queryXStore.Items)
                 {
                     anyChange |= ValidateQueryX(qx);
                 }
@@ -63,6 +62,7 @@ namespace ModelGraphSTD
 
             if (qx.Select != null && qx.Select.TryValidate(sto)) anyChange |= qx.Select.TryResolve();
             if (qx.Where != null && qx.Where.TryValidate(sto)) anyChange |= qx.Where.TryResolve();
+            qx.IsTail = (QueryX_QueryX.HasNoChildren(qx));
 
             return anyChange;
         }

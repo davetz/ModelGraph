@@ -48,7 +48,7 @@ namespace ModelGraphSTD
         internal override bool GetValue(Item key, out string value)
         {
             var b = (GetVal(key, out char[] v));
-            value = (v is null) ? string.Empty : v.ToString();
+            value = ArrayFormat(v, (i) => v[i].ToString());
             return b;
         }
         internal override bool SetValue(Item key, string value)
@@ -157,6 +157,12 @@ namespace ModelGraphSTD
         internal override bool SetValue(Item key, double[] value)
         {
             var c = ValueArray(value, out char[] v, (i) => (!(value[i] < char.MinValue || value[i] > char.MaxValue), (char)value[i]));
+            var b = SetVal(key, v);
+            return b && c;
+        }
+        internal override bool SetValue(Item key, string[] value)
+        {
+            var c = ValueArray(value, out char[] v, (i) => ((value[i] != null && value[i].Length > 0), (value[i] != null && value[i].Length > 0) ? value[i][0] : default(char)));
             var b = SetVal(key, v);
             return b && c;
         }

@@ -39,7 +39,7 @@ namespace ModelGraphUWP
         }
         private UIElement CreateShell()
         {
-            return new Views.ShellNavigationPage();
+            return new Views.NavigationPage();
         }
 
         protected override async void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
