@@ -11,7 +11,7 @@ namespace ModelGraphSTD
         static internal string BlankName = "???"; // indicates blank or missing name
         static internal string InvalidItem = "######"; // indicates invalid reference 
 
-        static internal ValueNone ValuesNone = new ValueNone();
+        static internal ValueUnknown ValuesUnknown = new ValueUnknown();
         static internal ValueInvalid ValuesInvalid = new ValueInvalid();
         static internal ValueCircular ValuesCircular = new ValueCircular();
         static internal ValueUnresolved ValuesUnresolved = new ValueUnresolved();
@@ -92,39 +92,34 @@ namespace ModelGraphSTD
                 }
             }
         }
-        internal string GetWhereString(ComputeX cx)
+        internal string GetWhereProperty(ComputeX cx)
         {
             var qx = ComputeX_QueryX.GetChild(cx);
             if (qx == null) return InvalidItem;
 
             return (qx.HasWhere) ? qx.WhereString : null;
         }
-        internal bool SetWhereString(ComputeX cx, string value)
+        internal bool TrySetWhereProperty(ComputeX cx, string value)
         {
             var qx = ComputeX_QueryX.GetChild(cx);
             if (qx == null) return false;
 
-            qx.WhereString = value;
-            ValidateComputeX(cx, qx);
-            return true;            
+            return TrySetWhereProperty(qx, value);
         }
-        internal string GetSelectString(ComputeX cx)
+        internal string GetSelectProperty(ComputeX cx)
         {
             var qx = ComputeX_QueryX.GetChild(cx);
             if (qx == null) return InvalidItem;
 
             return (qx.HasSelect) ? qx.SelectString : null;
         }
-        internal bool SetSelectString(ComputeX cx, string value)
+        internal bool TrySetSelectProperty(ComputeX cx, string value)
         {
             MajorDelta += 1;
             var qx = ComputeX_QueryX.GetChild(cx);
             if (qx == null) return false;
 
-            qx.SelectString = value;
-            ValidateQueryX(qx);
-            ValidateComputeX(cx, qx);
-            return true;
+            return TrySetSelectProperty(qx, value);
         }
         #endregion
 
@@ -320,7 +315,7 @@ namespace ModelGraphSTD
                 if (type < ValType.MaximumType)
                     cx.Value = Value.Create(type);
                 else if (type == ValType.IsUnknown)
-                    cx.Value = ValuesNone;
+                    cx.Value = ValuesUnknown;
                 else if (type == ValType.IsCircular)
                     cx.Value = ValuesCircular;
                 else if (type == ValType.IsUnresolved)
@@ -446,14 +441,5 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region ValidateComputeX  =============================================
-        private bool ValidateComputeX(ComputeX cx, QueryX qx)
-        {
-            var valType = cx.Value.ValType;
-            if (valType == ValType.IsUnknown)
-                AllocateValueCache(cx);
-            return valType != cx.Value.ValType; // anyChange
-        }
-        #endregion
     }
 }

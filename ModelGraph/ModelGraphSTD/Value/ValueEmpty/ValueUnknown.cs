@@ -3,9 +3,9 @@ using System;
 
 namespace ModelGraphSTD
 {
-    internal class ValueNone : ValueEmpty
+    internal class ValueUnknown : ValueEmpty
     {
-        internal ValueNone()
+        internal ValueUnknown()
         {
             _idString = "??????";
             _valueType = ValType.IsUnknown;

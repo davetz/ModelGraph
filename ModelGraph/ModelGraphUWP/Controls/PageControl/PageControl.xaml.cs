@@ -87,7 +87,7 @@ namespace ModelGraphUWP
 
         private void PageControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _model.ModelControl.SetSize(ActualWidth, ActualHeight);
+            _model.ModelControl?.SetSize(ActualWidth, ActualHeight);
         }
 
 
@@ -137,7 +137,7 @@ namespace ModelGraphUWP
         }
         #endregion
 
-
+        #region CreateControl  ================================================
         void CreateControl(ModelRoot model)
         {
             ControlGrid.Children.Clear();
@@ -188,6 +188,7 @@ namespace ModelGraphUWP
             }
             ModelTitle.Text = _model.TitleName;
         }
+        #endregion
 
         #region IPageControl  =================================================
         public async void Dispatch(UIRequest rq)
@@ -226,7 +227,7 @@ namespace ModelGraphUWP
 
             ModelRefresh();
         }
-        async void ModelRefresh()
+        internal async void ModelRefresh()
         {
             if (_model != null && _model.ModelControl != null)
             {

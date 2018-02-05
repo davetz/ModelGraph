@@ -36,13 +36,18 @@ namespace ModelGraphSTD
             
             Circular dependanies and invalid where/select clauses will be identified.
          */
+            ResetAllComputeValues();
+
             var anyChange = true;
             while (anyChange)
             {
                 anyChange = false;
                 foreach (var qx in _queryXStore.Items)
                 {
-                    anyChange |= ValidateQueryX(qx);
+                    var sto = GetQueryXTarget(qx);
+                    if (qx.Select != null && qx.Select.TryValidate(sto)) anyChange |= qx.Select.TryResolve();
+                    if (qx.Where != null && qx.Where.TryValidate(sto)) anyChange |= qx.Where.TryResolve();
+                    qx.IsTail = (QueryX_QueryX.HasNoChildren(qx));
                 }
                 foreach (var cx in _computeXStore.Items)
                 {
@@ -54,17 +59,23 @@ namespace ModelGraphSTD
                         cx.Value = ValuesInvalid;
                 }
             }
-        }
-        private bool ValidateQueryX(QueryX qx)
-        {
-            var sto = GetQueryXTarget(qx);
-            var anyChange = false;
 
-            if (qx.Select != null && qx.Select.TryValidate(sto)) anyChange |= qx.Select.TryResolve();
-            if (qx.Where != null && qx.Where.TryValidate(sto)) anyChange |= qx.Where.TryResolve();
-            qx.IsTail = (QueryX_QueryX.HasNoChildren(qx));
+            bool ValidateComputeX(ComputeX cx, QueryX qx)
+            {
+                var valType = cx.Value.ValType;
+                if (valType == ValType.IsUnknown)
+                    AllocateValueCache(cx);
+                return valType != cx.Value.ValType; // anyChange
+            }
 
-            return anyChange;
+            void ResetAllComputeValues()
+            {
+                foreach (var cx in _computeXStore.Items)
+                {
+                    cx.Value.Clear();
+                    cx.Value = ValuesUnknown;
+                }
+            }
         }
         #endregion
 
@@ -73,13 +84,13 @@ namespace ModelGraphSTD
         {
             while (qx != null)
             {
-                if (ValidateQueryX(qx))
+                if (ValidateQueryX())
                 {
                     if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
                     {
                         cx.Value.Clear();
-                        cx.Value = ValuesNone;
-                        ValidateComputeX(cx, qx);
+                        cx.Value = ValuesUnknown;
+                        AllocateValueCache(cx);
                     }
                 }
                 else
@@ -87,10 +98,28 @@ namespace ModelGraphSTD
                     if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
                     {
                         cx.Value.Clear();
-                        cx.Value = ValuesInvalid;
+                        cx.Value = ValuesUnknown;                        
                     }
                 }
                 if (!QueryX_QueryX.TryGetParent(qx, out qx)) return;
+            }
+
+            bool ValidateQueryX()
+            {
+                qx.IsTail = (QueryX_QueryX.HasNoChildren(qx));
+
+                var sto = GetQueryXTarget(qx);
+                if (qx.Select != null)
+                {
+                    if (!qx.Select.TryValidate(sto)) return false;
+                    qx.Select.TryResolve();
+                }
+                if (qx.Where != null)
+                {
+                    if (!qx.Where.TryValidate(sto)) return false;
+                    qx.Where.TryResolve();
+                }
+                return true;
             }
         }
         #endregion
@@ -319,13 +348,14 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        bool TrySetQueryXWhereProperty(QueryX qx, string val)
+        bool TrySetWhereProperty(QueryX qx, string val)
         {
+            MajorDelta += 1;
             qx.WhereString = val;
             ValidateDependants(qx);
             return qx.IsValid;
         }
-        bool TrySetQueryXSelectProperty(QueryX qx, string val)
+        bool TrySetSelectProperty(QueryX qx, string val)
         {
             MajorDelta += 1;
             qx.SelectString = val;

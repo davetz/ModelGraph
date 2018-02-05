@@ -56,6 +56,16 @@ namespace ModelGraphUWP.Services
 
         //=====================================================================
 
+        internal void RefreshModelPage(ModelRoot model)
+        {
+            if (_modelPages.TryGetValue(model, out PageControl p))
+            {
+                p.ModelRefresh();
+            }
+        }
+
+        //=====================================================================
+
         internal async void AddModelPage(ModelRoot model, PageControl page)
         {
             _modelPages.TryAdd(model, page);
