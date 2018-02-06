@@ -29,6 +29,8 @@ namespace ModelGraphSTD
                 [StepType.Ave] = ResolveAve,
                 [StepType.Count] = ResolveCount,
                 [StepType.Length] = ResolveLength,
+                [StepType.Ascend] = ResolveAscend,
+                [StepType.Descend] = ResolveDescend,
 
                 [StepType.Or1] = ResolveOr1,
                 [StepType.Or2] = ResolveFails,
@@ -196,6 +198,76 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region ResolveAscend  ================================================
+        static void ResolveAscend(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+            var group = step.Input[0].Evaluate.ValGroup;
+
+            switch (group)
+            {
+                case ValGroup.IntArray:
+                    step.Evaluate = new AscendInt32(step);
+                    break;
+                case ValGroup.LongArray:
+                    step.Evaluate = new AscendInt64(step);
+                    break;
+                case ValGroup.DoubleArray:
+                    step.Evaluate = new AscendDouble(step);
+                    break;
+                case ValGroup.StringArray:
+                    step.Evaluate = new AscendString(step);
+                    break;
+                case ValGroup.DateTimeArray:
+                    step.Evaluate = new AscendDateTime(step);
+                    break;
+
+                default:
+                    step.Error = StepError.InvalidArgsRHS;
+                    break;
+            }
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValType == ValType.IsUnresolved);
+        }
+        #endregion
+
+
+        #region ResolveDescend  ===============================================
+        static void ResolveDescend(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+            var group = step.Input[0].Evaluate.ValGroup;
+
+            switch (group)
+            {
+                case ValGroup.IntArray:
+                    step.Evaluate = new DescendInt32(step);
+                    break;
+                case ValGroup.LongArray:
+                    step.Evaluate = new DescendInt64(step);
+                    break;
+                case ValGroup.DoubleArray:
+                    step.Evaluate = new DescendDouble(step);
+                    break;
+                case ValGroup.StringArray:
+                    step.Evaluate = new DescendString(step);
+                    break;
+                case ValGroup.DateTimeArray:
+                    step.Evaluate = new DescendDateTime(step);
+                    break;
+
+                default:
+                    step.Error = StepError.InvalidArgsRHS;
+                    break;
+            }
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValType == ValType.IsUnresolved);
+        }
+        #endregion
 
         #region ResolveOr1  ===================================================
         static void ResolveOr1(ComputeStep step)

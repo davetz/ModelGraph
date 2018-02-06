@@ -610,6 +610,8 @@ namespace ModelGraphSTD
             [StepType.Ave] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
             [StepType.Count] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
             [StepType.Length] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
+            [StepType.Ascend] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
+            [StepType.Descend] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
 
             [StepType.Or1] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.Or2] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
@@ -661,6 +663,8 @@ namespace ModelGraphSTD
             ["ave"] = StepType.Ave,
             ["count"] = StepType.Count,
             ["length"] = StepType.Length,
+            ["ascend"] = StepType.Ascend,
+            ["descend"] = StepType.Descend,
             ["contains"] = StepType.Contains,
             ["endswith"] = StepType.EndsWith,
             ["startswith"] = StepType.StartsWith,

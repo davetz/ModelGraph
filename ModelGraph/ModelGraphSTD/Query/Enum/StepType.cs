@@ -30,7 +30,8 @@
         Ave,    // "Ave" average value in an array
         Count,  // "Count" length of an array or string
         Length, // "Length" length of an array or string
-
+        Ascend, // sort an array in ascend order
+        Descend, // sort an array in descend order
         Plus, // "+"   could be (string-concat or numeric-Add) depends on context
         Minus, // "-"  could be (string-remove or numeric-Minus) depends on context
         Negate, // "~" bitwise negate (ones complement)

@@ -8,5 +8,10 @@ namespace ModelGraphSTD
 
         internal override DateTime[] AsDateTimeArray() => GetVal();
         internal override int AsLength() => AsDateTimeArray().Length;
+        internal override string AsString()
+        {
+            var v = GetVal();
+            return Value.ArrayFormat(v, (i) => Value.ValueFormat(v[i], FormatType.IsDate));
+        }
     }
 }

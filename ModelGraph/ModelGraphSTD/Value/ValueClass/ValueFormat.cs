@@ -113,7 +113,7 @@ namespace ModelGraphSTD
         #region ArrayFormat  ==================================================
         static string ArrayElementSeperator = ", ";
         static char[] ArrayElementSeperatorSplit = ArrayElementSeperator.ToCharArray();
-        static protected string ArrayFormat(Array a, Func<int, string> valueAt)
+        static internal string ArrayFormat(Array a, Func<int, string> valueAt)
         {
             var N = (a == null) ? 0 : a.Length;
             if (N == 0) return string.Empty;

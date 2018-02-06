@@ -11,5 +11,11 @@ namespace ModelGraphSTD
         internal override bool[] AsBoolArray() => GetVal();
 
         internal override int AsLength() => AsBoolArray().Length;
+
+        internal override string AsString()
+        {
+            var v = GetVal();
+            return Value.ArrayFormat(v, (i) => Value.ValueFormat(v[i], FormatType.Bool1));
+        }
     }
 }
