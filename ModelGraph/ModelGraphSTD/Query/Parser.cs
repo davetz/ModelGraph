@@ -605,6 +605,9 @@ namespace ModelGraphSTD
             [StepType.BitField] = new PParm(PFlag.Priority7 | PFlag.CanNegate),
 
             [StepType.Min] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
+            [StepType.Max] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
+            [StepType.Sum] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
+            [StepType.Ave] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
             [StepType.Count] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
             [StepType.Length] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
 
@@ -653,6 +656,9 @@ namespace ModelGraphSTD
         static Dictionary<string, StepType> functionParseType = new Dictionary<string, StepType>
         {
             ["min"] = StepType.Min,
+            ["max"] = StepType.Max,
+            ["sum"] = StepType.Sum,
+            ["ave"] = StepType.Ave,
             ["count"] = StepType.Count,
             ["length"] = StepType.Length,
             ["contains"] = StepType.Contains,

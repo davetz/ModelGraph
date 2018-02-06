@@ -24,6 +24,9 @@ namespace ModelGraphSTD
             new Dictionary<StepType, Action<ComputeStep>>()
             {
                 [StepType.Min] = ResolveMin,
+                [StepType.Max] = ResolveMax,
+                [StepType.Sum] = ResolveSum,
+                [StepType.Ave] = ResolveAve,
                 [StepType.Count] = ResolveCount,
                 [StepType.Length] = ResolveLength,
 
@@ -70,6 +73,84 @@ namespace ModelGraphSTD
                 case ValGroup.LongArray:
                 case ValGroup.DoubleArray:
                     step.Evaluate = new MinDouble(step);
+                    break;
+
+                default:
+                    step.Error = StepError.InvalidArgsRHS;
+                    break;
+            }
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValType == ValType.IsUnresolved);
+        }
+        #endregion
+
+        #region ResolveMax  ===================================================
+        static void ResolveMax(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+            var group = step.Input[0].Evaluate.ValGroup;
+            var composite = step.ScanInputsAndReturnCompositeValueGroup();
+
+            switch (group)
+            {
+                case ValGroup.IntArray:
+                case ValGroup.LongArray:
+                case ValGroup.DoubleArray:
+                    step.Evaluate = new MaxDouble(step);
+                    break;
+
+                default:
+                    step.Error = StepError.InvalidArgsRHS;
+                    break;
+            }
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValType == ValType.IsUnresolved);
+        }
+        #endregion
+
+        #region ResolveSum  ===================================================
+        static void ResolveSum(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+            var group = step.Input[0].Evaluate.ValGroup;
+            var composite = step.ScanInputsAndReturnCompositeValueGroup();
+
+            switch (group)
+            {
+                case ValGroup.IntArray:
+                case ValGroup.LongArray:
+                case ValGroup.DoubleArray:
+                    step.Evaluate = new SumDouble(step);
+                    break;
+
+                default:
+                    step.Error = StepError.InvalidArgsRHS;
+                    break;
+            }
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValType == ValType.IsUnresolved);
+        }
+        #endregion
+
+        #region ResolveAve  ===================================================
+        static void ResolveAve(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+            var group = step.Input[0].Evaluate.ValGroup;
+            var composite = step.ScanInputsAndReturnCompositeValueGroup();
+
+            switch (group)
+            {
+                case ValGroup.IntArray:
+                case ValGroup.LongArray:
+                case ValGroup.DoubleArray:
+                    step.Evaluate = new AveDouble(step);
                     break;
 
                 default:

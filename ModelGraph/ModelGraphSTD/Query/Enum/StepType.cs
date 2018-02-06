@@ -25,6 +25,9 @@
         Not, // "!"    boolean Not
 
         Min,    // "Min" minimum value in an array
+        Max,    // "Max" maximum value in an array
+        Sum,    // "Sum" summation of value in an array
+        Ave,    // "Ave" average value in an array
         Count,  // "Count" length of an array or string
         Length, // "Length" length of an array or string
 
