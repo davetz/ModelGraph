@@ -28,9 +28,9 @@ namespace ModelGraphSTD
                 val = false;
             return val;
         }
-        internal override long AsLong()
+        internal override Int64 AsInt64()
         {
-            if (!_property.Value.GetValue(_getItem(), out long val))
+            if (!_property.Value.GetValue(_getItem(), out Int64 val))
                 val = 0;
             return val;
         }
@@ -50,6 +50,44 @@ namespace ModelGraphSTD
         {
             if (!_property.Value.GetValue(_getItem(), out DateTime val))
                 val = default(DateTime);
+            return val;
+        }
+
+        internal override Int32 AsLength()
+        {
+            if (!_property.Value.GetLength(_getItem(), out Int32 val))
+                val = 0;
+            return val;
+        }
+
+        internal override bool[] AsBoolArray()
+        {
+            if (!_property.Value.GetValue(_getItem(), out bool[] val))
+                val = new bool[0];
+            return val;
+        }
+        internal override Int64[] AsInt64Array()
+        {
+            if (!_property.Value.GetValue(_getItem(), out Int64[] val))
+                val = new Int64[0];
+            return val;
+        }
+        internal override double[] AsDoubleArray()
+        {
+            if (!_property.Value.GetValue(_getItem(), out double[] val))
+                val = new double[0];
+            return val;
+        }
+        internal override string[] AsStringArray()
+        {
+            if (!_property.Value.GetValue(_getItem(), out string[] val))
+                val = new string[0];
+            return val;
+        }
+        internal override DateTime[] AsDateTimeArray()
+        {
+            if (!_property.Value.GetValue(_getItem(), out DateTime[] val))
+                val = new DateTime[0];
             return val;
         }
     }

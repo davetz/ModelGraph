@@ -68,6 +68,19 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region GetLength  ====================================================
+        internal override bool GetLength(Item key, out int value)
+        {
+            if (GetVal(key, out DateTime[] v))
+            {
+                value = v.Length;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+        #endregion
+
         #region GetValue (array)  =============================================
         internal override bool GetValue(Item key, out DateTime[] value) => GetVal(key, out value);
 

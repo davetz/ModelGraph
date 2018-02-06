@@ -104,14 +104,14 @@ namespace ModelGraphSTD
             #region TryAddLiteralNumber  ==========================================
             bool TryAddLiteralNumber()
             {
-                (bool ok, bool isDouble, long v, double d) = Value.ParseNumber(Evaluate.Text);
+                (bool ok, bool isDouble, Int64 v, double d) = Value.ParseNumber(Evaluate.Text);
 
                 if (ok)
                 {
                     if (isDouble)
                         Step.Evaluate = new LiteralDouble(Step, d, Evaluate.Text);
                     else
-                        Step.Evaluate = new LiteralLong(Step, v, Evaluate.Text);
+                        Step.Evaluate = new LiteralInt64(Step, v, Evaluate.Text);
                     return true;
                 }
                 else
@@ -604,6 +604,10 @@ namespace ModelGraphSTD
             [StepType.Property] = new PParm(PFlag.Priority7 | PFlag.CanNegate),
             [StepType.BitField] = new PParm(PFlag.Priority7 | PFlag.CanNegate),
 
+            [StepType.Min] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
+            [StepType.Count] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
+            [StepType.Length] = new PParm(PFlag.Priority4 | PFlag.HasRHS),
+
             [StepType.Or1] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.Or2] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
             [StepType.And1] = new PParm(PFlag.Priority4 | PFlag.HasLHS | PFlag.HasRHS),
@@ -648,6 +652,9 @@ namespace ModelGraphSTD
         };
         static Dictionary<string, StepType> functionParseType = new Dictionary<string, StepType>
         {
+            ["min"] = StepType.Min,
+            ["count"] = StepType.Count,
+            ["length"] = StepType.Length,
             ["contains"] = StepType.Contains,
             ["endswith"] = StepType.EndsWith,
             ["startswith"] = StepType.StartsWith,

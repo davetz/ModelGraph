@@ -23,6 +23,10 @@ namespace ModelGraphSTD
         static Dictionary<StepType, Action<ComputeStep>> _stepTypeResolve =
             new Dictionary<StepType, Action<ComputeStep>>()
             {
+                [StepType.Min] = ResolveMin,
+                [StepType.Count] = ResolveCount,
+                [StepType.Length] = ResolveLength,
+
                 [StepType.Or1] = ResolveOr1,
                 [StepType.Or2] = ResolveFails,
 
@@ -51,6 +55,66 @@ namespace ModelGraphSTD
             step.Evaluate = Chef.LiteralUnresolved;
         }
         #endregion
+
+
+        #region ResolveMin  ===================================================
+        static void ResolveMin(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+            var group = step.Input[0].Evaluate.ValGroup;
+            var composite = step.ScanInputsAndReturnCompositeValueGroup();
+
+            switch (group)
+            {
+                case ValGroup.IntArray:
+                case ValGroup.LongArray:
+                case ValGroup.DoubleArray:
+                    step.Evaluate = new MinDouble(step);
+                    break;
+
+                default:
+                    step.Error = StepError.InvalidArgsRHS;
+                    break;
+            }
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValType == ValType.IsUnresolved);
+        }
+        #endregion
+
+        #region ResolveCount  =================================================
+        static void ResolveCount(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+
+            if (step.Count == 1)
+                step.Evaluate = new Count(step);
+            else
+                step.Error = StepError.InvalidArgsRHS;
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValType == ValType.IsUnresolved);
+        }
+        #endregion
+
+        #region ResolveLength  =================================================
+        static void ResolveLength(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+
+            if (step.Count == 1)
+                step.Evaluate = new Length(step);
+            else
+                step.Error = StepError.InvalidArgsRHS;
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValType == ValType.IsUnresolved);
+        }
+        #endregion
+
 
         #region ResolveOr1  ===================================================
         static void ResolveOr1(ComputeStep step)

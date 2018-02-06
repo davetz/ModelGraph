@@ -33,7 +33,7 @@ namespace ModelGraphSTD
 
         internal override bool GetValue(Item key, out int value) => (GetVal(key, out string v) && int.TryParse(v, out value)) ? true : NoValue(out value);
 
-        internal override bool GetValue(Item key, out long value) => (GetVal(key, out string v) && long.TryParse(v, out value)) ? true : NoValue(out value);
+        internal override bool GetValue(Item key, out Int64 value) => (GetVal(key, out string v) && Int64.TryParse(v, out value)) ? true : NoValue(out value);
 
         internal override bool GetValue(Item key, out double value) => (GetVal(key, out string v) && double.TryParse(v, out value)) ? true : NoValue(out value);
 
@@ -42,12 +42,68 @@ namespace ModelGraphSTD
         internal override bool GetValue(Item key, out string value) => GetVal(key, out value);
         #endregion
 
+        #region GetLength  ====================================================
+        internal override bool GetLength(Item key, out int value)
+        {
+            if (GetVal(key, out string v))
+            {
+                value = v.Length;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+        #endregion
+
+        #region PseudoArrayValue  =============================================
+        internal override bool GetValue(Item key, out bool[] value)
+        {
+            var b = GetValue(key, out bool v);
+            value = new bool[] { v };
+            return b;
+        }
+
+        internal override bool GetValue(Item key, out int[] value)
+        {
+            var b = GetValue(key, out int v);
+            value = new int[] { v };
+            return b;
+        }
+
+        internal override bool GetValue(Item key, out Int64[] value)
+        {
+            var b = GetValue(key, out Int64 v);
+            value = new Int64[] { v };
+            return b;
+        }
+
+        internal override bool GetValue(Item key, out double[] value)
+        {
+            var b = GetValue(key, out double v);
+            value = new double[] { v };
+            return b;
+        }
+
+        internal override bool GetValue(Item key, out string[] value)
+        {
+            var b = GetValue(key, out string v);
+            value = new string[] { v };
+            return b;
+        }
+        internal override bool GetValue(Item key, out DateTime[] value)
+        {
+            var b = GetValue(key, out DateTime v);
+            value = new DateTime[] { v };
+            return b;
+        }
+        #endregion
+
         #region SetValue ======================================================
         internal override bool SetValue(Item key, bool value) => SetVal(key, value.ToString());
 
         internal override bool SetValue(Item key, int value) => SetVal(key, value.ToString());
 
-        internal override bool SetValue(Item key, long value) => SetVal(key, value.ToString());
+        internal override bool SetValue(Item key, Int64 value) => SetVal(key, value.ToString());
 
         internal override bool SetValue(Item key, double value) => SetVal(key, value.ToString());
 

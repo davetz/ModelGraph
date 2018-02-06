@@ -12,7 +12,7 @@
         Vector,   // a vector of the same type values
         String,   // string constant
         Double,   // double precision floating point constant
-        Integer,  // (sbyte, short, int, or long) constant
+        Integer,  // (sbyte, short, int, or Int64) constant
         Boolean,  // boolean constant
         Property, // a property value
         BitField, // (byte, ushort, uint, or ulong) constant
@@ -23,6 +23,10 @@
         Or2, // "||"   boolean Or
         And2, // "&&"  boolean And
         Not, // "!"    boolean Not
+
+        Min,    // "Min" minimum value in an array
+        Count,  // "Count" length of an array or string
+        Length, // "Length" length of an array or string
 
         Plus, // "+"   could be (string-concat or numeric-Add) depends on context
         Minus, // "-"  could be (string-remove or numeric-Minus) depends on context

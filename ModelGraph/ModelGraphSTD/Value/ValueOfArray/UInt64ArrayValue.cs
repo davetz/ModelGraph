@@ -23,7 +23,7 @@ namespace ModelGraphSTD
                 if (!qx.HasSelect) continue;
                 foreach (var k in q.Items) { if (k != null) N++; }
             }
-            var v = new long[N];
+            var v = new Int64[N];
             var i = 0;
 
             foreach (var q in qList)
@@ -71,10 +71,10 @@ namespace ModelGraphSTD
             value = (int)v;
             return b;
         }
-        internal override bool GetValueAt(Item key, out long value, int index)
+        internal override bool GetValueAt(Item key, out Int64 value, int index)
         {
             var b = GetValAt(key, out ulong v, index);
-            value = (long)v;
+            value = (Int64)v;
             return b;
         }
 
@@ -93,6 +93,19 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region GetLength  ====================================================
+        internal override bool GetLength(Item key, out int value)
+        {
+            if (GetVal(key, out ulong[] v))
+            {
+                value = v.Length;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+        #endregion
+
         #region GetValue (array)  =============================================
         internal override bool GetValue(Item key, out bool[] value)
         {
@@ -108,10 +121,10 @@ namespace ModelGraphSTD
             return b && c;
         }
 
-        internal override bool GetValue(Item key, out long[] value)
+        internal override bool GetValue(Item key, out Int64[] value)
         {
             var b = GetVal(key, out ulong[] v);
-            var c = ValueArray(v, out value, (i) => (true, (long)v[i]));
+            var c = ValueArray(v, out value, (i) => (true, (Int64)v[i]));
             return b && c;
         }
 
@@ -146,7 +159,7 @@ namespace ModelGraphSTD
         }
 
 
-        internal override bool SetValue(Item key, long[] value)
+        internal override bool SetValue(Item key, Int64[] value)
         {
             var c = ValueArray(value, out ulong[] v, (i) => (true, (ulong)value[i]));
             var b = SetVal(key, v);

@@ -72,10 +72,10 @@ namespace ModelGraphSTD
             return b;
         }
 
-        internal override bool GetValueAt(Item key, out long value, int index)
+        internal override bool GetValueAt(Item key, out Int64 value, int index)
         {
-            var b = (GetValAt(key, out decimal v, index) && !(v < long.MinValue || v > long.MaxValue));
-            value = (long)v;
+            var b = (GetValAt(key, out decimal v, index) && !(v < Int64.MinValue || v > Int64.MaxValue));
+            value = (Int64)v;
             return b;
         }
 
@@ -94,6 +94,19 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region GetLength  ====================================================
+        internal override bool GetLength(Item key, out int value)
+        {
+            if (GetVal(key, out decimal[] v))
+            {
+                value = v.Length;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+        #endregion
+
         #region GetValue (array)  =============================================
         internal override bool GetValue(Item key, out bool[] value)
         {
@@ -109,10 +122,10 @@ namespace ModelGraphSTD
             return b && c;
         }
 
-        internal override bool GetValue(Item key, out long[] value)
+        internal override bool GetValue(Item key, out Int64[] value)
         {
             var b = GetVal(key, out decimal[] v);
-            var c = ValueArray(v, out value, (i) => (!(v[i] < long.MinValue || v[i] > long.MaxValue), (long)v[i]));
+            var c = ValueArray(v, out value, (i) => (!(v[i] < Int64.MinValue || v[i] > Int64.MaxValue), (Int64)v[i]));
             return b && c;
         }
 
@@ -147,7 +160,7 @@ namespace ModelGraphSTD
             return b && c;
         }
 
-        internal override bool SetValue(Item key, long[] value)
+        internal override bool SetValue(Item key, Int64[] value)
         {
             var c = ValueArray(value, out decimal[] v, (i) => (true, value[i]));
             var b = SetVal(key, v);

@@ -27,12 +27,5 @@ namespace ModelGraphSTD
             }
             return false;
         }
-
-        internal int Length(Item key) => (GetVal(key, out T[] v)) ? v.Length : 0;
-        internal T[] Take(Item key, int c) => (GetVal(key, out T[] v) && c > 0) ? v.Take((v.Length < c) ? v.Length : c).ToArray() : new T[0];
-        internal T[] SortAscending(Item key) =>  GetVal(key, out T[] v) ? v.OrderBy((s) => s).ToArray() : new T[0];
-        internal T[] SortDescending(Item key) => GetVal(key, out T[] v) ? v.OrderByDescending((s) => s).ToArray() : new T[0];
-        internal T[] SortAscendingTake(Item key, int c) => (GetVal(key, out T[] v) && c > 0) ? v.OrderBy((s) => s).Take((v.Length < c) ? v.Length : c).ToArray() : new T[0];
-        internal T[] SortDescendingTake(Item key, int c) => (GetVal(key, out T[] v) && c > 0) ? v.OrderByDescending((s) => s).Take((v.Length < c) ? v.Length : c).ToArray() : new T[0];
     }
 }

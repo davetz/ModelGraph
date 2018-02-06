@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 using System.Collections.Generic;
 
 namespace ModelGraphSTD
@@ -23,7 +23,7 @@ namespace ModelGraphSTD
                 if (!qx.HasSelect) continue;
                 foreach (var k in q.Items) { if (k != null) N++; }
             }
-            var v = new long[N];
+            var v = new Int64[N];
             var i = 0;
 
             foreach (var q in qList)
@@ -72,7 +72,7 @@ namespace ModelGraphSTD
             return b;
         }
 
-        internal override bool GetValueAt(Item key, out long value, int index)
+        internal override bool GetValueAt(Item key, out Int64 value, int index)
         {
             var b = GetValAt(key, out sbyte v, index);
             value = v;
@@ -94,6 +94,19 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region GetLength  ====================================================
+        internal override bool GetLength(Item key, out int value)
+        {
+            if (GetVal(key, out sbyte[] v))
+            {
+                value = v.Length;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+        #endregion
+
         #region GetValue (array)  =============================================
         internal override bool GetValue(Item key, out bool[] value)
         {
@@ -109,7 +122,7 @@ namespace ModelGraphSTD
             return b && c;
         }
 
-        internal override bool GetValue(Item key, out long[] value)
+        internal override bool GetValue(Item key, out Int64[] value)
         {
             var b = GetVal(key, out sbyte[] v);
             var c = ValueArray(v, out value, (i) => (true, v[i]));
@@ -147,7 +160,7 @@ namespace ModelGraphSTD
             return b && c;
         }
 
-        internal override bool SetValue(Item key, long[] value)
+        internal override bool SetValue(Item key, Int64[] value)
         {
             var c = ValueArray(value, out sbyte[] v, (i) => (!(value[i] < sbyte.MinValue || value[i] > sbyte.MaxValue), (sbyte)value[i]));
             var b = SetVal(key, v);

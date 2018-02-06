@@ -95,8 +95,8 @@ namespace ModelGraphSTD
             (c,s) => new UInt32Value(new ValueDictionary<uint>(c, (uint.TryParse(s, out uint v)) ? v : default(uint))), // 14 UInt32
             (c,s) => new UInt32ArrayValue(new ValueDictionary<uint[]>(c, null)), // 15 UInt32Array
 
-            (c,s) => new Int64Value(new ValueDictionary<long>(c, (long.TryParse(s, out long v)) ? v : default(long))), // 16 Int64
-            (c,s) => new Int64ArrayValue(new ValueDictionary<long[]>(c, null)), // 17 Int64Array
+            (c,s) => new Int64Value(new ValueDictionary<Int64>(c, (Int64.TryParse(s, out Int64 v)) ? v : default(Int64))), // 16 Int64
+            (c,s) => new Int64ArrayValue(new ValueDictionary<Int64[]>(c, null)), // 17 Int64Array
 
             (c,s) => new UInt64Value(new ValueDictionary<ulong>(c, (ulong.TryParse(s, out ulong v)) ? v : default(ulong))), // 18 UInt64
             (c,s) => new UInt64ArrayValue(new ValueDictionary<ulong[]>(c, null)), // 19 UInt64Array

@@ -13,42 +13,42 @@ namespace ModelGraphSTD
 
         static protected (bool ok, byte val) ByteParse(string str)
         {
-            (bool ok, bool isD, long v, double d) = ParseNumber(str);
+            (bool ok, bool isD, Int64 v, double d) = ParseNumber(str);
             return (!ok || v < byte.MinValue || v > byte.MaxValue) ? (false, (byte)0) : (true, (byte)v);
         }
         static protected (bool ok, sbyte val) SByteParse(string str)
         {
-            (bool ok, bool isD, long v, double d) = ParseNumber(str);
+            (bool ok, bool isD, Int64 v, double d) = ParseNumber(str);
             return (!ok || v < sbyte.MinValue || v > sbyte.MaxValue) ? (false, (sbyte)0) : (true, (sbyte)v);
         }
         static protected (bool ok, short val) Int16Parse(string str)
         {
-            (bool ok, bool isD, long v, double d) = ParseNumber(str);
+            (bool ok, bool isD, Int64 v, double d) = ParseNumber(str);
             return (!ok || v < short.MinValue || v > short.MaxValue) ? (false, (short)0) : (true, (short)v);
         }
         static protected (bool ok, ushort val) UInt16Parse(string str)
         {
-            (bool ok, bool isD, long v, double d) = ParseNumber(str);
+            (bool ok, bool isD, Int64 v, double d) = ParseNumber(str);
             return (!ok || v < ushort.MinValue || v > ushort.MaxValue) ? (false, (ushort)0) : (true, (ushort)v);
         }
         static protected (bool ok, int val) Int32Parse(string str)
         {
-            (bool ok, bool isD, long v, double d) = ParseNumber(str);
+            (bool ok, bool isD, Int64 v, double d) = ParseNumber(str);
             return (!ok || v < int.MinValue || v > int.MaxValue) ? (false, 0) : (true, (int)v);
         }
         static protected (bool ok, uint val) UInt32Parse(string str)
         {
-            (bool ok, bool isD, long v, double d) = ParseNumber(str);
+            (bool ok, bool isD, Int64 v, double d) = ParseNumber(str);
             return (!ok || v < uint.MinValue || v > uint.MaxValue) ? (false, 0) : (true, (uint)v);
         }
-        static protected (bool ok, long val) Int64Parse(string str)
+        static protected (bool ok, Int64 val) Int64Parse(string str)
         {
-            (bool ok, bool isD, long v, double d) = ParseNumber(str);
+            (bool ok, bool isD, Int64 v, double d) = ParseNumber(str);
             return (!ok) ? (false, 0) : (true, v);
         }
         static protected (bool ok, ulong val) UInt64Parse(string str)
         {
-            (bool ok, bool isD, long v, double d) = ParseNumber(str);
+            (bool ok, bool isD, Int64 v, double d) = ParseNumber(str);
             return (!ok) ? (false, 0) : (true, (ulong)v);
         }
         static protected (bool ok, float val) SingleParse(string str) => float.TryParse(str, _numberStyle, null, out float v) ? (true, v) : (false, 0);
@@ -57,17 +57,17 @@ namespace ModelGraphSTD
 
         static protected (bool ok, DateTime val) DateTimeParse(string str) => DateTime.TryParse(str, null, _dateStyle, out DateTime v) ? (true, v) : (false, default(DateTime));
 
-        static internal (bool ok, bool isDouble, long v, double d) ParseNumber(string str)
+        static internal (bool ok, bool isDouble, Int64 v, double d) ParseNumber(string str)
         {
             if (string.IsNullOrWhiteSpace(str)) return (false, false, 0, 0);
 
             (FormatType f, string s) = ScanInteger(str);
-            long v = 0;
+            Int64 v = 0;
 
             switch (f)
             {
                 case FormatType.IsInt:
-                    return long.TryParse(s, _numberStyle, null, out v) ? (true, false, v, 0) : (false, false, 0, 0);
+                    return Int64.TryParse(s, _numberStyle, null, out v) ? (true, false, v, 0) : (false, false, 0, 0);
 
                 case FormatType.IsBin:
                     foreach (var c in s)
@@ -225,17 +225,17 @@ namespace ModelGraphSTD
             }
             return (false, null);
         }
-        static protected (bool ok, long[] val) ArrayParse(string str, Func<string, (bool, long)> parse)
+        static protected (bool ok, Int64[] val) ArrayParse(string str, Func<string, (bool, Int64)> parse)
         {
             var part = str.Split(ArrayElementSeperatorSplit, StringSplitOptions.RemoveEmptyEntries);
             var N = (part == null) ? 0 : part.Length;
 
             if (N > 0)
             {
-                var a = new long[N];
+                var a = new Int64[N];
                 for (int i = 0; i < N; i++)
                 {
-                    (bool ok, long v) = parse(part[i]);
+                    (bool ok, Int64 v) = parse(part[i]);
                     if (!ok) return (false, null);
                     a[i] = v;
                 }

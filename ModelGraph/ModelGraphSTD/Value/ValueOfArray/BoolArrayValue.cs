@@ -67,7 +67,7 @@ namespace ModelGraphSTD
             return b;
         }
 
-        internal override bool GetValueAt(Item key, out long value, int index)
+        internal override bool GetValueAt(Item key, out Int64 value, int index)
         {
             var b = GetValAt(key, out bool v, index);
             value = v ? 1 : 0;
@@ -89,6 +89,19 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region GetLength  ====================================================
+        internal override bool GetLength(Item key, out int value)
+        {
+            if (GetVal(key, out bool[] v))
+            {
+                value = v.Length;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+        #endregion
+
         #region GetValue (array)  =============================================
         internal override bool GetValue(Item key, out bool[] value) => GetVal(key, out value);
 
@@ -99,7 +112,7 @@ namespace ModelGraphSTD
             return b && c;
         }
 
-        internal override bool GetValue(Item key, out long[] value)
+        internal override bool GetValue(Item key, out Int64[] value)
         {
             var b = GetVal(key, out bool[] v);
             var c = ValueArray(v, out value, (i) => (true, v[i] ? 1 : 0));
@@ -132,7 +145,7 @@ namespace ModelGraphSTD
             return b && c;
         }
 
-        internal override bool SetValue(Item key, long[] value)
+        internal override bool SetValue(Item key, Int64[] value)
         {
             var c = ValueArray(value, out bool[] v, (i) => (true, value[i] != 0));
             var b = SetVal(key, v);

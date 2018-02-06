@@ -14,7 +14,7 @@ namespace ModelGraphSTD
             [FormatType.Bool2] = (v) => v ? "T" : "F",
             [FormatType.Bool3] = (v) => v ? "1" : "0",
         };
-        static Dictionary<FormatType, Func<long, string>> _longFormat = new Dictionary<FormatType, Func<long, string>>()
+        static Dictionary<FormatType, Func<Int64, string>> _longFormat = new Dictionary<FormatType, Func<Int64, string>>()
         {
             [FormatType.Int1] = (v) => AugmentString(v.ToString(), 3),
             [FormatType.Int2] = (v) => v.ToString("N"),
@@ -40,8 +40,8 @@ namespace ModelGraphSTD
             [FormatType.Percent2] = (v) => v.ToString("P1"),
         };
         static internal string ValueFormat(bool v, FormatType ft) => (_boolFormat.TryGetValue(ft, out Func<bool, string> fs)) ? fs(v) : v.ToString();
-        static internal string ValueFormat(int v, FormatType ft) => (_longFormat.TryGetValue(ft, out Func<long, string> fs)) ? fs(v) : v.ToString();
-        static internal string ValueFormat(long v, FormatType ft) => (_longFormat.TryGetValue(ft, out Func<long, string> fs)) ? fs(v) : v.ToString();
+        static internal string ValueFormat(int v, FormatType ft) => (_longFormat.TryGetValue(ft, out Func<Int64, string> fs)) ? fs(v) : v.ToString();
+        static internal string ValueFormat(Int64 v, FormatType ft) => (_longFormat.TryGetValue(ft, out Func<Int64, string> fs)) ? fs(v) : v.ToString();
         static internal string ValueFormat(double v, FormatType ft) => (_doubleFormat.TryGetValue(ft, out Func<double, string> fs)) ? fs(v) : v.ToString();
         static internal string ValueFormat(DateTime v, FormatType f) =>  v.ToString();
 

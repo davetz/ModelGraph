@@ -1,5 +1,4 @@
-﻿using System.Text;
-
+﻿
 namespace ModelGraphSTD
 {
     internal class LiteralBool : ValueOfBool

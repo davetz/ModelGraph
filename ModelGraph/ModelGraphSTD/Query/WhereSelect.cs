@@ -97,12 +97,12 @@ namespace ModelGraphSTD
             value = (isValid) ? _root.Evaluate.AsBool() : false;
             return isValid;
         }
-        internal bool GetValue(Item item, out long value)
+        internal bool GetValue(Item item, out Int64 value)
         {
             var isValid = (_root != null && _isValid);
 
             _item = item;
-            value = (isValid) ? _root.Evaluate.AsLong() : 0;
+            value = (isValid) ? _root.Evaluate.AsInt64() : 0;
             return isValid;
         }
         internal bool GetValue(Item item, out double value)

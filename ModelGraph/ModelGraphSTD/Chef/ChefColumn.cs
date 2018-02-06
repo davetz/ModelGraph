@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {/*
@@ -100,7 +101,7 @@ namespace ModelGraphSTD
                         for (int i = 0; i < N; i++)
                         {
                             var key = rows[i];
-                            col.Value.GetValue(key, out long v);
+                            col.Value.GetValue(key, out Int64 v);
                             if (!value.SetValue(key, v)) return false;
                         }
                         break;
