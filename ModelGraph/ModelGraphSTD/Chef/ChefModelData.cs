@@ -725,49 +725,48 @@ namespace ModelGraphSTD
         #region 611 RootChef_M  ===============================================
         internal void RootChef_M(ModelTree model, ModelRoot root = null)
         {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+            //if (root != null)  // get the data for this root.ModelAction
+            //{
+            //    switch (root.ModelAction)
+            //    {
+            //        case ModelAction.DragOver:
 
-                        break;
+            //            break;
 
-                    case ModelAction.PointerOver:
+            //        case ModelAction.PointerOver:
 
-                        break;
+            //            break;
 
-                    case ModelAction.ModelRefresh:
+            //        case ModelAction.ModelRefresh:
 
-                        root.ModelName = _localize(model.NameKey);
-                        break;
+            //            break;
 
-                    case ModelAction.ModelSelect:
+            //        case ModelAction.ModelSelect:
 
-                        break;
-                }
-            }
-            else  // validate the model's child models
-            {
-                var chef = model.Item1 as Chef;
-                var N = chef.Count;
+            //            break;
+            //    }
+            //}
+            //else  // validate the model's child models
+            //{
+            //    var chef = model.Item1 as Chef;
+            //    var N = chef.Count;
 
-                if (N > 0)
-                {
-                    var items = chef.Items;
-                    var oldModels = model.ChildModels;
-                    model.ChildModels = new ModelTree[N];
+            //    if (N > 0)
+            //    {
+            //        var items = chef.Items;
+            //        var oldModels = model.ChildModels;
+            //        model.ChildModels = new ModelTree[N];
 
-                    for (int i = 0; i < N; i++)
-                    {
-                        var itm = items[i] as Chef;
-                        if (!TryGetOldModel(model, Trait.MockChef_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.MockChef_M, 0, itm, null, null, MockChef_M);
-                    }
-                }
-                if (N == 0) model.ChildModels = null;
+            //        for (int i = 0; i < N; i++)
+            //        {
+            //            var itm = items[i] as Chef;
+            //            if (!TryGetOldModel(model, Trait.MockChef_M, oldModels, i, itm))
+            //                model.ChildModels[i] = new ModelTree(model, Trait.MockChef_M, 0, itm, null, null, MockChef_M);
+            //        }
+            //    }
+            //    if (N == 0) model.ChildModels = null;
                 
-            }
+            //}
         }
         #endregion
 

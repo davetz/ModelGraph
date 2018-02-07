@@ -65,8 +65,6 @@ namespace ModelGraphSTD
 
             _getData = Chef.RootChef_M;
             ControlType = ControlType.AppRootChef;
-
-            IsExpandedLeft = true;
         }
 
         // (Primary & Secondary) RootModels: Created by PrimaryRoot

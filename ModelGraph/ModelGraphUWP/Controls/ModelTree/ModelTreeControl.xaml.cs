@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Input;
 using ModelGraphSTD;
 using System.Threading.Tasks;
 using ModelGraphUWP.Helpers;
+using System.Diagnostics;
 
 namespace ModelGraphUWP
 {
@@ -41,7 +42,7 @@ namespace ModelGraphUWP
 
             TreeCanvas.Loaded -= TreeCanvas_Loaded;
             _root.ViewCapacity = (int)(ActualHeight / _elementHieght);
-            RefreshVisibleModels();
+            //RefreshVisibleModels();
         }
         private bool IsLoaded;
 
@@ -411,16 +412,16 @@ namespace ModelGraphUWP
         #endregion
 
         #region PointerWheelChanged  ==========================================
+        bool _pointWheelEnabled;
         private void TreeCanvas_PointerWheelChanged(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             e.Handled = true;
-
-            var cp = e.GetCurrentPoint(TreeCanvas);
-
-            if (cp.Properties.MouseWheelDelta < 0)
-                ChangeScroll(3);
-            else
-                ChangeScroll(-3);
+            if (_pointWheelEnabled)
+            {
+                var cp = e.GetCurrentPoint(TreeCanvas);
+                var delta = (cp.Properties.MouseWheelDelta < 0) ? 3 : -3;
+                ChangeScroll(delta);
+            }
         }
         private void ChangeScroll(int delta)
         {
@@ -529,6 +530,11 @@ namespace ModelGraphUWP
         #region RefreshVisibleModels  =========================================
         private void RefreshVisibleModels()
         {
+            _pointWheelEnabled = false;
+
+            var delta = _root.ViewIndex2 - _root.ViewIndex1;
+            if (delta == 0) return;
+
             if (IsLoaded == false) return;
             SaveKeyboardFocus();
 
@@ -543,6 +549,8 @@ namespace ModelGraphUWP
             }
             RefreshSelectionGrid();
             RestoreKeyboardFocus();
+
+            _pointWheelEnabled = true;
         }
         #endregion
 

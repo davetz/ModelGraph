@@ -2,7 +2,6 @@
 using ModelGraphUWP.Services;
 using System;
 using System.Collections.Generic;
-using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Core;
@@ -18,78 +17,110 @@ namespace ModelGraphUWP
     public sealed partial class PageControl : Page, IPageControl
     {
         readonly ModelPageService _pageService;
+        ModelRoot _activeModel; // curently active model
 
-        ModelRoot _model;  // primary model
-        internal ModelRoot Model => _model;
-
+        #region Constructor/OnNavigatedTo  ====================================
         public PageControl()
         {
             InitializeComponent();
             _pageService = ModelPageService.Current;
+
+            SizeChanged += PageControl_SizeChanged;
+            ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter is ModelRoot model)
-                _model = model;
-            else
-                _model = new ModelRoot();
+            if (!(e.Parameter is ModelRoot model))
+            {
+                model = new ModelRoot();
+            }
 
-            InitializeModel(_model);
-
-            _pageService.AddModelPage(_model, this);
-
-            Loaded += PageControl_Loaded;
-            ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
+            InitializeModel(model);
         }
+        #endregion
 
-        internal void InitializeModel(ModelRoot model)
-        {
-            model.PageControl = this;
-            model.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
-        }
-        internal void ShowModelPage(ModelRoot model)
-        {
-            _model = model;
-            CreateControl(_model);
-        }
+        #region PageEventHandlers  ============================================
         private void ViewConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
         {
             sender.Consolidated -= ViewConsolidated;
-            _pageService.RemoveModelPage(_model, this);
-        }
-
-
-        private void PageControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            Loaded -= PageControl_Loaded;
-            GotFocus += PageControl_GotFocus;
-
-            CreateControl(_model);
-        }
-
-        private void PageControl_GotFocus(object sender, RoutedEventArgs e)
-        {
-            GotFocus -= PageControl_GotFocus;
-            SizeChanged += PageControl_SizeChanged;
-
-            if (_model == null) return;
-
-            (var w, var h) = _model.ModelControl.PreferredMinSize;
-            var sz = new Size() {Width = w, Height = h };
-
-            var view = ApplicationView.GetForCurrentView();
-            view.SetPreferredMinSize(sz);
-            //view.TryResizeView(sz);
-
-            ModelRefresh();
+            _pageService.RemoveModelPage(_activeModel, this);
         }
 
         private void PageControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _model.ModelControl?.SetSize(ActualWidth, ActualHeight);
+            _activeModel?.ModelControl?.SetSize(ActualWidth, ActualHeight);
+        }
+        #endregion
+
+        #region InitializeModel/ShowModelControl  =============================
+        internal void InitializeModel(ModelRoot model)
+        {
+            model.PageControl = this;
+            model.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
+
+            _pageService.AddModelPage(model, this);
+
+            ShowModelControl(model);
+        }
+        internal void ShowModelControl(ModelRoot model)
+        {
+            _activeModel = model;
+            ControlGrid.Children.Clear();
+            if (model == null) return;
+
+            switch (model.ControlType)
+            {
+                case ControlType.PrimaryTree:
+                case ControlType.PartialTree:
+                case ControlType.AppRootChef:
+                    ControlGrid.Children.Add(new ModelTreeControl(model));
+                    break;
+
+                case ControlType.SymbolEditor:
+                    ControlGrid.Children.Add(new SymbolEditControl(model));
+                    break;
+
+                case ControlType.GraphDisplay:
+                    ControlGrid.Children.Add(new ModelGraphControl(model));
+                    break;
+
+                default:
+                    throw new ArgumentException("Unknown ControlType");
+            }
+            (model.ModelControl as UserControl).Loaded += ModelControl_Loaded;
+
+            model.GetAppCommands();
+            var N = model.AppButtonCommands.Count;
+            var M = ButtonPanel.Children.Count;
+            for (int i = 0; i < M; i++)
+            {
+                var btn = ButtonPanel.Children[i] as Button;
+                if (i < N)
+                {
+                    var cmd = model.AppButtonCommands[i];
+                    btn.Tag = cmd;
+                    btn.Content = cmd.Name;
+                    btn.Visibility = Visibility.Visible;
+                    ToolTipService.SetToolTip(btn, cmd.Summary);
+                }
+                else
+                {
+                    btn.Visibility = Visibility.Collapsed;
+                }
+            }
+            ModelTitle.Text = model.TitleName;
         }
 
+        private void ModelControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            var ctl = sender as UserControl;
+            ctl.Loaded -= ModelControl_Loaded;
+
+            _activeModel?.ModelControl?.SetSize(ActualWidth, ActualHeight);
+            ModelRefresh();
+        }
+        #endregion
 
         #region AppButton_Click  ==============================================
         private async void AppButton_Click(object sender, RoutedEventArgs e)
@@ -137,59 +168,6 @@ namespace ModelGraphUWP
         }
         #endregion
 
-        #region CreateControl  ================================================
-        void CreateControl(ModelRoot model)
-        {
-            ControlGrid.Children.Clear();
-            if (model == null) return;
-
-            switch (model.ControlType)
-            {
-                case ControlType.PrimaryTree:
-                case ControlType.PartialTree:
-                case ControlType.AppRootChef:
-                    ControlGrid.Children.Add(new ModelTreeControl(model));
-                    break;
-
-                case ControlType.SymbolEditor:
-                    ControlGrid.Children.Add(new SymbolEditControl(model));
-                    break;
-
-                case ControlType.GraphDisplay:
-                    ControlGrid.Children.Add(new ModelGraphControl(model));
-                    break;
-
-                default:
-                    throw new ArgumentException("Unknown ControlType");
-            }
-            AddAppButtons();
-        }
-
-        void AddAppButtons()
-        {
-            _model.GetAppCommands();
-            var N = _model.AppButtonCommands.Count;
-            var M = ButtonPanel.Children.Count;
-            for (int i = 0; i < M; i++)
-            {
-                var btn = ButtonPanel.Children[i] as Button;
-                if (i < N)
-                {
-                    var cmd = _model.AppButtonCommands[i];
-                    btn.Tag = cmd;
-                    btn.Content = cmd.Name;
-                    btn.Visibility = Visibility.Visible;
-                    ToolTipService.SetToolTip(btn, cmd.Summary);
-                }
-                else
-                {
-                    btn.Visibility = Visibility.Collapsed;
-                }
-            }
-            ModelTitle.Text = _model.TitleName;
-        }
-        #endregion
-
         #region IPageControl  =================================================
         public async void Dispatch(UIRequest rq)
         {
@@ -220,21 +198,21 @@ namespace ModelGraphUWP
             else if (rq.DoCreateNewView)
             {
                 if (rq.DoCreateNewPage)
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreatePage(new ModelRoot(rq)));
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new ModelRoot(rq)));
                 else
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.AddNewPage(new ModelRoot(rq)));
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InitializeModel(new ModelRoot(rq)));
             }
 
             ModelRefresh();
         }
         internal async void ModelRefresh()
         {
-            if (_model != null && _model.ModelControl != null)
+            if (_activeModel != null && _activeModel.ModelControl != null)
             {
-                var ctrl = _model.ModelControl;
+                var ctrl = _activeModel.ModelControl;
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (!(ctrl is ModelTreeControl) || _model.Chef.ValidateModelTree(_model))
+                    if (!(ctrl is ModelTreeControl) || _activeModel.Chef.ValidateModelTree(_activeModel))
                         ctrl.Refresh();
                 });
             }

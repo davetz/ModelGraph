@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 
-using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using System.Collections.Concurrent;
+using Windows.UI.ViewManagement;
+using Windows.ApplicationModel.Core;
+
 using ModelGraphSTD;
-using System.Threading.Tasks;
 
 namespace ModelGraphUWP.Services
 {
@@ -17,21 +17,11 @@ namespace ModelGraphUWP.Services
         PageControl _rootPage;
         ModelRoot _rootModel;
         ModelRoot _compareModel;
-        readonly ConcurrentDictionary<ModelRoot, PageControl> _modelPages;
+
+        public static ModelPageService Current => _current ?? (_current = new ModelPageService());
         static ModelPageService _current;
 
-        //=====================================================================
-
-        Action<ModelRoot, ModelRoot, List<ModelRoot>, ModelRoot> _updateNavigationPane;
-        internal void RegesterNavigaionPaneUpdateMethod(Action<ModelRoot, ModelRoot, List<ModelRoot>, ModelRoot> updater)
-        {
-            _updateNavigationPane = updater;
-            UpdateNavigationPane(_rootModel);
-        }
-
-        //=====================================================================
-        public static ModelPageService Current => _current ?? (_current = new ModelPageService());
-
+        #region Constructor  ==================================================
         private ModelPageService()
         {
             _modelPages = new ConcurrentDictionary<ModelRoot, PageControl>();
@@ -43,29 +33,11 @@ namespace ModelGraphUWP.Services
             var app = (App)Application.Current;
             app.Exit(); // all ModelPage will close
         }
+        #endregion
 
-        //=====================================================================
+        readonly ConcurrentDictionary<ModelRoot, PageControl> _modelPages;
 
-        internal void ShowModelPage(ModelRoot model)
-        {
-            if (_rootPage != null)
-            {
-                _rootPage.ShowModelPage(model);
-            }
-        }
-
-        //=====================================================================
-
-        internal void RefreshModelPage(ModelRoot model)
-        {
-            if (_modelPages.TryGetValue(model, out PageControl p))
-            {
-                p.ModelRefresh();
-            }
-        }
-
-        //=====================================================================
-
+        #region AddModelPage  =================================================
         internal async void AddModelPage(ModelRoot model, PageControl page)
         {
             _modelPages.TryAdd(model, page);
@@ -79,6 +51,9 @@ namespace ModelGraphUWP.Services
                 await _rootPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { UpdateNavigationPane(model); });
             }
         }
+        #endregion
+
+        #region RemoveModelPage  ==============================================
         internal async void RemoveModelPage(ModelRoot model, PageControl page)
         {
             if (page == _rootPage)
@@ -114,7 +89,19 @@ namespace ModelGraphUWP.Services
                 await _rootPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { UpdateNavigationPane(_rootModel); });
             }
         }
+        #endregion
 
+
+        #region RegesterNavigaionPaneUpdateMethod  ============================
+        internal void RegesterNavigaionPaneUpdateMethod(Action<ModelRoot, ModelRoot, List<ModelRoot>, ModelRoot> updater)
+        {
+            _updateNavigationPane = updater;
+            UpdateNavigationPane(_rootModel);
+        }
+        Action<ModelRoot, ModelRoot, List<ModelRoot>, ModelRoot> _updateNavigationPane;
+        #endregion
+
+        #region UpdateNavigationPane  =========================================
         void UpdateNavigationPane(ModelRoot selectedModed)
         {
             if (_rootModel == null || _updateNavigationPane == null)
@@ -128,19 +115,12 @@ namespace ModelGraphUWP.Services
             }
             _updateNavigationPane(_rootModel, _compareModel, modelList, selectedModed);
         }
+        #endregion
 
-        //=====================================================================
+        internal void ShowModelControl(ModelRoot model) => _rootPage?.ShowModelControl(model);
 
-        internal async void AddNewPage(ModelRoot model)
-        {
-            AddModelPage(model, _rootPage);
-            _rootPage.InitializeModel(model);
-
-            ShowModelPage(model);
-            await Task.CompletedTask;
-        }
-
-        internal async void CreatePage(ModelRoot model)
+        #region CreateNewPage  ================================================
+        internal async void CreateNewPage(ModelRoot model)
         {
             CoreApplicationView newView = CoreApplication.CreateNewView();
             int newViewId = 0;
@@ -155,5 +135,6 @@ namespace ModelGraphUWP.Services
             await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId, ViewSizePreference.UseMinimum);
         }
 
+        #endregion
     }
 }

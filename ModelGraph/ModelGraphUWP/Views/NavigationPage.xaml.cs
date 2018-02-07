@@ -145,7 +145,7 @@ namespace ModelGraphUWP.Views
                 var model = item.Tag as ModelRoot;
                 if (model == null) return;
 
-                ModelPageService.Current.ShowModelPage(model);
+                ModelPageService.Current.ShowModelControl(model);
             }
         }
     }
