@@ -87,7 +87,6 @@ namespace ModelGraphSTD
                     for (int i = 0; i < N; i++)
                     {
                         var item = q.Items[i];
-                        qList.Clear();
 
                         foreach (var qx in qxChildren)
                         {

@@ -25,73 +25,6 @@ namespace ModelGraphSTD
         #endregion 
 
         #region <Get/Set>SelectString  ========================================
-        internal ValType GetValueType(ComputeX cx)
-        {
-            var root = ComputeX_QueryX.GetChild(cx);
-            switch (cx.CompuType)
-            {
-                case CompuType.RowValue:
-                    return (root.HasSelect) ? root.Select.ValueType : ValType.IsUnknown; ;
-
-                case CompuType.RelatedValue:
-                    return (root.HasSelect) ? root.Select.ValueType : ValType.IsUnknown; ;
-
-                case CompuType.NumericValueSet:
-                    if (cx.NumericSet == NumericSet.Count)
-                        return (AnyValueXHeads()) ? ValType.String : ValType.IsInvalid;
-                    else
-                        return (AnyValueXNumbers()) ? ValType.String : ValType.IsInvalid;
-
-                case CompuType.CompositeString:
-                    return (AnyValueXSelects()) ? ValType.String : ValType.IsInvalid;
-
-                case CompuType.CompositeReversed:
-                    return (AnyValueXSelects()) ? ValType.String : ValType.IsInvalid;
-                default:
-                    return ValType.IsInvalid;
-            }
-            bool AnyValueXHeads()
-            {
-                return QueryX_QueryX.HasChildLink(root);
-            }
-
-            bool AnyValueXSelects()
-            {
-                var qx = root;
-                while (qx != null)
-                {
-                    if (qx.HasSelect) return true;
-                    qx = QueryX_QueryX.GetChild(qx) as QueryX;
-                }
-                return false;
-            }
-
-            bool AnyValueXNumbers()
-            {
-                var qx = root;
-                while (qx != null)
-                {
-                    if (qx.HasSelect && IsNumber(qx.Select.ValueType)) return true;
-                    qx = QueryX_QueryX.GetChild(qx);
-                }
-                return false;
-            }
-
-            bool IsNumber(ValType nt)
-            {
-                switch(nt)
-                {
-                    case ValType.Byte:
-                    case ValType.Int16:
-                    case ValType.Int32:
-                    case ValType.Int64:
-                    case ValType.Double:
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        }
         internal string GetWhereProperty(ComputeX cx)
         {
             var qx = ComputeX_QueryX.GetChild(cx);
@@ -132,6 +65,7 @@ namespace ModelGraphSTD
             {
                 cx.CompuType = type;
                 cx.Value.Clear();
+                AllocateValueCache(cx);
             }
             return true;
         }
@@ -348,12 +282,13 @@ namespace ModelGraphSTD
              */
                 var qt = workQueue.Dequeue();
 
+                var r = Relation_QueryX.GetParent(qt);
+                if (r != null && (r.Pairing == Pairing.ManyToMany || (!qt.IsReversed && r.Pairing == Pairing.OneToMany)))
+                    isMultiple = true;
+
                 if (qt.HasValidSelect && qt.Select.ValueType < ValType.MaximumType)
                 {
                     vTypes.Add(qt.Select.ValueType);
-                    var r = Relation_QueryX.GetParent(qt);
-                    if (r != null && (r.Pairing == Pairing.ManyToMany || (!qt.IsReversed && r.Pairing == Pairing.OneToMany)))
-                        isMultiple = true;
                 }
 
                 children = QueryX_QueryX.GetChildren(qt);

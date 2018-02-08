@@ -8,9 +8,9 @@
     mc:Ignorable="d">
 
     <NavigationView x:Name="NavView"
-                    OpenPaneLength="280" 
+                    OpenPaneLength="200" 
                     CompactModeThresholdWidth="300" 
-                    ExpandedModeThresholdWidth="960"
+                    ExpandedModeThresholdWidth="600"
                     ItemInvoked="NavView_ItemInvoked"
                     SelectionChanged="NavView_SelectionChanged"
                     Loaded="NavView_Loaded"
