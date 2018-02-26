@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace ModelGraphSTD
@@ -362,12 +361,8 @@ namespace ModelGraphSTD
         #region GetSelectorName  ==============================================
         string GetSelectorName(ComputeX item)
         {
-            var text = "Select"; //<=================== FIX THIS
             var tbl = Store_ComputeX.GetParent(item);
-            var tblName = GetIdentity(tbl, IdentityStyle.Single);
-            if (tbl != null) return $"{tblName} ";
-
-            return text;
+            return (tbl != null) ? GetIdentity(tbl, IdentityStyle.Single) : "Select";
         }
         int GetValueType(QueryX qx)
         {
@@ -375,6 +370,5 @@ namespace ModelGraphSTD
             return (int)qx.Select.ValueType;
         }
         #endregion
-
     }
 }
