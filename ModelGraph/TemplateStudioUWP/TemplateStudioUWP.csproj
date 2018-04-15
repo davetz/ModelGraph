@@ -4,20 +4,20 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{20EE62B0-4559-445F-8316-6E0221E70E9B}</ProjectGuid>
+    <ProjectGuid>{D4952E04-315F-474A-90CF-8262D8C59C8E}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ModelGraphUWP</RootNamespace>
-    <AssemblyName>ModelGraphUWP</AssemblyName>
+    <RootNamespace>TemplateStudioUWP</RootNamespace>
+    <AssemblyName>TemplateStudioUWP</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16299.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>ModelGraphUWP_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>TemplateStudioUWP_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -93,17 +93,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.0.8</Version>
+      <Version>6.0.6</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed">
       <Version>2.0.0</Version>
     </PackageReference>
     <!-- Nuget package references -->
-    <PackageReference Include="Microsoft.Toolkit.Uwp">
-      <Version>2.2.0</Version>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>11.0.2</Version>
+      <Version>11.0.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
       <Version>2.2.0</Version>
@@ -114,24 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activation\ActivationHandler.cs" />
-    <Compile Include="Controls\ModelGraph\ModelGraphControl.xaml.cs">
-      <DependentUpon>ModelGraphControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ModelGraph\ModelGraphControlDrawing.cs" />
-    <Compile Include="Controls\ModelGraph\ModelGraphControlEventActions.cs" />
-    <Compile Include="Controls\ModelGraph\ModelGraphControlInputEvents.cs" />
-    <Compile Include="Controls\ModelGraph\ModelGraphControlMoveItems.cs" />
-    <Compile Include="Controls\ModelGraph\ModelGraphControlVisualAids.cs" />
-    <Compile Include="Controls\ModelTree\ModelTreeControl.xaml.cs">
-      <DependentUpon>ModelTreeControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ModelTree\ModelTreeUICache.cs" />
-    <Compile Include="Controls\PageControl\PageControl.xaml.cs">
-      <DependentUpon>PageControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\SymbolEdit\SymbolEditControl.xaml.cs">
-      <DependentUpon>SymbolEditControl.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Activation\ShareTargetActivationHandler.cs" />
     <Compile Include="Helpers\DataRequestExtensions.cs" />
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
     <Compile Include="Helpers\Json.cs" />
@@ -151,11 +131,9 @@
     <Compile Include="Services\DragAndDrop\DropConfiguration.cs" />
     <Compile Include="Services\DragAndDrop\ListViewDropConfiguration.cs" />
     <Compile Include="Services\DragAndDrop\VisualDropConfiguration.cs" />
-    <Compile Include="Services\ModelPageService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\ThemeSelectorService.cs" />
     <Compile Include="Services\ViewLifetimeControl.cs" />
-    <Compile Include="Services\WhatsNewDisplayService.cs" />
     <Compile Include="Services\WindowManagerService.cs" />
     <Compile Include="TemplateSelectors\SharedContentTemplateSelector.cs" />
     <Compile Include="Views\BlankPage.xaml.cs">
@@ -171,11 +149,8 @@
       <DependentUpon>ShareTargetPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellNavigationItem.cs" />
-    <Compile Include="Views\NavigationPage.xaml.cs">
-      <DependentUpon>NavigationPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\WhatsNewDialog.xaml.cs">
-      <DependentUpon>WhatsNewDialog.xaml</DependentUpon>
+    <Compile Include="Views\ShellPage.xaml.cs">
+      <DependentUpon>ShellPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -185,22 +160,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\ModelGraph\ModelGraphControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\ModelTree\ModelTreeControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\PageControl\PageControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\SymbolEdit\SymbolEditControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Styles\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -241,11 +200,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\NavigationPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\WhatsNewDialog.xaml">
+    <Page Include="Views\ShellPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -259,16 +214,7 @@
     <Compile Include="Helpers\ResourceExtensions.cs" />
     <Compile Include="Helpers\Singleton.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ModelGraphSTD\ModelGraphSTD.csproj">
-      <Project>{4adf1261-e541-4672-8a29-88da3f31a76f}</Project>
-      <Name>ModelGraphSTD</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RepositoryUWP\RepositoryUWP.csproj">
-      <Project>{22214a1f-4025-45d1-969d-b88190d31bba}</Project>
-      <Name>RepositoryUWP</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
@@ -281,7 +227,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
-    <None Include="ModelGraphUWP_TemporaryKey.pfx" />
+    <None Include="TemplateStudioUWP_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
