@@ -8,11 +8,11 @@
   IgnorableNamespaces="uap mp genTemplate">
 
   <Identity
-    Name="8DC104B9-4EFF-43DD-84E4-CA6861A131B6"
+    Name="F0DBC447-A16D-4BA2-8ED4-F3A66D20C79D"
     Publisher="CN=davet"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="8DC104B9-4EFF-43DD-84E4-CA6861A131B6" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="F0DBC447-A16D-4BA2-8ED4-F3A66D20C79D" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>TemplateStudioUWP</DisplayName>

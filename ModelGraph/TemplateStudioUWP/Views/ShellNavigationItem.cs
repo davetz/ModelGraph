@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media;
 
 namespace TemplateStudioUWP.Views
 {
-    public class ShellNavigationItem : INotifyPropertyChanged
+    public class ShellNavigationItemL : INotifyPropertyChanged
     {
         public string Label { get; set; }
 
