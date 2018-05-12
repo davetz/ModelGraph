@@ -3837,7 +3837,7 @@ namespace ModelGraphSTD
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.ComputeX_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ComputeX_M, level, itm, null, null, ComputeX_M);
+                            model.ChildModels[i] = new ModelTree(model, Trait.ComputeX_M, level, itm, Store_ComputeX, sto, ComputeX_M);
                     }
                 }
                 else
