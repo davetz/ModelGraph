@@ -132,6 +132,7 @@ namespace ModelGraphSTD
             {
                 foreach (var qxi in list) { qxi.QueryKind = QueryType.Graph; qxi.IsHead = false; qxi.IsTail = false; }
             }
+            MajorDelta += 1;
         }
         private void MakePathtHead(ModelTree model)
         {
@@ -143,6 +144,7 @@ namespace ModelGraphSTD
                 list[0].IsHead = true;
                 list[tail].IsTail = true;
             }
+            MajorDelta += 1;
         }
         private void MakeGroupHead(ModelTree model)
         {
@@ -154,6 +156,7 @@ namespace ModelGraphSTD
                 list[0].IsHead = true;
                 list[tail].IsTail = true;
             }
+            MajorDelta += 1;
         }
         private void MakeBridgeHead(ModelTree model)
         {
@@ -165,6 +168,7 @@ namespace ModelGraphSTD
                 list[0].IsHead = true;
                 list[tail].IsTail = true;
             }
+            MajorDelta += 1;
         }
 
         internal bool CanConvertQueryType(ModelTree model)
