@@ -15,8 +15,8 @@ namespace ModelGraphUWP.Services
     internal class ModelPageService
     {
         PageControl _rootPage;
-        ModelRoot _rootModel;
-        ModelRoot _compareModel;
+        RootModel _rootModel;
+        RootModel _compareModel;
 
         public static ModelPageService Current => _current ?? (_current = new ModelPageService());
         static ModelPageService _current;
@@ -24,7 +24,7 @@ namespace ModelGraphUWP.Services
         #region Constructor  ==================================================
         private ModelPageService()
         {
-            _modelPages = new ConcurrentDictionary<ModelRoot, PageControl>();
+            _modelPages = new ConcurrentDictionary<RootModel, PageControl>();
 
             ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
         }
@@ -35,10 +35,10 @@ namespace ModelGraphUWP.Services
         }
         #endregion
 
-        readonly ConcurrentDictionary<ModelRoot, PageControl> _modelPages;
+        readonly ConcurrentDictionary<RootModel, PageControl> _modelPages;
 
         #region AddModelPage  =================================================
-        internal async void AddModelPage(ModelRoot model, PageControl page)
+        internal async void AddModelPage(RootModel model, PageControl page)
         {
             _modelPages.TryAdd(model, page);
             if (_rootPage == null)
@@ -54,11 +54,11 @@ namespace ModelGraphUWP.Services
         #endregion
 
         #region RemoveModelPage  ==============================================
-        internal async void RemoveModelPage(ModelRoot model, PageControl page)
+        internal async void RemoveModelPage(RootModel model, PageControl page)
         {
             if (page == _rootPage)
             {
-                var hitList = new List<(ModelRoot model, PageControl page)>();
+                var hitList = new List<(RootModel model, PageControl page)>();
 
                 foreach (var e in _modelPages)
                 {
@@ -93,21 +93,21 @@ namespace ModelGraphUWP.Services
 
 
         #region RegesterNavigaionPaneUpdateMethod  ============================
-        internal void RegesterNavigaionPaneUpdateMethod(Action<ModelRoot, ModelRoot, List<ModelRoot>, ModelRoot> updater)
+        internal void RegesterNavigaionPaneUpdateMethod(Action<RootModel, RootModel, List<RootModel>, RootModel> updater)
         {
             _updateNavigationPane = updater;
             UpdateNavigationPane(_rootModel);
         }
-        Action<ModelRoot, ModelRoot, List<ModelRoot>, ModelRoot> _updateNavigationPane;
+        Action<RootModel, RootModel, List<RootModel>, RootModel> _updateNavigationPane;
         #endregion
 
         #region UpdateNavigationPane  =========================================
-        void UpdateNavigationPane(ModelRoot selectedModed)
+        void UpdateNavigationPane(RootModel selectedModed)
         {
             if (_rootModel == null || _updateNavigationPane == null)
                 return;
 
-            var modelList = new List<ModelRoot>(8);
+            var modelList = new List<RootModel>(8);
 
             foreach (var e in _modelPages)
             {
@@ -117,10 +117,10 @@ namespace ModelGraphUWP.Services
         }
         #endregion
 
-        internal void ShowModelControl(ModelRoot model) => _rootPage?.ShowModelControl(model);
+        internal void ShowModelControl(RootModel model) => _rootPage?.ShowModelControl(model);
 
         #region CreateNewPage  ================================================
-        internal async void CreateNewPage(ModelRoot model)
+        internal async void CreateNewPage(RootModel model)
         {
             CoreApplicationView newView = CoreApplication.CreateNewView();
             int newViewId = 0;

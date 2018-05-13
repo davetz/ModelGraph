@@ -20,7 +20,7 @@ namespace ModelGraphSTD
                 PostRequest(model, () => { command.Action1(model, command.Parameter1); });
         }
 
-        internal void PostDataAction(ModelTree model, Action action)
+        internal void PostDataAction(ItemModel model, Action action)
         {
             if (model.IsInvalid) return;
 
@@ -28,7 +28,7 @@ namespace ModelGraphSTD
         }
         // Model refresh runs after each execution. We only
         // need to invoke an execution on the background thread.
-        public void PostModelRefresh(ModelTree model)
+        public void PostModelRefresh(ItemModel model)
         {
             if (model == null || model.IsInvalid) return;
  
@@ -36,7 +36,7 @@ namespace ModelGraphSTD
         }
         private void DoNothing() { }
 
-        internal void PostModelSetValue(ModelTree model, string value)
+        internal void PostModelSetValue(ItemModel model, string value)
         {
             if (model.IsInvalid) return;
 
@@ -47,13 +47,13 @@ namespace ModelGraphSTD
 
             PostRequest(model, () => { SetValue(model, value); });
         }
-        internal void PostModelSetIsChecked(ModelTree model, bool value)
+        internal void PostModelSetIsChecked(ItemModel model, bool value)
         {
             if (model.IsInvalid) return;
 
             PostModelSetValue(model, value.ToString());
         }
-        internal void PostModelSetValueIndex(ModelTree model, int index)
+        internal void PostModelSetValueIndex(ItemModel model, int index)
         {
             if (index < 0) return;
             if (model.IsInvalid) return;
@@ -76,7 +76,7 @@ namespace ModelGraphSTD
         #region PostRequest ===================================================
         //  Called from the ui thread and runs on a background thred
 
-        private async void PostRequest(ModelTree requestingModel, Action requestedDataAction)
+        private async void PostRequest(ItemModel requestingModel, Action requestedDataAction)
         {
             if (requestingModel.IsInvalid) return;
 
@@ -120,14 +120,14 @@ namespace ModelGraphSTD
         private class ActionRequest
         {
             Action _action;
-            ModelTree _model;
-            internal ActionRequest(ModelTree model, Action action)
+            ItemModel _model;
+            internal ActionRequest(ItemModel model, Action action)
             {
                 _action = action;
                 _model = model;
             }
 
-            internal ModelTree Model { get { return _model; } }
+            internal ItemModel Model { get { return _model; } }
             internal void Execute() { _action(); _action = null; _model = null; }
             internal bool IsValid { get { return (_action != null && _model != null && !_model.IsInvalid); } }
         }

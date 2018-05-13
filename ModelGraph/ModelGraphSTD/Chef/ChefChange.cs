@@ -40,7 +40,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Expand All  ===================================================
-        private void ExpandAllChangeSets(ModelTree model)
+        private void ExpandAllChangeSets(ItemModel model)
         {
             if (_changeRoot == null) return;
             _changeRoot.AutoExpandChanges();
@@ -239,7 +239,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region ItemUpdated  ==================================================
-        private void SetValue(ModelTree model, string newValue)
+        private void SetValue(ItemModel model, string newValue)
         {
             var itm1 = model.Item1;
             var itm2 = model.Item2;
@@ -457,7 +457,7 @@ namespace ModelGraphSTD
         /// <summary>
         /// Remove and Unlink the target item and all of its dependents 
         /// </summary>
-        internal void RemoveItem(ModelTree model)
+        internal void RemoveItem(ItemModel model)
         {
             RemoveItem(model.Item1);
         }

@@ -24,7 +24,7 @@ namespace ModelGraphUWP.Views
         }
 
         #region UpdateNavigationPane  =========================================
-        internal void UpdateNavigationPane(ModelRoot home, ModelRoot compare, List<ModelRoot> modelList, ModelRoot select)
+        internal void UpdateNavigationPane(RootModel home, RootModel compare, List<RootModel> modelList, RootModel select)
         {
             object insertionPoint = null;
             var hitList = new List<NavigationViewItem>();
@@ -34,7 +34,7 @@ namespace ModelGraphUWP.Views
             {
                 if (item is NavigationViewItem n)
                 {
-                    var model = n.Tag as ModelRoot;
+                    var model = n.Tag as RootModel;
                     if (n.Name == "Home")
                     {
                         n.Tag = home;
@@ -142,7 +142,7 @@ namespace ModelGraphUWP.Views
                 var item = args.SelectedItem as NavigationViewItem;
                 if (item == null) return;
 
-                var model = item.Tag as ModelRoot;
+                var model = item.Tag as RootModel;
                 if (model == null) return;
 
                 ModelPageService.Current.ShowModelControl(model);

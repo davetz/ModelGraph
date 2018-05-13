@@ -4,22 +4,22 @@ namespace ModelGraphSTD
 {/*
 
  */
-    public class ModelTree
+    public class ItemModel
     {
         public Item Item1;
         public Item Item2;
         public Item Item3;
-        public ModelTree ParentModel;   // allows bidirectional tree taversal
-        public ModelTree[] ChildModels; // hierarchal subtree of models 
-        protected Action<ModelTree, ModelRoot> _getData;
+        public ItemModel ParentModel;   // allows bidirectional tree taversal
+        public ItemModel[] ChildModels; // hierarchal subtree of models 
+        protected Action<ItemModel, RootModel> _getData;
         internal Trait Trait;
         private State1 _flags1;
         private State2 _flags2;
         public byte Level;
 
         #region Constructor  ==================================================
-        internal ModelTree(ModelTree parent, Trait trait = Trait.Empty, byte level = 0, Item item1 = null, Item item2 = null, Item item3 = null,
-            Action<ModelTree, ModelRoot> getData = null)
+        internal ItemModel(ItemModel parent, Trait trait = Trait.Empty, byte level = 0, Item item1 = null, Item item2 = null, Item item3 = null,
+            Action<ItemModel, RootModel> getData = null)
         {
             Trait = trait;
             Level = level;
@@ -130,7 +130,7 @@ namespace ModelGraphSTD
         {
             return UIRequest.CreateNewView(controlType, Trait, Item1.GetChef(), Item1, Item2, Item3, _getData, true);
         }
-        public UIRequest BuildViewRequest(ControlType controlType, Trait trait, Action<ModelTree, ModelRoot> getData)
+        public UIRequest BuildViewRequest(ControlType controlType, Trait trait, Action<ItemModel, RootModel> getData)
         {
             return UIRequest.CreateNewView(controlType, trait, Item1.GetChef(), Item1, Item2, Item3, getData, true);
         }
@@ -138,16 +138,16 @@ namespace ModelGraphSTD
         public bool HasError { get { return false; } }
         public bool IsModified { get { return false; } }
         public string ModelIdentity => GetModelIdentity();
-        public Action<ModelTree, ModelRoot> ModelGetData => _getData;
+        public Action<ItemModel, RootModel> ModelGetData => _getData;
 
         public bool IsExpanded => (IsExpandedLeft || IsExpandedRight);
         public bool IsSorted => (IsSortAscending || IsSortDescending);
 
         public bool IsInvalid => (Item1 == null || Item1.IsInvalid);
         public void Validate() { _getData?.Invoke(this, null); }
-        public void GetData(ModelRoot root) { _getData?.Invoke(this, root); }
+        public void GetData(RootModel root) { _getData?.Invoke(this, root); }
 
-        public int GetChildlIndex(ModelTree child)
+        public int GetChildlIndex(ItemModel child)
         {
             if (ChildModels != null)
             {
@@ -177,7 +177,7 @@ namespace ModelGraphSTD
         public Relation Relation { get { return Item2 as Relation; } }
         public Query Query { get { return Item2 as Query; } }
 
-        public bool IsChildModel(ModelTree model)
+        public bool IsChildModel(ItemModel model)
         {
             if (ChildModels == null) return false;
             foreach (var child in ChildModels)
@@ -186,16 +186,16 @@ namespace ModelGraphSTD
             }
             return false;
         }
-        public bool IsSiblingModel(ModelTree model)
+        public bool IsSiblingModel(ItemModel model)
         {
             return (ParentModel == model.ParentModel);
         }
 
-        public ModelRoot GetRootModel()
+        public RootModel GetRootModel()
         {
             var mdl = this;
             while (mdl.ParentModel != null) { mdl = mdl.ParentModel; }
-            var root = mdl as ModelRoot;
+            var root = mdl as RootModel;
             if (root != null) return root;
             throw new Exception("Corrupt TreeModel Hierachy");
         }

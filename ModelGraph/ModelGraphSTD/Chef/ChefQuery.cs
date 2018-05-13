@@ -125,7 +125,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region ConvertQueryType  =============================================
-        private void MakeRootLink(ModelTree model)
+        private void MakeRootLink(ItemModel model)
         {
             var qx = model.Item1 as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
@@ -134,7 +134,7 @@ namespace ModelGraphSTD
             }
             MajorDelta += 1;
         }
-        private void MakePathtHead(ModelTree model)
+        private void MakePathtHead(ItemModel model)
         {
             var qx = model.Item1 as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
@@ -146,7 +146,7 @@ namespace ModelGraphSTD
             }
             MajorDelta += 1;
         }
-        private void MakeGroupHead(ModelTree model)
+        private void MakeGroupHead(ItemModel model)
         {
             var qx = model.Item1 as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
@@ -158,7 +158,7 @@ namespace ModelGraphSTD
             }
             MajorDelta += 1;
         }
-        private void MakeBridgeHead(ModelTree model)
+        private void MakeBridgeHead(ItemModel model)
         {
             var qx = model.Item1 as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
@@ -171,7 +171,7 @@ namespace ModelGraphSTD
             MajorDelta += 1;
         }
 
-        internal bool CanConvertQueryType(ModelTree model)
+        internal bool CanConvertQueryType(ItemModel model)
         {
             var qx = model.Item1 as QueryX;
             var prev = QueryX_QueryX.GetParent(qx);

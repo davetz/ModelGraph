@@ -10,11 +10,18 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
+        #region Initialize_ModelFunctions  ====================================
+        void Initialize_ModelFunctions()
+        {
+            Initialize_DataChef_M();
+        }
+        #endregion
+
         #region TryGetOldModel  ===============================================
         /// <summary>
         /// Try to find and reuse an existing model matching the callers parameters
         /// </summary>
-        private static bool TryGetOldModel(ModelTree model, Trait trait, ModelTree[] oldModels, int index, Item itm1 = null, Item itm2 = null, Item itm3 = null)
+        private static bool TryGetOldModel(ItemModel model, Trait trait, ItemModel[] oldModels, int index, Item itm1 = null, Item itm2 = null, Item itm3 = null)
         {
             if (oldModels == null || oldModels.Length == 0) return false;
 
@@ -42,7 +49,7 @@ namespace ModelGraphSTD
         private class TreeModelStack
         {
             private int _count;
-            private (ModelTree[] Models, int Index)[] _stack;
+            private (ItemModel[] Models, int Index)[] _stack;
             internal bool IsNotEmpty => (_count > 0);
 
             #region Constructor  ==============================================
@@ -50,7 +57,7 @@ namespace ModelGraphSTD
             internal TreeModelStack(int capacity = minLength)
             {
                 var length = (capacity < minLength) ? minLength : capacity;
-                _stack = new(ModelTree[] Models, int Index)[length];
+                _stack = new(ItemModel[] Models, int Index)[length];
             }
             #endregion
 
@@ -58,7 +65,7 @@ namespace ModelGraphSTD
             /// <summary>
             /// Push the ChildModels (if any)
             /// </summary>
-            internal int PushChildren(ModelTree model)
+            internal int PushChildren(ItemModel model)
             {
                 var models = model.ChildModels;
                 var length = (models == null) ? 0 : models.Length;
@@ -70,7 +77,7 @@ namespace ModelGraphSTD
                     if (_count == _stack.Length)
                     {
                         var oldStack = _stack;
-                        _stack = new(ModelTree[] Models, int Index)[_count  * 2];
+                        _stack = new(ItemModel[] Models, int Index)[_count  * 2];
                         Array.Copy(oldStack, _stack, _count);
                     }
                 }
@@ -83,7 +90,7 @@ namespace ModelGraphSTD
             /// Get the next unvisited model in the TreeModelTree
             /// </summary>
             /// <returns></returns>
-            internal ModelTree PopNext()
+            internal ItemModel PopNext()
             {
                 var end = _count - 1;
                 var entry = _stack[end];
@@ -104,7 +111,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region ValidateModelTree =============================================
-        public bool ValidateModelTree(ModelRoot root, ChangeType change = ChangeType.NoChange)
+        public bool ValidateModelTree(RootModel root, ChangeType change = ChangeType.NoChange)
         {
             var oldModels = root.ViewModels;
             var oldLen = (oldModels == null) ? 0 : oldModels.Length;
@@ -140,7 +147,7 @@ namespace ModelGraphSTD
                 // build a flat array representation of the itemModel tree
                 //=============================================================
                 var n = 0;
-                var newModels = root.ViewModels = new ModelTree[newLen]; // create array of the correct size
+                var newModels = root.ViewModels = new ItemModel[newLen]; // create array of the correct size
 
                 modelStack.PushChildren(root);
                 while (modelStack.IsNotEmpty)
@@ -199,7 +206,7 @@ namespace ModelGraphSTD
                         }
 
                         #region FindSelectParent  =============================
-                        ModelTree FindSelectParent()
+                        ItemModel FindSelectParent()
                         {
                             var mod = select;
                             while (mod != null && mod.ParentModel != null)
@@ -218,7 +225,7 @@ namespace ModelGraphSTD
                     }
 
                     #region IndexOf  ==========================================
-                    int IndexOf(ModelTree model, int index1, int index2)
+                    int IndexOf(ItemModel model, int index1, int index2)
                     {
                         if (index2 > newLen) index2 = newLen;
 
@@ -231,7 +238,7 @@ namespace ModelGraphSTD
                     #endregion
 
                     #region OldDelta  =========================================
-                    int OldDelta(ModelTree model, int index1, int index2)
+                    int OldDelta(ItemModel model, int index1, int index2)
                     {
                         if (index2 > oldLen) index2 = oldLen;
                         for (int i = index1; i < index2; i++)
@@ -336,7 +343,7 @@ namespace ModelGraphSTD
             #endregion
 
             #region ValidateModel  ============================================
-            void ValidateModel(ModelTree model)
+            void ValidateModel(ItemModel model)
             {
                 if (model.Item1.AutoExpandRight)
                 {
@@ -381,7 +388,7 @@ namespace ModelGraphSTD
 
 
         #region CheckFilterSort  ==============================================
-        private void CheckFilterSort(ModelTree model)
+        private void CheckFilterSort(ItemModel model)
         {
             var children = model.ChildModels;
             var count = (children == null) ? 0 : children.Length;
@@ -410,7 +417,7 @@ namespace ModelGraphSTD
                 if (model.IsSortDescending) items.Reverse();
 
                 count = items.Count;
-                children = new ModelTree[count];
+                children = new ItemModel[count];
                 for (int i = 0; i < count; i++)
                 {
                     children[i] = items[i].Model;
@@ -418,7 +425,7 @@ namespace ModelGraphSTD
                 model.ChildModels = children;
             }
         }
-        private string GetFilterSortName(ModelTree model)
+        private string GetFilterSortName(ItemModel model)
         {
             var refRoot = PrimaryRootModel;
             refRoot.GetModelItemData(model);
@@ -426,7 +433,7 @@ namespace ModelGraphSTD
             var name = string.IsNullOrEmpty(refRoot.ModelName) ? " " : refRoot.ModelName;
             return $"{kind} {name}";
         }
-        private bool TryGetFilter(ModelTree model, out Regex filter)
+        private bool TryGetFilter(ItemModel model, out Regex filter)
         {
             filter = null;
             if (model.IsExpandedFilter)
@@ -440,9 +447,9 @@ namespace ModelGraphSTD
         private class FilterSortItem
         {
             internal string Name;
-            internal ModelTree Model;
+            internal ItemModel Model;
 
-            internal FilterSortItem(ModelTree model, string name)
+            internal FilterSortItem(ItemModel model, string name)
             {
                 Name = name;
                 Model = model;
@@ -460,7 +467,7 @@ namespace ModelGraphSTD
 
 
         #region AddProperyModels  =============================================
-        private void AddProperyModels(ModelTree model, ModelTree[] oldModels, ColumnX[] cols)
+        private void AddProperyModels(ItemModel model, ItemModel[] oldModels, ColumnX[] cols)
         {
             var item = model.Item1;
             var N = cols.Length;
@@ -473,7 +480,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void AddProperyModels(ModelTree model, ModelTree[] oldModels, Property[] props)
+        private void AddProperyModels(ItemModel model, ItemModel[] oldModels, Property[] props)
         {
             var item = model.Item1;
             var N = props.Length;
@@ -494,37 +501,37 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private ModelTree NewPropertyModel(ModelTree model, byte level, Item item, ColumnX col)
+        private ItemModel NewPropertyModel(ItemModel model, byte level, Item item, ColumnX col)
         {
             if (EnumX_ColumnX.TryGetParent(col, out EnumX enu))
-                return new ModelTree(model, Trait.ComboProperty_M, level, item, col, enu, ComboColomn_X);
+                return new ItemModel(model, Trait.ComboProperty_M, level, item, col, enu, ComboColomn_X);
             else if (col.Value.ValType == ValType.Bool)
-                return new ModelTree(model, Trait.CheckProperty_M, level, item, col, null, CheckColumn_X);
+                return new ItemModel(model, Trait.CheckProperty_M, level, item, col, null, CheckColumn_X);
             else
-                return new ModelTree(model, Trait.TextProperty_M, level, item, col, null, TextColumn_M);
+                return new ItemModel(model, Trait.TextProperty_M, level, item, col, null, TextColumn_M);
         }
-        private ModelTree NewPropertyModel(ModelTree model, byte level, Item item, ComputeX cx)
+        private ItemModel NewPropertyModel(ItemModel model, byte level, Item item, ComputeX cx)
         {
             if (EnumX_ColumnX.TryGetParent(cx, out EnumX enu))
-                return new ModelTree(model, Trait.ComboProperty_M, level, item, cx, enu, ComboProperty_X);
+                return new ItemModel(model, Trait.ComboProperty_M, level, item, cx, enu, ComboProperty_X);
             else if (cx.Value.ValType == ValType.Bool)
-                return new ModelTree(model, Trait.CheckProperty_M, level, item, cx, null, CheckProperty_X);
+                return new ItemModel(model, Trait.CheckProperty_M, level, item, cx, null, CheckProperty_X);
             else
-                return new ModelTree(model, Trait.TextProperty_M, level, item, cx, null, TextCompute_X);
+                return new ItemModel(model, Trait.TextProperty_M, level, item, cx, null, TextCompute_X);
         }
-        private ModelTree NewPropertyModel(ModelTree model, byte level, Item item, Property prop)
+        private ItemModel NewPropertyModel(ItemModel model, byte level, Item item, Property prop)
         {
             if (Property_Enum.TryGetValue(prop, out EnumZ enu))
-                return new ModelTree(model, Trait.ComboProperty_M, level, item, prop, enu, ComboProperty_X);
+                return new ItemModel(model, Trait.ComboProperty_M, level, item, prop, enu, ComboProperty_X);
             else if (prop.Value.ValType == ValType.Bool)
-                return new ModelTree(model, Trait.CheckProperty_M, level, item, prop, null, CheckProperty_X);
+                return new ItemModel(model, Trait.CheckProperty_M, level, item, prop, null, CheckProperty_X);
             else
-                return new ModelTree(model, Trait.TextProperty_M, level, item, prop, null, TextProperty_X);
+                return new ItemModel(model, Trait.TextProperty_M, level, item, prop, null, TextProperty_X);
         }
         #endregion
 
         #region GetAppTabName  ================================================
-        internal string GetAppTabName(ModelRoot root)
+        internal string GetAppTabName(RootModel root)
         {
             switch (root.ControlType)
             {
@@ -542,7 +549,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region GetAppTabSummary  =============================================
-        internal string GetAppTabSummary(ModelRoot root)
+        internal string GetAppTabSummary(RootModel root)
         {
             switch (root.ControlType)
             {
@@ -572,7 +579,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region GetAppTitleName  ==============================================
-        internal string GetAppTitleName(ModelRoot root)
+        internal string GetAppTitleName(RootModel root)
         {
             switch (root.ControlType)
             {
@@ -602,7 +609,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region GetAppTitleSummary  ===========================================
-        internal string GetAppTitleSummary(ModelRoot root)
+        internal string GetAppTitleSummary(RootModel root)
         {
             switch (root.ControlType)
             {
@@ -632,7 +639,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region GetAppCommands  ===============================================
-        internal void GetAppCommands(ModelRoot root)
+        internal void GetAppCommands(RootModel root)
         {
             switch (root.ControlType)
             {
@@ -664,66 +671,66 @@ namespace ModelGraphSTD
                     break;
             }
         }
-        private void AppRootNewModel(ModelTree model)
+        private void AppRootNewModel(ItemModel model)
         {
-            var root = model as ModelRoot;
+            var root = model as RootModel;
             var rootChef = root.Chef;
             var dataChef = new Chef(rootChef, null);
 
             root.UIRequest = UIRequest.CreateNewView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_M);
         }
-        public void AppRootOpenModel(ModelTree model, Object parm1)
+        public void AppRootOpenModel(ItemModel model, Object parm1)
         {
             var repo = parm1 as IRepository;
-            var root = model as ModelRoot;
+            var root = model as RootModel;
             var rootChef = root.Chef;
             var dataChef = new Chef(rootChef, repo);
 
             root.UIRequest = UIRequest.CreateNewView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_M);
         }
-        internal void AppRootSaveAsModel(ModelTree model, Object parm1)
+        internal void AppRootSaveAsModel(ItemModel model, Object parm1)
         {
             var repo = parm1 as IRepository;
-            var root = model as ModelRoot;
+            var root = model as RootModel;
             var dataChef = root.Chef;
 
             MajorDelta += 1;
             dataChef.SaveToRepository(repo);
         }
-        private void AppRootSaveModel(ModelTree model)
+        private void AppRootSaveModel(ItemModel model)
         {
-            var root = model as ModelRoot;
+            var root = model as RootModel;
             var dataChef = root.Chef;
 
             MajorDelta += 1;
             dataChef.SaveToRepository();
         }
-        private void AppRootCloseModel(ModelTree model)
+        private void AppRootCloseModel(ItemModel model)
         {
-            var root = model as ModelRoot;
+            var root = model as RootModel;
             root.UIRequest = UIRequest.CloseModel(root);
         }
-        private void AppRootReloadModel(ModelTree model)
+        private void AppRootReloadModel(ItemModel model)
         {
-            var root = model as ModelRoot;
+            var root = model as RootModel;
             root.UIRequest = UIRequest.ReloadModel(root);
         }
-        private void AppSaveSymbol(ModelTree model)
+        private void AppSaveSymbol(ItemModel model)
         {
-            var root = model as ModelRoot;
+            var root = model as RootModel;
             root.UIRequest = UIRequest.SaveModel(root);
         }
-        private void AppReloadSymbol(ModelTree model)
+        private void AppReloadSymbol(ItemModel model)
         {
-            var root = model as ModelRoot;
+            var root = model as RootModel;
             root.UIRequest = UIRequest.ReloadModel(root);
         }
         #endregion
 
 
-
         #region 611 RootChef_M  ===============================================
-        internal void RootChef_M(ModelTree model, ModelRoot root = null)
+        ChefModelFunc _rootChef_M;
+        internal void RootChef_M(ItemModel model, RootModel root = null)
         {
             //if (root != null)  // get the data for this root.ModelAction
             //{
@@ -771,7 +778,18 @@ namespace ModelGraphSTD
         #endregion
 
         #region 612 DataChef_M  ===============================================
-        internal void DataChef_M(ModelTree model, ModelRoot root)
+        ChefModelFunc _dataChef_M;
+        void Initialize_DataChef_M()
+        {
+            _dataChef_M.GetData = GetData_DataChef_M;
+        }
+        (string Kind, string Name, int Count) GetData_DataChef_M(ItemModel model)
+        {
+            model.CanExpandLeft = true;
+
+            return (null, _localize(model.NameKey), 0);
+        }
+        internal void DataChef_M(ItemModel model, RootModel root)
         {
             var chef = model.Item1 as Chef;
             if (root != null)  // get the data for this root.ModelAction
@@ -806,30 +824,30 @@ namespace ModelGraphSTD
 
                 var N = 4;
 
-                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                 var i = 0;
                 if (!TryGetOldModel(model, Trait.ErrorRoot_M, oldModels, i))
-                    model.ChildModels[i] = new ModelTree(model, Trait.ErrorRoot_M, level, _errorStore, null, null, ErrorRoot_X);
+                    model.ChildModels[i] = new ItemModel(model, Trait.ErrorRoot_M, level, _errorStore, null, null, ErrorRoot_X);
 
                 i++;
                 if (!TryGetOldModel(model, Trait.ChangeRoot_M, oldModels, i))
-                    model.ChildModels[i] = new ModelTree(model, Trait.ChangeRoot_M, level, _changeRoot, null, null, ChangeRoot_X);
+                    model.ChildModels[i] = new ItemModel(model, Trait.ChangeRoot_M, level, _changeRoot, null, null, ChangeRoot_X);
 
                 i++;
                 if (!TryGetOldModel(model, Trait.MetadataRoot_M, oldModels, i))
-                    model.ChildModels[i] = new ModelTree(model, Trait.MetadataRoot_M, level, item, null, null, MetadataRoot_X);
+                    model.ChildModels[i] = new ItemModel(model, Trait.MetadataRoot_M, level, item, null, null, MetadataRoot_X);
 
                 i++;
                 if (!TryGetOldModel(model, Trait.ModelingRoot_M, oldModels, i))
-                    model.ChildModels[i] = new ModelTree(model, Trait.ModelingRoot_M, level, item, null, null, ModelingRoot_X);
+                    model.ChildModels[i] = new ItemModel(model, Trait.ModelingRoot_M, level, item, null, null, ModelingRoot_X);
             }
         }
 
         #endregion
 
         #region 613 MockChef_M  ===============================================
-        internal void MockChef_M(ModelTree model, ModelRoot root = null)
+        internal void MockChef_M(ItemModel model, RootModel root = null)
         {
             var chef = model.Item1 as Chef;
             if (root != null)
@@ -857,7 +875,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void CreatePrimaryModelTree(ModelTree model)
+        private void CreatePrimaryModelTree(ItemModel model)
         {
             var chef = model.Item1 as Chef;
             var root = model.GetRootModel();
@@ -866,7 +884,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 614 TextColumn_M  =============================================
-        internal void TextColumn_M(ModelTree model, ModelRoot root)
+        internal void TextColumn_M(ItemModel model, RootModel root)
         {
             var itm = model.Item1;
             var col = model.Item2 as ColumnX;
@@ -900,7 +918,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 615 CheckColumn  ==============================================
-        internal void CheckColumn_X(ModelTree model, ModelRoot root)
+        internal void CheckColumn_X(ItemModel model, RootModel root)
         {
             var itm = model.Item1;
             var col = model.Item2 as ColumnX;
@@ -933,7 +951,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 616 ComboColumn  ==============================================
-        internal void ComboColomn_X(ModelTree model, ModelRoot root)
+        internal void ComboColomn_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1013,7 +1031,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 617 TextProperty  =============================================
-        internal void TextProperty_X(ModelTree model, ModelRoot root)
+        internal void TextProperty_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1051,7 +1069,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 618 CheckProperty  ============================================
-        internal void CheckProperty_X(ModelTree model, ModelRoot root)
+        internal void CheckProperty_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1084,7 +1102,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 619 ComboProperty  ============================================
-        internal void ComboProperty_X(ModelTree model, ModelRoot root)
+        internal void ComboProperty_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1119,7 +1137,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 61A TextCompute  ==============================================
-        internal void TextCompute_X(ModelTree model, ModelRoot root)
+        internal void TextCompute_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1156,7 +1174,7 @@ namespace ModelGraphSTD
 
 
         #region 621 ErrorRoot  ================================================
-        internal void ErrorRoot_X(ModelTree model, ModelRoot root)
+        internal void ErrorRoot_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1195,13 +1213,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i] as Error;
                         if (!TryGetOldModel(model, Trait.ErrorType_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ErrorType_M, level, itm);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ErrorType_M, level, itm);
                     }
                 }
                 else
@@ -1214,7 +1232,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 622 ChangeRoot  ===============================================
-        internal void ChangeRoot_X(ModelTree model, ModelRoot root)
+        internal void ChangeRoot_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1264,13 +1282,13 @@ namespace ModelGraphSTD
                         var items = new List<ChangeSet>(_changeRoot.Items);
                         items.Reverse();
                         var level = (byte)(model.Level + 1);
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i] as ChangeSet;
                             if (!TryGetOldModel(model, Trait.ChangeSet_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.ChangeSet_M, level, itm, null, null, ChangeSet_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.ChangeSet_M, level, itm, null, null, ChangeSet_X);
                         }
                     }
                 }
@@ -1279,7 +1297,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 623 MetadataRoot  =============================================
-        internal void MetadataRoot_X(ModelTree model, ModelRoot root)
+        internal void MetadataRoot_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1315,27 +1333,27 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     var i = 0;
                     if (!TryGetOldModel(model, Trait.ViewXView_ZM, oldModels, i, _viewXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.ViewXView_ZM, level, _viewXStore, null, null, ViewXView_ZM);
+                        model.ChildModels[i] = new ItemModel(model, Trait.ViewXView_ZM, level, _viewXStore, null, null, ViewXView_ZM);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.EnumX_ZM, oldModels, i, _enumZStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.EnumX_ZM, level, _enumZStore, null, null, EnumXList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.EnumX_ZM, level, _enumZStore, null, null, EnumXList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.TableX_ZM, oldModels, i, _tableXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.TableX_ZM, level, _tableXStore, null, null, TableXList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.TableX_ZM, level, _tableXStore, null, null, TableXList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.GraphX_ZM, oldModels, i, _graphXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.GraphX_ZM, level, _graphXStore, null, null, GraphXList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.GraphX_ZM, level, _graphXStore, null, null, GraphXList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.InternalStore_ZM, oldModels, i, this))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_ZM, level, this, null, null, InternalStoreZ_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_ZM, level, this, null, null, InternalStoreZ_X);
                 }
                 else
                 {
@@ -1343,7 +1361,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void CreateSecondaryMetadataTree(ModelTree model)
+        private void CreateSecondaryMetadataTree(ItemModel model)
         {
             var root = model.GetRootModel();
             root.UIRequest = model.BuildViewRequest(ControlType.PartialTree);
@@ -1351,7 +1369,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 624 ModelingRoot  =============================================
-        internal void ModelingRoot_X(ModelTree model, ModelRoot root)
+        internal void ModelingRoot_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1388,23 +1406,23 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     var i = 0;
                     if (!TryGetOldModel(model, Trait.ViewView_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ModelTree(model, Trait.ViewView_ZM, level, item, null, null, ViewView_ZM);
+                        model.ChildModels[i] = new ItemModel(model, Trait.ViewView_ZM, level, item, null, null, ViewView_ZM);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.Table_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ModelTree(model, Trait.Table_ZM, level, item, null, null, TableList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.Table_ZM, level, item, null, null, TableList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.Graph_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ModelTree(model, Trait.Graph_ZM, level, item, null, null, GraphList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.Graph_ZM, level, item, null, null, GraphList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.PrimeCompute_M, oldModels, i, this))
-                        model.ChildModels[i] = new ModelTree(model, Trait.PrimeCompute_M, level, this, null, null, PrimeCompute_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.PrimeCompute_M, level, this, null, null, PrimeCompute_X);
                 }
                 else
                 {
@@ -1413,7 +1431,7 @@ namespace ModelGraphSTD
 
             }
         }
-        private void CreateSecondaryModelingTree(ModelTree model)
+        private void CreateSecondaryModelingTree(ItemModel model)
         {
             var root = model.GetRootModel();
             root.UIRequest = model.BuildViewRequest(ControlType.PartialTree);
@@ -1421,7 +1439,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 625 MetaRelationList  =========================================
-        internal void MetaRelationList_X(ModelTree model, ModelRoot root)
+        internal void MetaRelationList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1457,15 +1475,15 @@ namespace ModelGraphSTD
 
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     var i = 0;
                     if (!TryGetOldModel(model, Trait.NameColumnRelation_M, oldModels, i, item))
-                        model.ChildModels[i] = new ModelTree(model, Trait.NameColumnRelation_M, level, item, TableX_NameProperty, null, NameColumnRelation_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.NameColumnRelation_M, level, item, TableX_NameProperty, null, NameColumnRelation_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.SummaryColumnRelation_M, oldModels, i, item))
-                        model.ChildModels[i] = new ModelTree(model, Trait.SummaryColumnRelation_M, level, item, TableX_SummaryProperty, null, SummaryColumnRelation_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.SummaryColumnRelation_M, level, item, TableX_SummaryProperty, null, SummaryColumnRelation_X);
                 }
                 else
                 {
@@ -1476,7 +1494,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 626 ErrorType  ================================================
-        internal void ErrorType_X(ModelTree model, ModelRoot root)
+        internal void ErrorType_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1514,11 +1532,11 @@ namespace ModelGraphSTD
                 {
                     if (oldModels == null || oldModels.Length != N)
                     {
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            model.ChildModels[i] = new ModelTree(model, Trait.ErrorText_M, level, error);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ErrorText_M, level, error);
                         }
                     }
                 }
@@ -1531,7 +1549,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 627 ErrorText  ================================================
-        internal void ErrorText_X(ModelTree model, ModelRoot root)
+        internal void ErrorText_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1561,7 +1579,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 628 ChangeSet  ================================================
-        internal void ChangeSet_X(ModelTree model, ModelRoot root)
+        internal void ChangeSet_X(ItemModel model, RootModel root)
         {
             var chg = model.Item1 as ChangeSet;
             if (root != null)  // get the data for this root.ModelAction
@@ -1606,14 +1624,14 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i] as ItemChange;
                         if (!TryGetOldModel(model, Trait.ItemChange_M, oldModels, i, itm))
                         {
-                            model.ChildModels[i] = new ModelTree(model, Trait.ItemChange_M, level, itm, null, null, ItemChanged_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ItemChange_M, level, itm, null, null, ItemChanged_X);
                         }
                     }
                 }
@@ -1630,18 +1648,18 @@ namespace ModelGraphSTD
             else
                 return chg.Name;
         }
-        private void ModelMerge(ModelTree model)
+        private void ModelMerge(ItemModel model)
         {
             var chg = model.Item1 as ChangeSet;
             chg.Merge();
             MajorDelta += 1;
         }
-        private void ModelUndo(ModelTree model)
+        private void ModelUndo(ItemModel model)
         {
             var chg = model.Item1 as ChangeSet;
             Undo(chg);
         }
-        private void ModelRedo(ModelTree model)
+        private void ModelRedo(ItemModel model)
         {
             var chg = model.Item1 as ChangeSet;
             Redo(chg);
@@ -1649,7 +1667,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 629 ItemChanged  ==============================================
-        internal void ItemChanged_X(ModelTree model, ModelRoot root)
+        internal void ItemChanged_X(ItemModel model, RootModel root)
         {
             var chg = model.Item1 as ItemChange;
             if (root != null)  // get the data for this root.ModelAction
@@ -1681,7 +1699,7 @@ namespace ModelGraphSTD
 
 
         #region 631 ViewXView_ZM  =============================================
-        internal void ViewXView_ZM(ModelTree model, ModelRoot root)
+        internal void ViewXView_ZM(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -1729,24 +1747,24 @@ namespace ModelGraphSTD
                     {
                         var level = (byte)(model.Level + 1);
                         var oldModels = model.ChildModels;
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = roots[i];
                             if (!TryGetOldModel(model, Trait.ViewXView_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.ViewXView_M, level, itm, null, null, ViewXView_M);
+                                model.ChildModels[i] = new ItemModel(model, Trait.ViewXView_M, level, itm, null, null, ViewXView_M);
                         }
                     }
                 }
                 if (N == 0) model.ChildModels = null;
             }
         }
-        private void ViewXView_ZM_Insert(ModelTree model)
+        private void ViewXView_ZM_Insert(ItemModel model)
         {
             ItemCreated(new ViewX(_viewXStore));
         }
-        private DropAction ViewXView_ZM_Drop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction ViewXView_ZM_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
             var vxDrop = drop.Item1 as ViewX;
             if (vxDrop != null && vxDrop.Owner == _viewXStore)
@@ -1766,7 +1784,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 632 ViewXView_M  ==============================================
-        internal void ViewXView_M(ModelTree model, ModelRoot root)
+        internal void ViewXView_M(ItemModel model, RootModel root)
         {
             var view = model.Item1 as ViewX;
 
@@ -1838,7 +1856,7 @@ namespace ModelGraphSTD
                     {
                         var level = (byte)(model.Level + 1);
                         var oldModels = model.ChildModels;
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
@@ -1851,7 +1869,7 @@ namespace ModelGraphSTD
                                 var px = propertyList[j];
 
                                 if (!TryGetOldModel(model, Trait.ViewXProperty_M, oldModels, i, px))
-                                    model.ChildModels[i] = new ModelTree(model, Trait.ViewXProperty_M, level, px, ViewX_Property, view, ViewXProperty_M);
+                                    model.ChildModels[i] = new ItemModel(model, Trait.ViewXProperty_M, level, px, ViewX_Property, view, ViewXProperty_M);
                             }
                         }
                         if (L2 > 0)
@@ -1860,7 +1878,7 @@ namespace ModelGraphSTD
                             {
                                 var qx = queryList[j];
                                 if (!TryGetOldModel(model, Trait.ViewXQuery_M, oldModels, i, qx))
-                                    model.ChildModels[i] = new ModelTree(model, Trait.ViewXQuery_M, level, qx, ViewX_QueryX, view, ViewXQuery_M);
+                                    model.ChildModels[i] = new ItemModel(model, Trait.ViewXQuery_M, level, qx, ViewX_QueryX, view, ViewXQuery_M);
                             }
                         }
                         if (L3 > 0)
@@ -1869,7 +1887,7 @@ namespace ModelGraphSTD
                             {
                                 var vx = viewList[j];
                                 if (!TryGetOldModel(model, Trait.ViewXView_M, oldModels, i, vx))
-                                    model.ChildModels[i] = new ModelTree(model, Trait.ViewXView_M, level, vx, ViewX_ViewX, view, ViewXView_M);
+                                    model.ChildModels[i] = new ItemModel(model, Trait.ViewXView_M, level, vx, ViewX_ViewX, view, ViewXView_M);
                             }
                         }
                     }
@@ -1877,13 +1895,13 @@ namespace ModelGraphSTD
                 if (N == 0) model.ChildModels = null;
             }
         }
-        private void ViewXView_M_Insert(ModelTree model)
+        private void ViewXView_M_Insert(ItemModel model)
         {
             var vx = new ViewX(_viewXStore);
             ItemCreated(vx);
             AppendLink(ViewX_ViewX, model.Item1, vx);
         }
-        private DropAction ViewXView_M_Drop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction ViewXView_M_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
             var view = model.Item1 as ViewX;
             if (view != null)
@@ -1956,7 +1974,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 633 ViewXQuery_M  =============================================
-        internal void ViewXQuery_M(ModelTree model, ModelRoot root)
+        internal void ViewXQuery_M(ItemModel model, RootModel root)
         {
             var qx = model.Item1 as QueryX;
             if (root != null)  // get the data for this root.ModelAction
@@ -2042,7 +2060,7 @@ namespace ModelGraphSTD
                     {
                         var level = (byte)(model.Level + 1);
                         var oldModels = model.ChildModels;
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
@@ -2055,7 +2073,7 @@ namespace ModelGraphSTD
                                 var px = propertyList[j];
 
                                 if (!TryGetOldModel(model, Trait.ViewXProperty_M, oldModels, i, px))
-                                    model.ChildModels[i] = new ModelTree(model, Trait.ViewXProperty_M, level, px, QueryX_Property, qx, ViewXProperty_M);
+                                    model.ChildModels[i] = new ItemModel(model, Trait.ViewXProperty_M, level, px, QueryX_Property, qx, ViewXProperty_M);
                             }
                         }
                         if (L2 > 0)
@@ -2064,7 +2082,7 @@ namespace ModelGraphSTD
                             {
                                 var qr = queryList[j];
                                 if (!TryGetOldModel(model, Trait.ViewXQuery_M, oldModels, i, qr))
-                                    model.ChildModels[i] = new ModelTree(model, Trait.ViewXQuery_M, level, qr, QueryX_QueryX, qx, ViewXQuery_M);
+                                    model.ChildModels[i] = new ItemModel(model, Trait.ViewXQuery_M, level, qr, QueryX_QueryX, qx, ViewXQuery_M);
                             }
                         }
                         if (L3 > 0)
@@ -2073,7 +2091,7 @@ namespace ModelGraphSTD
                             {
                                 var vx = viewList[j];
                                 if (!TryGetOldModel(model, Trait.ViewXView_M, oldModels, i, vx))
-                                    model.ChildModels[i] = new ModelTree(model, Trait.ViewXView_M, level, vx, QueryX_ViewX, qx, ViewXView_M);
+                                    model.ChildModels[i] = new ItemModel(model, Trait.ViewXView_M, level, vx, QueryX_ViewX, qx, ViewXView_M);
                             }
                         }
                     }
@@ -2081,14 +2099,14 @@ namespace ModelGraphSTD
                 if (N == 0) model.ChildModels = null;
             }
         }
-        private void ViewXQuery_M_Insert(ModelTree model)
+        private void ViewXQuery_M_Insert(ItemModel model)
         {
             var vx = new ViewX(_viewXStore);
             ItemCreated(vx);
             AppendLink(QueryX_ViewX, model.Item1, vx);
         }
 
-        private DropAction ViewXQuery_M_Drop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction ViewXQuery_M_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
             var query = model.Item1 as QueryX;
             if (drop.Item1 is Relation rel)
@@ -2112,7 +2130,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 634 ViewXCommand  =============================================
-        internal void ViewXCommand_X(ModelTree model, ModelRoot root)
+        internal void ViewXCommand_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -2147,7 +2165,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 635 ViewXProperty_M  ==========================================
-        internal void ViewXProperty_M(ModelTree model, ModelRoot root)
+        internal void ViewXProperty_M(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -2177,7 +2195,7 @@ namespace ModelGraphSTD
 
 
         #region 63A ViewView_ZM  ==============================================
-        internal void ViewView_ZM(ModelTree model, ModelRoot root)
+        internal void ViewView_ZM(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -2223,13 +2241,13 @@ namespace ModelGraphSTD
                     {
                         var level = (byte)(model.Level + 1);
                         var oldModels = model.ChildModels;
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = roots[i];
                             if (!TryGetOldModel(model, Trait.ViewView_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.ViewView_M, level, itm, null, null, ViewView_M);
+                                model.ChildModels[i] = new ItemModel(model, Trait.ViewView_M, level, itm, null, null, ViewView_M);
                         }
                     }
                 }
@@ -2239,7 +2257,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 63B ViewView_M  ===============================================
-        internal void ViewView_M(ModelTree model, ModelRoot root)
+        internal void ViewView_M(ItemModel model, RootModel root)
         {
             var view = model.Item1 as ViewX;
             var key = model.Item2; // may be null
@@ -2306,14 +2324,14 @@ namespace ModelGraphSTD
                         N = items.Length;
                         var level = (byte)(model.Level + 1);
                         var oldModels = model.ChildModels;
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
 
                             if (!TryGetOldModel(model, Trait.ViewItem_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.ViewItem_M, level, itm, queryList[0], null, ViewItem_M);
+                                model.ChildModels[i] = new ItemModel(model, Trait.ViewItem_M, level, itm, queryList[0], null, ViewItem_M);
                         }
                     }
                     else if (key != null && L2 > 0)
@@ -2321,14 +2339,14 @@ namespace ModelGraphSTD
                         N = L2;
                         var level = (byte)(model.Level + 1);
                         var oldModels = model.ChildModels;
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var qx = queryList[i];
 
                             if (!TryGetOldModel(model, Trait.ViewQuery_M, oldModels, i, qx))
-                                model.ChildModels[i] = new ModelTree(model, Trait.ViewQuery_M, level, qx, key, null, ViewQuery_M);
+                                model.ChildModels[i] = new ItemModel(model, Trait.ViewQuery_M, level, qx, key, null, ViewQuery_M);
                         }
                     }
                     else if (L3 > 0)
@@ -2336,14 +2354,14 @@ namespace ModelGraphSTD
                         N = L3;
                         var level = (byte)(model.Level + 1);
                         var oldModels = model.ChildModels;
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var vx = viewList[i];
 
                             if (!TryGetOldModel(model, Trait.ViewView_M, oldModels, i, vx))
-                                model.ChildModels[i] = new ModelTree(model, Trait.ViewView_M, level, vx, null, null, ViewView_M);
+                                model.ChildModels[i] = new ItemModel(model, Trait.ViewView_M, level, vx, null, null, ViewView_M);
                         }
                     }
                     //N = L1 + L2 + L3;
@@ -2389,7 +2407,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 63C ViewItem_M  ===============================================
-        internal void ViewItem_M(ModelTree model, ModelRoot root)
+        internal void ViewItem_M(ItemModel model, RootModel root)
         {
             var item = model.Item1;
             var query = model.Item2 as QueryX;
@@ -2439,7 +2457,7 @@ namespace ModelGraphSTD
                     {
                         var level = (byte)(model.Level + 1);
                         var oldModels = model.ChildModels;
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
@@ -2453,7 +2471,7 @@ namespace ModelGraphSTD
                             {
                                 var qx = qxc.QueryList[j];
                                 if (!TryGetOldModel(model, Trait.ViewQuery_M, oldModels, i, item, qx))
-                                    model.ChildModels[i] = new ModelTree(model, Trait.ViewQuery_M, level, item, qx, null, ViewQuery_M);
+                                    model.ChildModels[i] = new ItemModel(model, Trait.ViewQuery_M, level, item, qx, null, ViewQuery_M);
                             }
                             for (int j = 0; j < qxc.L3; i++, j++)
                             {
@@ -2468,7 +2486,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 63D ViewQuery_M  ==============================================
-        internal void ViewQuery_M(ModelTree model, ModelRoot root)
+        internal void ViewQuery_M(ItemModel model, RootModel root)
         {
             var key = model.Item1;
             var query = model.Item2 as QueryX;
@@ -2513,13 +2531,13 @@ namespace ModelGraphSTD
                     {
                         var level = (byte)(model.Level + 1);
                         var oldModels = model.ChildModels;
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
                             if (!TryGetOldModel(model, Trait.ViewItem_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.ViewItem_M, level, itm, query, null, ViewItem_M);
+                                model.ChildModels[i] = new ItemModel(model, Trait.ViewItem_M, level, itm, query, null, ViewItem_M);
                         }
                     }
                 }
@@ -2532,7 +2550,7 @@ namespace ModelGraphSTD
 
 
         #region 642 EnumXList  ================================================
-        internal void EnumXList_X(ModelTree model, ModelRoot root)
+        internal void EnumXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -2573,13 +2591,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i] as EnumX;
                         if (!TryGetOldModel(model, Trait.EnumX_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.EnumX_M, level, itm, null, null, EnumX_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.EnumX_M, level, itm, null, null, EnumX_X);
                     }
                 }
                 else
@@ -2588,14 +2606,14 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void EnumDefListInsert(ModelTree model)
+        private void EnumDefListInsert(ItemModel model)
         {
             ItemCreated(new EnumX(_enumXStore));
         }
         #endregion
 
         #region 643 TableXList  ===============================================
-        internal void TableXList_X(ModelTree model, ModelRoot root)
+        internal void TableXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -2637,13 +2655,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i] as TableX;
                         if (!TryGetOldModel(model, Trait.TableX_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.TableX_M, level, itm, null, null, TableX_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.TableX_M, level, itm, null, null, TableX_X);
                     }
                 }
                 else
@@ -2653,14 +2671,14 @@ namespace ModelGraphSTD
 
             }
         }
-        private void TableDefListInsert(ModelTree model)
+        private void TableDefListInsert(ItemModel model)
         {
             ItemCreated(new TableX(_tableXStore));
         }
         #endregion
 
         #region 644 GraphXList  ===============================================
-        internal void GraphXList_X(ModelTree model, ModelRoot root)
+        internal void GraphXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -2701,13 +2719,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i] as GraphX;
                         if (!TryGetOldModel(model, Trait.GraphX_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphX_M, level, itm, null, null, GraphX_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphX_M, level, itm, null, null, GraphX_X);
                     }
                 }
                 else
@@ -2717,7 +2735,7 @@ namespace ModelGraphSTD
 
             }
         }
-        private void GraphXRootInsert(ModelTree model)
+        private void GraphXRootInsert(ItemModel model)
         {
             ItemCreated(new GraphX(_graphXStore));
             model.IsExpandedLeft = true;
@@ -2725,7 +2743,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 645 SymbolXlList  =============================================
-        internal void SymbolXList_X(ModelTree model, ModelRoot root)
+        internal void SymbolXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -2769,13 +2787,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var sym = syms[i];
                         if (!TryGetOldModel(model, Trait.SymbolX_M, oldModels, i, sym))
-                            model.ChildModels[i] = new ModelTree(model, Trait.SymbolX_M, level, sym, GraphX_SymbolX, gd, SymbolX_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.SymbolX_M, level, sym, GraphX_SymbolX, gd, SymbolX_X);
                     }
                 }
                 else
@@ -2784,7 +2802,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void SymbolListInsert(ModelTree model)
+        private void SymbolListInsert(ItemModel model)
         {
             var gd = model.Item1 as GraphX;
             var sym = new SymbolX(_symbolXStore);
@@ -2792,7 +2810,7 @@ namespace ModelGraphSTD
             AppendLink(GraphX_SymbolX, gd, sym);
             model.IsExpandedLeft = true;
         }
-        private DropAction SymbolDef_Drop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction SymbolDef_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!drop.Item1.IsSymbolX) return DropAction.None;
             var src = drop.Item1 as SymbolX;
@@ -2813,7 +2831,7 @@ namespace ModelGraphSTD
 
 
         #region 647 TableList  ================================================
-        internal void TableList_X(ModelTree model, ModelRoot root)
+        internal void TableList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -2853,13 +2871,13 @@ namespace ModelGraphSTD
                 if (model.IsExpandedLeft && N > 0)
                 {
                     var items = _tableXStore.Items;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.Table_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.Table_M, level, itm, null, null, Table_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.Table_M, level, itm, null, null, Table_X);
                     }
                 }
                 else
@@ -2871,7 +2889,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 648 GraphList  ================================================
-        internal void GraphList_X(ModelTree model, ModelRoot root)
+        internal void GraphList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -2911,13 +2929,13 @@ namespace ModelGraphSTD
                 if (model.IsExpandedLeft && N > 0)
                 {
                     var items = _graphXStore.Items;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var gx = items[i];
                         if (!TryGetOldModel(model, Trait.GraphXRef_M, oldModels, i, gx))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXRef_M, level, gx, null, null, GraphXRef_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXRef_M, level, gx, null, null, GraphXRef_X);
                     }
                 }
                 else
@@ -2932,7 +2950,7 @@ namespace ModelGraphSTD
 
 
         #region 652 PairX  ====================================================
-        internal void PairX_X(ModelTree model, ModelRoot root)
+        internal void PairX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -2970,7 +2988,7 @@ namespace ModelGraphSTD
                     var N = sp.Length;
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     AddProperyModels(model, oldModels, sp);
                 }
@@ -2983,7 +3001,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 653 EnumX  ====================================================
-        internal void EnumX_X(ModelTree model, ModelRoot root)
+        internal void EnumX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3027,7 +3045,7 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -3037,11 +3055,11 @@ namespace ModelGraphSTD
                     {
                         var i = R;
                         if (!TryGetOldModel(model, Trait.EnumValue_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.EnumValue_ZM, level, item, null, null, PairXList_Dx);
+                            model.ChildModels[i] = new ItemModel(model, Trait.EnumValue_ZM, level, item, null, null, PairXList_Dx);
 
                         i++;
                         if (!TryGetOldModel(model, Trait.EnumColumn_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.EnumColumn_ZM, level, item, null, null, EnumColumnList_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.EnumColumn_ZM, level, item, null, null, EnumColumnList_X);
                     }
                 }
                 else
@@ -3053,7 +3071,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 654 TableX  ===================================================
-        internal void TableX_X(ModelTree model, ModelRoot root)
+        internal void TableX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3098,7 +3116,7 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
                     var oldModels = model.ChildModels;
 
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -3108,23 +3126,23 @@ namespace ModelGraphSTD
                     {
                         var i = R;
                         if (!TryGetOldModel(model, Trait.ColumnX_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ColumnX_ZM, level, item, null, null, ColumnXList_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ColumnX_ZM, level, item, null, null, ColumnXList_X);
 
                         i++;
                         if (!TryGetOldModel(model, Trait.ComputeX_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ComputeX_ZM, level, item, null, null, ComputeXList_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ComputeX_ZM, level, item, null, null, ComputeXList_X);
 
                         i++;
                         if (!TryGetOldModel(model, Trait.ChildRelationX_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ChildRelationX_ZM, level, item, null, null, ChildRelationXList_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ChildRelationX_ZM, level, item, null, null, ChildRelationXList_X);
 
                         i++;
                         if (!TryGetOldModel(model, Trait.ParentRelatationX_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ParentRelatationX_ZM, level, item, null, null, ParentRelatationXList_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ParentRelatationX_ZM, level, item, null, null, ParentRelatationXList_X);
 
                         i++;
                         if (!TryGetOldModel(model, Trait.MetaRelation_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.MetaRelation_ZM, level, item, null, null, MetaRelationList_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.MetaRelation_ZM, level, item, null, null, MetaRelationList_X);
                     }
                 }
                 else
@@ -3136,7 +3154,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 655 GraphX  ===================================================
-        internal void GraphX_X(ModelTree model, ModelRoot root)
+        internal void GraphX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3181,7 +3199,7 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -3191,19 +3209,19 @@ namespace ModelGraphSTD
                     {
                         var i = R;
                         if (!TryGetOldModel(model, Trait.GraphXColoring_M, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXColoring_M, level, item, null, null, GraphXColoring_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXColoring_M, level, item, null, null, GraphXColoring_X);
 
                         i++;
                         if (!TryGetOldModel(model, Trait.GraphXRoot_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXRoot_ZM, level, item, null, null, GraphXRootList_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXRoot_ZM, level, item, null, null, GraphXRootList_X);
 
                         i++;
                         if (!TryGetOldModel(model, Trait.GraphXNode_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXNode_ZM, level, item, null, null, GraphXNodeList_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXNode_ZM, level, item, null, null, GraphXNodeList_X);
 
                         i++;
                         if (!TryGetOldModel(model, Trait.SymbolX_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.SymbolX_ZM, level, item, null, null, SymbolXList_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.SymbolX_ZM, level, item, null, null, SymbolXList_X);
                     }
                 }
                 else
@@ -3215,7 +3233,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 656 SymbolX  ==================================================
-        internal void SymbolX_X(ModelTree model, ModelRoot root)
+        internal void SymbolX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3256,7 +3274,7 @@ namespace ModelGraphSTD
                     var N = sp.Length;
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     AddProperyModels(model, oldModels, sp);
                 }
@@ -3266,7 +3284,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void CreateSecondarySymbolEdit(ModelTree model)
+        private void CreateSecondarySymbolEdit(ItemModel model)
         {
             var root = model.GetRootModel();
             root.UIRequest = model.BuildViewRequest(ControlType.SymbolEditor);
@@ -3274,7 +3292,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 657 ColumnX  ==================================================
-        internal void ColumnX_X(ModelTree model, ModelRoot root)
+        internal void ColumnX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3313,7 +3331,7 @@ namespace ModelGraphSTD
                     var N = sp.Length;
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     AddProperyModels(model, oldModels, sp);
                 }
@@ -3326,7 +3344,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 658 ComputeX_M  ===============================================
-        internal void ComputeX_M(ModelTree model, ModelRoot root)
+        internal void ComputeX_M(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3397,7 +3415,7 @@ namespace ModelGraphSTD
                     if (N > 0)
                     {
                         var oldModels = model.ChildModels;
-                        if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                        if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
@@ -3411,7 +3429,7 @@ namespace ModelGraphSTD
                             {
                                 var itm = items[j] as QueryX;
                                 if (!TryGetOldModel(model, Trait.ValueXHead_M, oldModels, i, itm))
-                                    model.ChildModels[i] = new ModelTree(model, Trait.ValueXHead_M, level, itm, null, null, ValueXHead_X);
+                                    model.ChildModels[i] = new ItemModel(model, Trait.ValueXHead_M, level, itm, null, null, ValueXHead_X);
                             }
                         }
                     }
@@ -3427,7 +3445,7 @@ namespace ModelGraphSTD
             }
         }
 
-        private DropAction ComputedX_M_Drop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction ComputedX_M_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(drop.Item1 is Relation rel)) return DropAction.None;
 
@@ -3453,7 +3471,7 @@ namespace ModelGraphSTD
 
 
         #region 661 ColumnXList  ==============================================
-        internal void ColumnXList_X(ModelTree model, ModelRoot root)
+        internal void ColumnXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3495,13 +3513,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.ColumnX_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ColumnX_M, level, itm, TableX_ColumnX, tbl, ColumnX_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ColumnX_M, level, itm, TableX_ColumnX, tbl, ColumnX_X);
                     }
                 }
                 else
@@ -3510,7 +3528,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void ColumnDefListInsert(ModelTree model)
+        private void ColumnDefListInsert(ItemModel model)
         {
             var col = new ColumnX(_columnXStore);
             ItemCreated(col); AppendLink(TableX_ColumnX, model.Item1, col);
@@ -3518,7 +3536,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 662 ChildRelationXList  =======================================
-        internal void ChildRelationXList_X(ModelTree model, ModelRoot root)
+        internal void ChildRelationXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3560,13 +3578,13 @@ namespace ModelGraphSTD
 
                     var level = (byte)(model.Level + 1);
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var rel = items[i];
                         if (!TryGetOldModel(model, Trait.ChildRelationX_M, oldModels, i, rel))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ChildRelationX_M, level, rel, TableX_ChildRelationX, tbl, ChildRelationX_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ChildRelationX_M, level, rel, TableX_ChildRelationX, tbl, ChildRelationX_X);
                     }
                 }
                 else
@@ -3575,7 +3593,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void ChildRelationDefListInsert(ModelTree model)
+        private void ChildRelationDefListInsert(ItemModel model)
         {
             var rel = new RelationX(_relationXStore);
             ItemCreated(rel); AppendLink(TableX_ChildRelationX, model.Item1, rel);
@@ -3583,7 +3601,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 663 ParentRelatationXList  ====================================
-        internal void ParentRelatationXList_X(ModelTree model, ModelRoot root)
+        internal void ParentRelatationXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3625,13 +3643,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var rel = items[i];
                         if (!TryGetOldModel(model, Trait.ParentRelationX_M, oldModels, i, rel))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ParentRelationX_M, level, rel, TableX_ParentRelationX, tbl, ParentRelationX_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ParentRelationX_M, level, rel, TableX_ParentRelationX, tbl, ParentRelationX_X);
                     }
                 }
                 else
@@ -3640,7 +3658,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void ParentRelationDefListInsert(ModelTree model)
+        private void ParentRelationDefListInsert(ItemModel model)
         {
             var rel = new RelationX(_relationXStore); ItemCreated(rel);
             AppendLink(TableX_ParentRelationX, model.Item1, rel);
@@ -3648,7 +3666,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 664 PairXList  ================================================
-        internal void PairXList_Dx(ModelTree model, ModelRoot root)
+        internal void PairXList_Dx(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3691,13 +3709,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i] as PairX;
                         if (!TryGetOldModel(model, Trait.PairX_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.PairX_M, level, itm, enu, null, PairX_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.PairX_M, level, itm, enu, null, PairX_X);
                     }
                 }
                 else
@@ -3706,14 +3724,14 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void EnumValueListInsert(ModelTree model)
+        private void EnumValueListInsert(ItemModel model)
         {
             ItemCreated(new PairX(model.Item1 as EnumX));
         }
         #endregion
 
         #region 665 EnumColumnList  ===========================================
-        internal void EnumColumnList_X(ModelTree model, ModelRoot root)
+        internal void EnumColumnList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3756,7 +3774,7 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
@@ -3765,7 +3783,7 @@ namespace ModelGraphSTD
                         if (tbl != null)
                         {
                             if (!TryGetOldModel(model, Trait.EnumRelatedColumn_M, oldModels, i, col))
-                                model.ChildModels[i] = new ModelTree(model, Trait.EnumRelatedColumn_M, level, col, tbl, enu, EnumRelatedColumn_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.EnumRelatedColumn_M, level, col, tbl, enu, EnumRelatedColumn_X);
                         }
                     }
                 }
@@ -3775,7 +3793,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction EnumColumn_Drop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction EnumColumn_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!drop.Item1.IsColumnX) return DropAction.None;
 
@@ -3788,7 +3806,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 666 ComputeXList  =============================================
-        internal void ComputeXList_X(ModelTree model, ModelRoot root)
+        internal void ComputeXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3831,13 +3849,13 @@ namespace ModelGraphSTD
                     var items = Store_ComputeX.GetChildren(sto);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.ComputeX_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ComputeX_M, level, itm, Store_ComputeX, sto, ComputeX_M);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ComputeX_M, level, itm, Store_ComputeX, sto, ComputeX_M);
                     }
                 }
                 else
@@ -3846,7 +3864,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void ComputedDefListInsert(ModelTree model)
+        private void ComputedDefListInsert(ItemModel model)
         {
             var st = model.Item1 as Store;
             var cx = new ComputeX(_computeXStore);
@@ -3860,7 +3878,7 @@ namespace ModelGraphSTD
 
 
         #region 671 ChildRelationX  ===========================================
-        internal void ChildRelationX_X(ModelTree model, ModelRoot root)
+        internal void ChildRelationX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3904,7 +3922,7 @@ namespace ModelGraphSTD
                     var N = sp.Length;
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     AddProperyModels(model, oldModels, sp);
                 }
@@ -3915,7 +3933,7 @@ namespace ModelGraphSTD
 
             }
         }
-        private DropAction ChildRelationDef_Drop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction ChildRelationDef_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!drop.Item1.IsTableX) return DropAction.None;
 
@@ -3928,7 +3946,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 672 ParentRelationX  ==========================================
-        internal void ParentRelationX_X(ModelTree model, ModelRoot root)
+        internal void ParentRelationX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -3972,7 +3990,7 @@ namespace ModelGraphSTD
                     var N = sp.Length;
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     AddProperyModels(model, oldModels, sp);
                 }
@@ -3983,7 +4001,7 @@ namespace ModelGraphSTD
 
             }
         }
-        private DropAction ParentRelationDef_Drop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction ParentRelationDef_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!drop.Item1.IsTableX) return DropAction.None;
 
@@ -3996,7 +4014,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 673 NameColumnRelation  =======================================
-        internal void NameColumnRelation_X(ModelTree model, ModelRoot root)
+        internal void NameColumnRelation_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4034,10 +4052,10 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || oldModels.Length != 1) model.ChildModels = new ModelTree[1];
+                    if (oldModels == null || oldModels.Length != 1) model.ChildModels = new ItemModel[1];
 
                     if (!TryGetOldModel(model, Trait.NameColumn_M, oldModels, 0, prop))
-                        model.ChildModels[0] = new ModelTree(model, Trait.NameColumn_M, level, prop, tbl, null, NameColumn_X);
+                        model.ChildModels[0] = new ItemModel(model, Trait.NameColumn_M, level, prop, tbl, null, NameColumn_X);
                 }
                 else
                 {
@@ -4045,7 +4063,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction NameColumnRelation_Drop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction NameColumnRelation_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(drop.Item1 is Property)) return DropAction.None;
 
@@ -4064,7 +4082,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 674 SummaryColumnRelation  ====================================
-        internal void SummaryColumnRelation_X(ModelTree model, ModelRoot root)
+        internal void SummaryColumnRelation_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4102,10 +4120,10 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || oldModels.Length != 1) model.ChildModels = new ModelTree[1];
+                    if (oldModels == null || oldModels.Length != 1) model.ChildModels = new ItemModel[1];
 
                     if (!TryGetOldModel(model, Trait.SummaryColumn_M, oldModels, 0, prop))
-                        model.ChildModels[0] = new ModelTree(model, Trait.SummaryColumn_M, level, prop, tbl, null, SummaryColumn_X);
+                        model.ChildModels[0] = new ItemModel(model, Trait.SummaryColumn_M, level, prop, tbl, null, SummaryColumn_X);
                 }
                 else
                 {
@@ -4113,7 +4131,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction SummaryColRelation_Drop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction SummaryColRelation_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(drop.Item1 is Property)) return DropAction.None;
 
@@ -4132,7 +4150,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 675 NameColumn  ===============================================
-        internal void NameColumn_X(ModelTree model, ModelRoot root)
+        internal void NameColumn_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4168,7 +4186,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 676 SummaryColumn  ============================================
-        internal void SummaryColumn_X(ModelTree model, ModelRoot root)
+        internal void SummaryColumn_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4207,7 +4225,7 @@ namespace ModelGraphSTD
 
 
         #region 681 GraphXColoring  ===========================================
-        internal void GraphXColoring_X(ModelTree model, ModelRoot root)
+        internal void GraphXColoring_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4248,10 +4266,10 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || oldModels.Length != 1) model.ChildModels = new ModelTree[1];
+                    if (oldModels == null || oldModels.Length != 1) model.ChildModels = new ItemModel[1];
 
                     if (!TryGetOldModel(model, Trait.GraphXColorColumn_M, oldModels, 0, col, tbl))
-                        model.ChildModels[0] = new ModelTree(model, Trait.GraphXColorColumn_M, level, col, tbl, null, GraphXColorColumn_X);
+                        model.ChildModels[0] = new ItemModel(model, Trait.GraphXColorColumn_M, level, col, tbl, null, GraphXColorColumn_X);
                 }
                 else
                 {
@@ -4259,7 +4277,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction GraphXColoringDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction GraphXColoringDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             var gd = model.Item1;
             var col = drop.Item1;
@@ -4275,7 +4293,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 682 GraphXRootList  ===========================================
-        internal void GraphXRootList_X(ModelTree model, ModelRoot root)
+        internal void GraphXRootList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4315,13 +4333,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.GraphXRoot_M, oldModels, i, itm, gd))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXRoot_M, level, itm, gd, null, QueryXRoot_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXRoot_M, level, itm, gd, null, QueryXRoot_X);
                     }
                 }
                 else
@@ -4330,7 +4348,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction GraphXRootListDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction GraphXRootListDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(model.Item1 is GraphX gx)) return DropAction.None;
             if (!(drop.Item1 is Store st)) return DropAction.None;
@@ -4357,7 +4375,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 683 GraphXNodeList  ===========================================
-        internal void GraphXNodeList_X(ModelTree model, ModelRoot root)
+        internal void GraphXNodeList_X(ItemModel model, RootModel root)
         {
             var gx = model.Item1 as GraphX;
             if (root != null)  // get the data for this root.ModelAction
@@ -4396,13 +4414,13 @@ namespace ModelGraphSTD
                         var level = (byte)(model.Level + 1);
 
                         var oldModels = model.ChildModels;
-                        if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                        if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var sto = owners[i];
                             if (!TryGetOldModel(model, Trait.GraphXNode_M, oldModels, i, sto, gx))
-                                model.ChildModels[i] = new ModelTree(model, Trait.GraphXNode_M, level, sto, gx, null, GraphXNode_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXNode_M, level, sto, gx, null, GraphXNode_X);
                         }
                     }
                     else
@@ -4419,7 +4437,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 684 GraphXNode  ===============================================
-        internal void GraphXNode_X(ModelTree model, ModelRoot root)
+        internal void GraphXNode_X(ItemModel model, RootModel root)
         {
             var sto = model.Item1 as Store;
             var gx = model.Item2 as GraphX;
@@ -4461,14 +4479,14 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     (var symbols, var querys) = GetSymbolXQueryX(gx, sto);
                     for (int i = 0; i < N; i++)
                     {
                         var seg = querys[i];
                         if (!TryGetOldModel(model, Trait.GraphXNodeSymbol_M, oldModels, i, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXNodeSymbol_M, level, seg, GraphX_SymbolQueryX, gx, GraphXNodeSymbol_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXNodeSymbol_M, level, seg, GraphX_SymbolQueryX, gx, GraphXNodeSymbol_X);
                     }
                 }
                 else
@@ -4477,7 +4495,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction SymbolNodeOwnerDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction SymbolNodeOwnerDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(model.Item1 is Store st)) return DropAction.None;
             if (!(model.Item2 is GraphX gx)) return DropAction.None;
@@ -4492,7 +4510,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 685 GraphXColorColumn  ========================================
-        internal void GraphXColorColumn_X(ModelTree model, ModelRoot root)
+        internal void GraphXColorColumn_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4526,7 +4544,7 @@ namespace ModelGraphSTD
 
 
         #region 691 QueryXRoot  ===============================================
-        internal void QueryXRoot_X(ModelTree model, ModelRoot root)
+        internal void QueryXRoot_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4575,7 +4593,7 @@ namespace ModelGraphSTD
                     {
                         var level = (byte)(model.Level + 1);
                         var oldModels = model.ChildModels;
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
@@ -4593,12 +4611,12 @@ namespace ModelGraphSTD
                                     if (child.IsHead)
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXPathHead_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXPathHead_M, level, child, null, null, QueryXPathHead_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathHead_M, level, child, null, null, QueryXPathHead_X);
                                     }
                                     else
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXPathLink_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXPathLink_M, level, child, null, null, QueryXPathLink_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathLink_M, level, child, null, null, QueryXPathLink_X);
                                     }
                                 }
                                 else if (child.IsGroup)
@@ -4606,12 +4624,12 @@ namespace ModelGraphSTD
                                     if (child.IsHead)
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXGroupHead_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXGroupHead_M, level, child, null, null, QueryXGroupHead_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupHead_M, level, child, null, null, QueryXGroupHead_X);
                                     }
                                     else
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXGroupLink_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXGroupLink_M, level, child, null, null, QueryXGroupLink_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupLink_M, level, child, null, null, QueryXGroupLink_X);
                                     }
                                 }
                                 else if (child.IsSegue)
@@ -4619,23 +4637,23 @@ namespace ModelGraphSTD
                                     if (child.IsHead)
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXEgressHead_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXEgressHead_M, level, child, null, null, QueryXEgressHead_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressHead_M, level, child, null, null, QueryXEgressHead_X);
                                     }
                                     else
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXEgressLink_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXEgressLink_M, level, child, null, null, QueryXEgressLink_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressLink_M, level, child, null, null, QueryXEgressLink_X);
                                     }
                                 }
                                 else if (child.IsRoot)
                                 {
                                     if (!TryGetOldModel(model, Trait.GraphXLink_M, oldModels, i, child))
-                                        model.ChildModels[i] = new ModelTree(model, Trait.GraphXLink_M, level, child, null, null, QueryXLink_X);
+                                        model.ChildModels[i] = new ItemModel(model, Trait.GraphXLink_M, level, child, null, null, QueryXLink_X);
                                 }
                                 else
                                 {
                                     if (!TryGetOldModel(model, Trait.GraphXLink_M, oldModels, i, child))
-                                        model.ChildModels[i] = new ModelTree(model, Trait.GraphXLink_M, level, child, null, null, QueryXLink_X);
+                                        model.ChildModels[i] = new ItemModel(model, Trait.GraphXLink_M, level, child, null, null, QueryXLink_X);
                                 }
                             }
                         }
@@ -4644,7 +4662,7 @@ namespace ModelGraphSTD
                 if (N == 0)    model.ChildModels = null;
             }
         }
-        private DropAction QueryXRootHeadDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction QueryXRootHeadDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(drop.Item1 is Relation re)) return DropAction.None;
             if (!(model.Item1 is QueryX qx)) return DropAction.None;
@@ -4655,7 +4673,7 @@ namespace ModelGraphSTD
             }
             return DropAction.Link;
         }
-        private string QueryXRootName(ModelTree modle)
+        private string QueryXRootName(ItemModel modle)
         {
             var sd = modle.Item1;
             var tb = Store_QueryX.GetParent(sd);
@@ -4664,7 +4682,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 692 QueryXLink  ===============================================
-        internal void QueryXLink_X(ModelTree model, ModelRoot root)
+        internal void QueryXLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4713,7 +4731,7 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -4733,12 +4751,12 @@ namespace ModelGraphSTD
                                     if (qx.IsHead)
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXPathHead_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXPathHead_M, level, qx, null, null, QueryXPathHead_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathHead_M, level, qx, null, null, QueryXPathHead_X);
                                     }
                                     else
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXPathLink_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXPathLink_M, level, qx, null, null, QueryXPathLink_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathLink_M, level, qx, null, null, QueryXPathLink_X);
                                     }
                                     break;
 
@@ -4746,12 +4764,12 @@ namespace ModelGraphSTD
                                     if (qx.IsHead)
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXGroupHead_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXGroupHead_M, level, qx, null, null, QueryXGroupHead_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupHead_M, level, qx, null, null, QueryXGroupHead_X);
                                     }
                                     else
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXGroupLink_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXGroupLink_M, level, qx, null, null, QueryXGroupLink_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupLink_M, level, qx, null, null, QueryXGroupLink_X);
                                     }
                                     break;
 
@@ -4759,18 +4777,18 @@ namespace ModelGraphSTD
                                     if (qx.IsHead)
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXEgressHead_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXEgressHead_M, level, qx, null, null, QueryXEgressHead_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressHead_M, level, qx, null, null, QueryXEgressHead_X);
                                     }
                                     else
                                     {
                                         if (!TryGetOldModel(model, Trait.GraphXEgressLink_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ModelTree(model, Trait.GraphXEgressLink_M, level, qx, null, null, QueryXEgressLink_X);
+                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressLink_M, level, qx, null, null, QueryXEgressLink_X);
                                     }
                                     break;
 
                                 case QueryType.Graph:
                                     if (!TryGetOldModel(model, Trait.GraphXLink_M, oldModels, i, qx))
-                                        model.ChildModels[i] = new ModelTree(model, Trait.GraphXLink_M, level, qx, null, null, QueryXLink_X);
+                                        model.ChildModels[i] = new ItemModel(model, Trait.GraphXLink_M, level, qx, null, null, QueryXLink_X);
                                     break;
 
                                 default:
@@ -4786,7 +4804,7 @@ namespace ModelGraphSTD
             }
         }
 
-        private string GetQueryXRelationName(ModelTree model)
+        private string GetQueryXRelationName(ItemModel model)
         {
             Relation parent;
             if (Relation_QueryX.TryGetParent(model.Item1, out parent))
@@ -4796,7 +4814,7 @@ namespace ModelGraphSTD
             }
             return null;
         }
-        private DropAction QueryXRootLinkDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction QueryXRootLinkDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (drop.Item1.IsRelationX)
             {
@@ -4818,7 +4836,7 @@ namespace ModelGraphSTD
             }
             return DropAction.None;
         }
-        string QueryXLinkName(ModelTree model)
+        string QueryXLinkName(ItemModel model)
         {
             return QueryXFilterName(model.Item1 as QueryX);
         }
@@ -4849,7 +4867,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 693 QueryXPathHead  ===========================================
-        internal void QueryXPathHead_X(ModelTree model, ModelRoot root)
+        internal void QueryXPathHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4898,7 +4916,7 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -4913,7 +4931,7 @@ namespace ModelGraphSTD
                         {
                             var itm = items[j];
                             if (!TryGetOldModel(model, Trait.GraphXPathLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.GraphXPathLink_M, level, itm, null, null, QueryXPathLink_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathLink_M, level, itm, null, null, QueryXPathLink_X);
                         }
                     }
                 }
@@ -4923,7 +4941,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        string QueryXHeadName(ModelTree model)
+        string QueryXHeadName(ItemModel model)
         {
             var sd = model.Item1 as QueryX;
 
@@ -4952,7 +4970,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 694 QueryXPathLink  ===========================================
-        internal void QueryXPathLink_X(ModelTree model, ModelRoot root)
+        internal void QueryXPathLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -4997,7 +5015,7 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -5012,7 +5030,7 @@ namespace ModelGraphSTD
                         {
                             var itm = items[j];
                             if (!TryGetOldModel(model, Trait.GraphXPathLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.GraphXPathLink_M, level, itm, null, null, QueryXPathLink_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathLink_M, level, itm, null, null, QueryXPathLink_X);
                         }
                     }
                 }
@@ -5022,7 +5040,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction QueryXPathDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction QueryXPathDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(model.Item1 is QueryX qx)) return DropAction.None;
             if (!(drop.Item1 is Relation re)) return DropAction.None;
@@ -5037,7 +5055,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 695 QueryXGroupHead  ==========================================
-        internal void QueryXGroupHead_X(ModelTree model, ModelRoot root)
+        internal void QueryXGroupHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5087,7 +5105,7 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -5102,7 +5120,7 @@ namespace ModelGraphSTD
                         {
                             var itm = items[j];
                             if (!TryGetOldModel(model, Trait.GraphXGroupLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.GraphXGroupLink_M, level, itm, null, null, QueryXGroupLink_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupLink_M, level, itm, null, null, QueryXGroupLink_X);
                         }
                     }
                 }
@@ -5115,7 +5133,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 696 QueryXGroupLink  ==========================================
-        internal void QueryXGroupLink_X(ModelTree model, ModelRoot root)
+        internal void QueryXGroupLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5160,7 +5178,7 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -5175,7 +5193,7 @@ namespace ModelGraphSTD
                         {
                             var itm = items[j];
                             if (!TryGetOldModel(model, Trait.GraphXGroupLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.GraphXGroupLink_M, level, itm, null, null, QueryXGroupLink_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupLink_M, level, itm, null, null, QueryXGroupLink_X);
                         }
                     }
                 }
@@ -5185,7 +5203,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction QueryXGroupDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction QueryXGroupDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(model.Item1 is QueryX qx)) return DropAction.None;
             if (!(drop.Item1 is Relation re)) return DropAction.None;
@@ -5200,7 +5218,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 697 QueryXEgressHead  =========================================
-        internal void QueryXEgressHead_X(ModelTree model, ModelRoot root)
+        internal void QueryXEgressHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5251,7 +5269,7 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -5266,7 +5284,7 @@ namespace ModelGraphSTD
                         {
                             var itm = items[j];
                             if (!TryGetOldModel(model, Trait.GraphXEgressLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.GraphXEgressLink_M, level, itm, null, null, QueryXEgressLink_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressLink_M, level, itm, null, null, QueryXEgressLink_X);
                         }
                     }
                 }
@@ -5279,7 +5297,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 698 QueryXEgressLink  =========================================
-        internal void QueryXEgressLink_X(ModelTree model, ModelRoot root)
+        internal void QueryXEgressLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5324,7 +5342,7 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -5339,7 +5357,7 @@ namespace ModelGraphSTD
                         {
                             var itm = items[j];
                             if (!TryGetOldModel(model, Trait.GraphXEgressLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.GraphXEgressLink_M, level, itm, null, null, QueryXEgressLink_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressLink_M, level, itm, null, null, QueryXEgressLink_X);
                         }
                     }
                 }
@@ -5349,7 +5367,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction QueryXBridgeDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction QueryXBridgeDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(model.Item1 is QueryX qx)) return DropAction.None;
             if (!(drop.Item1 is Relation re)) return DropAction.None;
@@ -5364,7 +5382,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 699 GraphXNodeSymbol  =========================================
-        internal void GraphXNodeSymbol_X(ModelTree model, ModelRoot root)
+        internal void GraphXNodeSymbol_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5403,7 +5421,7 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     AddProperyModels(model, oldModels, sp);
                 }
@@ -5413,7 +5431,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private string QueryXNodeSymbolName(ModelTree model)
+        private string QueryXNodeSymbolName(ItemModel model)
         {
             var sd = model.Item1;
             SymbolX sym;
@@ -5423,7 +5441,7 @@ namespace ModelGraphSTD
 
 
         #region 69E ValueXHead  ===============================================
-        internal void ValueXHead_X(ModelTree model, ModelRoot root)
+        internal void ValueXHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5473,7 +5491,7 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -5485,7 +5503,7 @@ namespace ModelGraphSTD
                         {
                             var itm = items[j];
                             if (!TryGetOldModel(model, Trait.ValueXLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.ValueXLink_M, level, itm, null, null, ValueXLink_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.ValueXLink_M, level, itm, null, null, ValueXLink_X);
                         }
                     }
                 }
@@ -5498,7 +5516,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 69F ValueXLink  ===============================================
-        internal void ValueXLink_X(ModelTree model, ModelRoot root)
+        internal void ValueXLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5546,7 +5564,7 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -5558,7 +5576,7 @@ namespace ModelGraphSTD
                         {
                             var itm = items[j];
                             if (!TryGetOldModel(model, Trait.ValueXLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.ValueXLink_M, level, itm, null, null, ValueXLink_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.ValueXLink_M, level, itm, null, null, ValueXLink_X);
                         }
                     }
                 }
@@ -5568,7 +5586,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction ValueXLinkDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction ValueXLinkDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(drop.Item1 is Relation re)) return DropAction.None;
             if (!(model.Item1 is QueryX qx)) return DropAction.None;
@@ -5584,7 +5602,7 @@ namespace ModelGraphSTD
             }
             return DropAction.Link;
         }
-        string QueryXComputeName(ModelTree model)
+        string QueryXComputeName(ItemModel model)
         {
             var sd = model.Item1 as QueryX;
 
@@ -5615,7 +5633,7 @@ namespace ModelGraphSTD
 
 
         #region 6A1 RowX  =====================================================
-        internal void RowX_X(ModelTree model, ModelRoot root)
+        internal void RowX_X(ItemModel model, RootModel root)
         {
             var row = model.Item1 as RowX;
             if (root != null)  // get the data for this root.ModelAction
@@ -5652,7 +5670,7 @@ namespace ModelGraphSTD
                 RowX_VX(model);
             }
         }
-        private void RowX_VX(ModelTree model)
+        private void RowX_VX(ItemModel model)
         {
             var row = model.Item1 as RowX;
             ColumnX[] cols = null;
@@ -5665,7 +5683,7 @@ namespace ModelGraphSTD
                 var level = (byte)(model.Level + 1);
 
                 var oldModels = model.ChildModels;
-                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
 
                 if (R > 0)
@@ -5681,31 +5699,31 @@ namespace ModelGraphSTD
 
                     int i = R;
                     if (!TryGetOldModel(model, Trait.RowProperty_ZM, oldModels, i))
-                        model.ChildModels[i] = new ModelTree(model, Trait.RowProperty_ZM, level, row, TableX_ColumnX, null, RowPropertyList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.RowProperty_ZM, level, row, TableX_ColumnX, null, RowPropertyList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.RowCompute_ZM, oldModels, i))
-                        model.ChildModels[i] = new ModelTree(model, Trait.RowCompute_ZM, level, row, Store_ComputeX, null, RowComputeList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.RowCompute_ZM, level, row, Store_ComputeX, null, RowComputeList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.RowChildRelation_ZM, oldModels, i))
-                        model.ChildModels[i] = new ModelTree(model, Trait.RowChildRelation_ZM, level, row, TableX_ChildRelationX, null, RowChildRelationList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.RowChildRelation_ZM, level, row, TableX_ChildRelationX, null, RowChildRelationList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.RowParentRelation_ZM, oldModels, i))
-                        model.ChildModels[i] = new ModelTree(model, Trait.RowParentRelation_ZM, level, row, TableX_ParentRelationX, null, RowParentRelationList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.RowParentRelation_ZM, level, row, TableX_ParentRelationX, null, RowParentRelationList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.RowDefaultProperty_ZM, oldModels, i))
-                        model.ChildModels[i] = new ModelTree(model, Trait.RowDefaultProperty_ZM, level, row, TableX_ColumnX, null, RowDefaultPropertyList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.RowDefaultProperty_ZM, level, row, TableX_ColumnX, null, RowDefaultPropertyList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.RowUnusedChildRelation_ZM, oldModels, i))
-                        model.ChildModels[i] = new ModelTree(model, Trait.RowUnusedChildRelation_ZM, level, row, TableX_ChildRelationX, null, RowUnusedChildRelationList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.RowUnusedChildRelation_ZM, level, row, TableX_ChildRelationX, null, RowUnusedChildRelationList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.RowUnusedParentRelation_ZM, oldModels, i))
-                        model.ChildModels[i] = new ModelTree(model, Trait.RowUnusedParentRelation_ZM, level, row, TableX_ParentRelationX, null, RowUnusedParentRelationList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.RowUnusedParentRelation_ZM, level, row, TableX_ParentRelationX, null, RowUnusedParentRelationList_X);
                 }
             }
             else
@@ -5713,7 +5731,7 @@ namespace ModelGraphSTD
                 model.ChildModels = null;
             }
         }
-        private DropAction ReorderStoreItem(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction ReorderStoreItem(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (!(model.Item1.Owner is Store sto)) return DropAction.None;
             if (!model.IsSiblingModel(drop)) return DropAction.None;
@@ -5733,7 +5751,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6A3 View  =====================================================
-        internal void View_X(ModelTree model, ModelRoot root)
+        internal void View_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5763,7 +5781,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6A4 TableX  ===================================================
-        internal void Table_X(ModelTree model, ModelRoot root)
+        internal void Table_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5807,13 +5825,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var row = items[i];
                         if (!TryGetOldModel(model, Trait.Row_M, oldModels, i, row, tbl, col))
-                            model.ChildModels[i] = new ModelTree(model, Trait.Row_M, level, row, tbl, col, RowX_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.Row_M, level, row, tbl, col, RowX_X);
                     }
                 }
                 else
@@ -5822,7 +5840,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void TableInsert(ModelTree model)
+        private void TableInsert(ItemModel model)
         {
             var tbl = model.Item1 as TableX;
             ItemCreated(new RowX(tbl));
@@ -5830,7 +5848,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6A5 Graph  ====================================================
-        internal void Graph_X(ModelTree model, ModelRoot root)
+        internal void Graph_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5870,27 +5888,27 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     var i = 0;
                     if (!TryGetOldModel(model, Trait.GraphNode_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ModelTree(model, Trait.GraphNode_ZM, level, item, null, null, GraphNodeList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.GraphNode_ZM, level, item, null, null, GraphNodeList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.GraphEdge_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ModelTree(model, Trait.GraphEdge_ZM, level, item, null, null, GraphEdgeList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.GraphEdge_ZM, level, item, null, null, GraphEdgeList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.GraphOpen_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ModelTree(model, Trait.GraphOpen_ZM, level, item, null, null, GraphOpenList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.GraphOpen_ZM, level, item, null, null, GraphOpenList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.GraphRoot_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ModelTree(model, Trait.GraphRoot_ZM, level, item, null, null, GraphRootList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.GraphRoot_ZM, level, item, null, null, GraphRootList_X);
 
                     i++;
                     if (!TryGetOldModel(model, Trait.GraphLevel_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ModelTree(model, Trait.GraphLevel_ZM, level, item, null, null, GraphLevelList_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.GraphLevel_ZM, level, item, null, null, GraphLevelList_X);
                 }
                 else
                 {
@@ -5898,7 +5916,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void CreateSecondaryModelGraph(ModelTree model)
+        private void CreateSecondaryModelGraph(ItemModel model)
         {
             var root = model.GetRootModel();
             root.UIRequest = model.BuildViewRequest(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X);
@@ -5906,7 +5924,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6A6 GraphRef  =================================================
-        internal void GraphRef_X(ModelTree model, ModelRoot root)
+        internal void GraphRef_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5942,7 +5960,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6A7 RowChildRelation  =========================================
-        internal void RowChildRelation_X(ModelTree model, ModelRoot root)
+        internal void RowChildRelation_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -5988,13 +6006,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var row2 = items[i];
                         if (!TryGetOldModel(model, Trait.RowRelatedChild_M, oldModels, i, row2))
-                            model.ChildModels[i] = new ModelTree(model, Trait.RowRelatedChild_M, level, row2, rel, row1, RowRelatedChild_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.RowRelatedChild_M, level, row2, rel, row1, RowRelatedChild_X);
                     }
                 }
                 else
@@ -6003,7 +6021,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction RowChildRelationDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction RowChildRelationDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             TableX expectedOwner;
             if (!drop.Item1.IsRowX) return DropAction.None;
@@ -6025,7 +6043,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6A8 RowParentRelation  ========================================
-        internal void RowParentRelation_X(ModelTree model, ModelRoot root)
+        internal void RowParentRelation_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6069,13 +6087,13 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && rel.TryGetParents(item, out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.RowRelatedParent_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.RowRelatedParent_M, level, itm, rel, item, RowRelatedParent_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.RowRelatedParent_M, level, itm, rel, item, RowRelatedParent_X);
                     }
                 }
                 else
@@ -6084,7 +6102,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private DropAction RowParentRelationDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction RowParentRelationDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             TableX expectedOwner;
             if (!drop.Item1.IsRowX) return DropAction.None;
@@ -6106,7 +6124,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6A9 RowRelatedChild  ============================================
-        internal void RowRelatedChild_X(ModelTree model, ModelRoot root)
+        internal void RowRelatedChild_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6148,14 +6166,14 @@ namespace ModelGraphSTD
                 RowX_VX(model);
             }
         }
-        private void UnlinkRelatedChild(ModelTree model)
+        private void UnlinkRelatedChild(ItemModel model)
         {
             var key = model.Item3;
             var rel = model.Item2 as Relation;
             var item = model.Item1;
             RemoveLink(rel, key, item);
         }
-        private void UnlinkRelatedRow(ModelTree model)
+        private void UnlinkRelatedRow(ItemModel model)
         {
             var parent = model.ParentModel;
             if (parent.IsRowChildRelationModel)
@@ -6173,7 +6191,7 @@ namespace ModelGraphSTD
                 RemoveLink(rel, row1, row2);
             }
         }
-        private DropAction ReorderRelatedChild (ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction ReorderRelatedChild (ItemModel model, ItemModel drop, bool doDrop)
         {
             if (model.Item3 == null) return DropAction.None;
             if (model.Item2 == null || !(model.Item2 is Relation rel)) return DropAction.None;
@@ -6192,7 +6210,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6AA RowRelatedParent  ============================================
-        internal void RowRelatedParent_X(ModelTree model, ModelRoot root)
+        internal void RowRelatedParent_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6231,14 +6249,14 @@ namespace ModelGraphSTD
                 RowX_VX(model);
             }
         }
-        private void UnlinkRelatedParent(ModelTree model)
+        private void UnlinkRelatedParent(ItemModel model)
         {
             var key = model.Item1;
             var rel = model.Item2 as Relation;
             var item = model.Item3;
             RemoveLink(rel, key, item);
         }
-        private DropAction ReorderRelatedParent(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction ReorderRelatedParent(ItemModel model, ItemModel drop, bool doDrop)
         {
             if (model.Item3 == null) return DropAction.None;
             if (model.Item2 == null || !(model.Item2 is Relation rel)) return DropAction.None;
@@ -6257,7 +6275,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6AB EnumRelatedColumn  ========================================
-        internal void EnumRelatedColumn_X(ModelTree model, ModelRoot root)
+        internal void EnumRelatedColumn_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6287,7 +6305,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void UnlinkRelatedColumn(ModelTree model)
+        private void UnlinkRelatedColumn(ItemModel model)
         {
             var col = model.Item1;
             var tbl = model.Item2;
@@ -6299,7 +6317,7 @@ namespace ModelGraphSTD
 
 
         #region 6B1 RowPropertyList  ==========================================
-        internal void RowPropertyList_X(ModelTree model, ModelRoot root)
+        internal void RowPropertyList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6339,7 +6357,7 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && TryGetUsedColumns(row, out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
@@ -6358,7 +6376,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B2 RowChildRelationList  =====================================
-        internal void RowChildRelationList_X(ModelTree model, ModelRoot root)
+        internal void RowChildRelationList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6398,14 +6416,14 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && TryGetUsedChildRelations(item, out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var rel = items[i] as RelationX;
 
                         if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, rel))
-                            model.ChildModels[i] = new ModelTree(model, Trait.RowChildRelation_M, level, item, rel, null, RowChildRelation_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.RowChildRelation_M, level, item, rel, null, RowChildRelation_X);
                     }
                 }
                 else
@@ -6417,7 +6435,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B3 RowParentRelationList  ====================================
-        internal void RowParentRelationList_X(ModelTree model, ModelRoot root)
+        internal void RowParentRelationList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6457,14 +6475,14 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && TryGetUsedParentRelations(item, out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var rel = items[i] as RelationX;
 
                         if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, rel))
-                            model.ChildModels[i] = new ModelTree(model, Trait.RowParentRelation_M, level, item, rel, null, RowParentRelation_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.RowParentRelation_M, level, item, rel, null, RowParentRelation_X);
                     }
                 }
                 else
@@ -6476,7 +6494,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B4 RowDefaultPropertyList  ===================================
-        internal void RowDefaultPropertyList_X(ModelTree model, ModelRoot root)
+        internal void RowDefaultPropertyList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6516,7 +6534,7 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && TryGetUnusedColumns(item, out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
@@ -6535,7 +6553,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B5 RowUnusedChildRelationList  ===============================
-        internal void RowUnusedChildRelationList_X(ModelTree model, ModelRoot root)
+        internal void RowUnusedChildRelationList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6575,14 +6593,14 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && TryGetUnusedChildRelations(item, out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var rel = items[i] as RelationX;
 
                         if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, rel))
-                            model.ChildModels[i] = new ModelTree(model, Trait.RowChildRelation_M, level, item, rel, null, RowChildRelation_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.RowChildRelation_M, level, item, rel, null, RowChildRelation_X);
                     }
                 }
                 else
@@ -6594,7 +6612,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B6 RowUnusedParentRelationList  ==============================
-        internal void RowUnusedParentRelationList_X(ModelTree model, ModelRoot root)
+        internal void RowUnusedParentRelationList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6634,14 +6652,14 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && TryGetUnusedParentRelations(item, out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var rel = items[i] as RelationX;
 
                         if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, rel))
-                            model.ChildModels[i] = new ModelTree(model, Trait.RowParentRelation_M, level, item, rel, null, RowParentRelation_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.RowParentRelation_M, level, item, rel, null, RowParentRelation_X);
                     }
                 }
                 else
@@ -6653,7 +6671,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B7 RowComputeList  ===========================================
-        internal void RowComputeList_X(ModelTree model, ModelRoot root)
+        internal void RowComputeList_X(ItemModel model, RootModel root)
         {
             var item = model.Item1;
             var sto = item.Owner;
@@ -6692,14 +6710,14 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     var list = Store_ComputeX.GetChildren(sto);
                     for (int i = 0; i < N; i++)
                     {
                         var itm = list[i];
                         if (!TryGetOldModel(model, Trait.TextProperty_M, oldModels, i, item, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.TextProperty_M, level, item, itm, null, TextCompute_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.TextProperty_M, level, item, itm, null, TextCompute_X);
                     }
                 }
                 else
@@ -6713,7 +6731,7 @@ namespace ModelGraphSTD
 
 
         #region 6C1 QueryRootLink  ============================================
-        internal void QueryRootLink_X(ModelTree model, ModelRoot root)
+        internal void QueryRootLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6751,13 +6769,13 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.QueryRootItem_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryRootItem_M, level, itm, seg, null, QueryRootItem_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryRootItem_M, level, itm, seg, null, QueryRootItem_X);
                     }
                 }
                 else
@@ -6766,7 +6784,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private string QueryLinkName(ModelTree modle)
+        private string QueryLinkName(ItemModel modle)
         {
             var s = modle.Query;
             return QueryXFilterName(s.QueryX);
@@ -6774,7 +6792,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C2 QueryPathHead  ============================================
-        internal void QueryPathHead_X(ModelTree model, ModelRoot root)
+        internal void QueryPathHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6810,7 +6828,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C3 QueryPathLink  ============================================
-        internal void QueryPathLink_X(ModelTree model, ModelRoot root)
+        internal void QueryPathLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6845,7 +6863,7 @@ namespace ModelGraphSTD
                 QueryPathLink_VX(model);
             }
         }
-        private void QueryPathLink_VX(ModelTree model)
+        private void QueryPathLink_VX(ItemModel model)
         {
             var seg = model.Query;
 
@@ -6855,7 +6873,7 @@ namespace ModelGraphSTD
                 var N = items.Length;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
-                model.ChildModels = new ModelTree[N];
+                model.ChildModels = new ItemModel[N];
 
                 for (int i = 0; i < N; i++)
                 {
@@ -6863,12 +6881,12 @@ namespace ModelGraphSTD
                     if (seg.IsTail)
                     {
                         if (!TryGetOldModel(model, Trait.QueryPathTail_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryPathTail_M, level, itm, seg, null, QueryPathTail_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryPathTail_M, level, itm, seg, null, QueryPathTail_X);
                     }
                     else
                     {
                         if (!TryGetOldModel(model, Trait.QueryPathStep_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryPathStep_M, level, itm, seg, null, QueryPathStep_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryPathStep_M, level, itm, seg, null, QueryPathStep_X);
                     }
                 }
             }
@@ -6880,7 +6898,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C4 QueryGroupHead  ===========================================
-        internal void QueryGroupHead_X(ModelTree model, ModelRoot root)
+        internal void QueryGroupHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6916,7 +6934,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C5 QueryGroupLink  ===========================================
-        internal void QueryGroupLink_X(ModelTree model, ModelRoot root)
+        internal void QueryGroupLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -6949,7 +6967,7 @@ namespace ModelGraphSTD
                 QueryGroupLink_VX(model);
             }
         }
-        private void QueryGroupLink_VX(ModelTree model)
+        private void QueryGroupLink_VX(ItemModel model)
         {
             var seg = model.Query;
             var level = (byte)(model.Level + 1);
@@ -6959,7 +6977,7 @@ namespace ModelGraphSTD
             var N = (model.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
             if (N > 0)
             {
-                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                 for (int i = 0; i < N; i++)
                 {
@@ -6967,12 +6985,12 @@ namespace ModelGraphSTD
                     if (seg.IsTail)
                     {
                         if (!TryGetOldModel(model, Trait.QueryGroupTail_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryGroupTail_M, level, itm, seg, null, QueryGroupTail_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryGroupTail_M, level, itm, seg, null, QueryGroupTail_X);
                     }
                     else
                     {
                         if (!TryGetOldModel(model, Trait.QueryGroupStep_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryGroupStep_M, level, itm, seg, null, QueryGroupStep_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryGroupStep_M, level, itm, seg, null, QueryGroupStep_X);
                     }
                 }
             }
@@ -6984,7 +7002,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C6 QueryEgressHead  ==========================================
-        internal void QueryEgressHead_X(ModelTree model, ModelRoot root)
+        internal void QueryEgressHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7020,7 +7038,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C7 QueryEgressLink  ==========================================
-        internal void QueryEgressLink_X(ModelTree model, ModelRoot root)
+        internal void QueryEgressLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7053,7 +7071,7 @@ namespace ModelGraphSTD
                 QueryEgressLink_VX(model);
             }
         }
-        private void QueryEgressLink_VX(ModelTree model)
+        private void QueryEgressLink_VX(ItemModel model)
         {
             var seg = model.Query;
             var level = (byte)(model.Level + 1);
@@ -7063,7 +7081,7 @@ namespace ModelGraphSTD
             var N = (model.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
             if (N > 0)
             {
-                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                 for (int i = 0; i < N; i++)
                 {
@@ -7071,12 +7089,12 @@ namespace ModelGraphSTD
                     if (seg.IsTail)
                     {
                         if (!TryGetOldModel(model, Trait.QueryEgressTail_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryEgressTail_M, level, itm, seg, null, QueryEgressTail_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryEgressTail_M, level, itm, seg, null, QueryEgressTail_X);
                     }
                     else
                     {
                         if (!TryGetOldModel(model, Trait.QueryEgressStep_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryEgressStep_M, level, itm, seg, null, QueryEgressStep_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryEgressStep_M, level, itm, seg, null, QueryEgressStep_X);
                     }
                 }
             }
@@ -7090,7 +7108,7 @@ namespace ModelGraphSTD
 
 
         #region 6D1 QueryRootItem  ============================================
-        internal void QueryRootItem_X(ModelTree model, ModelRoot root)
+        internal void QueryRootItem_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7125,7 +7143,7 @@ namespace ModelGraphSTD
                 ValidateQueryModel(model);
             }
         }
-        private void ValidateQueryModel(ModelTree model)
+        private void ValidateQueryModel(ItemModel model)
         {
             var itm = model.Item1;
             var seg = model.Query;
@@ -7136,7 +7154,7 @@ namespace ModelGraphSTD
             var N = (model.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
             if (N > 0)
             {
-                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                 for (int i = 0; i < N; i++)
                 {
@@ -7144,22 +7162,22 @@ namespace ModelGraphSTD
                     if (seg.IsGraphLink)
                     {
                         if (!TryGetOldModel(model, Trait.QueryRootLink_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryRootLink_M, level, itm, seg, null, QueryRootLink_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryRootLink_M, level, itm, seg, null, QueryRootLink_X);
                     }
                     else if (seg.IsPathHead)
                     {
                         if (!TryGetOldModel(model, Trait.QueryPathHead_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryPathHead_M, level, itm, seg, null, QueryPathHead_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryPathHead_M, level, itm, seg, null, QueryPathHead_X);
                     }
                     else if (seg.IsGroupHead)
                     {
                         if (!TryGetOldModel(model, Trait.QueryGroupHead_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryGroupHead_M, level, itm, seg, null, QueryGroupHead_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryGroupHead_M, level, itm, seg, null, QueryGroupHead_X);
                     }
                     else if (seg.IsSegueHead)
                     {
                         if (!TryGetOldModel(model, Trait.QueryEgressHead_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryEgressHead_M, level, itm, seg, null, QueryEgressHead_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryEgressHead_M, level, itm, seg, null, QueryEgressHead_X);
                     }
                     else
                         throw new Exception("Invalid Query");
@@ -7173,7 +7191,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D2 QueryPathStep  ============================================
-        internal void QueryPathStep_X(ModelTree model, ModelRoot root)
+        internal void QueryPathStep_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7214,13 +7232,13 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         seg = items[i];
                         if (!TryGetOldModel(model, Trait.QueryPathLink_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryPathLink_M, level, itm, seg, null, QueryPathLink_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryPathLink_M, level, itm, seg, null, QueryPathLink_X);
                     }
                 }
                 else
@@ -7232,7 +7250,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D3 QueryPathTail  ============================================
-        internal void QueryPathTail_X(ModelTree model, ModelRoot root)
+        internal void QueryPathTail_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7266,7 +7284,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D4 QueryGroupStep  ===========================================
-        internal void QueryGroupStep_X(ModelTree model, ModelRoot root)
+        internal void QueryGroupStep_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7307,13 +7325,13 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         seg = items[i];
                         if (!TryGetOldModel(model, Trait.QueryGroupLink_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryGroupLink_M, level, itm, seg, null, QueryGroupLink_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryGroupLink_M, level, itm, seg, null, QueryGroupLink_X);
                     }
                 }
                 else
@@ -7325,7 +7343,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D5 QueryGroupTail  ===========================================
-        internal void QueryGroupTail_X(ModelTree model, ModelRoot root)
+        internal void QueryGroupTail_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7359,7 +7377,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D6 QueryEgressStep  ==========================================
-        internal void QueryEgressStep_X(ModelTree model, ModelRoot root)
+        internal void QueryEgressStep_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7400,13 +7418,13 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         seg = items[i];
                         if (!TryGetOldModel(model, Trait.QueryEgressLink_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryEgressLink_M, level, itm, seg, null, QueryEgressLink_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryEgressLink_M, level, itm, seg, null, QueryEgressLink_X);
                     }
                 }
                 else
@@ -7418,7 +7436,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D7 QueryEgressTail  ==========================================
-        internal void QueryEgressTail_X(ModelTree model, ModelRoot root)
+        internal void QueryEgressTail_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7454,7 +7472,7 @@ namespace ModelGraphSTD
 
 
         #region 6E1 GraphXRef  ================================================
-        internal void GraphXRef_X(ModelTree model, ModelRoot root)
+        internal void GraphXRef_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7497,13 +7515,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var g = items[i] as Graph;
                         if (!TryGetOldModel(model, Trait.Graph_M, oldModels, i, g))
-                            model.ChildModels[i] = new ModelTree(model, Trait.Graph_M, level, g, null, null, Graph_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.Graph_M, level, g, null, null, Graph_X);
                     }
                 }
                 else
@@ -7512,7 +7530,7 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private void CreateGraph(ModelTree model)
+        private void CreateGraph(ItemModel model)
         {
             var gx = model.Item1 as GraphX;
             CreateGraph(gx, out Graph g);
@@ -7523,7 +7541,7 @@ namespace ModelGraphSTD
             var root = model.GetRootModel();
             root.UIRequest = UIRequest.CreateNewView(ControlType.GraphDisplay, Trait.GraphRef_M, this, g, null, null, GraphRef_X, true);
         }
-        private DropAction GraphXModDrop(ModelTree model, ModelTree drop, bool doDrop)
+        private DropAction GraphXModDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             var gd = model.Item1 as GraphX;
             Graph g;
@@ -7558,7 +7576,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E2 GraphNodeList  ============================================
-        internal void GraphNodeList_X(ModelTree model, ModelRoot root)
+        internal void GraphNodeList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7598,13 +7616,13 @@ namespace ModelGraphSTD
                 var N = items.Count;
                 if (model.IsExpandedLeft && N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.GraphNode_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphNode_M, level, itm, null, null, GraphNode_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphNode_M, level, itm, null, null, GraphNode_X);
                     }
                 }
                 else
@@ -7616,7 +7634,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E3 GraphEdgeList  ============================================
-        internal void GraphEdgeList_X(ModelTree model, ModelRoot root)
+        internal void GraphEdgeList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7656,13 +7674,13 @@ namespace ModelGraphSTD
                 var N = items.Count;
                 if (model.IsExpandedLeft && N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.GraphEdge_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphEdge_M, level, itm, null, null, GraphEdge_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphEdge_M, level, itm, null, null, GraphEdge_X);
                     }
                 }
                 else
@@ -7674,7 +7692,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E4 GraphRootList  ============================================
-        internal void GraphRootList_X(ModelTree model, ModelRoot root)
+        internal void GraphRootList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7714,14 +7732,14 @@ namespace ModelGraphSTD
                 var N = item.QueryCount;
                 if (model.IsExpandedLeft && N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var seg = items[i];
                         var tbl = seg.Item;
                         if (!TryGetOldModel(model, Trait.GraphRoot_M, oldModels, i, tbl, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphRoot_M, level, tbl, seg, null, GraphRoot_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphRoot_M, level, tbl, seg, null, GraphRoot_X);
                     }
                 }
                 else
@@ -7733,7 +7751,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E5 GraphLevelList  ===========================================
-        internal void GraphLevelList_X(ModelTree model, ModelRoot root)
+        internal void GraphLevelList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7775,13 +7793,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i] as Level;
                         if (!TryGetOldModel(model, Trait.GraphLevel_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphLevel_M, level, itm, null, null, GraphLevel_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphLevel_M, level, itm, null, null, GraphLevel_X);
                     }
                 }
                 else
@@ -7793,7 +7811,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E6 GraphLevel  ===============================================
-        internal void GraphLevel_X(ModelTree model, ModelRoot root)
+        internal void GraphLevel_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7834,13 +7852,13 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft) ? items.Count : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSortAscending || model.IsSortDescending || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSortAscending || model.IsSortDescending || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.GraphPath_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphPath_M, level, itm, null, null, GraphPath_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphPath_M, level, itm, null, null, GraphPath_X);
                     }
                 }
                 else
@@ -7852,7 +7870,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E7 GraphPath  ================================================
-        internal void GraphPath_X(ModelTree model, ModelRoot root)
+        internal void GraphPath_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7893,13 +7911,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i] as Path;
                         if (!TryGetOldModel(model, Trait.GraphPath_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphPath_M, level, itm, null, null, GraphPath_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphPath_M, level, itm, null, null, GraphPath_X);
                     }
                 }
                 else
@@ -7927,7 +7945,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E8 GraphRoot  ================================================
-        internal void GraphRoot_X(ModelTree model, ModelRoot root)
+        internal void GraphRoot_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -7969,13 +7987,13 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
                 if (N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var itm = items[i];
                         if (!TryGetOldModel(model, Trait.QueryRootItem_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ModelTree(model, Trait.QueryRootItem_M, level, itm, seg, null, QueryRootItem_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.QueryRootItem_M, level, itm, seg, null, QueryRootItem_X);
                     }
                 }
                 else
@@ -7987,7 +8005,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E9 GraphNode  ================================================
-        internal void GraphNode_X(ModelTree model, ModelRoot root)
+        internal void GraphNode_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -8036,7 +8054,7 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     if (R > 0)
                     {
@@ -8048,7 +8066,7 @@ namespace ModelGraphSTD
                         {
                             var edge = edges[j];
                             if (!TryGetOldModel(model, Trait.GraphEdge_M, oldModels, i, edge))
-                                model.ChildModels[i] = new ModelTree(model, Trait.GraphEdge_M, level, edge, null, null, GraphEdge_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.GraphEdge_M, level, edge, null, null, GraphEdge_X);
                         }
                     }
                 }
@@ -8061,7 +8079,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6EA GraphEdge  ================================================
-        internal void GraphEdge_X(ModelTree model, ModelRoot root)
+        internal void GraphEdge_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -8097,7 +8115,7 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     AddProperyModels(model, oldModels, sp);
                 }
@@ -8116,7 +8134,7 @@ namespace ModelGraphSTD
 
 
         #region 6EB GraphOpenList  ============================================
-        internal void GraphOpenList_X(ModelTree model, ModelRoot root)
+        internal void GraphOpenList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -8155,14 +8173,14 @@ namespace ModelGraphSTD
                 var N = g.OpenQuerys.Count;
                 if (model.IsExpandedLeft && N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var h = g.OpenQuerys[i].Query1;
                         var t = g.OpenQuerys[i].Query2;
                         if (!TryGetOldModel(model, Trait.GraphOpen_M, oldModels, i, g, h, t))
-                            model.ChildModels[i] = new ModelTree(model, Trait.GraphOpen_M, level, g, h, t, GraphOpen_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.GraphOpen_M, level, g, h, t, GraphOpen_X);
                     }
                 }
                 else
@@ -8175,7 +8193,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6EC GraphOpen  ================================================
-        internal void GraphOpen_X(ModelTree model, ModelRoot root)
+        internal void GraphOpen_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -8197,14 +8215,14 @@ namespace ModelGraphSTD
                 }
             }
         }
-        private string GraphOpenKind(ModelTree model)
+        private string GraphOpenKind(ItemModel model)
         {
             var g = model.Item1 as Graph;
             var h = model.Item2 as Query;
 
             return GetIdentity(h.Item, IdentityStyle.Double);
         }
-        private string GraphOpenName(ModelTree model)
+        private string GraphOpenName(ItemModel model)
         {
             var g = model.Item1 as Graph;
             var t = model.Item3 as Query;
@@ -8217,7 +8235,7 @@ namespace ModelGraphSTD
 
 
         #region 7D0 PrimeCompute  =============================================
-        internal void PrimeCompute_X(ModelTree model, ModelRoot root)
+        internal void PrimeCompute_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -8257,7 +8275,7 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     var list = GetPrimeComputeStores();
 
@@ -8265,7 +8283,7 @@ namespace ModelGraphSTD
                     {
                         var sto = list[i];
                         if (!TryGetOldModel(model, Trait.ComputeStore_M, oldModels, i, sto))
-                            model.ChildModels[i] = new ModelTree(model, Trait.ComputeStore_M, level, sto, null, null, ComputeStore_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.ComputeStore_M, level, sto, null, null, ComputeStore_X);
                     }
                 }
                 else
@@ -8295,7 +8313,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7D1 ComputeStore  =============================================
-        internal void ComputeStore_X(ModelTree model, ModelRoot root)
+        internal void ComputeStore_X(ItemModel model, RootModel root)
         {
             var sto = model.Item1 as Store;
             if (root != null)  // get the data for this root.ModelAction
@@ -8335,14 +8353,14 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     var list = Store_ComputeX.GetChildren(sto);
                     for (int i = 0; i < N; i++)
                     {
                         var itm = list[i];
                         if (!TryGetOldModel(model, Trait.TextProperty_M, oldModels, i, sto, itm))
-                            model.ChildModels[i] = new ModelTree(model, Trait.TextProperty_M, level, sto, itm, null, TextCompute_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.TextProperty_M, level, sto, itm, null, TextCompute_X);
                     }
                 }
                 else
@@ -8355,7 +8373,7 @@ namespace ModelGraphSTD
 
 
         #region 7F0 InternlStoreZ  ============================================
-        internal void InternalStoreZ_X(ModelTree model, ModelRoot root)
+        internal void InternalStoreZ_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -8392,51 +8410,51 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     int i = 0;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _viewXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _viewXStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _viewXStore, null, null, InternalStore_X);
 
                     i += 1;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _enumXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _enumXStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _enumXStore, null, null, InternalStore_X);
 
                     i += 1;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _tableXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _tableXStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _tableXStore, null, null, InternalStore_X);
 
                     i += 1;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _graphXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _graphXStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _graphXStore, null, null, InternalStore_X);
 
                     i += 1;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _queryXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _queryXStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _queryXStore, null, null, InternalStore_X);
 
                     i += 1;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _symbolXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _symbolXStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _symbolXStore, null, null, InternalStore_X);
 
                     i += 1;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _columnXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _columnXStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _columnXStore, null, null, InternalStore_X);
 
                     i += 1;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _relationXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _relationXStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _relationXStore, null, null, InternalStore_X);
 
                     i += 1;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _computeXStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _computeXStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _computeXStore, null, null, InternalStore_X);
 
                     i += 1;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _relationStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _relationStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _relationStore, null, null, InternalStore_X);
 
                     i += 1;
                     if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _propertyStore))
-                        model.ChildModels[i] = new ModelTree(model, Trait.InternalStore_M, level, _propertyStore, null, null, InternalStore_X);
+                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _propertyStore, null, null, InternalStore_X);
                 }
                 else
                 {
@@ -8447,7 +8465,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F1 InternalStore  ============================================
-        internal void InternalStore_X(ModelTree model, ModelRoot root)
+        internal void InternalStore_X(ItemModel model, RootModel root)
         {
             var store = model.Item1 as Store;
             if (root != null)  // get the data for this root.ModelAction
@@ -8487,14 +8505,14 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     var list = store.GetItems();
                     for (int i = 0; i < N; i++)
                     {
                         var item = list[i];
                         if (!TryGetOldModel(model, Trait.StoreItem_M, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreItem_M, level, item, null, null, StoreItem_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreItem_M, level, item, null, null, StoreItem_X);
                     }
                 }
                 else
@@ -8506,7 +8524,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F2 StoreItem  ================================================
-        internal void StoreItem_X(ModelTree model, ModelRoot root)
+        internal void StoreItem_X(ItemModel model, RootModel root)
         {
             var item = model.Item1;
             var hasItems = (item is Store sto && sto.Count > 0) ? true : false;
@@ -8557,32 +8575,32 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != count) model.ChildModels = new ModelTree[count];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != count) model.ChildModels = new ItemModel[count];
 
                     int i = -1;
                     if (hasItems)
                     {
                         i++;
                         if (!TryGetOldModel(model, Trait.StoreItemItem_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreItemItem_ZM, level, item, null, null, StoreItemItemZ_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreItemItem_ZM, level, item, null, null, StoreItemItemZ_X);
                     }
                     if (hasLinks)
                     {
                         i++;
                         if (!TryGetOldModel(model, Trait.StoreRelationLink_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreRelationLink_ZM, level, item, null, null, StoreRelationLinkZ_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreRelationLink_ZM, level, item, null, null, StoreRelationLinkZ_X);
                     }
                     if (hasChildRels)
                     {
                         i++;
                         if (!TryGetOldModel(model, Trait.StoreChildRelation_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreChildRelation_ZM, level, item, null, null, StoreChildRelationZ_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreChildRelation_ZM, level, item, null, null, StoreChildRelationZ_X);
                     }
                     if (hasParentRels)
                     {
                         i++;
                         if (!TryGetOldModel(model, Trait.StoreParentRelation_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreParentRelation_ZM, level, item, null, null, StoreParentRelationZ_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreParentRelation_ZM, level, item, null, null, StoreParentRelationZ_X);
                     }
                 }
                 else
@@ -8594,7 +8612,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F4 StoreItemItemZ  ===========================================
-        internal void StoreItemItemZ_X(ModelTree model, ModelRoot root)
+        internal void StoreItemItemZ_X(ItemModel model, RootModel root)
         {
             var store = model.Item1 as Store;
             if (root != null)  // get the data for this root.ModelAction
@@ -8634,14 +8652,14 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     var list = store.GetItems();
                     for (int i = 0; i < N; i++)
                     {
                         var item = list[i];
                         if (!TryGetOldModel(model, Trait.StoreItemItem_M, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreItemItem_M, level, item, null, null, StoreItemItem_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreItemItem_M, level, item, null, null, StoreItemItem_X);
                     }
                 }
                 else
@@ -8653,7 +8671,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F5 StoreRelationLinkZ  =======================================
-        internal void StoreRelationLinkZ_X(ModelTree model, ModelRoot root)
+        internal void StoreRelationLinkZ_X(ItemModel model, RootModel root)
         {
             var rel = model.Item1 as Relation;
             if (root != null)  // get the data for this root.ModelAction
@@ -8696,14 +8714,14 @@ namespace ModelGraphSTD
                 if (N > 0)
                 {
                     var level = (byte)(model.Level + 1);
-                    model.ChildModels = new ModelTree[N];
+                    model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var parent = parents[i];
                         var child = children[i];
                         if (!TryGetOldModel(model, Trait.StoreRelationLink_M, oldModels, i, rel, parent, child))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreRelationLink_M, level, rel, parent, child, StoreRelationLink_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreRelationLink_M, level, rel, parent, child, StoreRelationLink_X);
                     }
                 }
             }
@@ -8711,7 +8729,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F6 StoreChildRelationZ  ======================================
-        internal void StoreChildRelationZ_X(ModelTree model, ModelRoot root)
+        internal void StoreChildRelationZ_X(ItemModel model, RootModel root)
         {
             var item = model.Item1;
 
@@ -8751,13 +8769,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var rel = relations[i];
                         if (!TryGetOldModel(model, Trait.StoreChildRelation_M, oldModels, i, rel, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreChildRelation_M, level, rel, item, null, StoreChildRelation_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreChildRelation_M, level, rel, item, null, StoreChildRelation_X);
                     }
                 }
                 else
@@ -8769,7 +8787,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F7 StoreParentRelationZ  =====================================
-        internal void StoreParentRelationZ_X(ModelTree model, ModelRoot root)
+        internal void StoreParentRelationZ_X(ItemModel model, RootModel root)
         {
             var item = model.Item1;
 
@@ -8809,13 +8827,13 @@ namespace ModelGraphSTD
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ModelTree[N];
+                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var rel = relations[i];
                         if (!TryGetOldModel(model, Trait.StoreParentRelation_M, oldModels, i, rel, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreParentRelation_M, level, rel, item, null, StoreParentRelation_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreParentRelation_M, level, rel, item, null, StoreParentRelation_X);
                     }
                 }
                 else
@@ -8827,7 +8845,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F8 StoreItemItem  ============================================
-        internal void StoreItemItem_X(ModelTree model, ModelRoot root)
+        internal void StoreItemItem_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -8858,7 +8876,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F9 StoreRelationLink  ========================================
-        internal void StoreRelationLink_X(ModelTree model, ModelRoot root)
+        internal void StoreRelationLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
@@ -8891,7 +8909,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7FA StoreChildRelation  =======================================
-        internal void StoreChildRelation_X(ModelTree model, ModelRoot root)
+        internal void StoreChildRelation_X(ItemModel model, RootModel root)
         {
             var rel = model.Item1 as Relation;
             if (root != null)  // get the data for this root.ModelAction
@@ -8935,13 +8953,13 @@ namespace ModelGraphSTD
                     {
                         var N = items.Length;
                         var level = (byte)(model.Level + 1);
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
                             if (!TryGetOldModel(model, Trait.StoreRelatedItem_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.StoreRelatedItem_M, level, itm, null, null, StoreRelatedItem_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.StoreRelatedItem_M, level, itm, null, null, StoreRelatedItem_X);
                         }
                     }
                 }
@@ -8950,7 +8968,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7FA StoreParentRelation  ======================================
-        internal void StoreParentRelation_X(ModelTree model, ModelRoot root)
+        internal void StoreParentRelation_X(ItemModel model, RootModel root)
         {
             var rel = model.Item1 as Relation;
             if (root != null)  // get the data for this root.ModelAction
@@ -8994,13 +9012,13 @@ namespace ModelGraphSTD
                     {
                         var N = items.Length;
                         var level = (byte)(model.Level + 1);
-                        model.ChildModels = new ModelTree[N];
+                        model.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
                             if (!TryGetOldModel(model, Trait.StoreRelatedItem_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ModelTree(model, Trait.StoreRelatedItem_M, level, itm, null, null, StoreRelatedItem_X);
+                                model.ChildModels[i] = new ItemModel(model, Trait.StoreRelatedItem_M, level, itm, null, null, StoreRelatedItem_X);
                         }
                     }
                 }
@@ -9009,7 +9027,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7FC StoreRelatedItem  =========================================
-        internal void StoreRelatedItem_X(ModelTree model, ModelRoot root)
+        internal void StoreRelatedItem_X(ItemModel model, RootModel root)
         {
             var item = model.Item1;
             var hasChildRels = (GetChildRelationCount(item, SubsetType.Used) > 0) ? true : false;
@@ -9057,20 +9075,20 @@ namespace ModelGraphSTD
                 if (model.IsExpandedLeft && count > 0)
                 {
                     var level = (byte)(model.Level + 1);
-                     model.ChildModels = new ModelTree[count];
+                     model.ChildModels = new ItemModel[count];
 
                     int i = -1;
                     if (hasChildRels)
                     {
                         i++;
                         if (!TryGetOldModel(model, Trait.StoreChildRelation_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreChildRelation_ZM, level, item, null, null, StoreChildRelationZ_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreChildRelation_ZM, level, item, null, null, StoreChildRelationZ_X);
                     }
                     if (hasParentRels)
                     {
                         i++;
                         if (!TryGetOldModel(model, Trait.StoreParentRelation_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ModelTree(model, Trait.StoreParentRelation_ZM, level, item, null, null, StoreParentRelationZ_X);
+                            model.ChildModels[i] = new ItemModel(model, Trait.StoreParentRelation_ZM, level, item, null, null, StoreParentRelationZ_X);
                     }
                 }
                 else

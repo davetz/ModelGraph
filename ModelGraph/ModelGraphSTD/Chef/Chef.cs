@@ -53,9 +53,9 @@ namespace ModelGraphSTD
         #endregion
 
         #region RootModels  ===================================================
-        private ModelRoot PrimaryRootModel;
-        private List<ModelRoot> _rootModels = new List<ModelRoot>(10);
-        internal void AddRootModel(ModelRoot root)
+        private RootModel PrimaryRootModel;
+        private List<RootModel> _rootModels = new List<RootModel>(10);
+        internal void AddRootModel(RootModel root)
         {
             if (PrimaryRootModel == null) PrimaryRootModel = root;
 
@@ -65,7 +65,7 @@ namespace ModelGraphSTD
             MajorDelta += 1;
             _rootModels.Add(root);
         }
-        internal void RemoveRootModel(ModelRoot root)
+        internal void RemoveRootModel(RootModel root)
         {
             var g = root.Item1 as Graph;
             if (g != null) g.RemoveRootModel(root);
@@ -77,12 +77,12 @@ namespace ModelGraphSTD
         #endregion
 
         #region DragDrop  =====================================================
-        internal ModelTree DragDropSource
+        internal ItemModel DragDropSource
         {
             get { return GetRootChef().DragDropModel; }
             set { GetRootChef().DragDropModel = value; }
         }
-        protected ModelTree DragDropModel;
+        protected ItemModel DragDropModel;
 
         private Chef GetRootChef()
         {

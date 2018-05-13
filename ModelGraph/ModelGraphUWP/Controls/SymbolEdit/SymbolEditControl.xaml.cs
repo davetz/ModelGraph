@@ -15,11 +15,11 @@ namespace ModelGraphUWP
     public sealed partial class SymbolEditControl : UserControl, IModelControl
     {
         private Chef _chef;
-        private ModelRoot _rootModel;
+        private RootModel _rootModel;
         private SymbolX _symbol;
 
         #region Constructor  ==================================================
-        public SymbolEditControl(ModelRoot root)
+        public SymbolEditControl(RootModel root)
         {
             InitializeComponent();
 

@@ -7,15 +7,15 @@ namespace ModelGraphSTD
     public class ModelCommand
     {
         public Chef Chef;
-        public ModelTree Model;
-        public Action<ModelTree> Action;
-        public Action<ModelTree, Object> Action1;
+        public ItemModel Model;
+        public Action<ItemModel> Action;
+        public Action<ItemModel, Object> Action1;
         public Object Parameter1;
         public string Name;
         public string Summary;
         internal Trait Trait;
 
-        public ModelCommand(Chef chef, ModelTree model, Trait trait, Action<ModelTree> action)
+        public ModelCommand(Chef chef, ItemModel model, Trait trait, Action<ItemModel> action)
         {
             Chef = chef;
             Model = model;
@@ -24,7 +24,7 @@ namespace ModelGraphSTD
             Name = chef.GetName(trait);
             Summary = chef.GetSummary(trait); ;
         }
-        public ModelCommand(Chef chef, ModelTree model, Trait trait, Action<ModelTree, Object> action)
+        public ModelCommand(Chef chef, ItemModel model, Trait trait, Action<ItemModel, Object> action)
         {
             Chef = chef;
             Model = model;

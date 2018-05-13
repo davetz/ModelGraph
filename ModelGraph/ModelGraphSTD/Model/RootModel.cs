@@ -12,7 +12,7 @@ namespace ModelGraphSTD
     properties of ModelGraphSTD objects. This is especially important for the case
     of the ModelGraphControl.
  */
-    public class ModelRoot : ModelTree
+    public class RootModel : ItemModel
     {
         public Chef Chef;
         public IPageControl PageControl { get; set; } // reference the UI PageControl
@@ -35,20 +35,20 @@ namespace ModelGraphSTD
         public List<ModelCommand> ButtonCommands = new List<ModelCommand>();
         public List<ModelCommand> AppButtonCommands = new List<ModelCommand>();
 
-        public Func<ModelTree, ModelTree, bool, DropAction> ModelDrop;
-        public Func<ModelTree, ModelTree, bool, DropAction> ReorderItems;
+        public Func<ItemModel, ItemModel, bool, DropAction> ModelDrop;
+        public Func<ItemModel, ItemModel, bool, DropAction> ReorderItems;
 
         public int ViewIndex1; //index of first visible model
         public int ViewIndex2; //index one beyond the last visible model
         public int ViewCapacity; //max number of visible models
-        public ModelTree ViewSelectModel; //currently selected model
-        public ModelTree[] ViewModels; //flattend list of itemModel tree
+        public ItemModel ViewSelectModel; //currently selected model
+        public ItemModel[] ViewModels; //flattend list of itemModel tree
         public Dictionary<object, string> ViewFilter = new Dictionary<object, string>();
 
         public ModelAction ModelAction;
 
-        private ModelTree[] _modelList;
-        public ModelTree[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
+        private ItemModel[] _modelList;
+        public ItemModel[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
         public int Capacity { get; set; } = 100;
 
         public bool ModelIsChecked;
@@ -57,7 +57,7 @@ namespace ModelGraphSTD
 
         #region Constructors  =================================================
         // AppRootChef: Created by PageControl.xaml.cs
-        public ModelRoot()
+        public RootModel()
             : base(null, Trait.RootChef_M, 0, new Chef())
         {
             Chef = Item1 as Chef;
@@ -68,7 +68,7 @@ namespace ModelGraphSTD
         }
 
         // (Primary & Secondary) RootModels: Created by PrimaryRoot
-        public ModelRoot(UIRequest rq)
+        public RootModel(UIRequest rq)
             : base(null, rq.Trait, 0, rq.Item1, rq.Item2, rq.Item3, rq.GetData)
         {
             Chef = rq.Chef;
@@ -95,7 +95,7 @@ namespace ModelGraphSTD
         #region ModelData  ====================================================
 
         // ModelAction.DragOver  ==============================================
-        public void GetDragOverData(ModelTree model)
+        public void GetDragOverData(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -106,7 +106,7 @@ namespace ModelGraphSTD
         }
 
         // ModelAction.PointerOver  ===========================================
-        public void GetPointerOverData(ModelTree model)
+        public void GetPointerOverData(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -120,7 +120,7 @@ namespace ModelGraphSTD
         }
 
         // ModelAction.ModelSelect  ===========================================
-        public void GetModelSelectData(ModelTree model)
+        public void GetModelSelectData(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -136,7 +136,7 @@ namespace ModelGraphSTD
         }
 
         // ModelAction.ModelRefresh  ==========================================
-        public void GetModelItemData(ModelTree model)
+        public void GetModelItemData(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -157,7 +157,7 @@ namespace ModelGraphSTD
             if (string.IsNullOrEmpty(ModelName)) ModelName = "???";
         }
 
-        public void PostModelDrop(ModelTree model)
+        public void PostModelDrop(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
@@ -169,14 +169,14 @@ namespace ModelGraphSTD
             else
                 Chef.PostDataAction(this, () => { ModelDrop?.Invoke(model, drop, true); });
         }
-        public void SetDragDropSource(ModelTree model)
+        public void SetDragDropSource(ItemModel model)
         {
             if (model == null | model.IsInvalid) return;
 
             Chef.DragDropSource = model;
         }
 
-        public DropAction CanModelAcceptDrop(ModelTree model)
+        public DropAction CanModelAcceptDrop(ItemModel model)
         {
             if (model == null | model.IsInvalid) return DropAction.None;
 
@@ -227,15 +227,15 @@ namespace ModelGraphSTD
 
         public void PostModelRefresh() { Chef.PostModelRefresh(this); }
 
-        public void PostSetValue(ModelTree model, string value)
+        public void PostSetValue(ItemModel model, string value)
         {
             Chef.PostModelSetValue(model, value);
         }
-        public void PostSetIsChecked(ModelTree model, bool value)
+        public void PostSetIsChecked(ItemModel model, bool value)
         {
             Chef.PostModelSetIsChecked(model, value);
         }
-        public void PostSetValueIndex(ModelTree model, int value)
+        public void PostSetValueIndex(ItemModel model, int value)
         {
             model.GetData(this);
             Chef.PostModelSetValueIndex(model, value);

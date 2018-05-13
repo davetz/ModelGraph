@@ -12,9 +12,9 @@ namespace ModelGraphUWP
     {
         private Chef _chef;
         private Graph _graph;
-        private ModelRoot _rootModel;
+        private RootModel _rootModel;
 
-        public ModelGraphControl(ModelRoot root)
+        public ModelGraphControl(RootModel root)
         {
             _chef = root.Chef;
             _rootModel = root;

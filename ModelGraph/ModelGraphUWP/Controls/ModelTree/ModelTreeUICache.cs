@@ -139,7 +139,7 @@ namespace ModelGraphUWP
 
 
         #region AddItemKind  ==================================================
-        private void AddItemKind(int index, ModelTree model)
+        private void AddItemKind(int index, ItemModel model)
         {
             var obj = _itemKindCache[index];
             if (obj == null)
@@ -166,7 +166,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddItemName  ==================================================
-        private void AddItemName(int index, ModelTree model)
+        private void AddItemName(int index, ItemModel model)
         {
             var obj = _itemNameCache[index];
             if (obj == null)
@@ -193,7 +193,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddItemInfo  ==================================================
-        private void AddItemInfo(int index, ModelTree model)
+        private void AddItemInfo(int index, ItemModel model)
         {
             var obj = _itemInfoCache[index];
             if (obj == null)
@@ -211,7 +211,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddTotalCount  ================================================
-        private void AddTotalCount(int index, ModelTree model)
+        private void AddTotalCount(int index, ItemModel model)
         {
             var obj = _totalCountCache[index];
             if (obj == null)
@@ -229,7 +229,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddTreeIndent  ================================================
-        private void AddTreeIndent(int index, ModelTree model)
+        private void AddTreeIndent(int index, ItemModel model)
         {
             var obj = _indentTreeCache[index];
             if (obj == null)
@@ -249,7 +249,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddExpandLeft  ================================================
-        private void AddExpandLeft(int index, ModelTree model)
+        private void AddExpandLeft(int index, ItemModel model)
         {
             var obj = _expandLeftCache[index];
             if (obj == null)
@@ -276,7 +276,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddExpandRight  ===============================================
-        private void AddExpandRight(int index, ModelTree model)
+        private void AddExpandRight(int index, ItemModel model)
         {
             var obj = _expandRightCache[index];
             if (obj == null)
@@ -299,7 +299,7 @@ namespace ModelGraphUWP
 
 
         #region AddSortMode  ==================================================
-        private void AddSortMode(int index, ModelTree model, bool canSort)
+        private void AddSortMode(int index, ItemModel model, bool canSort)
         {
             var obj = _sortModeCache[index];
             if (canSort)
@@ -328,7 +328,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddUsageMode  ==================================================
-        private void AddUsageMode(int index, ModelTree model, bool canFilterUsage)
+        private void AddUsageMode(int index, ItemModel model, bool canFilterUsage)
         {
             var obj = _usageModeCache[index];
             if (canFilterUsage)
@@ -357,7 +357,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddFilterMode  ================================================
-        private void AddFilterMode(int index, ModelTree model, bool canFilter)
+        private void AddFilterMode(int index, ItemModel model, bool canFilter)
         {
             var obj = _filterModeCache[index];
             if (canFilter)
@@ -386,7 +386,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddFilterText  ================================================
-        private void AddFilterText(int index, ModelTree model)
+        private void AddFilterText(int index, ItemModel model)
         {
             var obj = _filterTextCache[index];
             if (obj == null)
@@ -406,7 +406,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddFilterCount  ===============================================
-        private void AddFilterCount(int index, ModelTree model)
+        private void AddFilterCount(int index, ItemModel model)
         {
             var obj = _filterCountCache[index];
             if (obj == null)
@@ -425,7 +425,7 @@ namespace ModelGraphUWP
 
 
         #region AddPropertyName  ==============================================
-        private void AddPropertyName(int index, ModelTree model)
+        private void AddPropertyName(int index, ItemModel model)
         {
             var obj = _propertyNameCache[index];
             var bdr = _propertyBorderCache[index];
@@ -454,7 +454,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddTextProperty  ==============================================
-        private void AddTextProperty(int index, ModelTree model)
+        private void AddTextProperty(int index, ItemModel model)
         {
             var obj = _textPropertyCache[index];
             if (obj == null)
@@ -476,7 +476,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddCheckProperty  =============================================
-        private void AddCheckProperty(int index, ModelTree model)
+        private void AddCheckProperty(int index, ItemModel model)
         {
             var obj = _checkPropertyCache[index];
             if (obj == null)
@@ -497,7 +497,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddComboProperty  =============================================
-        private void AddComboProperty(int index, ModelTree model)
+        private void AddComboProperty(int index, ItemModel model)
         {
             var obj = _comboPropertyCache[index];
             if (obj == null)
@@ -518,7 +518,7 @@ namespace ModelGraphUWP
 
 
         #region AddModelIdentity  =============================================
-        private void AddModelIdentity(int index, ModelTree model)
+        private void AddModelIdentity(int index, ItemModel model)
         {
             var obj = _modelIdentityCache[index];
             if (obj == null)
@@ -538,7 +538,7 @@ namespace ModelGraphUWP
 
 
         #region AddStackPanel  ================================================
-        private void AddStackPanel(int index, ModelTree model)
+        private void AddStackPanel(int index, ItemModel model)
         {
             if (index >= _cacheSize) ExpandCache();
 

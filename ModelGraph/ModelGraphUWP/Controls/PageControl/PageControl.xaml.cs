@@ -17,7 +17,7 @@ namespace ModelGraphUWP
     public sealed partial class PageControl : Page, IPageControl
     {
         readonly ModelPageService _pageService;
-        ModelRoot _activeModel; // curently active model
+        RootModel _activeModel; // curently active model
 
         #region Constructor/OnNavigatedTo  ====================================
         public PageControl()
@@ -31,9 +31,9 @@ namespace ModelGraphUWP
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (!(e.Parameter is ModelRoot model))
+            if (!(e.Parameter is RootModel model))
             {
-                model = new ModelRoot();
+                model = new RootModel();
             }
 
             InitializeModel(model);
@@ -54,7 +54,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region InitializeModel/ShowModelControl  =============================
-        internal void InitializeModel(ModelRoot model)
+        internal void InitializeModel(RootModel model)
         {
             model.PageControl = this;
             model.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
@@ -63,7 +63,7 @@ namespace ModelGraphUWP
 
             ShowModelControl(model);
         }
-        internal void ShowModelControl(ModelRoot model)
+        internal void ShowModelControl(RootModel model)
         {
             _activeModel = model;
             ControlGrid.Children.Clear();
@@ -198,9 +198,9 @@ namespace ModelGraphUWP
             else if (rq.DoCreateNewView)
             {
                 if (rq.DoCreateNewPage)
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new ModelRoot(rq)));
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new RootModel(rq)));
                 else
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InitializeModel(new ModelRoot(rq)));
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InitializeModel(new RootModel(rq)));
             }
 
             ModelRefresh();
@@ -218,12 +218,12 @@ namespace ModelGraphUWP
             }
         }
 
-        private void ReloadModel(ModelRoot model)
+        private void ReloadModel(RootModel model)
         {
             throw new NotImplementedException();
         }
 
-        private void CloseModel(ModelRoot model)
+        private void CloseModel(RootModel model)
         {
             var chef = model.Chef;
             chef.Close();

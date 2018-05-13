@@ -657,7 +657,7 @@ namespace ModelGraphSTD
             var inx = tbl.IndexOf(row);
             return $"#{inx.ToString()}";
         }
-        internal string RowSummary(ModelTree model)
+        internal string RowSummary(ItemModel model)
         {
             return RowSummary(model.Item1 as RowX);
         }

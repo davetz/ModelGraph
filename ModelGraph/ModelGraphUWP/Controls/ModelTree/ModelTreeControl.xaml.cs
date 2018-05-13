@@ -16,7 +16,7 @@ namespace ModelGraphUWP
 {
     public sealed partial class ModelTreeControl : UserControl, IModelControl
     {
-        public ModelTreeControl(ModelRoot root)
+        public ModelTreeControl(RootModel root)
         {
             _root = root;
             _root.ModelControl = this;
@@ -49,9 +49,9 @@ namespace ModelGraphUWP
         #endregion
 
         #region Fields  =======================================================
-        private ModelRoot _root;
+        private RootModel _root;
 
-        private ModelTree _previousModel;
+        private ItemModel _previousModel;
 
         private ToolTip _itemIdentityTip;
         private ToolTip _modelIdentityTip;
@@ -245,7 +245,7 @@ namespace ModelGraphUWP
 
         private async void TailButton_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            var mdl = TailButton.DataContext as ModelTree;
+            var mdl = TailButton.DataContext as ItemModel;
             if (mdl == null) return;
             _root.ViewSelectModel = mdl;
 
@@ -404,7 +404,7 @@ namespace ModelGraphUWP
             }
         }
 
-        private bool CanToggleLeft(ModelTree model)
+        private bool CanToggleLeft(ItemModel model)
         {
             _root.GetModelItemData(model);
             return model.CanExpandLeft;
@@ -445,7 +445,7 @@ namespace ModelGraphUWP
         private void ItemIdentityTip_Opened(object sender, RoutedEventArgs e)
         {
             var tip = sender as ToolTip;
-            var mdl = tip.DataContext as ModelTree;
+            var mdl = tip.DataContext as ItemModel;
             _root.GetPointerOverData(mdl);
             var content = _root.ModelSummary;
             tip.Content = string.IsNullOrWhiteSpace(content) ? null : content;
@@ -453,7 +453,7 @@ namespace ModelGraphUWP
         private void ModelIdentityTip_Opened(object sender, RoutedEventArgs e)
         {
             var tip = sender as ToolTip;
-            var mdl = tip.DataContext as ModelTree;
+            var mdl = tip.DataContext as ItemModel;
             tip.Content = mdl.ModelIdentity;
         }
         #endregion
@@ -478,7 +478,7 @@ namespace ModelGraphUWP
             TailButton.Focus(FocusState.Keyboard);
             RefreshSelectionGrid();
         }
-        private ModelTree PointerModel(Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private ItemModel PointerModel(Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             var p = e.GetCurrentPoint(TreeCanvas);
             var i = (int)(p.Position.Y / _elementHieght) + _root.ViewIndex1;
@@ -712,7 +712,7 @@ namespace ModelGraphUWP
             _previousModel = PointerModel(e);
             //e.Handled = true;
         }
-        private void RefreshItemName(ModelTree model, TextBlock obj)
+        private void RefreshItemName(ItemModel model, TextBlock obj)
         {
             obj.Text = _root.ModelName;
         }
@@ -725,7 +725,7 @@ namespace ModelGraphUWP
         {
             //args.DragUI.SetContentFromDataPackage();
             var obj = sender as TextBlock;
-            var mdl = obj.DataContext as ModelTree;
+            var mdl = obj.DataContext as ItemModel;
             if (mdl.CanDrag)
                 _root.SetDragDropSource(mdl);
             else
@@ -738,7 +738,7 @@ namespace ModelGraphUWP
         {
             e.DragUIOverride.IsContentVisible = false;
             var obj = sender as TextBlock;
-            var mdl = obj.DataContext as ModelTree;
+            var mdl = obj.DataContext as ItemModel;
 
             var type = _root.CanModelAcceptDrop(mdl);
             switch (type)
@@ -763,7 +763,7 @@ namespace ModelGraphUWP
         private void ItemName_Drop(object sender, DragEventArgs e)
         {
             var obj = sender as TextBlock;
-            var mdl = obj.DataContext as ModelTree;
+            var mdl = obj.DataContext as ItemModel;
             _root.PostModelDrop(mdl);
         }
         #endregion
@@ -780,7 +780,7 @@ namespace ModelGraphUWP
             obj.Opacity = 0.5;
         }
 
-        private void RefreshExpandTree(ModelTree model, TextBlock obj)
+        private void RefreshExpandTree(ItemModel model, TextBlock obj)
         {
             if (model.CanExpandLeft)
             {
@@ -796,7 +796,7 @@ namespace ModelGraphUWP
             if (_previousModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
-                _root.ViewSelectModel = obj.DataContext as ModelTree;
+                _root.ViewSelectModel = obj.DataContext as ItemModel;
                 await RefreshTree(ChangeType.ToggleLeft);
             }
         }
@@ -808,7 +808,7 @@ namespace ModelGraphUWP
             if (_previousModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
-                _root.ViewSelectModel = obj.DataContext as ModelTree;
+                _root.ViewSelectModel = obj.DataContext as ItemModel;
                 await RefreshTree(ChangeType.ToggleRight);
             }
         }
@@ -818,7 +818,7 @@ namespace ModelGraphUWP
         private void ModelIdentity_PointerEntered(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             var obj = sender as TextBlock;
-            _modelIdentityTip.DataContext = obj.DataContext as ModelTree;
+            _modelIdentityTip.DataContext = obj.DataContext as ItemModel;
         }
         #endregion
 
@@ -835,7 +835,7 @@ namespace ModelGraphUWP
         private async void ExecuteSort(TextBlock obj)
         {
             if (obj == null) return;
-            var mdl = obj.DataContext as ModelTree;
+            var mdl = obj.DataContext as ItemModel;
             if (mdl.IsSortAscending)
             {
                 mdl.IsSortAscending = false;
@@ -869,7 +869,7 @@ namespace ModelGraphUWP
         private async void ExecuteUsage(TextBlock obj)
         {
             if (obj == null) return;
-            var mdl = obj.DataContext as ModelTree;
+            var mdl = obj.DataContext as ItemModel;
             if (mdl.IsUsedFilter)
             {
                 mdl.IsUsedFilter = false;
@@ -904,7 +904,7 @@ namespace ModelGraphUWP
         private async void ExecuteFilterMode(TextBlock obj)
         {
             if (obj == null) return;
-            var mdl = obj.DataContext as ModelTree;
+            var mdl = obj.DataContext as ItemModel;
 
             await RefreshTree(ChangeType.ToggleFilter);
         }
@@ -914,7 +914,7 @@ namespace ModelGraphUWP
         private async void FilterText_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             var obj = sender as TextBox;
-            var mdl = obj.DataContext as ModelTree;
+            var mdl = obj.DataContext as ItemModel;
 
             if (e.Key == Windows.System.VirtualKey.Enter || e.Key == Windows.System.VirtualKey.Tab)
             {
@@ -943,7 +943,7 @@ namespace ModelGraphUWP
         private void TextProperty_LostFocus(object sender, RoutedEventArgs e)
         {
             var obj = sender as TextBox;
-            var mdl = obj.DataContext as ModelTree;
+            var mdl = obj.DataContext as ItemModel;
             if ((string)obj.Tag != obj.Text)
                 _root.PostSetValue(mdl, obj.Text);
         }
@@ -952,14 +952,14 @@ namespace ModelGraphUWP
             if (e.Key == Windows.System.VirtualKey.Enter || e.Key == Windows.System.VirtualKey.Tab)
             {
                 var obj = sender as TextBox;
-                var mdl = obj.DataContext as ModelTree;
+                var mdl = obj.DataContext as ItemModel;
                 if ((string)obj.Tag != obj.Text)
                     _root.PostSetValue(mdl, obj.Text);
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
                 var obj = sender as TextBox;
-                var mdl = obj.DataContext as ModelTree;
+                var mdl = obj.DataContext as ItemModel;
                 if ((string)obj.Tag != obj.Text)
                     _root.GetModelItemData(mdl);
                 obj.Text = _root.ModelValue ?? string.Empty;
@@ -972,7 +972,7 @@ namespace ModelGraphUWP
         private void Check_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             var obj = sender as CheckBox;
-            var mdl = obj.DataContext as ModelTree;
+            var mdl = obj.DataContext as ItemModel;
             var val = obj.IsChecked ?? false;
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
@@ -990,7 +990,7 @@ namespace ModelGraphUWP
             else
             {
                 var obj = sender as CheckBox;
-                var mdl = obj.DataContext as ModelTree;
+                var mdl = obj.DataContext as ItemModel;
                 var val = obj.IsChecked ?? false;
                 _root.PostSetIsChecked(mdl, val);
             }
@@ -1001,7 +1001,7 @@ namespace ModelGraphUWP
         private void ComboProperty_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var obj = sender as ComboBox;
-            var mdl = obj.DataContext as ModelTree;
+            var mdl = obj.DataContext as ItemModel;
             _root.PostSetValueIndex(mdl, obj.SelectedIndex);
         }
         #endregion
@@ -1010,7 +1010,7 @@ namespace ModelGraphUWP
         private void PropertyBorder_PointerEntered(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             var obj = sender as Border;
-            _itemIdentityTip.DataContext = obj.DataContext as ModelTree;
+            _itemIdentityTip.DataContext = obj.DataContext as ItemModel;
         }
         #endregion
 
