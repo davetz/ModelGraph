@@ -26,7 +26,7 @@ namespace ModelGraphUWP
             _rootModel = root;
             _rootModel.ModelControl = this;
             _chef = root.Chef;
-            _symbol = root.Item1 as SymbolX;
+            _symbol = root.Item as SymbolX;
             UnpackSymbolData(_symbol.Data);
             UpdataLineStyleUI();
             UpdateSymbolSize();

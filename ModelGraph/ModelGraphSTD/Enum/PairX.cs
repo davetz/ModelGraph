@@ -17,7 +17,7 @@ namespace ModelGraphSTD
             Guid = Guid.NewGuid();
             AutoExpandRight = true;
 
-            owner.Append(this);
+            owner.Add(this);
         }
         internal PairX(EnumX owner, Guid guid)
         {

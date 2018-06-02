@@ -10,6 +10,7 @@ namespace ModelGraphSTD
     {
         static int _newChefCount;
         private int _newChefNumber;
+        public static ItemModel DragDropSource; 
 
         private object _executionLock = new object(); // only one thread may modify the data
 
@@ -27,7 +28,7 @@ namespace ModelGraphSTD
 
             Repository = repository;
 
-            rootChef.Append(this);
+            rootChef.Add(this);
             rootChef.MajorDelta += 1;
 
             if (repository == null)
@@ -59,7 +60,7 @@ namespace ModelGraphSTD
         {
             if (PrimaryRootModel == null) PrimaryRootModel = root;
 
-            var g = root.Item1 as Graph;
+            var g = root.Item as Graph;
             if (g != null) g.AddRootModel(root);
 
             MajorDelta += 1;
@@ -67,23 +68,16 @@ namespace ModelGraphSTD
         }
         internal void RemoveRootModel(RootModel root)
         {
-            var g = root.Item1 as Graph;
+            var g = root.Item as Graph;
             if (g != null) g.RemoveRootModel(root);
             MajorDelta += 1;
 
             _rootModels.Remove(root);
-            PostModelRefresh(PrimaryRootModel);
+            PostRefresh(PrimaryRootModel);
         }
         #endregion
 
-        #region DragDrop  =====================================================
-        internal ItemModel DragDropSource
-        {
-            get { return GetRootChef().DragDropModel; }
-            set { GetRootChef().DragDropModel = value; }
-        }
-        protected ItemModel DragDropModel;
-
+        #region GetRootChef  ==================================================
         private Chef GetRootChef()
         {
             var chef = this;

@@ -222,7 +222,7 @@ namespace ModelGraphUWP
                 ToolTipService.SetToolTip(obj, _totalCountTip);
             }
 
-            obj.Text = _root.ModelCount.ToString();
+            obj.Text = _root.ChildCount.ToString();
 
             _stackPanelCache[index].Children.Add(obj);
         }
@@ -582,7 +582,7 @@ namespace ModelGraphUWP
                 AddItemName(index, model);
                 if (model.CanExpandRight) AddExpandRight(index, model);
 
-                if (_root.ModelCount > 0)
+                if (_root.ChildCount > 0)
                 {
                     AddSortMode(index, model, (model.CanSort));
 

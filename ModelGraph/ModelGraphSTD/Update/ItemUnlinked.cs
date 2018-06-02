@@ -23,7 +23,7 @@
             ChildIndex = parentIndex;
             ParentIndex = parentIndex;
 
-            owner.Append(this);
+            owner.Add(this);
         }
         #endregion
     }

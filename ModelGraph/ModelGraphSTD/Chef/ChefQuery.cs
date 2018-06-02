@@ -42,14 +42,14 @@ namespace ModelGraphSTD
             while (anyChange)
             {
                 anyChange = false;
-                foreach (var qx in _queryXStore.Items)
+                foreach (var qx in _queryXStore.ToArray)
                 {
                     var sto = GetQueryXTarget(qx);
                     if (qx.Select != null && qx.Select.TryValidate(sto)) anyChange |= qx.Select.TryResolve();
                     if (qx.Where != null && qx.Where.TryValidate(sto)) anyChange |= qx.Where.TryResolve();
                     qx.IsTail = (QueryX_QueryX.HasNoChildren(qx));
                 }
-                foreach (var cx in _computeXStore.Items)
+                foreach (var cx in _computeXStore.ToArray)
                 {
                     if (ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
                     {
@@ -70,7 +70,7 @@ namespace ModelGraphSTD
 
             void ResetAllComputeValues()
             {
-                foreach (var cx in _computeXStore.Items)
+                foreach (var cx in _computeXStore.ToArray)
                 {
                     cx.Value.Clear();
                     cx.Value = ValuesUnknown;
@@ -127,7 +127,7 @@ namespace ModelGraphSTD
         #region ConvertQueryType  =============================================
         private void MakeRootLink(ItemModel model)
         {
-            var qx = model.Item1 as QueryX;
+            var qx = model.Item as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
             {
                 foreach (var qxi in list) { qxi.QueryKind = QueryType.Graph; qxi.IsHead = false; qxi.IsTail = false; }
@@ -136,7 +136,7 @@ namespace ModelGraphSTD
         }
         private void MakePathtHead(ItemModel model)
         {
-            var qx = model.Item1 as QueryX;
+            var qx = model.Item as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
             {
                 foreach (var qxi in list) { qxi.QueryKind = QueryType.Path; }
@@ -148,7 +148,7 @@ namespace ModelGraphSTD
         }
         private void MakeGroupHead(ItemModel model)
         {
-            var qx = model.Item1 as QueryX;
+            var qx = model.Item as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
             {
                 foreach (var qxi in list) {qxi.QueryKind = QueryType.Group; }
@@ -160,7 +160,7 @@ namespace ModelGraphSTD
         }
         private void MakeBridgeHead(ItemModel model)
         {
-            var qx = model.Item1 as QueryX;
+            var qx = model.Item as QueryX;
             if (TryGetQueryXList(qx, out List<QueryX> list))
             {
                 foreach (var qxi in list) { qxi.QueryKind = QueryType.Segue; }
@@ -173,7 +173,7 @@ namespace ModelGraphSTD
 
         internal bool CanConvertQueryType(ItemModel model)
         {
-            var qx = model.Item1 as QueryX;
+            var qx = model.Item as QueryX;
             var prev = QueryX_QueryX.GetParent(qx);
             if (prev == null) return false;
             if (!prev.IsQueryGraphLink && !prev.IsQueryGraphRoot) return false;

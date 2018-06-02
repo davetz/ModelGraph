@@ -36,10 +36,8 @@ namespace ModelGraphSTD
 
         public void Execute()
         {
-            if (Model == null || Model.IsInvalid) return;
-
            if (IsInsertCommand) Model.IsExpandedLeft = true;
-           Chef.PostExecuteCommand(this);
+           Chef.PostCommand(this);
         }
 
         #region Trait  ========================================================

@@ -22,7 +22,7 @@ namespace ModelGraphSTD
 
             Value = Value.Create(ValType.String);
 
-            owner.Append(this);
+            owner.Add(this);
         }
         internal ColumnX(StoreOf<ColumnX> owner, Guid guid)
         {

@@ -11,7 +11,7 @@
             Trait = Trait.ChangeRoot;
 
             if (owner.IsRootChef) return;
-            owner.Append(this); // we want to be in the dataChef's item tree hierarchy
+            owner.Add(this); // we want to be in the dataChef's item tree hierarchy
         }
         #endregion
 
@@ -24,7 +24,7 @@
             var last = Count - 1;
             for (int i = last; i >= 0; i--)
             {
-                var item = Items[i] as ChangeSet;
+                var item = ToArray[i] as ChangeSet;
                 if (item == chg)
                     return item.CanUndo;
                 else if (!item.CanRedo)
@@ -38,7 +38,7 @@
             var last = Count - 1;
             for (int i = last; i >= 0; i--)
             {
-                var item = Items[i] as ChangeSet;
+                var item = ToArray[i] as ChangeSet;
                 if (item == chg)
                     return item.CanRedo;
                 else if (!item.CanUndo)
@@ -56,15 +56,15 @@
             var prev = index - 1;
             if (prev < 0) return false;
 
-            var chg2 = Items[prev] as ChangeSet;
+            var chg2 = ToArray[prev] as ChangeSet;
             if (chg2.IsCongealed) return false;
             if (chg2.IsUndone != chg.IsUndone) return false;
 
             if (onlyTestMerge) return true;
 
             _items.Remove(chg2);
-            var items = chg2.Items;
-            foreach (var item in items) { chg.Append(item); }
+            var items = chg2.ToArray;
+            foreach (var item in items) { chg.Add(item); }
             chg2.RemoveAll();
 
             return true;
@@ -75,7 +75,7 @@
             if (Count > 0)
             {
                 ChangeSet save = null;
-                foreach (var item in Items)
+                foreach (var item in ToArray)
                 {
                     var chg = item as ChangeSet;
                     if (chg.IsCongealed) continue;
@@ -96,7 +96,7 @@
 
         internal void AutoExpandChanges()
         {
-            foreach (var item in Items)
+            foreach (var item in ToArray)
             {
                 var chg = item as ChangeSet;
                 if (chg.IsCongealed) break;

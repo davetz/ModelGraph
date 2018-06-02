@@ -10,7 +10,7 @@ namespace ModelGraphSTD
             Owner = owner;
             Trait = trait;
 
-            owner.Append(this);
+            owner.Add(this);
         }
 
         internal int EnumKey => (int)(Trait & Trait.EnumMask);

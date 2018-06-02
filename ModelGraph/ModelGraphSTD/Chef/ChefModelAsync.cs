@@ -7,129 +7,107 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        #region PostDataActionRequest  ========================================
+        #region PostRequest  ==================================================
         // These methods are called from the ui thread and typically they invoke 
         // some type of change to the dataChefs objects (create, remove, update)
+        internal void PostAction(ItemModel model, Action action)
+        {
+            if (model.IsInvalid) return;
 
-        internal void PostExecuteCommand(ModelCommand command)
+            PostModelRequest(model, action);
+        }
+        public void PostRefresh(ItemModel model)
+        {/*
+            Model refresh runs after each execution. We only
+            need to invoke an execution on the background thread.
+         */
+            PostModelRequest(model, () => { DoNothing(); });
+        }
+        private static void DoNothing() { }
+        internal void PostCommand(ModelCommand command)
         {
             var model = command.Model;
             if (command.Action != null)
-                PostRequest(model, () => { command.Action(model); });
+                PostModelRequest(model, () => { command.Action(model); });
             else if (command.Action1 != null)
-                PostRequest(model, () => { command.Action1(model, command.Parameter1); });
+                PostModelRequest(model, () => { command.Action1(model, command.Parameter1); });
         }
-
-        internal void PostDataAction(ItemModel model, Action action)
+        internal void PostSetValue(ItemModel model, bool value)
+        {
+            PostSetValue(model, value.ToString());
+        }
+        internal void PostSetValue(ItemModel model, string value)
         {
             if (model.IsInvalid) return;
 
-            PostRequest(model, action);
-        }
-        // Model refresh runs after each execution. We only
-        // need to invoke an execution on the background thread.
-        public void PostModelRefresh(ItemModel model)
-        {
-            if (model == null || model.IsInvalid) return;
- 
-            PostRequest(model, () => { DoNothing(); });
-        }
-        private void DoNothing() { }
-
-        internal void PostModelSetValue(ItemModel model, string value)
-        {
-            if (model.IsInvalid) return;
-
-            var item = model.Item1;
-            var prop = model.Item2 as Property;
+            var item = model.Item;
+            var prop = model.Aux1 as Property;
             var oldValue = prop.Value.GetString(item);
             if (IsSameValue(value, oldValue)) return;
 
-            PostRequest(model, () => { SetValue(model, value); });
+            PostModelRequest(model, () => {SetValue(model, value); });
         }
-        internal void PostModelSetIsChecked(ItemModel model, bool value)
-        {
-            if (model.IsInvalid) return;
-
-            PostModelSetValue(model, value.ToString());
-        }
-        internal void PostModelSetValueIndex(ItemModel model, int index)
+        internal void PostSetValue(ItemModel model, int index)
         {
             if (index < 0) return;
             if (model.IsInvalid) return;
 
 
             string[] values;
-            if (model.Item3 is EnumX x)
+            if (model.Aux2 is EnumX x)
             {
                 values = GetEnumActualValues(x);
-                if (index < values.Length) PostModelSetValue(model, values[index]);
+                if (index < values.Length) PostSetValue(model, values[index]);
             }
-            else if (model.Item3 is EnumZ z)
+            else if (model.Aux2 is EnumZ z)
             {
                 var zvals = GetEnumZNames(z);
-                if (index < zvals.Length) PostModelSetValue(model, zvals[index]);
+                if (index < zvals.Length) PostSetValue(model, zvals[index]);
             }
         }
         #endregion
 
-        #region PostRequest ===================================================
+        #region ExecuteRequest ================================================
         //  Called from the ui thread and runs on a background thred
 
-        private async void PostRequest(ItemModel requestingModel, Action requestedDataAction)
+        private async void PostModelRequest(ItemModel model, Action action)
         {
-            if (requestingModel.IsInvalid) return;
-
-            var action = new ActionRequest(requestingModel, requestedDataAction);
-            await Task.Run(() => { ExecuteRequest(action); }); // runs on worker thread 
+            await Task.Run(() => { ExecuteRequest(new ModelRequest(model, action)); }); // runs on worker thread 
             //<=== control immediatley returns to the ui thread
 
             //(some time later the worker task completes and signals the ui thread)
 
             //===> the ui thread returns here and continues executing the following code            
-            foreach (var model in _rootModels) { model.PageDispatch(); }
-            
+            foreach (var root in _rootModels) { root.PageDispatch(); }            
         }
 
-        private void ExecuteRequest(ActionRequest action)
+        private void ExecuteRequest(ModelRequest request)
         {
-            if (action.IsValid)
+            // the dataAction will likey modify the dataChef's objects, 
+            // so we can't have multiple threads stepping on each other
+            lock (_executionLock)
             {
-                // the dataAction will likey modify the dataChef's objects, 
-                // so we can't have multiple threads stepping on each other
-                lock (_executionLock)
-                {
-                    if (IsRootChef)
-                    {
-                        var model = action.Model;
-                        action.Execute();
-                    }
-                    else
-                    {
-                        var model = action.Model;
-                        action.Execute();
-                        CheckChanges();
-                    }
-                }
+                request.Execute();
+                if (!IsRootChef) CheckChanges();
             }
         }
-
-        #endregion
-
-        #region ActionRequest  ================================================
-        private class ActionRequest
+        class ModelRequest
         {
-            Action _action;
             ItemModel _model;
-            internal ActionRequest(ItemModel model, Action action)
+            Action _action;
+            internal ModelRequest(ItemModel model, Action action)
             {
-                _action = action;
                 _model = model;
+                _action = action;
             }
 
-            internal ItemModel Model { get { return _model; } }
-            internal void Execute() { _action(); _action = null; _model = null; }
-            internal bool IsValid { get { return (_action != null && _model != null && !_model.IsInvalid); } }
+            internal void Execute()
+            {/*
+                make sure the requested model action is still valid, because it is posible that
+                a preceeding model action in the queue could have invalidated this model 
+             */
+                if (_model != null && _action != null && _model.Item != null && _model.Item.IsValid) _action();
+            }
         }
         #endregion
     }

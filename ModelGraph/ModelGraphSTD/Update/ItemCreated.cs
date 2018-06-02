@@ -22,7 +22,7 @@ namespace ModelGraphSTD
             Columns = columns;
             Values = values;
 
-            owner.Append(this);
+            owner.Add(this);
         }
         #endregion
 

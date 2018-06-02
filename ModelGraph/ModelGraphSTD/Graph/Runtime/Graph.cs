@@ -39,7 +39,7 @@ namespace ModelGraphSTD
             RootItem = rootItem;
             Forest = querys;
 
-            owner.Append(this);
+            owner.Add(this);
         }
         #endregion
 

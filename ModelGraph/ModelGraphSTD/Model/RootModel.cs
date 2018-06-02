@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {/*
-    Data flow and control between ModelGraphSTD <--> ModelGraph
-
     The ModelGraphSTD has no direct knowledge of the UI controls, however, it does 
     initiates UI action through the interfaces IPageControl and IModelControl.
 
@@ -17,26 +15,9 @@ namespace ModelGraphSTD
         public Chef Chef;
         public IPageControl PageControl { get; set; } // reference the UI PageControl
         public IModelControl ModelControl { get; set; }
-        
-        public int ModelCount;
-        public int ValueIndex;
+
         public int MinorDelta;
         public int MajorDelta;
-
-        public string ModelKind;
-        public string ModelName;
-        public string ModelInfo;
-        public string ModelValue;
-        public string ModelSummary;
-        public string ModelDescription;
-        public string[] ModelValueList;
-
-        public List<ModelCommand> MenuCommands = new List<ModelCommand>();
-        public List<ModelCommand> ButtonCommands = new List<ModelCommand>();
-        public List<ModelCommand> AppButtonCommands = new List<ModelCommand>();
-
-        public Func<ItemModel, ItemModel, bool, DropAction> ModelDrop;
-        public Func<ItemModel, ItemModel, bool, DropAction> ReorderItems;
 
         public int ViewIndex1; //index of first visible model
         public int ViewIndex2; //index one beyond the last visible model
@@ -45,14 +26,6 @@ namespace ModelGraphSTD
         public ItemModel[] ViewModels; //flattend list of itemModel tree
         public Dictionary<object, string> ViewFilter = new Dictionary<object, string>();
 
-        public ModelAction ModelAction;
-
-        private ItemModel[] _modelList;
-        public ItemModel[] ModelList { get { return _modelList; } set { if (_modelList == null) _modelList = value; } }
-        public int Capacity { get; set; } = 100;
-
-        public bool ModelIsChecked;
-
         public ControlType ControlType;
 
         #region Constructors  =================================================
@@ -60,7 +33,7 @@ namespace ModelGraphSTD
         public RootModel()
             : base(null, Trait.RootChef_M, 0, new Chef())
         {
-            Chef = Item1 as Chef;
+            Chef = Item as Chef;
             Chef.AddRootModel(this);
 
             _getData = Chef.RootChef_M;
@@ -92,106 +65,6 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region ModelData  ====================================================
-
-        // ModelAction.DragOver  ==============================================
-        public void GetDragOverData(ItemModel model)
-        {
-            if (model == null | model.IsInvalid) return;
-
-            ModelAction = ModelAction.DragOver;
-            ModelDrop = ReorderItems = null;
-
-            model.GetData(this);
-        }
-
-        // ModelAction.PointerOver  ===========================================
-        public void GetPointerOverData(ItemModel model)
-        {
-            if (model == null | model.IsInvalid) return;
-
-            ModelAction = ModelAction.PointerOver;
-            ModelSummary = null;
-
-            model.GetData(this);
-
-            if (string.IsNullOrEmpty(ModelSummary))
-                ModelSummary = model.ModelIdentity;
-        }
-
-        // ModelAction.ModelSelect  ===========================================
-        public void GetModelSelectData(ItemModel model)
-        {
-            if (model == null | model.IsInvalid) return;
-
-            ModelAction = ModelAction.ModelSelect;
-            ModelDescription = null;
-            MenuCommands.Clear();
-            ButtonCommands.Clear();
-
-            model.GetData(this);
-
-            if (string.IsNullOrEmpty(ModelSummary))
-                ModelSummary = model.ModelIdentity;
-        }
-
-        // ModelAction.ModelRefresh  ==========================================
-        public void GetModelItemData(ItemModel model)
-        {
-            if (model == null | model.IsInvalid) return;
-
-            ModelAction = ModelAction.ModelRefresh;
-
-            ModelKind = string.Empty;
-            ModelName = string.Empty;
-            ModelInfo = string.Empty;
-
-            ModelValue = string.Empty;
-            ModelValueList = null;
-            ModelCount = 0;
-            ValueIndex = 0;
-            ModelIsChecked = false;
-
-            model.GetData(this);
-
-            if (string.IsNullOrEmpty(ModelName)) ModelName = "???";
-        }
-
-        public void PostModelDrop(ItemModel model)
-        {
-            if (model == null | model.IsInvalid) return;
-
-            var drop = Chef.DragDropSource;
-            if (drop == null) return;
-
-            if (model.IsSiblingModel(drop))
-                Chef.PostDataAction(this, () => { ReorderItems?.Invoke(model, drop, true); });
-            else
-                Chef.PostDataAction(this, () => { ModelDrop?.Invoke(model, drop, true); });
-        }
-        public void SetDragDropSource(ItemModel model)
-        {
-            if (model == null | model.IsInvalid) return;
-
-            Chef.DragDropSource = model;
-        }
-
-        public DropAction CanModelAcceptDrop(ItemModel model)
-        {
-            if (model == null | model.IsInvalid) return DropAction.None;
-
-            var drop = Chef.DragDropSource;
-            if (drop == null) return DropAction.None;
-
-            GetDragOverData(model);
-
-            if (model.IsSiblingModel(drop))
-                return (ReorderItems == null) ? DropAction.None : ReorderItems(model, drop, false);
-            else
-                return (ModelDrop == null) ? DropAction.None : ModelDrop(model, drop, false);
-        }
-        #endregion
-
         #region PageDispatch  =================================================
         private UIRequest _uiRequest;
         internal UIRequest UIRequest { get { return _uiRequest; } set { if (_uiRequest == null && value != null) _uiRequest = value; } }
@@ -215,30 +88,6 @@ namespace ModelGraphSTD
                     PageControl.Dispatch(request);
                 }
             }
-        }
-        #endregion
-
-        #region CalledFromUI  =================================================
-        public void GetAppCommands()
-        {
-            AppButtonCommands.Clear();
-            Chef.GetAppCommands(this);
-        }
-
-        public void PostModelRefresh() { Chef.PostModelRefresh(this); }
-
-        public void PostSetValue(ItemModel model, string value)
-        {
-            Chef.PostModelSetValue(model, value);
-        }
-        public void PostSetIsChecked(ItemModel model, bool value)
-        {
-            Chef.PostModelSetIsChecked(model, value);
-        }
-        public void PostSetValueIndex(ItemModel model, int value)
-        {
-            model.GetData(this);
-            Chef.PostModelSetValueIndex(model, value);
         }
         #endregion
     }

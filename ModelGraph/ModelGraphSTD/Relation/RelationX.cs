@@ -18,7 +18,7 @@ namespace ModelGraphSTD
 
             AutoExpandRight = true;
 
-            owner.Append(this);
+            owner.Add(this);
         }
 
         internal RelationX(StoreOf<RelationX> owner, Guid guid)

@@ -16,7 +16,7 @@ namespace ModelGraphSTD
         public Item Item2 { get; private set; }
         public Item Item3 { get; private set; }
         public ControlType Type { get; private set; }
-        public Action<ItemModel, RootModel> GetData { get; private set; }
+        internal ModelAction ModelAction { get; private set; }
         public Trait Trait { get; private set; }
 
         public bool DoRefresh { get; private set; }
@@ -31,7 +31,7 @@ namespace ModelGraphSTD
         {
             RootModel = model;
         }
-        private UIRequest(ControlType type, Trait trait, Chef chef, Item item1, Item item2 = null, Item item3 = null, Action<ItemModel, RootModel> getData = null, bool openInNewPage = false)
+        private UIRequest(ControlType type, Trait trait, Chef chef, Item item1, Item item2, Item item3, ModelAction modelAction, bool openInNewPage = false)
         {
             Chef = chef;
             Type = type;
@@ -39,7 +39,7 @@ namespace ModelGraphSTD
             Item1 = item1;
             Item2 = item2;
             Item3 = item3;
-            GetData = getData;
+            ModelAction = modelAction;
             DoCreateNewView = true;
             DoCreateNewPage = openInNewPage;
         }
@@ -73,9 +73,9 @@ namespace ModelGraphSTD
                 DoReloadModel = true
             };
         }
-        public static UIRequest CreateNewView(ControlType type, Trait trait, Chef chef, Item item1, Item item2 = null, Item item3 = null, Action<ItemModel, RootModel> getData = null, bool openInNewPage = false)
+        internal static UIRequest CreateNewView(ControlType type, Trait trait, Chef chef, Item item1, Item item2, Item item3, ModelAction modelAction, bool openInNewPage = false)
         {
-            return new UIRequest(type, trait, chef, item1, item2, item3, getData, openInNewPage);
+            return new UIRequest(type, trait, chef, item1, item2, item3, modelAction, openInNewPage);
         }
     }
 }

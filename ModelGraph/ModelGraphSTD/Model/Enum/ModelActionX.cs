@@ -2,7 +2,7 @@
 {/*
     Data Interface between ModelGraphSTD <--> ModelGraph App
  */
-    public enum ModelAction
+    public enum ModelActionX
     {
         DragOver,
         PointerOver,

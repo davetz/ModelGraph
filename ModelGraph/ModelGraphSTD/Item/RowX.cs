@@ -15,7 +15,7 @@ namespace ModelGraphSTD
             Guid = Guid.NewGuid();
             AutoExpandRight = true;
 
-            owner.Append(this);
+            owner.Add(this);
         }
         internal RowX(TableX owner, Guid guid) // used by Load operation
         {

@@ -10,7 +10,7 @@ namespace ModelGraphSTD
         #region InitializeChoiceColumns  ======================================
         private void InitializeChoiceColumns()
         {
-            foreach (var tbl in _tableXStore.Items) { ValidateTableChoiceColumns(tbl); }
+            foreach (var tbl in _tableXStore.ToArray) { ValidateTableChoiceColumns(tbl); }
         }
         private void ValidateTableChoiceColumns(TableX tbl)
         {
@@ -84,7 +84,7 @@ namespace ModelGraphSTD
 
             if ((newGroup & ValGroup.ScalarGroup) != 0 && (preGroup & ValGroup.ScalarGroup) != 0)
             {
-                var rows = tbl.Items;
+                var rows = tbl.ToArray;
                 var value = Value.Create(type, N);
 
                 switch (newGroup)

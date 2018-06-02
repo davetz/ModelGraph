@@ -10,10 +10,149 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        #region Initialize_ModelFunctions  ====================================
-        void Initialize_ModelFunctions()
+        #region Initialize_ModelActions  ======================================
+        void Initialize_ModelActions()
         {
-            Initialize_DataChef_M();
+            Initialize_DataChef_X();
+            Initialize_TextColumn_X();
+            Initialize_CheckColumn_X();
+            Initialize_ComboColumn_X();
+            Initialize_TextProperty_X();
+            Initialize_CheckProperty_X();
+            Initialize_ComboProperty_X();
+            Initialize_TextCompute_X();
+
+            Initialize_ErrorRoot_X();
+            Initialize_ChangeRoot_X();
+            Initialize_MetadataRoot_X();
+            Initialize_ModelingRoot_X();
+            Initialize_MetaRelationList_X();
+            Initialize_ErrorType_X();
+            Initialize_ErrorText_X();
+            Initialize_ChangeSet_X();
+            Initialize_ItemChange_X();
+
+            Initialize_ViewXView_X();
+            Initialize_ViewXViewM_X();
+            Initialize_ViewXQuery_X();
+            Initialize_ViewXCommand_X();
+            Initialize_ViewXProperty_X();
+
+            Initialize_ViewView_X();
+            Initialize_ViewViewM_X();
+            Initialize_ViewItem_X();
+            Initialize_ViewQuery_X();
+
+            Initialize_EnumXList_X();
+            Initialize_TableXList_X();
+            Initialize_GraphXList_X();
+            Initialize_SymbolXList_X();
+            Initialize_TableList_X();
+            Initialize_GraphList_X();
+
+            Initialize_PairX_X();
+            Initialize_EnumX_X();
+            Initialize_TableX_X();
+            Initialize_GraphX_X();
+            Initialize_SymbolX_X();
+            Initialize_ColumnX_X();
+            Initialize_ComputeX_X();
+
+            Initialize_ColumnXList_X();
+            Initialize_ChildRelationXList_X();
+            Initialize_ParentRelationXList_X();
+            Initialize_PairXList_X();
+            Initialize_EnumColumnList_X();
+            Initialize_ComputeXList_X();
+
+            Initialize_ChildRelationX_X();
+            Initialize_ParentRelationX_X();
+            Initialize_NameColumnRelation_X();
+            Initialize_SummaryColumnRelation_X();
+            Initialize_NameColumn_X();
+            Initialize_SummaryColumn_X();
+
+            Initialize_GraphXColoring_X();
+            Initialize_GraphXRootList_X();
+            Initialize_GraphXNodeList_X();
+            Initialize_GraphXNode_X();
+            Initialize_GraphXColorColumn_X();
+
+            Initialize_QueryXRoot_X();
+            Initialize_QueryXLink_X();
+            Initialize_QueryXPathHead_X();
+            Initialize_QueryXPathLink_X();
+            Initialize_QueryXGroupHead_X();
+            Initialize_QueryXGroupLink_X();
+            Initialize_QueryXEgressHead_X();
+            Initialize_QueryXEgressLink_X();
+
+            Initialize_GraphXNodeSymbol_X();
+
+            Initialize_ValueHead_X();
+            Initialize_ValueLink_X();
+
+            Initialize_Row_X();
+            Initialize_View_X();
+            Initialize_Table_X();
+            Initialize_Graph_X();
+            Initialize_RowChildRelation_X();
+            Initialize_RowParentRelation_X();
+            Initialize_RowRelatedChild_X();
+            Initialize_RowRelatedParent_X();
+            Initialize_EnumRelatedColumn_X();
+
+            Initialize_RowPropertyList_X();
+            Initialize_RowChildRelationList_X();
+            Initialize_RowParentRelationList_X();
+            Initialize_RowDefaultPropertyList_X();
+            Initialize_RowUnusedChildRelationList_X();
+            Initialize_RowUnusedParentRelationList_X();
+            Initialize_RowComputeList_X();
+
+            Initialize_QueryRootLink_X();
+            Initialize_QueryPathHead_X();
+            Initialize_QueryPathLink_X();
+            Initialize_QueryGroupHead_X();
+            Initialize_QueryGroupLink_X();
+            Initialize_QueryEgressHead_X();
+            Initialize_QueryEgressLink_X();
+
+            Initialize_QueryRootItem_X();
+            Initialize_QueryPathStep_X();
+            Initialize_QueryPathTail_X();
+            Initialize_QueryGroupStep_X();
+            Initialize_QueryGroupTail_X();
+            Initialize_QueryEgressStep_X();
+            Initialize_QueryEgressTail_X();
+
+            Initialize_GraphRef_X();
+            Initialize_GraphNodeList_X();
+            Initialize_GraphEdgeList_X();
+            Initialize_GraphRootList_X();
+            Initialize_GraphLevelList_X();
+            Initialize_GraphLevel_X();
+            Initialize_GraphPath_X();
+            Initialize_GraphRoot_X();
+            Initialize_GraphNode_X();
+            Initialize_GraphEdge_X();
+            Initialize_GraphOpenList_X();
+            Initialize_GraphOpen_X();
+
+            Initialize_PrimeCompute_X();
+            Initialize_ComputeStore_X();
+            Initialize_InternalStoreZ_X();
+            Initialize_InternalStore_X();
+            Initialize_StoreItem_X();
+            Initialize_StoreItemItemZ_X();
+            Initialize_StoreRelationLinkZ_X();
+            Initialize_StoreChildRelationZ_X();
+            Initialize_StoreParentRelationZ_X();
+            Initialize_StoreItemItem_X();
+            Initialize_StoreRelationLink_X();
+            Initialize_StoreChildRelation_X();
+            Initialize_StoreParentRelation_X();
+            Initialize_StoreRelatedItem_X();
         }
         #endregion
 
@@ -26,14 +165,15 @@ namespace ModelGraphSTD
             if (oldModels == null || oldModels.Length == 0) return false;
 
             var N = oldModels.Length;
-            for (int i = 0; i < N; i++)
+            var i = (index < N) ? index : N / 2;
+            for (int n = 0; n < N; n++, i = (i + 1) % N)
             {
                 var mod = oldModels[i];
                 if (mod == null) continue;
                 if (trait != Trait.Empty && trait != mod.Trait) continue;
-                if (itm1 != null && itm1 != mod.Item1) continue;
-                if (itm2 != null && itm2 != mod.Item2) continue;
-                if (itm3 != null && itm3 != mod.Item3) continue;
+                if (itm1 != null && itm1 != mod.Item) continue;
+                if (itm2 != null && itm2 != mod.Aux1) continue;
+                if (itm3 != null && itm3 != mod.Aux2) continue;
                 oldModels[i] = null;
                 model.ChildModels[index] = mod;
                 return true;
@@ -345,10 +485,10 @@ namespace ModelGraphSTD
             #region ValidateModel  ============================================
             void ValidateModel(ItemModel model)
             {
-                if (model.Item1.AutoExpandRight)
+                if (model.Item.AutoExpandRight)
                 {
                     model.IsExpandedRight = true;
-                    model.Item1.AutoExpandRight = false;
+                    model.Item.AutoExpandRight = false;
                 }
 
                 if (rebuildTree || model.IsChanged)
@@ -469,7 +609,7 @@ namespace ModelGraphSTD
         #region AddProperyModels  =============================================
         private void AddProperyModels(ItemModel model, ItemModel[] oldModels, ColumnX[] cols)
         {
-            var item = model.Item1;
+            var item = model.Item;
             var N = cols.Length;
             for (int i = 0; i < N; i++)
             {
@@ -482,7 +622,7 @@ namespace ModelGraphSTD
         }
         private void AddProperyModels(ItemModel model, ItemModel[] oldModels, Property[] props)
         {
-            var item = model.Item1;
+            var item = model.Item;
             var N = props.Length;
             for (int i = 0; i < N; i++)
             {
@@ -593,7 +733,7 @@ namespace ModelGraphSTD
                     return $"{GetRepositoryName()} - {GetName(root.Trait)}";
 
                 case ControlType.GraphDisplay:
-                    var g = root.Item1 as Graph;
+                    var g = root.Item as Graph;
                     var gx = g.GraphX;
                     if (g.RootItem == null)
                         return $"{gx.Name}";
@@ -602,7 +742,7 @@ namespace ModelGraphSTD
 
                 case ControlType.SymbolEditor:
 
-                    return $"{GetName(Trait.EditSymbol)} : {GetIdentity(root.Item1, IdentityStyle.Single)}";
+                    return $"{GetName(Trait.EditSymbol)} : {GetIdentity(root.Item, IdentityStyle.Single)}";
             }
             return BlankName;
         }
@@ -728,268 +868,97 @@ namespace ModelGraphSTD
         #endregion
 
 
-        #region 611 RootChef_M  ===============================================
-        ChefModelFunc _rootChef_M;
-        internal void RootChef_M(ItemModel model, RootModel root = null)
+        #region 612 DataChef_X  ===============================================
+        ModelAction DataChef_X;
+        void Initialize_DataChef_X()
         {
-            //if (root != null)  // get the data for this root.ModelAction
-            //{
-            //    switch (root.ModelAction)
-            //    {
-            //        case ModelAction.DragOver:
+            DataChef_X = new ModelAction
+            {
+                ChildCount = (m) => 1, // allow expand left, but don't display the count
+                ModelName = (m) => _localize(m.NameKey),
 
-            //            break;
+                Validate = Validate_DataChef_X,
+            };
+        }
+        void Validate_DataChef_X(ItemModel model)
+        {
+            var item = model.Item;
+            var level = (byte)(model.Level + 1);
+            var oldModels = model.ChildModels;
 
-            //        case ModelAction.PointerOver:
+            var N = 4;
 
-            //            break;
+            if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
-            //        case ModelAction.ModelRefresh:
+            var i = 0;
+            if (!TryGetOldModel(model, Trait.ErrorRoot_M, oldModels, i))
+                model.ChildModels[i] = new ItemModel(model, Trait.ErrorRoot_M, level, _errorStore, null, null, ErrorRoot_X);
 
-            //            break;
+            i++;
+            if (!TryGetOldModel(model, Trait.ChangeRoot_M, oldModels, i))
+                model.ChildModels[i] = new ItemModel(model, Trait.ChangeRoot_M, level, _changeRoot, null, null, ChangeRoot_X);
 
-            //        case ModelAction.ModelSelect:
+            i++;
+            if (!TryGetOldModel(model, Trait.MetadataRoot_M, oldModels, i))
+                model.ChildModels[i] = new ItemModel(model, Trait.MetadataRoot_M, level, item, null, null, MetadataRoot_X);
 
-            //            break;
-            //    }
-            //}
-            //else  // validate the model's child models
-            //{
-            //    var chef = model.Item1 as Chef;
-            //    var N = chef.Count;
-
-            //    if (N > 0)
-            //    {
-            //        var items = chef.Items;
-            //        var oldModels = model.ChildModels;
-            //        model.ChildModels = new ModelTree[N];
-
-            //        for (int i = 0; i < N; i++)
-            //        {
-            //            var itm = items[i] as Chef;
-            //            if (!TryGetOldModel(model, Trait.MockChef_M, oldModels, i, itm))
-            //                model.ChildModels[i] = new ModelTree(model, Trait.MockChef_M, 0, itm, null, null, MockChef_M);
-            //        }
-            //    }
-            //    if (N == 0) model.ChildModels = null;
-                
-            //}
+            i++;
+            if (!TryGetOldModel(model, Trait.ModelingRoot_M, oldModels, i))
+                model.ChildModels[i] = new ItemModel(model, Trait.ModelingRoot_M, level, item, null, null, ModelingRoot_X);
         }
         #endregion
 
-        #region 612 DataChef_M  ===============================================
-        ChefModelFunc _dataChef_M;
-        void Initialize_DataChef_M()
+        #region 614 TextColumn_X  =============================================
+        ModelAction TextColumn_X;
+        void Initialize_TextColumn_X()
         {
-            _dataChef_M.GetData = GetData_DataChef_M;
-        }
-        (string Kind, string Name, int Count) GetData_DataChef_M(ItemModel model)
-        {
-            model.CanExpandLeft = true;
-
-            return (null, _localize(model.NameKey), 0);
-        }
-        internal void DataChef_M(ItemModel model, RootModel root)
-        {
-            var chef = model.Item1 as Chef;
-            if (root != null)  // get the data for this root.ModelAction
+            TextColumn_X = new ModelAction
             {
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+                ModelName = (m) => m.ColumnX.Name,
+                ModelSummary = (m) => m.ColumnX.Summary,
+                ModelDescription = (m) => m.ColumnX.Description,
 
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        break;
-
-                    case ModelAction.ModelRefresh:
-                        
-                        root.ModelName = _localize(model.NameKey);
-
-                        model.CanExpandLeft = true;
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the model's child models
-            {
-                var item = model.Item1;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                var N = 4;
-
-                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                var i = 0;
-                if (!TryGetOldModel(model, Trait.ErrorRoot_M, oldModels, i))
-                    model.ChildModels[i] = new ItemModel(model, Trait.ErrorRoot_M, level, _errorStore, null, null, ErrorRoot_X);
-
-                i++;
-                if (!TryGetOldModel(model, Trait.ChangeRoot_M, oldModels, i))
-                    model.ChildModels[i] = new ItemModel(model, Trait.ChangeRoot_M, level, _changeRoot, null, null, ChangeRoot_X);
-
-                i++;
-                if (!TryGetOldModel(model, Trait.MetadataRoot_M, oldModels, i))
-                    model.ChildModels[i] = new ItemModel(model, Trait.MetadataRoot_M, level, item, null, null, MetadataRoot_X);
-
-                i++;
-                if (!TryGetOldModel(model, Trait.ModelingRoot_M, oldModels, i))
-                    model.ChildModels[i] = new ItemModel(model, Trait.ModelingRoot_M, level, item, null, null, ModelingRoot_X);
-            }
-        }
-
-        #endregion
-
-        #region 613 MockChef_M  ===============================================
-        internal void MockChef_M(ItemModel model, RootModel root = null)
-        {
-            var chef = model.Item1 as Chef;
-            if (root != null)
-            {
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
-
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        root.ModelSummary = chef.GetLongRepositoryName();
-                        break;
-
-                    case ModelAction.ModelRefresh:
-
-                        root.ModelName = chef.GetRepositoryName();
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        root.ButtonCommands.Add(new ModelCommand(this, model, Trait.ViewCommand, CreatePrimaryModelTree));
-                        break;
-                }
-            }
-        }
-        private void CreatePrimaryModelTree(ItemModel model)
-        {
-            var chef = model.Item1 as Chef;
-            var root = model.GetRootModel();
-            root.UIRequest = UIRequest.CreateNewView(ControlType.PrimaryTree, Trait.DataChef_M, chef, chef, null, null, chef.DataChef_M);
+                TextValue = (m) => m.ColumnX.Value.GetString(m.Item),
+            };
         }
         #endregion
 
-        #region 614 TextColumn_M  =============================================
-        internal void TextColumn_M(ItemModel model, RootModel root)
+        #region 615 CheckColumn_X  ============================================
+        ModelAction CheckColumn_X;
+        void Initialize_CheckColumn_X()
         {
-            var itm = model.Item1;
-            var col = model.Item2 as ColumnX;
-            if (root != null)  // get the data for this root.ModelAction
+            CheckColumn_X = new ModelAction
             {
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+                ModelName = (m) => m.ColumnX.Name,
+                ModelSummary = (m) => m.ColumnX.Summary,
+                ModelDescription = (m) => m.ColumnX.Description,
 
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        root.ModelSummary = col.Summary;
-                        break;
-
-                    case ModelAction.ModelRefresh:
-
-                        root.ModelName = col.Name;
-                        root.ModelValue = col.Value.GetString(itm);
-                        if (root.ModelValue == null) root.ModelValue = string.Empty;
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        root.ModelDescription = col.Description;
-                        break;
-                }
-            }
+                BoolValue = (m) => m.ColumnX.Value.GetBool(m.Item),
+            };
         }
         #endregion
 
-        #region 615 CheckColumn  ==============================================
-        internal void CheckColumn_X(ItemModel model, RootModel root)
+        #region 616 ComboColumn_X  ============================================
+        ModelAction ComboColumn_X;
+        void Initialize_ComboColumn_X()
         {
-            var itm = model.Item1;
-            var col = model.Item2 as ColumnX;
-            if (root != null)  // get the data for this root.ModelAction
+            ComboColumn_X = new ModelAction
             {
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+                ModelName = (m) => m.ColumnX.Name,
+                ModelSummary = (m) => m.ColumnX.Summary,
+                ModelDescription = (m) => m.ColumnX.Description,
 
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        root.ModelSummary = col.Summary;
-                        break;
-
-                    case ModelAction.ModelRefresh:
-
-                        root.ModelName = col.Name;
-                        root.ModelIsChecked = col.Value.GetBool(itm);
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        root.ModelDescription = col.Description;
-                        break;
-                }
-            }
-        }
-        #endregion
-
-        #region 616 ComboColumn  ==============================================
-        internal void ComboColomn_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var itm = model.Item1;
-                var col = model.Item2 as ColumnX;
-                var enu = model.Item3 as EnumX;
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
-
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        root.ModelSummary = col.Summary;
-                        break;
-
-                    case ModelAction.ModelRefresh:
-
-                        root.ModelName = col.Name;
-                        root.ModelValueList = GetEnumDisplayValues(enu);
-                        root.ValueIndex = GetComboSelectedIndex(itm, col, enu);
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        root.ModelDescription = col.Description;
-                        break;
-                }
-            }
+                ListValue = (m) => GetEnumDisplayValues(m.EnumX),
+                IndexValue = (m) => GetComboSelectedIndex(m.Item, m.ColumnX, m.EnumX),
+            };
         }
         //=====================================================================
-        private string[] GetEnumDisplayValues(EnumX e)
+        string[] GetEnumDisplayValues(EnumX e)
         {
             string[] values = null;
             if (e != null && e.IsValid)
             {
-                var items = e.Items;
+                var items = e.ToArray;
                 var count = e.Count;
                 values = new string[count];
 
@@ -1002,12 +971,12 @@ namespace ModelGraphSTD
             return values;
         }
         //=====================================================================
-        private string[] GetEnumActualValues(EnumX e)
+        string[] GetEnumActualValues(EnumX e)
         {
             string[] values = null;
             if (e != null && e.IsValid)
             {
-                var items = e.Items;
+                var items = e.ToArray;
                 var count = e.Count;
                 values = new string[count];
 
@@ -1020,7 +989,7 @@ namespace ModelGraphSTD
             return values;
         }
         //=====================================================================
-        private int GetComboSelectedIndex(Item itm, Property col, EnumX enu)
+        int GetComboSelectedIndex(Item itm, Property col, EnumX enu)
         {
             var value = col.Value.GetString(itm);
             var values = GetEnumActualValues(enu);
@@ -1030,266 +999,174 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 617 TextProperty  =============================================
-        internal void TextProperty_X(ItemModel model, RootModel root)
+        #region 617 TextProperty_X  ===========================================
+        ModelAction TextProperty_X;
+        void Initialize_TextProperty_X()
         {
-            if (root != null)  // get the data for this root.ModelAction
+            TextProperty_X = new ModelAction
             {
-                var itm = model.Item1;
-                var pro = model.Item2 as Property;
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+                ModelName = (m) => m.Property.HasItemName ? $"{m.Property.GetItemName(m.Item)} {_localize(m.Property.NameKey)}" : _localize(m.Property.NameKey),
+                ModelSummary = (m) => _localize(m.Property.SummaryKey),
+                ModelDescription = (m) => _localize(m.Property.DescriptionKey),
 
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        root.ModelSummary = _localize(pro.SummaryKey);
-                        break;
-
-                    case ModelAction.ModelRefresh:
-
-                        if (pro.HasItemName)
-                            root.ModelName = $"{pro.GetItemName(itm)} {_localize(pro.NameKey)}";
-                        else
-                            root.ModelName = _localize(pro.NameKey);
-
-                        root.ModelValue = pro.Value.GetString(itm);
-                        if (root.ModelValue == null) root.ModelValue = string.Empty;
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        root.ModelDescription = _localize(pro.DescriptionKey);
-                        break;
-                }
-            }
+                TextValue = (m) => m.Property.Value.GetString(m.Item),
+            };
         }
         #endregion
 
-        #region 618 CheckProperty  ============================================
-        internal void CheckProperty_X(ItemModel model, RootModel root)
+        #region 618 CheckProperty_X  ==========================================
+        ModelAction CheckProperty_X;
+        void Initialize_CheckProperty_X()
         {
-            if (root != null)  // get the data for this root.ModelAction
+            CheckProperty_X = new ModelAction
             {
-                var itm = model.Item1;
-                var pro = model.Item2 as Property;
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+                ModelName = (m) => m.Property.HasItemName ? $"{m.Property.GetItemName(m.Item)} {_localize(m.Property.NameKey)}" : _localize(m.Property.NameKey),
+                ModelSummary = (m) => _localize(m.Property.SummaryKey),
+                ModelDescription = (m) => _localize(m.Property.DescriptionKey),
 
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        root.ModelSummary = _localize(pro.SummaryKey);
-                        break;
-
-                    case ModelAction.ModelRefresh:
-
-                        root.ModelName = _localize(pro.NameKey);
-                        root.ModelIsChecked = pro.Value.GetBool(itm);
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        root.ModelDescription = _localize(pro.DescriptionKey);
-                        break;
-                }
-            }
+                BoolValue = (m) => m.Property.Value.GetBool(m.Item),
+            };
         }
         #endregion
 
-        #region 619 ComboProperty  ============================================
-        internal void ComboProperty_X(ItemModel model, RootModel root)
+        #region 619 ComboProperty_X  ==========================================
+        ModelAction ComboProperty_X;
+        void Initialize_ComboProperty_X()
         {
-            if (root != null)  // get the data for this root.ModelAction
+            ComboProperty_X = new ModelAction
             {
-                var itm = model.Item1;
-                var pro = model.Item2 as Property;
-                var enu = model.Item3 as EnumZ;
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+                ModelName = (m) => m.Property.HasItemName ? $"{m.Property.GetItemName(m.Item)} {_localize(m.Property.NameKey)}" : _localize(m.Property.NameKey),
+                ModelSummary = (m) => _localize(m.Property.SummaryKey),
+                ModelDescription = (m) => _localize(m.Property.DescriptionKey),
 
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        root.ModelSummary = _localize(pro.SummaryKey);
-                        break;
-
-                    case ModelAction.ModelRefresh:
-
-                        root.ModelName = _localize(pro.NameKey);
-                        root.ModelValueList = GetEnumZNames(enu);
-                        root.ValueIndex = GetEnumZIndex(enu, pro.Value.GetString(itm));
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        root.ModelDescription = _localize(pro.DescriptionKey);
-                        break;
-                }
-            }
+                ListValue = (m) => GetEnumZNames(m.EnumZ),
+                IndexValue = (m) => GetEnumZIndex(m.EnumZ, m.Property.Value.GetString(m.Item)),
+            };
         }
         #endregion
 
-        #region 61A TextCompute  ==============================================
-        internal void TextCompute_X(ItemModel model, RootModel root)
+        #region 61A TextCompute_X  ============================================
+        ModelAction TextCompute_X;
+        void Initialize_TextCompute_X()
         {
-            if (root != null)  // get the data for this root.ModelAction
+            TextCompute_X = new ModelAction
             {
-                var item = model.Item1;
-                var cx = model.Item2 as ComputeX;
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+                ModelName = (m) => m.ComputeX.Name,
+                ModelSummary = (m) => m.ComputeX.Summary,
+                ModelDescription = (m) => m.ComputeX.Description,
 
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        root.ModelSummary = cx.Summary;
-                        break;
-
-                    case ModelAction.ModelRefresh:
-
-                        root.ModelName = cx.Name;
-
-                        root.ModelValue = cx.Value.GetString(item);
-                        if (root.ModelValue == null) root.ModelValue = string.Empty;
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        root.ModelDescription = cx.Description;
-                        break;
-                }
-            }
+                TextValue = (m) => m.ComputeX.Value.GetString(m.Item),
+            };
         }
         #endregion
 
 
 
         #region 621 ErrorRoot  ================================================
-        internal void ErrorRoot_X(ItemModel model, RootModel root)
+        ModelAction ErrorRoot_X;
+        void Initialize_ErrorRoot_X()
         {
-            if (root != null)  // get the data for this root.ModelAction
+            DataChef_X = new ModelAction
             {
-                var store = model.Item1 as StoreOf<Error>;
-                switch (root.ModelAction)
+                Refresh = Refresh_ErrorRoot_X,
+                Refresh = Refresh_ErrorRoot_X,
+                Validate = Validate_ErrorRoot_X
+            };
+        }
+        void Refresh_ErrorRoot_X(RootModel root, ItemModel model)
+        {
+        }
+        void Refresh_ErrorRoot_X(RootModel root, ItemModel model)
+        {
+            var store = model.Item as StoreOf<Error>;
+
+            root.ModelName = _localize(model.NameKey);
+            root.ModelCount = store.Count;
+
+            model.CanExpandLeft = (root.ChildCount > 0);
+        }
+        void Validate_ErrorRoot_X(ItemModel model)
+        {
+            var N = model.IsExpandedLeft ? _errorStore.Count : 0;
+
+            if (N > 0)
+            {
+                var items = _errorStore.ToArray;
+                var item = model.Item;
+                var level = (byte)(model.Level + 1);
+
+                var oldModels = model.ChildModels;
+                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+
+                for (int i = 0; i < N; i++)
                 {
-                    case ModelAction.DragOver:
-
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        break;
-
-                    case ModelAction.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = store.Count;
-
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        break;
+                    var itm = items[i] as Error;
+                    if (!TryGetOldModel(model, Trait.ErrorType_M, oldModels, i, itm))
+                        model.ChildModels[i] = new ItemModel(model, Trait.ErrorType_M, level, itm, null, null, ErrorType_X);
                 }
             }
             else
             {
-                var N = model.IsExpandedLeft ? _errorStore.Count : 0;
-
-                if (N > 0)
-                {
-                    var items = _errorStore.Items;
-                    var item = model.Item1;
-                    var level = (byte)(model.Level + 1);
-
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    for (int i = 0; i < N; i++)
-                    {
-                        var itm = items[i] as Error;
-                        if (!TryGetOldModel(model, Trait.ErrorType_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ItemModel(model, Trait.ErrorType_M, level, itm);
-                    }
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
-
+                model.ChildModels = null;
             }
         }
         #endregion
 
         #region 622 ChangeRoot  ===============================================
-        internal void ChangeRoot_X(ItemModel model, RootModel root)
+        ModelAction ChangeRoot_X;
+        void Initialize_ChangeRoot_X()
         {
-            if (root != null)  // get the data for this root.ModelAction
+            DataChef_X = new ModelAction
             {
-                var chg = model.Item1 as ChangeRoot;
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
-
-                        break;
-
-                    case ModelAction.PointerOver:
-
-                        break;
-
-                    case ModelAction.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        if (model.IsExpandedLeft)
-                        {
-                            _changeRootInfoItem = null;
-                            _changeRootInfoText = string.Empty;
-                        }
-                        root.ModelInfo = _changeRootInfoText;
-                        root.ModelCount = chg.Count;
-
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        if (_changeRoot.Count > 0 && model.IsExpandedLeft == false)
-                            root.ButtonCommands.Add(new ModelCommand(this, model, Trait.ExpandAllCommand, ExpandAllChangeSets));
-                        break;
-                }
+                Refresh = Refresh_ChangeRoot_X,
+                Refresh = Refresh_ChangeRoot_X,
+                Select = Select_ChangeRoot_X,
+                Validate = Validate_ChangeRoot_X
+            };
+        }
+        void Refresh_ChangeRoot_X(RootModel root, ItemModel model)
+        {
+        }
+        void Refresh_ChangeRoot_X(RootModel root, ItemModel model)
+        {
+            var chg = model.Item as ChangeRoot;
+            root.ModelName = _localize(model.NameKey);
+            if (model.IsExpandedLeft)
+            {
+                _changeRootInfoItem = null;
+                _changeRootInfoText = string.Empty;
             }
-            else
+            root.ModelInfo = _changeRootInfoText;
+            root.ModelCount = chg.Count;
+
+            model.CanExpandLeft = (root.ChildCount > 0);
+        }
+        void Select_ChangeRoot_X(RootModel root, ItemModel model)
+        {
+            if (_changeRoot.Count > 0 && model.IsExpandedLeft == false)
+                root.ButtonCommands.Add(new ModelCommand(this, model, Trait.ExpandAllCommand, ExpandAllChangeSets));
+        }
+        void Validate_ChangeRoot_X(ItemModel model)
+        {
+            var oldModels = model.ChildModels;
+            model.ChildModels = null;
+
+            if (model.IsExpandedLeft)
             {
-                var oldModels = model.ChildModels;
-                model.ChildModels = null;
+                var N = _changeRoot.Count;
 
-                if (model.IsExpandedLeft)
+                if (N > 0)
                 {
-                    var N = _changeRoot.Count;
+                    var items = new List<ChangeSet>(_changeRoot.ToArray);
+                    items.Reverse();
+                    var level = (byte)(model.Level + 1);
+                    model.ChildModels = new ItemModel[N];
 
-                    if (N > 0)
+                    for (int i = 0; i < N; i++)
                     {
-                        var items = new List<ChangeSet>(_changeRoot.Items);
-                        items.Reverse();
-                        var level = (byte)(model.Level + 1);
-                        model.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
-                        {
-                            var itm = items[i] as ChangeSet;
-                            if (!TryGetOldModel(model, Trait.ChangeSet_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.ChangeSet_M, level, itm, null, null, ChangeSet_X);
-                        }
+                        var itm = items[i] as ChangeSet;
+                        if (!TryGetOldModel(model, Trait.ChangeSet_M, oldModels, i, itm))
+                            model.ChildModels[i] = new ItemModel(model, Trait.ChangeSet_M, level, itm, null, null, ChangeSet_X);
                     }
                 }
             }
@@ -1297,68 +1174,64 @@ namespace ModelGraphSTD
         #endregion
 
         #region 623 MetadataRoot  =============================================
-        internal void MetadataRoot_X(ItemModel model, RootModel root)
+        ModelAction MetadataRoot_X;
+        void Initialize_MetadataRoot_X()
         {
-            if (root != null)  // get the data for this root.ModelAction
+            DataChef_X = new ModelAction
             {
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+                Refresh = Refresh_MetadataRoot_X,
+                Refresh = Refresh_MetadataRoot_X,
+                Select = Select_MetadataRoot_X,
+                Validate = Validate_MetadataRoot_X
+            };
+        }
+        void Refresh_MetadataRoot_X(RootModel root, ItemModel model)
+        {
+        }
+        void Refresh_MetadataRoot_X(RootModel root, ItemModel model)
+        {
+            root.ModelName = _localize(model.NameKey);
 
-                        break;
+            model.CanExpandLeft = true;
+        }
+        void Select_MetadataRoot_X(RootModel root, ItemModel model)
+        {
+            root.ButtonCommands.Add(new ModelCommand(this, model, Trait.ViewCommand, CreateSecondaryMetadataTree));
+        }
+        void Validate_MetadataRoot_X(ItemModel model)
+        {
+            var N = (model.IsExpandedLeft) ? 5 : 0;
 
-                    case ModelAction.PointerOver:
+            if (N > 0)
+            {
+                var level = (byte)(model.Level + 1);
 
-                        break;
+                var oldModels = model.ChildModels;
+                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
-                    case ModelAction.ModelRefresh:
+                var i = 0;
+                if (!TryGetOldModel(model, Trait.ViewXView_ZM, oldModels, i, _viewXStore))
+                    model.ChildModels[i] = new ItemModel(model, Trait.ViewXView_ZM, level, _viewXStore, null, null, ViewXView_ZM);
 
-                        root.ModelName = _localize(model.NameKey);
+                i++;
+                if (!TryGetOldModel(model, Trait.EnumX_ZM, oldModels, i, _enumZStore))
+                    model.ChildModels[i] = new ItemModel(model, Trait.EnumX_ZM, level, _enumZStore, null, null, EnumXList_X);
 
-                        model.CanExpandLeft = true;
-                        break;
+                i++;
+                if (!TryGetOldModel(model, Trait.TableX_ZM, oldModels, i, _tableXStore))
+                    model.ChildModels[i] = new ItemModel(model, Trait.TableX_ZM, level, _tableXStore, null, null, TableXList_X);
 
-                    case ModelAction.ModelSelect:
+                i++;
+                if (!TryGetOldModel(model, Trait.GraphX_ZM, oldModels, i, _graphXStore))
+                    model.ChildModels[i] = new ItemModel(model, Trait.GraphX_ZM, level, _graphXStore, null, null, GraphXList_X);
 
-                        root.ButtonCommands.Add(new ModelCommand(this, model, Trait.ViewCommand, CreateSecondaryMetadataTree));
-                        break;
-                }
+                i++;
+                if (!TryGetOldModel(model, Trait.InternalStore_ZM, oldModels, i, this))
+                    model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_ZM, level, this, null, null, InternalStoreZ_X);
             }
             else
             {
-                var N = (model.IsExpandedLeft) ? 5 : 0;
-
-                if (N > 0)
-                {
-                    var level = (byte)(model.Level + 1);
-
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    var i = 0;
-                    if (!TryGetOldModel(model, Trait.ViewXView_ZM, oldModels, i, _viewXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.ViewXView_ZM, level, _viewXStore, null, null, ViewXView_ZM);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.EnumX_ZM, oldModels, i, _enumZStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.EnumX_ZM, level, _enumZStore, null, null, EnumXList_X);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.TableX_ZM, oldModels, i, _tableXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.TableX_ZM, level, _tableXStore, null, null, TableXList_X);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.GraphX_ZM, oldModels, i, _graphXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.GraphX_ZM, level, _graphXStore, null, null, GraphXList_X);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.InternalStore_ZM, oldModels, i, this))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_ZM, level, this, null, null, InternalStoreZ_X);
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
+                model.ChildModels = null;
             }
         }
         private void CreateSecondaryMetadataTree(ItemModel model)
@@ -1369,66 +1242,61 @@ namespace ModelGraphSTD
         #endregion
 
         #region 624 ModelingRoot  =============================================
-        internal void ModelingRoot_X(ItemModel model, RootModel root)
+        ModelAction ModelingRoot_X;
+        void Initialize_ModelingRoot_X()
         {
-            if (root != null)  // get the data for this root.ModelAction
+            DataChef_X = new ModelAction
             {
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+                Refresh = Refresh_ModelingRoot_X,
+                Refresh = Refresh_ModelingRoot_X,
+                Select = Select_ModelingRoot_X,
+                Validate = Validate_ModelingRoot_X
+            };
+        }
+        void Refresh_ModelingRoot_X(RootModel root, ItemModel model)
+        {
+        }
+        void Refresh_ModelingRoot_X(RootModel root, ItemModel model)
+        {
+            root.ModelName = _localize(model.NameKey);
 
-                        break;
+            model.CanExpandLeft = true;
+        }
+        void Select_ModelingRoot_X(RootModel root, ItemModel model)
+        {
+            root.ButtonCommands.Add(new ModelCommand(this, model, Trait.ViewCommand, CreateSecondaryModelingTree));
+        }
+        void Validate_ModelingRoot_X(ItemModel model)
+        {
+            var N = (model.IsExpandedLeft) ? 4 : 0;
 
-                    case ModelAction.PointerOver:
+            if (N > 0)
+            {
+                var item = model.Item;
+                var level = (byte)(model.Level + 1);
 
-                        break;
+                var oldModels = model.ChildModels;
+                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
-                    case ModelAction.ModelRefresh:
+                var i = 0;
+                if (!TryGetOldModel(model, Trait.ViewView_ZM, oldModels, i, item))
+                    model.ChildModels[i] = new ItemModel(model, Trait.ViewView_ZM, level, item, null, null, ViewView_ZM);
 
-                        root.ModelName = _localize(model.NameKey);
+                i++;
+                if (!TryGetOldModel(model, Trait.Table_ZM, oldModels, i, item))
+                    model.ChildModels[i] = new ItemModel(model, Trait.Table_ZM, level, item, null, null, TableList_X);
 
-                        model.CanExpandLeft = true;
-                        break;
+                i++;
+                if (!TryGetOldModel(model, Trait.Graph_ZM, oldModels, i, item))
+                    model.ChildModels[i] = new ItemModel(model, Trait.Graph_ZM, level, item, null, null, GraphList_X);
 
-                    case ModelAction.ModelSelect:
-
-                        root.ButtonCommands.Add(new ModelCommand(this, model, Trait.ViewCommand, CreateSecondaryModelingTree));
-                        break;
-                }
+                i++;
+                if (!TryGetOldModel(model, Trait.PrimeCompute_M, oldModels, i, this))
+                    model.ChildModels[i] = new ItemModel(model, Trait.PrimeCompute_M, level, this, null, null, PrimeCompute_X);
             }
-            else  // validate the list of child models
+            else
             {
-                var N = (model.IsExpandedLeft) ? 4 : 0;
-
-                if (N > 0)
-                {
-                    var item = model.Item1;
-                    var level = (byte)(model.Level + 1);
-
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    var i = 0;
-                    if (!TryGetOldModel(model, Trait.ViewView_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ItemModel(model, Trait.ViewView_ZM, level, item, null, null, ViewView_ZM);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.Table_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ItemModel(model, Trait.Table_ZM, level, item, null, null, TableList_X);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.Graph_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ItemModel(model, Trait.Graph_ZM, level, item, null, null, GraphList_X);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.PrimeCompute_M, oldModels, i, this))
-                        model.ChildModels[i] = new ItemModel(model, Trait.PrimeCompute_M, level, this, null, null, PrimeCompute_X);
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
-
+                model.ChildModels = null;
             }
         }
         private void CreateSecondaryModelingTree(ItemModel model)
@@ -1439,91 +1307,90 @@ namespace ModelGraphSTD
         #endregion
 
         #region 625 MetaRelationList  =========================================
-        internal void MetaRelationList_X(ItemModel model, RootModel root)
+        ModelAction MetaRelationList_X;
+        void Initialize_MetaRelationList_X()
         {
-            if (root != null)  // get the data for this root.ModelAction
+            DataChef_X = new ModelAction
             {
-                switch (root.ModelAction)
-                {
-                    case ModelAction.DragOver:
+                Refresh = Refresh_MetaRelationList_X,
+                Validate = Validate_MetaRelationList_X
+            };
+        }
+        void Refresh_MetaRelationList_X(RootModel root, ItemModel model)
+        {
+            root.ModelName = _localize(model.NameKey);
 
-                        break;
+            model.CanExpandLeft = true;
+        }
+        void Validate_MetaRelationList_X(ItemModel model)
+        {
+            var item = model.Item;
+            var level = (byte)(model.Level + 1);
+            var oldModels = model.ChildModels;
 
-                    case ModelAction.PointerOver:
+            int N = (model.IsExpandedLeft) ? 2 : 0;
 
-                        break;
+            if (N > 0)
+            {
+                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
-                    case ModelAction.ModelRefresh:
+                var i = 0;
+                if (!TryGetOldModel(model, Trait.NameColumnRelation_M, oldModels, i, item))
+                    model.ChildModels[i] = new ItemModel(model, Trait.NameColumnRelation_M, level, item, TableX_NameProperty, null, NameColumnRelation_X);
 
-                        root.ModelName = _localize(model.NameKey);
-
-                        model.CanExpandLeft = true;
-                        break;
-
-                    case ModelAction.ModelSelect:
-
-                        break;
-                }
+                i++;
+                if (!TryGetOldModel(model, Trait.SummaryColumnRelation_M, oldModels, i, item))
+                    model.ChildModels[i] = new ItemModel(model, Trait.SummaryColumnRelation_M, level, item, TableX_SummaryProperty, null, SummaryColumnRelation_X);
             }
-            else  // validate the list of child models
+            else
             {
-                var item = model.Item1;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                int N = (model.IsExpandedLeft) ? 2 : 0;
-
-                if (N > 0)
-                {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    var i = 0;
-                    if (!TryGetOldModel(model, Trait.NameColumnRelation_M, oldModels, i, item))
-                        model.ChildModels[i] = new ItemModel(model, Trait.NameColumnRelation_M, level, item, TableX_NameProperty, null, NameColumnRelation_X);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.SummaryColumnRelation_M, oldModels, i, item))
-                        model.ChildModels[i] = new ItemModel(model, Trait.SummaryColumnRelation_M, level, item, TableX_SummaryProperty, null, SummaryColumnRelation_X);
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
+                model.ChildModels = null;
             }
         }
         #endregion
 
         #region 626 ErrorType  ================================================
+        ModelAction ErrorType_X;
+        void Initialize_ErrorType_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ErrorType_X,
+            };
+        }
+        void Refresh_ErrorType_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ErrorType_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as Error;
+                var item = model.Item as Error;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(item.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(item.NameKey);
                         root.ModelCount = item.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var error = model.Item1 as Error;
+                var error = model.Item as Error;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -1549,21 +1416,32 @@ namespace ModelGraphSTD
         #endregion
 
         #region 627 ErrorText  ================================================
+        ModelAction ErrorText_X;
+        void Initialize_ErrorText_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ErrorText_X,
+            };
+        }
+        void Refresh_ErrorText_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ErrorText_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
-                        var err = model.Item1 as Error;
+                        var err = model.Item as Error;
                         var inx = model.ParentModel.GetChildlIndex(model);
                         if (inx < 0 || err.Count <= inx)
                             root.ModelName = InvalidItem;
@@ -1571,7 +1449,7 @@ namespace ModelGraphSTD
                             root.ModelName = err.Errors[inx];
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
                         break;
                 }
             }
@@ -1579,30 +1457,41 @@ namespace ModelGraphSTD
         #endregion
 
         #region 628 ChangeSet  ================================================
+        ModelAction ChangeSet_X;
+        void Initialize_ChangeSet_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ChangeSet_X,
+            };
+        }
+        void Refresh_ChangeSet_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ChangeSet_X(ItemModel model, RootModel root)
         {
-            var chg = model.Item1 as ChangeSet;
+            var chg = model.Item as ChangeSet;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = GetChangeSetName(chg);
                         root.ModelCount = chg.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         if (chg.CanMerge)
                             root.ButtonCommands.Add(new ModelCommand(this, model, Trait.MergeCommand, ModelMerge));
@@ -1615,12 +1504,12 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var cs = model.Item1 as ChangeSet;
+                var cs = model.Item as ChangeSet;
                 var N = model.IsExpandedLeft ? cs.Count : 0;
 
                 if (N > 0)
                 {
-                    var items = (cs.IsReversed) ? cs.Items : cs.ItemsReversed;
+                    var items = (cs.IsReversed) ? cs.ToArray : cs.ItemsReversed;
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
@@ -1650,45 +1539,56 @@ namespace ModelGraphSTD
         }
         private void ModelMerge(ItemModel model)
         {
-            var chg = model.Item1 as ChangeSet;
+            var chg = model.Item as ChangeSet;
             chg.Merge();
             MajorDelta += 1;
         }
         private void ModelUndo(ItemModel model)
         {
-            var chg = model.Item1 as ChangeSet;
+            var chg = model.Item as ChangeSet;
             Undo(chg);
         }
         private void ModelRedo(ItemModel model)
         {
-            var chg = model.Item1 as ChangeSet;
+            var chg = model.Item as ChangeSet;
             Redo(chg);
         }
         #endregion
 
         #region 629 ItemChanged  ==============================================
+        ModelAction ItemChange_X;
+        void Initialize_ItemChange_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ItemChange_X,
+            };
+        }
+        void Refresh_ItemChange_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ItemChanged_X(ItemModel model, RootModel root)
         {
-            var chg = model.Item1 as ItemChange;
+            var chg = model.Item as ItemChange;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(chg.KindKey);
                         root.ModelName = chg.Name;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -1699,26 +1599,37 @@ namespace ModelGraphSTD
 
 
         #region 631 ViewXView_ZM  =============================================
+        ModelAction ViewXView_X;
+        void Initialize_ViewXView_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ViewXView_X,
+            };
+        }
+        void Refresh_ViewXView_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ViewXView_ZM(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = ViewXView_ZM_Drop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
 
-                        var views = _viewXStore.Items;
+                        var views = _viewXStore.ToArray;
                         var count = 0;
                         foreach (var vx in views) { if (ViewX_ViewX.HasNoParent(vx)) count++; }
                         root.ModelCount = count;
@@ -1728,7 +1639,7 @@ namespace ModelGraphSTD
                         model.CanSort = (model.IsExpandedLeft && count > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, ViewXView_ZM_Insert));
                         break;
@@ -1739,7 +1650,7 @@ namespace ModelGraphSTD
                 int N = 0;
                 if (model.IsExpandedLeft)
                 {
-                    var views = _viewXStore.Items;
+                    var views = _viewXStore.ToArray;
                     var roots = new List<ViewX>();
                     foreach (var view in views) { if (ViewX_ViewX.HasNoParent(view)) { roots.Add(view); N++; } } 
                     
@@ -1766,7 +1677,7 @@ namespace ModelGraphSTD
         }
         private DropAction ViewXView_ZM_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            var vxDrop = drop.Item1 as ViewX;
+            var vxDrop = drop.Item as ViewX;
             if (vxDrop != null && vxDrop.Owner == _viewXStore)
             {
                 if (doDrop)
@@ -1784,26 +1695,37 @@ namespace ModelGraphSTD
         #endregion
 
         #region 632 ViewXView_M  ==============================================
+        ModelAction ViewXViewM_X;
+        void Initialize_ViewXViewM_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ViewXViewM_X,
+            };
+        }
+        void Refresh_ViewXViewM_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ViewXView_M(ItemModel model, RootModel root)
         {
-            var view = model.Item1 as ViewX;
+            var view = model.Item as ViewX;
 
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = ViewXView_M_Drop;
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = view.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = view.Name;
                         var count = (ViewX_ViewX.ChildCount(view) + ViewX_QueryX.ChildCount(view) + ViewX_Property.ChildCount(view));
@@ -1816,7 +1738,7 @@ namespace ModelGraphSTD
                         model.CanSort = (model.IsExpandedLeft && count > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, ViewXView_M_Insert));
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
@@ -1899,14 +1821,14 @@ namespace ModelGraphSTD
         {
             var vx = new ViewX(_viewXStore);
             ItemCreated(vx);
-            AppendLink(ViewX_ViewX, model.Item1, vx);
+            AppendLink(ViewX_ViewX, model.Item, vx);
         }
         private DropAction ViewXView_M_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            var view = model.Item1 as ViewX;
+            var view = model.Item as ViewX;
             if (view != null)
             {
-                var vx = drop.Item1 as ViewX;
+                var vx = drop.Item as ViewX;
                 if (vx != null)
                 {
                     if (vx.Owner == _viewXStore)
@@ -1925,7 +1847,7 @@ namespace ModelGraphSTD
                 }
                 else
                 {
-                    var st = drop.Item1 as Store;
+                    var st = drop.Item as Store;
                     if (st != null)
                     {
                         if (ViewX_ViewX.HasNoChildren(view) && ViewX_QueryX.HasNoChildren(view) && ViewX_Property.HasNoChildren(view))
@@ -1939,7 +1861,7 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        var re = drop.Item1 as Relation;
+                        var re = drop.Item as Relation;
                         if (re != null)
                         {
                             if (ViewX_ViewX.HasNoChildren(view) && ViewX_Property.HasNoChildren(view))
@@ -1953,7 +1875,7 @@ namespace ModelGraphSTD
                         }
                         else
                         {
-                            var pr = drop.Item1 as Property;
+                            var pr = drop.Item as Property;
                             if (pr != null)
                             {
                                 if (ViewX_ViewX.HasNoChildren(view) && ViewX_QueryX.HasNoChildren(view))
@@ -1974,23 +1896,34 @@ namespace ModelGraphSTD
         #endregion
 
         #region 633 ViewXQuery_M  =============================================
+        ModelAction ViewXQuery_X;
+        void Initialize_ViewXQuery_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ViewXQuery_X,
+            };
+        }
+        void Refresh_ViewXQuery_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ViewXQuery_M(ItemModel model, RootModel root)
         {
-            var qx = model.Item1 as QueryX;
+            var qx = model.Item as QueryX;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = ViewXQuery_M_Drop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
 
                         var rel = Relation_QueryX.GetParent(qx);
@@ -2018,7 +1951,7 @@ namespace ModelGraphSTD
                         model.CanSort = (model.IsExpandedLeft && count > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ModelDescription = _localize(model.DescriptionKey);
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, ViewXQuery_M_Insert));
@@ -2103,13 +2036,13 @@ namespace ModelGraphSTD
         {
             var vx = new ViewX(_viewXStore);
             ItemCreated(vx);
-            AppendLink(QueryX_ViewX, model.Item1, vx);
+            AppendLink(QueryX_ViewX, model.Item, vx);
         }
 
         private DropAction ViewXQuery_M_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            var query = model.Item1 as QueryX;
-            if (drop.Item1 is Relation rel)
+            var query = model.Item as QueryX;
+            if (drop.Item is Relation rel)
             {
                 if (doDrop)
                 {
@@ -2117,7 +2050,7 @@ namespace ModelGraphSTD
                 }
                 return DropAction.Link;
             }
-            else if (drop.Item1 is Property prop)
+            else if (drop.Item is Property prop)
             {
                 if (doDrop)
                 {
@@ -2130,25 +2063,36 @@ namespace ModelGraphSTD
         #endregion
 
         #region 634 ViewXCommand  =============================================
+        ModelAction ViewXCommand_X;
+        void Initialize_ViewXCommand_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ViewXCommand_X,
+            };
+        }
+        void Refresh_ViewXCommand_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ViewXCommand_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -2165,27 +2109,38 @@ namespace ModelGraphSTD
         #endregion
 
         #region 635 ViewXProperty_M  ==========================================
+        ModelAction ViewXProperty_X;
+        void Initialize_ViewXProperty_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ViewXProperty_X,
+            };
+        }
+        void Refresh_ViewXProperty_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ViewXProperty_M(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as Property;
+                var item = model.Item as Property;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
                         root.ModelKind = GetIdentity(item, IdentityStyle.Kind);
                         root.ModelName = GetIdentity(item, IdentityStyle.Double);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -2195,25 +2150,36 @@ namespace ModelGraphSTD
 
 
         #region 63A ViewView_ZM  ==============================================
+        ModelAction ViewView_X;
+        void Initialize_ViewView_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ViewView_X,
+            };
+        }
+        void Refresh_ViewView_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ViewView_ZM(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        var views = _viewXStore.Items;
+                        var views = _viewXStore.ToArray;
                         var count = 0;
                         foreach (var vx in views) { if (ViewX_ViewX.HasNoParent(vx)) count++; }
                         root.ModelCount = count;
@@ -2223,7 +2189,7 @@ namespace ModelGraphSTD
                         model.CanSort = (model.IsExpandedLeft && count > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -2233,7 +2199,7 @@ namespace ModelGraphSTD
                 int N = 0;
                 if (model.IsExpandedLeft)
                 {
-                    var views = _viewXStore.Items;
+                    var views = _viewXStore.ToArray;
                     var roots = new List<ViewX>();
                     foreach (var vx in views) { if (ViewX_ViewX.HasNoParent(vx)) { roots.Add(vx); N++; } }
 
@@ -2257,25 +2223,36 @@ namespace ModelGraphSTD
         #endregion
 
         #region 63B ViewView_M  ===============================================
+        ModelAction ViewViewM_X;
+        void Initialize_ViewViewM_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ViewViewM_X,
+            };
+        }
+        void Refresh_ViewViewM_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ViewView_M(ItemModel model, RootModel root)
         {
-            var view = model.Item1 as ViewX;
-            var key = model.Item2; // may be null
+            var view = model.Item as ViewX;
+            var key = model.Aux1; // may be null
 
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = view.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         var count = 0;
                         var querys = ViewX_QueryX.GetChildren(view);
@@ -2301,7 +2278,7 @@ namespace ModelGraphSTD
                         model.CanSort = (model.IsExpandedLeft && count > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -2407,23 +2384,34 @@ namespace ModelGraphSTD
         #endregion
 
         #region 63C ViewItem_M  ===============================================
+        ModelAction ViewItem_X;
+        void Initialize_ViewItem_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ViewItem_X,
+            };
+        }
+        void Refresh_ViewItem_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ViewItem_M(ItemModel model, RootModel root)
         {
-            var item = model.Item1;
-            var query = model.Item2 as QueryX;
+            var item = model.Item;
+            var query = model.Aux1 as QueryX;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = GetIdentity(item.Owner, IdentityStyle.Single);
                         root.ModelName = GetIdentity(item, IdentityStyle.Single);
@@ -2437,7 +2425,7 @@ namespace ModelGraphSTD
                         model.CanFilterUsage = (model.IsExpandedLeft && count > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -2486,24 +2474,35 @@ namespace ModelGraphSTD
         #endregion
 
         #region 63D ViewQuery_M  ==============================================
+        ModelAction ViewQuery_X;
+        void Initialize_ViewQuery_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ViewQuery_X,
+            };
+        }
+        void Refresh_ViewQuery_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ViewQuery_M(ItemModel model, RootModel root)
         {
-            var key = model.Item1;
-            var query = model.Item2 as QueryX;
+            var key = model.Item;
+            var query = model.Aux1 as QueryX;
 
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
                         var count = TryGetQueryItems(query, out Item[] items, key) ? items.Length : 0;
 
                         root.ModelKind = _localize(model.KindKey);
@@ -2515,7 +2514,7 @@ namespace ModelGraphSTD
                         model.CanSort = (model.IsExpandedLeft && count > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -2550,31 +2549,42 @@ namespace ModelGraphSTD
 
 
         #region 642 EnumXList  ================================================
+        ModelAction EnumXList_X;
+        void Initialize_EnumXList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_EnumXList_X,
+            };
+        }
+        void Refresh_EnumXList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void EnumXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = _enumXStore.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, EnumDefListInsert));
                         break;
@@ -2586,8 +2596,8 @@ namespace ModelGraphSTD
 
                 if (model.IsExpandedLeft && N > 0)
                 {
-                    var items = _enumXStore.Items;
-                    var item = model.Item1;
+                    var items = _enumXStore.ToArray;
+                    var item = model.Item;
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
@@ -2613,32 +2623,43 @@ namespace ModelGraphSTD
         #endregion
 
         #region 643 TableXList  ===============================================
+        ModelAction TableXList_X;
+        void Initialize_TableXList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_TableXList_X,
+            };
+        }
+        void Refresh_TableXList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void TableXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = _tableXStore.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, TableDefListInsert));
                         break;
@@ -2650,8 +2671,8 @@ namespace ModelGraphSTD
 
                 if (model.IsExpandedLeft && N > 0)
                 {
-                    var items = _tableXStore.Items;
-                    var item = model.Item1;
+                    var items = _tableXStore.ToArray;
+                    var item = model.Item;
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
@@ -2678,32 +2699,43 @@ namespace ModelGraphSTD
         #endregion
 
         #region 644 GraphXList  ===============================================
+        ModelAction GraphXList_X;
+        void Initialize_GraphXList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphXList_X,
+            };
+        }
+        void Refresh_GraphXList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = _graphXStore.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, GraphXRootInsert));
                         break;
@@ -2715,7 +2747,7 @@ namespace ModelGraphSTD
 
                 if (model.IsExpandedLeft && N > 0)
                 {
-                    var items = _graphXStore.Items;
+                    var items = _graphXStore.ToArray;
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
@@ -2743,34 +2775,45 @@ namespace ModelGraphSTD
         #endregion
 
         #region 645 SymbolXlList  =============================================
+        ModelAction SymbolXList_X;
+        void Initialize_SymbolXList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_SymbolXList_X,
+            };
+        }
+        void Refresh_SymbolXList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void SymbolXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var gd = model.Item1 as GraphX;
+                var gd = model.Item as GraphX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = SymbolDef_Drop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = GraphX_SymbolX.ChildCount(gd);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, SymbolListInsert));
                         break;
@@ -2778,7 +2821,7 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var gd = model.Item1 as GraphX;
+                var gd = model.Item as GraphX;
                 var N = GraphX_SymbolX.ChildCount(gd);
 
                 if (model.IsExpandedLeft && N > 0)
@@ -2804,7 +2847,7 @@ namespace ModelGraphSTD
         }
         private void SymbolListInsert(ItemModel model)
         {
-            var gd = model.Item1 as GraphX;
+            var gd = model.Item as GraphX;
             var sym = new SymbolX(_symbolXStore);
             ItemCreated(sym);
             AppendLink(GraphX_SymbolX, gd, sym);
@@ -2812,11 +2855,11 @@ namespace ModelGraphSTD
         }
         private DropAction SymbolDef_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!drop.Item1.IsSymbolX) return DropAction.None;
-            var src = drop.Item1 as SymbolX;
+            if (!drop.Item.IsSymbolX) return DropAction.None;
+            var src = drop.Item as SymbolX;
             if (doDrop)
             {
-                var gd = model.Item1 as GraphX;
+                var gd = model.Item as GraphX;
                 var sym = new SymbolX(_symbolXStore);
                 ItemCreated(sym);
                 AppendLink(GraphX_SymbolX, gd, sym);
@@ -2831,46 +2874,57 @@ namespace ModelGraphSTD
 
 
         #region 647 TableList  ================================================
+        ModelAction TableList_X;
+        void Initialize_TableList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_TableList_X,
+            };
+        }
+        void Refresh_TableList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void TableList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = _tableXStore.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1;
+                var item = model.Item;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
                 var N = _tableXStore.Count;
                 if (model.IsExpandedLeft && N > 0)
                 {
-                    var items = _tableXStore.Items;
+                    var items = _tableXStore.ToArray;
                     if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
@@ -2889,46 +2943,57 @@ namespace ModelGraphSTD
         #endregion
 
         #region 648 GraphList  ================================================
+        ModelAction GraphList_X;
+        void Initialize_GraphList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphList_X,
+            };
+        }
+        void Refresh_GraphList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = _graphXStore.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1;
+                var item = model.Item;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
                 var N = _graphXStore.Count;
                 if (model.IsExpandedLeft && N > 0)
                 {
-                    var items = _graphXStore.Items;
+                    var items = _graphXStore.ToArray;
                     if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
@@ -2950,24 +3015,35 @@ namespace ModelGraphSTD
 
 
         #region 652 PairX  ====================================================
+        ModelAction PairX_X;
+        void Initialize_PairX_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_PairX_X,
+            };
+        }
+        void Refresh_PairX_X(RootModel root, ItemModel model)
+        {
+        }
         internal void PairX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as PairX;
+                var item = model.Item as PairX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = item.ActualValue;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = item.DisplayValue;
 
@@ -2975,7 +3051,7 @@ namespace ModelGraphSTD
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -3001,24 +3077,35 @@ namespace ModelGraphSTD
         #endregion
 
         #region 653 EnumX  ====================================================
+        ModelAction EnumX_X;
+        void Initialize_EnumX_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_EnumX_X,
+            };
+        }
+        void Refresh_EnumX_X(RootModel root, ItemModel model)
+        {
+        }
         internal void EnumX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as EnumX;
+                var item = model.Item as EnumX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ReorderItems = ReorderStoreItem;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = item.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = item.Name;
 
@@ -3026,7 +3113,7 @@ namespace ModelGraphSTD
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -3041,7 +3128,7 @@ namespace ModelGraphSTD
 
                 if (N > 0)
                 {
-                    var item = model.Item1 as EnumX;
+                    var item = model.Item as EnumX;
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
@@ -3071,24 +3158,35 @@ namespace ModelGraphSTD
         #endregion
 
         #region 654 TableX  ===================================================
+        ModelAction TableX_X;
+        void Initialize_TableX_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_TableX_X,
+            };
+        }
+        void Refresh_TableX_X(RootModel root, ItemModel model)
+        {
+        }
         internal void TableX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var tbl = model.Item1 as TableX;
+                var tbl = model.Item as TableX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ReorderItems = ReorderStoreItem;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = tbl.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = tbl.Name;
 
@@ -3097,7 +3195,7 @@ namespace ModelGraphSTD
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -3112,7 +3210,7 @@ namespace ModelGraphSTD
 
                 if (N > 0)
                 {
-                    var item = model.Item1 as TableX;
+                    var item = model.Item as TableX;
                     var level = (byte)(model.Level + 1);
                     var oldModels = model.ChildModels;
 
@@ -3154,24 +3252,35 @@ namespace ModelGraphSTD
         #endregion
 
         #region 655 GraphX  ===================================================
+        ModelAction GraphX_X;
+        void Initialize_GraphX_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphX_X,
+            };
+        }
+        void Refresh_GraphX_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var gd = model.Item1 as GraphX;
+                var gd = model.Item as GraphX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ReorderItems = ReorderStoreItem;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = gd.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = gd.Name;
 
@@ -3180,7 +3289,7 @@ namespace ModelGraphSTD
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -3195,7 +3304,7 @@ namespace ModelGraphSTD
 
                 if (N > 0)
                 {
-                    var item = model.Item1 as GraphX;
+                    var item = model.Item as GraphX;
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
@@ -3233,24 +3342,35 @@ namespace ModelGraphSTD
         #endregion
 
         #region 656 SymbolX  ==================================================
+        ModelAction SymbolX_X;
+        void Initialize_SymbolX_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_SymbolX_X,
+            };
+        }
+        void Refresh_SymbolX_X(RootModel root, ItemModel model)
+        {
+        }
         internal void SymbolX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as SymbolX;
+                var item = model.Item as SymbolX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = item.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = item.Name;
 
@@ -3259,7 +3379,7 @@ namespace ModelGraphSTD
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.EditCommand, CreateSecondarySymbolEdit));
@@ -3292,24 +3412,35 @@ namespace ModelGraphSTD
         #endregion
 
         #region 657 ColumnX  ==================================================
+        ModelAction ColumnX_X;
+        void Initialize_ColumnX_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ColumnX_X,
+            };
+        }
+        void Refresh_ColumnX_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ColumnX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var col = model.Item1 as ColumnX;
+                var col = model.Item as ColumnX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = col.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = col.Name;
 
@@ -3317,7 +3448,7 @@ namespace ModelGraphSTD
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -3344,36 +3475,47 @@ namespace ModelGraphSTD
         #endregion
 
         #region 658 ComputeX_M  ===============================================
+        ModelAction ComputeX_X;
+        void Initialize_ComputeX_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ComputeX_X,
+            };
+        }
+        void Refresh_ComputeX_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ComputeX_M(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var cpd = model.Item1 as ComputeX;
+                var cpd = model.Item as ComputeX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = ComputedX_M_Drop;
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = cpd.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = cpd.Name;
                         var qx = ComputeX_QueryX.GetChild(cpd);
                         if (qx != null) root.ModelCount = QueryX_QueryX.ChildCount(qx);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -3383,7 +3525,7 @@ namespace ModelGraphSTD
             {
                 if (model.IsExpanded)
                 {
-                    var cx = model.Item1 as ComputeX;
+                    var cx = model.Item as ComputeX;
                     var qx = ComputeX_QueryX.GetChild(cx);
 
                     int R = 0;
@@ -3447,9 +3589,9 @@ namespace ModelGraphSTD
 
         private DropAction ComputedX_M_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(drop.Item1 is Relation rel)) return DropAction.None;
+            if (!(drop.Item is Relation rel)) return DropAction.None;
 
-            var cd = model.Item1 as ComputeX;
+            var cd = model.Item as ComputeX;
             var root = ComputeX_QueryX.GetChild(cd);
             if (root == null) return DropAction.None;
 
@@ -3471,32 +3613,43 @@ namespace ModelGraphSTD
 
 
         #region 661 ColumnXList  ==============================================
+        ModelAction ColumnXList_X;
+        void Initialize_ColumnXList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ColumnXList_X,
+            };
+        }
+        void Refresh_ColumnXList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ColumnXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = TableX_ColumnX.ChildCount(model.Item1);
+                        root.ModelCount = TableX_ColumnX.ChildCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, ColumnDefListInsert));
                         break;
@@ -3504,7 +3657,7 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var tbl = model.Item1 as TableX;
+                var tbl = model.Item as TableX;
 
                 var N = (model.IsExpandedLeft) ? TableX_ColumnX.ChildCount(tbl) : 0;
                 if (N > 0)
@@ -3531,37 +3684,48 @@ namespace ModelGraphSTD
         private void ColumnDefListInsert(ItemModel model)
         {
             var col = new ColumnX(_columnXStore);
-            ItemCreated(col); AppendLink(TableX_ColumnX, model.Item1, col);
+            ItemCreated(col); AppendLink(TableX_ColumnX, model.Item, col);
         }
         #endregion
 
         #region 662 ChildRelationXList  =======================================
+        ModelAction ChildRelationXList_X;
+        void Initialize_ChildRelationXList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ChildRelationXList_X,
+            };
+        }
+        void Refresh_ChildRelationXList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ChildRelationXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = TableX_ChildRelationX.ChildCount(model.Item1);
+                        root.ModelCount = TableX_ChildRelationX.ChildCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, ChildRelationDefListInsert));
                         break;
@@ -3569,7 +3733,7 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var tbl = model.Item1 as TableX;
+                var tbl = model.Item as TableX;
 
                 var N = (model.IsExpandedLeft) ? TableX_ChildRelationX.ChildCount(tbl) : 0;
                 if (N > 0)
@@ -3596,37 +3760,48 @@ namespace ModelGraphSTD
         private void ChildRelationDefListInsert(ItemModel model)
         {
             var rel = new RelationX(_relationXStore);
-            ItemCreated(rel); AppendLink(TableX_ChildRelationX, model.Item1, rel);
+            ItemCreated(rel); AppendLink(TableX_ChildRelationX, model.Item, rel);
         }
         #endregion
 
         #region 663 ParentRelatationXList  ====================================
+        ModelAction ParentRelationXList_X;
+        void Initialize_ParentRelationXList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ParentRelationXList_X,
+            };
+        }
+        void Refresh_ParentRelationXList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ParentRelatationXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = TableX_ParentRelationX.ChildCount(model.Item1);
+                        root.ModelCount = TableX_ParentRelationX.ChildCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, ParentRelationDefListInsert));
                         break;
@@ -3634,7 +3809,7 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var tbl = model.Item1 as TableX;
+                var tbl = model.Item as TableX;
 
                 var N = (model.IsExpandedLeft) ? TableX_ParentRelationX.ChildCount(tbl) : 0;
                 if (N > 0)
@@ -3661,38 +3836,49 @@ namespace ModelGraphSTD
         private void ParentRelationDefListInsert(ItemModel model)
         {
             var rel = new RelationX(_relationXStore); ItemCreated(rel);
-            AppendLink(TableX_ParentRelationX, model.Item1, rel);
+            AppendLink(TableX_ParentRelationX, model.Item, rel);
         }
         #endregion
 
         #region 664 PairXList  ================================================
+        ModelAction PairXList_X;
+        void Initialize_PairXList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_PairXList_X,
+            };
+        }
+        void Refresh_PairXList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void PairXList_Dx(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as EnumX;
+                var item = model.Item as EnumX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = item.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, EnumValueListInsert));
                         break;
@@ -3700,12 +3886,12 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var enu = model.Item1 as EnumX;
+                var enu = model.Item as EnumX;
                 var N = enu.Count;
 
                 if (model.IsExpandedLeft && N > 0)
                 {
-                    var items = enu.Items;
+                    var items = enu.ToArray;
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
@@ -3726,46 +3912,57 @@ namespace ModelGraphSTD
         }
         private void EnumValueListInsert(ItemModel model)
         {
-            ItemCreated(new PairX(model.Item1 as EnumX));
+            ItemCreated(new PairX(model.Item as EnumX));
         }
         #endregion
 
         #region 665 EnumColumnList  ===========================================
+        ModelAction EnumColumnList_X;
+        void Initialize_EnumColumnList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_EnumColumnList_X,
+            };
+        }
+        void Refresh_EnumColumnList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void EnumColumnList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as EnumX;
+                var item = model.Item as EnumX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = EnumColumn_Drop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = EnumX_ColumnX.ChildCount(item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var enu = model.Item1 as EnumX;
+                var enu = model.Item as EnumX;
 
                 var N = (model.IsExpandedLeft) ? EnumX_ColumnX.ChildCount(enu): 0;
                 if (N > 0)
@@ -3795,44 +3992,55 @@ namespace ModelGraphSTD
         }
         private DropAction EnumColumn_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!drop.Item1.IsColumnX) return DropAction.None;
+            if (!drop.Item.IsColumnX) return DropAction.None;
 
             if (doDrop)
             {
-                AppendLink(EnumX_ColumnX, model.Item1, drop.Item1);
+                AppendLink(EnumX_ColumnX, model.Item, drop.Item);
             }
             return DropAction.Link;
         }
         #endregion
 
         #region 666 ComputeXList  =============================================
+        ModelAction ComputeXList_X;
+        void Initialize_ComputeXList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ComputeXList_X,
+            };
+        }
+        void Refresh_ComputeXList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ComputeXList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var sto = model.Item1 as Store;
+                var sto = model.Item as Store;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = Store_ComputeX.ChildCount(sto);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, ComputedDefListInsert));
                         break;
@@ -3840,7 +4048,7 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var sto = model.Item1 as Store;
+                var sto = model.Item as Store;
 
                 var N = (model.IsExpandedLeft) ? Store_ComputeX.ChildCount(sto) : 0;
                 if (N > 0)
@@ -3866,7 +4074,7 @@ namespace ModelGraphSTD
         }
         private void ComputedDefListInsert(ItemModel model)
         {
-            var st = model.Item1 as Store;
+            var st = model.Item as Store;
             var cx = new ComputeX(_computeXStore);
             ItemCreated(cx);
             AppendLink(Store_ComputeX, st, cx);
@@ -3878,25 +4086,36 @@ namespace ModelGraphSTD
 
 
         #region 671 ChildRelationX  ===========================================
+        ModelAction ChildRelationX_X;
+        void Initialize_ChildRelationX_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ChildRelationX_X,
+            };
+        }
+        void Refresh_ChildRelationX_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ChildRelationX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as RelationX;
+                var item = model.Item as RelationX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = ChildRelationDef_Drop;
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = item.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = GetIdentity(item, IdentityStyle.Single);
 
@@ -3904,7 +4123,7 @@ namespace ModelGraphSTD
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -3917,7 +4136,7 @@ namespace ModelGraphSTD
                     var sp1 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty};
                     var sp2 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty};
 
-                    var item = model.Item1 as RelationX;
+                    var item = model.Item as RelationX;
                     var sp = item.IsLimited ? sp2 : sp1;
                     var N = sp.Length;
 
@@ -3935,36 +4154,47 @@ namespace ModelGraphSTD
         }
         private DropAction ChildRelationDef_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!drop.Item1.IsTableX) return DropAction.None;
+            if (!drop.Item.IsTableX) return DropAction.None;
 
             if (doDrop)
             {
-                AppendLink(TableX_ParentRelationX, drop.Item1, model.Item1);
+                AppendLink(TableX_ParentRelationX, drop.Item, model.Item);
             }
             return DropAction.Link;
         }
         #endregion
 
         #region 672 ParentRelationX  ==========================================
+        ModelAction ParentRelationX_X;
+        void Initialize_ParentRelationX_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ParentRelationX_X,
+            };
+        }
+        void Refresh_ParentRelationX_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ParentRelationX_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var rel = model.Item1 as RelationX;
+                var rel = model.Item as RelationX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = ParentRelationDef_Drop;
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = rel.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = GetIdentity(rel, IdentityStyle.Single);
 
@@ -3972,7 +4202,7 @@ namespace ModelGraphSTD
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -3985,7 +4215,7 @@ namespace ModelGraphSTD
                     var sp1 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty, _relationXIsLimitedProperty };
                     var sp2 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty, _relationXIsLimitedProperty, _relationXMinOccuranceProperty, _relationXMaxOccuranceProperty };
 
-                    var item = model.Item1 as RelationX;
+                    var item = model.Item as RelationX;
                     var sp = item.IsLimited ? sp2 : sp1;
                     var N = sp.Length;
 
@@ -4003,48 +4233,59 @@ namespace ModelGraphSTD
         }
         private DropAction ParentRelationDef_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!drop.Item1.IsTableX) return DropAction.None;
+            if (!drop.Item.IsTableX) return DropAction.None;
 
             if (doDrop)
             {
-                AppendLink(TableX_ChildRelationX, drop.Item1, model.Item1);
+                AppendLink(TableX_ChildRelationX, drop.Item, model.Item);
             }
             return DropAction.Link;
         }
         #endregion
 
         #region 673 NameColumnRelation  =======================================
+        ModelAction NameColumnRelation_X;
+        void Initialize_NameColumnRelation_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_NameColumnRelation_X,
+            };
+        }
+        void Refresh_NameColumnRelation_X(RootModel root, ItemModel model)
+        {
+        }
         internal void NameColumnRelation_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = NameColumnRelation_Drop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = TableX_NameProperty.ChildCount(model.Item1);
+                        root.ModelCount = TableX_NameProperty.ChildCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var tbl = model.Item1 as TableX;
+                var tbl = model.Item as TableX;
                 Property prop;
 
                 if (model.IsExpandedLeft && TableX_NameProperty.TryGetChild(tbl, out prop))
@@ -4065,15 +4306,15 @@ namespace ModelGraphSTD
         }
         private DropAction NameColumnRelation_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(drop.Item1 is Property)) return DropAction.None;
+            if (!(drop.Item is Property)) return DropAction.None;
 
             if (doDrop)
             {
                 if (model.IsChildModel(drop))
-                    RemoveLink(TableX_NameProperty, model.Item1, drop.Item1);
+                    RemoveLink(TableX_NameProperty, model.Item, drop.Item);
                 else
                 {
-                    AppendLink(TableX_NameProperty, model.Item1, drop.Item1);
+                    AppendLink(TableX_NameProperty, model.Item, drop.Item);
                     model.IsExpandedLeft = true;
                 }
             }
@@ -4082,37 +4323,48 @@ namespace ModelGraphSTD
         #endregion
 
         #region 674 SummaryColumnRelation  ====================================
+        ModelAction SummaryColumnRelation_X;
+        void Initialize_SummaryColumnRelation_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_SummaryColumnRelation_X,
+            };
+        }
+        void Refresh_SummaryColumnRelation_X(RootModel root, ItemModel model)
+        {
+        }
         internal void SummaryColumnRelation_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = SummaryColRelation_Drop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = TableX_SummaryProperty.ChildCount(model.Item1);
+                        root.ModelCount = TableX_SummaryProperty.ChildCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var tbl = model.Item1 as TableX;
+                var tbl = model.Item as TableX;
                 Property prop = null;
 
                 if (model.IsExpandedLeft && TableX_SummaryProperty.TryGetChild(tbl, out prop))
@@ -4133,15 +4385,15 @@ namespace ModelGraphSTD
         }
         private DropAction SummaryColRelation_Drop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(drop.Item1 is Property)) return DropAction.None;
+            if (!(drop.Item is Property)) return DropAction.None;
 
             if (doDrop)
             {
                 if (model.IsChildModel(drop))
-                    RemoveLink(TableX_SummaryProperty, model.Item1, drop.Item1);
+                    RemoveLink(TableX_SummaryProperty, model.Item, drop.Item);
                 else
                 {
-                    AppendLink(TableX_SummaryProperty, model.Item1, drop.Item1);
+                    AppendLink(TableX_SummaryProperty, model.Item, drop.Item);
                     model.IsExpandedLeft = true;
                 }
             }
@@ -4150,18 +4402,29 @@ namespace ModelGraphSTD
         #endregion
 
         #region 675 NameColumn  ===============================================
+        ModelAction NameColumn_X;
+        void Initialize_NameColumn_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_NameColumn_X,
+            };
+        }
+        void Refresh_NameColumn_X(RootModel root, ItemModel model)
+        {
+        }
         internal void NameColumn_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1;
+                var item = model.Item;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         if (item.IsColumnX)
                             root.ModelSummary = (item as ColumnX).Summary;
@@ -4169,7 +4432,7 @@ namespace ModelGraphSTD
                             root.ModelSummary = (item as ComputeX).Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         if (item.IsColumnX)
                             root.ModelName = (item as ColumnX).Name;
@@ -4177,7 +4440,7 @@ namespace ModelGraphSTD
                             root.ModelName = (item as ComputeX).Name;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -4186,18 +4449,29 @@ namespace ModelGraphSTD
         #endregion
 
         #region 676 SummaryColumn  ============================================
+        ModelAction SummaryColumn_X;
+        void Initialize_SummaryColumn_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_SummaryColumn_X,
+            };
+        }
+        void Refresh_SummaryColumn_X(RootModel root, ItemModel model)
+        {
+        }
         internal void SummaryColumn_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1;
+                var item = model.Item;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         if (item.IsColumnX)
                             root.ModelSummary = (item as ColumnX).Summary;
@@ -4205,7 +4479,7 @@ namespace ModelGraphSTD
                             root.ModelSummary = (item as ComputeX).Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
 
                         if (item.IsColumnX)
@@ -4214,7 +4488,7 @@ namespace ModelGraphSTD
                             root.ModelName = (item as ComputeX).Name;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -4225,32 +4499,43 @@ namespace ModelGraphSTD
 
 
         #region 681 GraphXColoring  ===========================================
+        ModelAction GraphXColoring_X;
+        void Initialize_GraphXColoring_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphXColoring_X,
+            };
+        }
+        void Refresh_GraphXColoring_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphXColoring_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var gd = model.Item1 as GraphX;
+                var gd = model.Item as GraphX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = GraphXColoringDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = GraphX_ColorColumnX.ChildCount(gd);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ModelDescription = _localize(model.DescriptionKey);
                         break;
@@ -4258,7 +4543,7 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var item = model.Item1;
+                var item = model.Item;
                 ColumnX col = null;
                 TableX tbl = null;
                 if (model.IsExpandedLeft && GraphX_ColorColumnX.TryGetChild(item, out col) && TableX_ColumnX.TryGetParent(col, out tbl))
@@ -4279,8 +4564,8 @@ namespace ModelGraphSTD
         }
         private DropAction GraphXColoringDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            var gd = model.Item1;
-            var col = drop.Item1;
+            var gd = model.Item;
+            var col = drop.Item;
             if (!col.IsColumnX) return DropAction.None;
             if (!gd.IsGraphX) return DropAction.None;
 
@@ -4293,30 +4578,41 @@ namespace ModelGraphSTD
         #endregion
 
         #region 682 GraphXRootList  ===========================================
+        ModelAction GraphXRootList_X;
+        void Initialize_GraphXRootList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphXRootList_X,
+            };
+        }
+        void Refresh_GraphXRootList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphXRootList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = GraphXRootListDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = GraphX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = GraphX_QueryX.ChildCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ModelDescription = _localize(model.DescriptionKey);
                         break;
@@ -4324,7 +4620,7 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var gd = model.Item1 as GraphX;
+                var gd = model.Item as GraphX;
 
                 var N = (model.IsExpandedLeft) ? GraphX_QueryX.ChildCount(gd): 0;
                 if (N > 0)
@@ -4350,8 +4646,8 @@ namespace ModelGraphSTD
         }
         private DropAction GraphXRootListDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(model.Item1 is GraphX gx)) return DropAction.None;
-            if (!(drop.Item1 is Store st)) return DropAction.None;
+            if (!(model.Item is GraphX gx)) return DropAction.None;
+            if (!(drop.Item is Store st)) return DropAction.None;
             if (GraphXAlreadyHasThisRoot(gx, st)) return DropAction.None;
 
             if (doDrop)
@@ -4375,30 +4671,41 @@ namespace ModelGraphSTD
         #endregion
 
         #region 683 GraphXNodeList  ===========================================
+        ModelAction GraphXNodeList_X;
+        void Initialize_GraphXNodeList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphXNodeList_X,
+            };
+        }
+        void Refresh_GraphXNodeList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphXNodeList_X(ItemModel model, RootModel root)
         {
-            var gx = model.Item1 as GraphX;
+            var gx = model.Item as GraphX;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = GetNodeOwners(gx).Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -4437,35 +4744,46 @@ namespace ModelGraphSTD
         #endregion
 
         #region 684 GraphXNode  ===============================================
+        ModelAction GraphXNode_X;
+        void Initialize_GraphXNode_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphXNode_X,
+            };
+        }
+        void Refresh_GraphXNode_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphXNode_X(ItemModel model, RootModel root)
         {
-            var sto = model.Item1 as Store;
-            var gx = model.Item2 as GraphX;
+            var sto = model.Item as Store;
+            var gx = model.Aux1 as GraphX;
 
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as TableX;
+                var item = model.Item as TableX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = SymbolNodeOwnerDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = item.Name;
                         root.ModelCount = GetSymbolQueryXCount(gx, sto);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -4497,9 +4815,9 @@ namespace ModelGraphSTD
         }
         private DropAction SymbolNodeOwnerDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(model.Item1 is Store st)) return DropAction.None;
-            if (!(model.Item2 is GraphX gx)) return DropAction.None;
-            if (!(drop.Item1 is SymbolX sx)) return DropAction.None;
+            if (!(model.Item is Store st)) return DropAction.None;
+            if (!(model.Aux1 is GraphX gx)) return DropAction.None;
+            if (!(drop.Item is SymbolX sx)) return DropAction.None;
 
             if (doDrop)
             {
@@ -4510,29 +4828,40 @@ namespace ModelGraphSTD
         #endregion
 
         #region 685 GraphXColorColumn  ========================================
+        ModelAction GraphXColorColumn_X;
+        void Initialize_GraphXColorColumn_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphXColorColumn_X,
+            };
+        }
+        void Refresh_GraphXColorColumn_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphXColorColumn_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var col = model.Item1 as ColumnX;
-                var tbl = model.Item2 as TableX;
+                var col = model.Item as ColumnX;
+                var tbl = model.Aux1 as TableX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = $"{tbl.Name} : {col.Name}";
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ModelDescription = _localize(model.DescriptionKey);
                         break;
@@ -4544,33 +4873,44 @@ namespace ModelGraphSTD
 
 
         #region 691 QueryXRoot  ===============================================
+        ModelAction QueryXRoot_X;
+        void Initialize_QueryXRoot_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryXRoot_X,
+            };
+        }
+        void Refresh_QueryXRoot_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryXRoot_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = QueryXRootHeadDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.NameKey);
                         root.ModelName = QueryXRootName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ModelDescription = _localize(model.DescriptionKey);
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
@@ -4582,7 +4922,7 @@ namespace ModelGraphSTD
                 int N = 0;
                 if (model.IsExpandedLeft || model.IsExpandedRight)
                 {
-                    var qx = model.Item1 as QueryX;
+                    var qx = model.Item as QueryX;
                     var sp = new Property[] { };
                     var R = model.IsExpandedRight ? sp.Length : 0;
 
@@ -4664,8 +5004,8 @@ namespace ModelGraphSTD
         }
         private DropAction QueryXRootHeadDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(drop.Item1 is Relation re)) return DropAction.None;
-            if (!(model.Item1 is QueryX qx)) return DropAction.None;
+            if (!(drop.Item is Relation re)) return DropAction.None;
+            if (!(model.Item is QueryX qx)) return DropAction.None;
 
             if (doDrop)
             {
@@ -4675,42 +5015,53 @@ namespace ModelGraphSTD
         }
         private string QueryXRootName(ItemModel modle)
         {
-            var sd = modle.Item1;
+            var sd = modle.Item;
             var tb = Store_QueryX.GetParent(sd);
             return GetIdentity(tb, IdentityStyle.Single);
         }
         #endregion
 
         #region 692 QueryXLink  ===============================================
+        ModelAction QueryXLink_X;
+        void Initialize_QueryXLink_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryXLink_X,
+            };
+        }
+        void Refresh_QueryXLink_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryXLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = QueryXRootLinkDrop;
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetQueryXRelationName(model);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakePathHeadCommand, MakePathtHead));
@@ -4724,7 +5075,7 @@ namespace ModelGraphSTD
                 var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
                 var R = model.IsExpandedRight ? sp.Length : 0;
 
-                var sd = model.Item1 as QueryX;
+                var sd = model.Item as QueryX;
                 var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
 
                 var N = L + R;
@@ -4807,7 +5158,7 @@ namespace ModelGraphSTD
         private string GetQueryXRelationName(ItemModel model)
         {
             Relation parent;
-            if (Relation_QueryX.TryGetParent(model.Item1, out parent))
+            if (Relation_QueryX.TryGetParent(model.Item, out parent))
             {
                 var rel = parent as RelationX;
                 return GetRelationName(rel);
@@ -4816,17 +5167,17 @@ namespace ModelGraphSTD
         }
         private DropAction QueryXRootLinkDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (drop.Item1.IsRelationX)
+            if (drop.Item.IsRelationX)
             {
                 if (doDrop)
                 {
-                    var qx = model.Item1 as QueryX;
-                    var re = drop.Item1 as Relation;
+                    var qx = model.Item as QueryX;
+                    var re = drop.Item as Relation;
                     CreateQueryX(qx, re, QueryType.Graph);
                 }
                 return DropAction.Link;
             }
-            else if (model.Item1.IsQueryGraphLink)
+            else if (model.Item.IsQueryGraphLink)
             {
                 if (doDrop)
                 {
@@ -4838,7 +5189,7 @@ namespace ModelGraphSTD
         }
         string QueryXLinkName(ItemModel model)
         {
-            return QueryXFilterName(model.Item1 as QueryX);
+            return QueryXFilterName(model.Item as QueryX);
         }
         string QueryXFilterName(QueryX sd)
         {
@@ -4859,6 +5210,8 @@ namespace ModelGraphSTD
         {
             Store head, tail;
             GetHeadTail(sd, out head, out tail);
+
+
             if (head == null || tail == null) return InvalidItem;
             var headName = GetIdentity(head, IdentityStyle.Single);
             var tailName = GetIdentity(tail, IdentityStyle.Single);
@@ -4867,35 +5220,46 @@ namespace ModelGraphSTD
         #endregion
 
         #region 693 QueryXPathHead  ===========================================
+        ModelAction QueryXPathHead_X;
+        void Initialize_QueryXPathHead_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryXPathHead_X,
+            };
+        }
+        void Refresh_QueryXPathHead_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryXPathHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = QueryXPathDrop;
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetQueryXRelationName(model);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryXHeadName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakeRootLinkCommand, MakeRootLink));
@@ -4909,7 +5273,7 @@ namespace ModelGraphSTD
                 var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXIsBreakPointProperty, _queryXConnect1Property, _queryXConnect2Property, _queryXRootWhereProperty };
                 var R = model.IsExpandedRight ? sp.Length : 0;
 
-                var sd = model.Item1 as QueryX;
+                var sd = model.Item as QueryX;
                 var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
 
                 var N = L + R;
@@ -4943,7 +5307,7 @@ namespace ModelGraphSTD
         }
         string QueryXHeadName(ItemModel model)
         {
-            var sd = model.Item1 as QueryX;
+            var sd = model.Item as QueryX;
 
             Store head1, tail1, head2, tail2;
             GetHeadTail(sd, out head1, out tail1);
@@ -4970,34 +5334,45 @@ namespace ModelGraphSTD
         #endregion
 
         #region 694 QueryXPathLink  ===========================================
+        ModelAction QueryXPathLink_X;
+        void Initialize_QueryXPathLink_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryXPathLink_X,
+            };
+        }
+        void Refresh_QueryXPathLink_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryXPathLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = QueryXPathDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetQueryXRelationName(model);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -5008,7 +5383,7 @@ namespace ModelGraphSTD
                 var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXIsBreakPointProperty, _queryXRootWhereProperty };
                 var R = model.IsExpandedRight ? sp.Length : 0;
 
-                var sd = model.Item1 as QueryX;
+                var sd = model.Item as QueryX;
                 var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
 
                 var N = L + R;
@@ -5042,9 +5417,9 @@ namespace ModelGraphSTD
         }
         private DropAction QueryXPathDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(model.Item1 is QueryX qx)) return DropAction.None;
-            if (!(drop.Item1 is Relation re)) return DropAction.None;
-            if (!CanDropQueryXRelation(qx, drop.Item1 as RelationX)) return DropAction.None;
+            if (!(model.Item is QueryX qx)) return DropAction.None;
+            if (!(drop.Item is Relation re)) return DropAction.None;
+            if (!CanDropQueryXRelation(qx, drop.Item as RelationX)) return DropAction.None;
 
             if (doDrop)
             {
@@ -5055,33 +5430,44 @@ namespace ModelGraphSTD
         #endregion
 
         #region 695 QueryXGroupHead  ==========================================
+        ModelAction QueryXGroupHead_X;
+        void Initialize_QueryXGroupHead_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryXGroupHead_X,
+            };
+        }
+        void Refresh_QueryXGroupHead_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryXGroupHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = QueryXGroupDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryXHeadName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         if (CanConvertQueryType(model))
                         {
@@ -5098,7 +5484,7 @@ namespace ModelGraphSTD
                 var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
                 var R = model.IsExpandedRight ? sp.Length : 0;
 
-                var sd = model.Item1 as QueryX;
+                var sd = model.Item as QueryX;
                 var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
 
                 var N = L + R;
@@ -5133,34 +5519,45 @@ namespace ModelGraphSTD
         #endregion
 
         #region 696 QueryXGroupLink  ==========================================
+        ModelAction QueryXGroupLink_X;
+        void Initialize_QueryXGroupLink_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryXGroupLink_X,
+            };
+        }
+        void Refresh_QueryXGroupLink_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryXGroupLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = QueryXGroupDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetQueryXRelationName(model);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -5171,7 +5568,7 @@ namespace ModelGraphSTD
                 var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
                 var R = model.IsExpandedRight ? sp.Length : 0;
 
-                var sd = model.Item1 as QueryX;
+                var sd = model.Item as QueryX;
                 var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
 
                 var N = L + R;
@@ -5205,9 +5602,9 @@ namespace ModelGraphSTD
         }
         private DropAction QueryXGroupDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(model.Item1 is QueryX qx)) return DropAction.None;
-            if (!(drop.Item1 is Relation re)) return DropAction.None;
-            if (!CanDropQueryXRelation(qx, drop.Item1 as RelationX)) return DropAction.None;
+            if (!(model.Item is QueryX qx)) return DropAction.None;
+            if (!(drop.Item is Relation re)) return DropAction.None;
+            if (!CanDropQueryXRelation(qx, drop.Item as RelationX)) return DropAction.None;
 
             if (doDrop)
             {
@@ -5218,34 +5615,45 @@ namespace ModelGraphSTD
         #endregion
 
         #region 697 QueryXEgressHead  =========================================
+        ModelAction QueryXEgressHead_X;
+        void Initialize_QueryXEgressHead_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryXEgressHead_X,
+            };
+        }
+        void Refresh_QueryXEgressHead_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryXEgressHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = QueryXBridgeDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetQueryXRelationName(model);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryXHeadName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         if (CanConvertQueryType(model))
                         {
@@ -5262,7 +5670,7 @@ namespace ModelGraphSTD
                 var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
                 var R = model.IsExpandedRight ? sp.Length : 0;
 
-                var sd = model.Item1 as QueryX;
+                var sd = model.Item as QueryX;
                 var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
 
                 var N = L + R;
@@ -5297,34 +5705,45 @@ namespace ModelGraphSTD
         #endregion
 
         #region 698 QueryXEgressLink  =========================================
+        ModelAction QueryXEgressLink_X;
+        void Initialize_QueryXEgressLink_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryXEgressLink_X,
+            };
+        }
+        void Refresh_QueryXEgressLink_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryXEgressLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = QueryXBridgeDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetQueryXRelationName(model);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -5335,7 +5754,7 @@ namespace ModelGraphSTD
                 var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
                 var R = model.IsExpandedRight ? sp.Length : 0;
 
-                var sd = model.Item1 as QueryX;
+                var sd = model.Item as QueryX;
                 var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
 
                 var N = L + R;
@@ -5369,9 +5788,9 @@ namespace ModelGraphSTD
         }
         private DropAction QueryXBridgeDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(model.Item1 is QueryX qx)) return DropAction.None;
-            if (!(drop.Item1 is Relation re)) return DropAction.None;
-            if (!CanDropQueryXRelation(qx, drop.Item1 as RelationX)) return DropAction.None;
+            if (!(model.Item is QueryX qx)) return DropAction.None;
+            if (!(drop.Item is Relation re)) return DropAction.None;
+            if (!CanDropQueryXRelation(qx, drop.Item as RelationX)) return DropAction.None;
 
             if (doDrop)
             {
@@ -5382,23 +5801,34 @@ namespace ModelGraphSTD
         #endregion
 
         #region 699 GraphXNodeSymbol  =========================================
+        ModelAction GraphXNodeSymbol_X;
+        void Initialize_GraphXNodeSymbol_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphXNodeSymbol_X,
+            };
+        }
+        void Refresh_GraphXNodeSymbol_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphXNodeSymbol_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetQueryXRelationName(model);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryXNodeSymbolName(model);
@@ -5407,7 +5837,7 @@ namespace ModelGraphSTD
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -5433,7 +5863,7 @@ namespace ModelGraphSTD
         }
         private string QueryXNodeSymbolName(ItemModel model)
         {
-            var sd = model.Item1;
+            var sd = model.Item;
             SymbolX sym;
             return (SymbolX_QueryX.TryGetParent(sd, out sym)) ? sym.Name : null;
         }
@@ -5441,34 +5871,45 @@ namespace ModelGraphSTD
 
 
         #region 69E ValueXHead  ===============================================
+        ModelAction ValueHead_X;
+        void Initialize_ValueHead_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ValueHead_X,
+            };
+        }
+        void Refresh_ValueHead_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ValueXHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = ValueXLinkDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = QueryXComputeName(model);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -5476,7 +5917,7 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var qx = model.Item1 as QueryX;
+                var qx = model.Item as QueryX;
                 var sp1 = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty};
                 var sp2 = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty, _queryXValueTypeProperty };
                 var sp = qx.HasSelect ? sp2 : sp1;
@@ -5516,34 +5957,45 @@ namespace ModelGraphSTD
         #endregion
 
         #region 69F ValueXLink  ===============================================
+        ModelAction ValueLink_X;
+        void Initialize_ValueLink_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ValueLink_X,
+            };
+        }
+        void Refresh_ValueLink_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ValueXLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = ValueXLinkDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = QueryXComputeName(model);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item1);
+                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
 
                         model.CanDrag = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -5554,7 +6006,7 @@ namespace ModelGraphSTD
                 var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty, _queryXValueTypeProperty };
                 var R = model.IsExpandedRight ? sp.Length : 0;
 
-                var vd = model.Item1 as QueryX;
+                var vd = model.Item as QueryX;
                 var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(vd) : 0;
 
                 var N = L + R;
@@ -5588,8 +6040,8 @@ namespace ModelGraphSTD
         }
         private DropAction ValueXLinkDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(drop.Item1 is Relation re)) return DropAction.None;
-            if (!(model.Item1 is QueryX qx)) return DropAction.None;
+            if (!(drop.Item is Relation re)) return DropAction.None;
+            if (!(model.Item is QueryX qx)) return DropAction.None;
 
             Store tb1Head, tb1Tail, tb2Head, tb2Tail;
             GetHeadTail(qx,out tb1Head, out tb1Tail);
@@ -5604,7 +6056,7 @@ namespace ModelGraphSTD
         }
         string QueryXComputeName(ItemModel model)
         {
-            var sd = model.Item1 as QueryX;
+            var sd = model.Item as QueryX;
 
             Store head1, tail1, head2, tail2;
             GetHeadTail(sd, out head1, out tail1);
@@ -5633,33 +6085,44 @@ namespace ModelGraphSTD
 
 
         #region 6A1 RowX  =====================================================
+        ModelAction Row_X;
+        void Initialize_Row_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_Row_X,
+            };
+        }
+        void Refresh_Row_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowX_X(ItemModel model, RootModel root)
         {
-            var row = model.Item1 as RowX;
+            var row = model.Item as RowX;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ReorderItems = ReorderStoreItem;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
-                        root.ModelSummary = GetIdentity(model.Item1, IdentityStyle.Summary);
+                        root.ModelSummary = GetIdentity(model.Item, IdentityStyle.Summary);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
-                        root.ModelName = GetIdentity(model.Item1, IdentityStyle.Single);
+                        root.ModelName = GetIdentity(model.Item, IdentityStyle.Single);
 
                         model.CanDrag = true;
                         model.CanExpandLeft = true;
                         model.CanExpandRight = row.TableX.HasChoiceColumns;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
                         break;
@@ -5672,7 +6135,7 @@ namespace ModelGraphSTD
         }
         private void RowX_VX(ItemModel model)
         {
-            var row = model.Item1 as RowX;
+            var row = model.Item as RowX;
             ColumnX[] cols = null;
             var R = (model.IsExpandedRight && TryGetChoiceColumns(row.Owner, out cols)) ? cols.Length : 0;
             var L = (model.IsExpandedLeft) ? 7 : 0;
@@ -5733,46 +6196,57 @@ namespace ModelGraphSTD
         }
         private DropAction ReorderStoreItem(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (!(model.Item1.Owner is Store sto)) return DropAction.None;
+            if (!(model.Item.Owner is Store sto)) return DropAction.None;
             if (!model.IsSiblingModel(drop)) return DropAction.None;
             
-            var item1 = drop.Item1;
-            var item2 = model.Item1;
+            var item1 = drop.Item;
+            var item2 = model.Item;
             var index1 = sto.IndexOf(item1);
             var index2 = sto.IndexOf(item2);
             if (index1 < 0 || index2 < 0 || index1 == index2) return DropAction.None;
 
             if (doDrop)
             {
-                ItemMoved(drop.Item1, index1, index2);
+                ItemMoved(drop.Item, index1, index2);
             }
             return DropAction.Move;
         }
         #endregion
 
         #region 6A3 View  =====================================================
+        ModelAction View_X;
+        void Initialize_View_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_View_X,
+            };
+        }
+        void Refresh_View_X(RootModel root, ItemModel model)
+        {
+        }
         internal void View_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as ViewX;
+                var item = model.Item as ViewX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = item.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = item.Name;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -5781,33 +6255,44 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6A4 TableX  ===================================================
+        ModelAction Table_X;
+        void Initialize_Table_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_Table_X,
+            };
+        }
+        void Refresh_Table_X(RootModel root, ItemModel model)
+        {
+        }
         internal void Table_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var tbl = model.Item1 as TableX;
+                var tbl = model.Item as TableX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = tbl.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = tbl.Name;
                         root.ModelCount = tbl.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, TableInsert));
                         break;
@@ -5815,13 +6300,13 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var tbl = model.Item1 as TableX;
+                var tbl = model.Item as TableX;
                 var col = TableX_NameProperty.GetChild(tbl);
                 var N = model.IsExpandedLeft ? tbl.Count : 0;
 
                 if (N > 0)
                 {
-                    var items = tbl.Items;
+                    var items = tbl.ToArray;
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
@@ -5842,29 +6327,40 @@ namespace ModelGraphSTD
         }
         private void TableInsert(ItemModel model)
         {
-            var tbl = model.Item1 as TableX;
+            var tbl = model.Item as TableX;
             ItemCreated(new RowX(tbl));
         }
         #endregion
 
         #region 6A5 Graph  ====================================================
+        ModelAction Graph_X;
+        void Initialize_Graph_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_Graph_X,
+            };
+        }
+        void Refresh_Graph_X(RootModel root, ItemModel model)
+        {
+        }
         internal void Graph_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var g = model.Item1 as Graph;
+                var g = model.Item as Graph;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = g.GraphX.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = g.Name;
@@ -5872,7 +6368,7 @@ namespace ModelGraphSTD
                         model.CanExpandLeft = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.ViewCommand, CreateSecondaryModelGraph));
                         //root.ButtonCommands.Add(new ModelCommand(this, model, Trait.RefreshCommand, RefreshGraph));
@@ -5884,7 +6380,7 @@ namespace ModelGraphSTD
                 var N = (model.IsExpandedLeft) ? 5 : 0;
                 if (N > 0)
                 {
-                    var item = model.Item1 as Graph;
+                    var item = model.Item as Graph;
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
@@ -5924,79 +6420,101 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6A6 GraphRef  =================================================
+        ModelAction GraphRef_X;
+        void Initialize_GraphRef_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphRef_X,
+            };
+        }
+        void Refresh_GraphRef_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphRef_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var graph = model.Item1 as Graph;
+                var graph = model.Item as Graph;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = graph.GraphX.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = graph.Name;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else
             {
-                var graph = model.Item1 as Graph;
+                var graph = model.Item as Graph;
                 //graph.GraphRefValidate(model as RootModel);
             }
         }
         #endregion
 
         #region 6A7 RowChildRelation  =========================================
+        ModelAction RowChildRelation_X;
+        void Initialize_RowChildRelation_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowChildRelation_X,
+            };
+        }
+        void Refresh_RowChildRelation_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowChildRelation_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var rel = model.Item2 as RelationX;
+                var rel = model.Aux1 as RelationX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = RowChildRelationDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = rel.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = GetRelationName(rel);
-                        root.ModelCount = model.Relation.ChildCount(model.Item1);
+                        root.ModelCount = model.Relation.ChildCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var row1 = model.Item1 as RowX;
-                var rel = model.Item2 as RelationX;
+                var row1 = model.Item as RowX;
+                var rel = model.Aux1 as RelationX;
 
                 var N = (model.IsExpandedLeft) ? rel.ChildCount(row1) : 0;
 
@@ -6024,62 +6542,73 @@ namespace ModelGraphSTD
         private DropAction RowChildRelationDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             TableX expectedOwner;
-            if (!drop.Item1.IsRowX) return DropAction.None;
-            if (!model.Item1.IsRowX) return DropAction.None;
-            if (!model.Item2.IsRelationX) return DropAction.None;
-            if (!TableX_ParentRelationX.TryGetParent(model.Item2, out expectedOwner)) return DropAction.None;
-            if (drop.Item1.Owner != expectedOwner) return DropAction.None;
+            if (!drop.Item.IsRowX) return DropAction.None;
+            if (!model.Item.IsRowX) return DropAction.None;
+            if (!model.Aux1.IsRelationX) return DropAction.None;
+            if (!TableX_ParentRelationX.TryGetParent(model.Aux1, out expectedOwner)) return DropAction.None;
+            if (drop.Item.Owner != expectedOwner) return DropAction.None;
 
             if (doDrop)
             {
-                var rel = model.Item2 as RelationX;
+                var rel = model.Aux1 as RelationX;
                 if (model.IsChildModel(drop))
-                    RemoveLink(rel, model.Item1, drop.Item1);
+                    RemoveLink(rel, model.Item, drop.Item);
                 else
-                    AppendLink(rel, model.Item1, drop.Item1);
+                    AppendLink(rel, model.Item, drop.Item);
             }
             return DropAction.Link;
         }
         #endregion
 
         #region 6A8 RowParentRelation  ========================================
+        ModelAction RowParentRelation_X;
+        void Initialize_RowParentRelation_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowParentRelation_X,
+            };
+        }
+        void Refresh_RowParentRelation_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowParentRelation_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var rel = model.Item2 as RelationX;
+                var rel = model.Aux1 as RelationX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = RowParentRelationDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = rel.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = GetRelationName(rel);
-                        root.ModelCount = model.Relation.ParentCount(model.Item1);
+                        root.ModelCount = model.Relation.ParentCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as RowX;
-                var rel = model.Item2 as RelationX;
+                var item = model.Item as RowX;
+                var rel = model.Aux1 as RelationX;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -6105,39 +6634,50 @@ namespace ModelGraphSTD
         private DropAction RowParentRelationDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
             TableX expectedOwner;
-            if (!drop.Item1.IsRowX) return DropAction.None;
-            if (!model.Item1.IsRowX) return DropAction.None;
-            if (!model.Item2.IsRelationX) return DropAction.None;
-            if (!TableX_ChildRelationX.TryGetParent(model.Item2, out expectedOwner)) return DropAction.None;
-            if (drop.Item1.Owner != expectedOwner) return DropAction.None;
+            if (!drop.Item.IsRowX) return DropAction.None;
+            if (!model.Item.IsRowX) return DropAction.None;
+            if (!model.Aux1.IsRelationX) return DropAction.None;
+            if (!TableX_ChildRelationX.TryGetParent(model.Aux1, out expectedOwner)) return DropAction.None;
+            if (drop.Item.Owner != expectedOwner) return DropAction.None;
 
             if (doDrop)
             {
-                var rel = model.Item2 as RelationX;
+                var rel = model.Aux1 as RelationX;
                 if (model.IsChildModel(drop))
-                    RemoveLink(rel, drop.Item1, model.Item1);
+                    RemoveLink(rel, drop.Item, model.Item);
                 else
-                    AppendLink(rel, drop.Item1, model.Item1);
+                    AppendLink(rel, drop.Item, model.Item);
             }
             return DropAction.Link;
         }
         #endregion
 
         #region 6A9 RowRelatedChild  ============================================
+        ModelAction RowRelatedChild_X;
+        void Initialize_RowRelatedChild_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowRelatedChild_X,
+            };
+        }
+        void Refresh_RowRelatedChild_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowRelatedChild_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var row = model.Item1 as RowX;
-                var rel = model.Item2 as RelationX;
+                var row = model.Item as RowX;
+                var rel = model.Aux1 as RelationX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ReorderItems = ReorderRelatedChild;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = RowSummary(model);
 
@@ -6145,7 +6685,7 @@ namespace ModelGraphSTD
                         model.CanExpandLeft = true;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = row.TableX.Name;
                         root.ModelName = GetRowName(row);
@@ -6155,7 +6695,7 @@ namespace ModelGraphSTD
                         model.CanExpandLeft = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, UnlinkRelatedChild));
                         break;
@@ -6168,9 +6708,9 @@ namespace ModelGraphSTD
         }
         private void UnlinkRelatedChild(ItemModel model)
         {
-            var key = model.Item3;
-            var rel = model.Item2 as Relation;
-            var item = model.Item1;
+            var key = model.Aux2;
+            var rel = model.Aux1 as Relation;
+            var item = model.Item;
             RemoveLink(rel, key, item);
         }
         private void UnlinkRelatedRow(ItemModel model)
@@ -6178,27 +6718,27 @@ namespace ModelGraphSTD
             var parent = model.ParentModel;
             if (parent.IsRowChildRelationModel)
             {
-                var row2 = model.Item1;
-                var row1 = parent.Item1;
-                var rel = parent.Item2 as Relation;
+                var row2 = model.Item;
+                var row1 = parent.Item;
+                var rel = parent.Aux1 as Relation;
                 RemoveLink(rel, row1, row2);
             }
             else if (parent.IsRowParentRelationModel)
             {
-                var row1 = model.Item1;
-                var row2 = parent.Item1;
-                var rel = parent.Item2 as Relation;
+                var row1 = model.Item;
+                var row2 = parent.Item;
+                var rel = parent.Aux1 as Relation;
                 RemoveLink(rel, row1, row2);
             }
         }
         private DropAction ReorderRelatedChild (ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (model.Item3 == null) return DropAction.None;
-            if (model.Item2 == null || !(model.Item2 is Relation rel)) return DropAction.None;
+            if (model.Aux2 == null) return DropAction.None;
+            if (model.Aux1 == null || !(model.Aux1 is Relation rel)) return DropAction.None;
 
-            var key = model.Item3;
-            var item1 = drop.Item1;
-            var item2 = model.Item1;
+            var key = model.Aux2;
+            var item1 = drop.Item;
+            var item2 = model.Item;
             (int index1, int index2) = rel.GetChildrenIndex(key, item1, item2);
 
             if (index1 < 0 || index2 < 0 || index1 == index2) return DropAction.None;
@@ -6210,25 +6750,36 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6AA RowRelatedParent  ============================================
+        ModelAction RowRelatedParent_X;
+        void Initialize_RowRelatedParent_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowRelatedParent_X,
+            };
+        }
+        void Refresh_RowRelatedParent_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowRelatedParent_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var row = model.Item1 as RowX;
-                var rel = model.Item2 as RelationX;
+                var row = model.Item as RowX;
+                var rel = model.Aux1 as RelationX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ReorderItems = ReorderRelatedParent;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = RowSummary(model);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = row.TableX.Name;
                         root.ModelName = GetRowName(row);
@@ -6238,7 +6789,7 @@ namespace ModelGraphSTD
                         model.CanExpandLeft = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, UnlinkRelatedParent));
                         break;
@@ -6251,19 +6802,19 @@ namespace ModelGraphSTD
         }
         private void UnlinkRelatedParent(ItemModel model)
         {
-            var key = model.Item1;
-            var rel = model.Item2 as Relation;
-            var item = model.Item3;
+            var key = model.Item;
+            var rel = model.Aux1 as Relation;
+            var item = model.Aux2;
             RemoveLink(rel, key, item);
         }
         private DropAction ReorderRelatedParent(ItemModel model, ItemModel drop, bool doDrop)
         {
-            if (model.Item3 == null) return DropAction.None;
-            if (model.Item2 == null || !(model.Item2 is Relation rel)) return DropAction.None;
+            if (model.Aux2 == null) return DropAction.None;
+            if (model.Aux1 == null || !(model.Aux1 is Relation rel)) return DropAction.None;
 
-            var key = model.Item3;
-            var item1 = drop.Item1;
-            var item2 = model.Item1;
+            var key = model.Aux2;
+            var item1 = drop.Item;
+            var item2 = model.Item;
             (int index1, int index2) = rel.GetParentsIndex(key, item1, item2);
 
             if (index1 < 0 || index2 < 0 || index1 == index2) return DropAction.None;
@@ -6275,30 +6826,41 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6AB EnumRelatedColumn  ========================================
+        ModelAction EnumRelatedColumn_X;
+        void Initialize_EnumRelatedColumn_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_EnumRelatedColumn_X,
+            };
+        }
+        void Refresh_EnumRelatedColumn_X(RootModel root, ItemModel model)
+        {
+        }
         internal void EnumRelatedColumn_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var col = model.Item1 as ColumnX;
-                var tbl = model.Item2 as TableX;
+                var col = model.Item as ColumnX;
+                var tbl = model.Aux1 as TableX;
 
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = $"{tbl.Name}: {col.Name}";
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, UnlinkRelatedColumn));
                         break;
@@ -6307,9 +6869,9 @@ namespace ModelGraphSTD
         }
         private void UnlinkRelatedColumn(ItemModel model)
         {
-            var col = model.Item1;
-            var tbl = model.Item2;
-            var enu = model.Item3;
+            var col = model.Item;
+            var tbl = model.Aux1;
+            var enu = model.Aux2;
             RemoveLink(EnumX_ColumnX, enu, col);
         }
         #endregion
@@ -6317,6 +6879,17 @@ namespace ModelGraphSTD
 
 
         #region 6B1 RowPropertyList  ==========================================
+        ModelAction RowPropertyList_X;
+        void Initialize_RowPropertyList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowPropertyList_X,
+            };
+        }
+        void Refresh_RowPropertyList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowPropertyList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
@@ -6324,32 +6897,32 @@ namespace ModelGraphSTD
                 int n;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        GetColumnCount(model.Item1, out root.ModelCount, out n);
+                        GetColumnCount(model.Item, out root.ModelCount, out n);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var row = model.Item1 as RowX;
+                var row = model.Item as RowX;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -6376,6 +6949,17 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B2 RowChildRelationList  =====================================
+        ModelAction RowChildRelationList_X;
+        void Initialize_RowChildRelationList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowChildRelationList_X,
+            };
+        }
+        void Refresh_RowChildRelationList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowChildRelationList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
@@ -6383,32 +6967,32 @@ namespace ModelGraphSTD
                 int n;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        GetChildRelationCount(model.Item1, out root.ModelCount, out n);
+                        GetChildRelationCount(model.Item, out root.ModelCount, out n);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as RowX;
+                var item = model.Item as RowX;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -6435,6 +7019,17 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B3 RowParentRelationList  ====================================
+        ModelAction RowParentRelationList_X;
+        void Initialize_RowParentRelationList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowParentRelationList_X,
+            };
+        }
+        void Refresh_RowParentRelationList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowParentRelationList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
@@ -6442,32 +7037,32 @@ namespace ModelGraphSTD
                 int n;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        GetParentRelationCount(model.Item1, out root.ModelCount, out n);
+                        GetParentRelationCount(model.Item, out root.ModelCount, out n);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as RowX;
+                var item = model.Item as RowX;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -6494,6 +7089,17 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B4 RowDefaultPropertyList  ===================================
+        ModelAction RowDefaultPropertyList_X;
+        void Initialize_RowDefaultPropertyList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowDefaultPropertyList_X,
+            };
+        }
+        void Refresh_RowDefaultPropertyList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowDefaultPropertyList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
@@ -6501,32 +7107,32 @@ namespace ModelGraphSTD
                 int n;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        GetColumnCount(model.Item1, out n, out root.ModelCount);
+                        GetColumnCount(model.Item, out n, out root.ModelCount);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as RowX;
+                var item = model.Item as RowX;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -6553,6 +7159,17 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B5 RowUnusedChildRelationList  ===============================
+        ModelAction RowUnusedChildRelationList_X;
+        void Initialize_RowUnusedChildRelationList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowUnusedChildRelationList_X,
+            };
+        }
+        void Refresh_RowUnusedChildRelationList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowUnusedChildRelationList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
@@ -6560,32 +7177,32 @@ namespace ModelGraphSTD
                 int n;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        GetChildRelationCount(model.Item1, out n, out root.ModelCount);
+                        GetChildRelationCount(model.Item, out n, out root.ModelCount);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as RowX;
+                var item = model.Item as RowX;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -6612,6 +7229,17 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B6 RowUnusedParentRelationList  ==============================
+        ModelAction RowUnusedParentRelationList_X;
+        void Initialize_RowUnusedParentRelationList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowUnusedParentRelationList_X,
+            };
+        }
+        void Refresh_RowUnusedParentRelationList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowUnusedParentRelationList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
@@ -6619,32 +7247,32 @@ namespace ModelGraphSTD
                 int n;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
-                        GetParentRelationCount(model.Item1, out n, out root.ModelCount);
+                        GetParentRelationCount(model.Item, out n, out root.ModelCount);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as RowX;
+                var item = model.Item as RowX;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -6671,33 +7299,44 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6B7 RowComputeList  ===========================================
+        ModelAction RowComputeList_X;
+        void Initialize_RowComputeList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_RowComputeList_X,
+            };
+        }
+        void Refresh_RowComputeList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void RowComputeList_X(ItemModel model, RootModel root)
         {
-            var item = model.Item1;
+            var item = model.Item;
             var sto = item.Owner;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = Store_ComputeX.ChildCount(sto);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -6731,30 +7370,41 @@ namespace ModelGraphSTD
 
 
         #region 6C1 QueryRootLink  ============================================
+        ModelAction QueryRootLink_X;
+        void Initialize_QueryRootLink_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryRootLink_X,
+            };
+        }
+        void Refresh_QueryRootLink_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryRootLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -6792,30 +7442,41 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C2 QueryPathHead  ============================================
+        ModelAction QueryPathHead_X;
+        void Initialize_QueryPathHead_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryPathHead_X,
+            };
+        }
+        void Refresh_QueryPathHead_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryPathHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -6828,32 +7489,43 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C3 QueryPathLink  ============================================
+        ModelAction QueryPathLink_X;
+        void Initialize_QueryPathLink_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryPathLink_X,
+            };
+        }
+        void Refresh_QueryPathLink_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryPathLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var seg = model.Item2 as Query;
+                var seg = model.Aux1 as Query;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -6898,30 +7570,41 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C4 QueryGroupHead  ===========================================
+        ModelAction QueryGroupHead_X;
+        void Initialize_QueryGroupHead_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryGroupHead_X,
+            };
+        }
+        void Refresh_QueryGroupHead_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryGroupHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -6934,30 +7617,41 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C5 QueryGroupLink  ===========================================
+        ModelAction QueryGroupLink_X;
+        void Initialize_QueryGroupLink_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryGroupLink_X,
+            };
+        }
+        void Refresh_QueryGroupLink_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryGroupLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -7002,30 +7696,41 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C6 QueryEgressHead  ==========================================
+        ModelAction QueryEgressHead_X;
+        void Initialize_QueryEgressHead_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryEgressHead_X,
+            };
+        }
+        void Refresh_QueryEgressHead_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryEgressHead_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -7038,30 +7743,41 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6C7 QueryEgressLink  ==========================================
+        ModelAction QueryEgressLink_X;
+        void Initialize_QueryEgressLink_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryEgressLink_X,
+            };
+        }
+        void Refresh_QueryEgressLink_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryEgressLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = QueryLinkName(model);
                         root.ModelCount = model.Query.ItemCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -7108,32 +7824,43 @@ namespace ModelGraphSTD
 
 
         #region 6D1 QueryRootItem  ============================================
+        ModelAction QueryRootItem_X;
+        void Initialize_QueryRootItem_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryRootItem_X,
+            };
+        }
+        void Refresh_QueryRootItem_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryRootItem_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var row = model.Item1 as RowX;
+                var row = model.Item as RowX;
                 var seg = model.Query;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = (row.Owner as TableX).Name;
                         root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item1);
+                        root.ModelCount = seg.QueryCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -7145,7 +7872,7 @@ namespace ModelGraphSTD
         }
         private void ValidateQueryModel(ItemModel model)
         {
-            var itm = model.Item1;
+            var itm = model.Item;
             var seg = model.Query;
             var level = (byte)(model.Level + 1);
             var oldModels = model.ChildModels;
@@ -7191,39 +7918,50 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D2 QueryPathStep  ============================================
+        ModelAction QueryPathStep_X;
+        void Initialize_QueryPathStep_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryPathStep_X,
+            };
+        }
+        void Refresh_QueryPathStep_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryPathStep_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var row = model.Item1 as RowX;
+                var row = model.Item as RowX;
                 var seg = model.Query;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = $"{_localize(model.KindKey)} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item1);
+                        root.ModelCount = seg.QueryCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var itm = model.Item1;
+                var itm = model.Item;
                 var seg = model.Query;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
@@ -7250,32 +7988,43 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D3 QueryPathTail  ============================================
+        ModelAction QueryPathTail_X;
+        void Initialize_QueryPathTail_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryPathTail_X,
+            };
+        }
+        void Refresh_QueryPathTail_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryPathTail_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var row = model.Item1 as RowX;
+                var row = model.Item as RowX;
                 var seg = model.Query;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = $"{_localize(model.KindKey)} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item1);
+                        root.ModelCount = seg.QueryCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -7284,39 +8033,50 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D4 QueryGroupStep  ===========================================
+        ModelAction QueryGroupStep_X;
+        void Initialize_QueryGroupStep_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryGroupStep_X,
+            };
+        }
+        void Refresh_QueryGroupStep_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryGroupStep_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var row = model.Item1 as RowX;
+                var row = model.Item as RowX;
                 var seg = model.Query;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = $"{_localize(KindKey)} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item1);
+                        root.ModelCount = seg.QueryCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var itm = model.Item1;
+                var itm = model.Item;
                 var seg = model.Query;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
@@ -7343,32 +8103,43 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D5 QueryGroupTail  ===========================================
+        ModelAction QueryGroupTail_X;
+        void Initialize_QueryGroupTail_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryGroupTail_X,
+            };
+        }
+        void Refresh_QueryGroupTail_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryGroupTail_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var row = model.Item1 as RowX;
+                var row = model.Item as RowX;
                 var seg = model.Query;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = $"{_localize(model.KindKey)} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item1);
+                        root.ModelCount = seg.QueryCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -7377,39 +8148,50 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D6 QueryEgressStep  ==========================================
+        ModelAction QueryEgressStep_X;
+        void Initialize_QueryEgressStep_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryEgressStep_X,
+            };
+        }
+        void Refresh_QueryEgressStep_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryEgressStep_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var row = model.Item1 as RowX;
+                var row = model.Item as RowX;
                 var seg = model.Query;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = $"{_localize(model.KindKey)} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item1);
+                        root.ModelCount = seg.QueryCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var itm = model.Item1;
+                var itm = model.Item;
                 var seg = model.Query;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
@@ -7436,32 +8218,43 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6D7 QueryEgressTail  ==========================================
+        ModelAction QueryEgressTail_X;
+        void Initialize_QueryEgressTail_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_QueryEgressTail_X,
+            };
+        }
+        void Refresh_QueryEgressTail_X(RootModel root, ItemModel model)
+        {
+        }
         internal void QueryEgressTail_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var row = model.Item1 as RowX;
+                var row = model.Item as RowX;
                 var seg = model.Query;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = $"{_localize(model.KindKey)} {(row.Owner as TableX).Name}";
                         root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item1);
+                        root.ModelCount = seg.QueryCount(model.Item);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -7472,33 +8265,44 @@ namespace ModelGraphSTD
 
 
         #region 6E1 GraphXRef  ================================================
+        ModelAction GraphXRef_X;
+        void Initialize_GraphXRef_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphXRef_X,
+            };
+        }
+        void Refresh_GraphXRef_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphXRef_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var gx = model.Item1 as GraphX;
+                var gx = model.Item as GraphX;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         root.ModelDrop = GraphXModDrop;
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = gx.Summary;
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = gx.Trait.ToString();
                         root.ModelName = gx.Name;
                         root.ModelCount = gx.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
+                        model.CanExpandLeft = (root.ChildCount > 0);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ButtonCommands.Add(new ModelCommand(this, model, Trait.CreateCommand, CreateGraph));
                         break;
@@ -7506,12 +8310,12 @@ namespace ModelGraphSTD
             }
             else  // validate the list of child models
             {
-                var gx = model.Item1 as GraphX;
+                var gx = model.Item as GraphX;
                 var N = model.IsExpandedLeft ? gx.Count : 0;
 
                 if (N > 0)
                 {
-                    var items = gx.Items;
+                    var items = gx.ToArray;
                     var level = (byte)(model.Level + 1);
 
                     var oldModels = model.ChildModels;
@@ -7532,7 +8336,7 @@ namespace ModelGraphSTD
         }
         private void CreateGraph(ItemModel model)
         {
-            var gx = model.Item1 as GraphX;
+            var gx = model.Item as GraphX;
             CreateGraph(gx, out Graph g);
 
             model.IsExpandedLeft = true;
@@ -7543,7 +8347,7 @@ namespace ModelGraphSTD
         }
         private DropAction GraphXModDrop(ItemModel model, ItemModel drop, bool doDrop)
         {
-            var gd = model.Item1 as GraphX;
+            var gd = model.Item as GraphX;
             Graph g;
             Store tbl = null;
 
@@ -7552,18 +8356,18 @@ namespace ModelGraphSTD
             var items = GraphX_QueryX.GetChildren(gd);
             foreach (var item in items)
             {
-                if (item.IsQueryGraphRoot && Store_QueryX.TryGetParent(item, out tbl) && drop.Item1.Owner == tbl) break;
+                if (item.IsQueryGraphRoot && Store_QueryX.TryGetParent(item, out tbl) && drop.Item.Owner == tbl) break;
             }
             if (tbl == null) return DropAction.None;
 
-            foreach (var tg in gd.Items)
+            foreach (var tg in gd.ToArray)
             {
-                if (tg.RootItem == drop.Item1) return DropAction.None;
+                if (tg.RootItem == drop.Item) return DropAction.None;
             }
 
             if (doDrop)
             {
-                CreateGraph(gd, out g, drop.Item1);
+                CreateGraph(gd, out g, drop.Item);
 
                 model.IsExpandedLeft = true;
                 MajorDelta += 1;
@@ -7576,39 +8380,50 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E2 GraphNodeList  ============================================
+        ModelAction GraphNodeList_X;
+        void Initialize_GraphNodeList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphNodeList_X,
+            };
+        }
+        void Refresh_GraphNodeList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphNodeList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = model.Graph.NodeCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as Graph;
+                var item = model.Item as Graph;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -7634,39 +8449,50 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E3 GraphEdgeList  ============================================
+        ModelAction GraphEdgeList_X;
+        void Initialize_GraphEdgeList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphEdgeList_X,
+            };
+        }
+        void Refresh_GraphEdgeList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphEdgeList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = model.Graph.EdgeCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as Graph;
+                var item = model.Item as Graph;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -7692,39 +8518,50 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E4 GraphRootList  ============================================
+        ModelAction GraphRootList_X;
+        void Initialize_GraphRootList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphRootList_X,
+            };
+        }
+        void Refresh_GraphRootList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphRootList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = model.Graph.QueryCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as Graph;
+                var item = model.Item as Graph;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -7751,40 +8588,51 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E5 GraphLevelList  ===========================================
+        ModelAction GraphLevelList_X;
+        void Initialize_GraphLevelList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphLevelList_X,
+            };
+        }
+        void Refresh_GraphLevelList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphLevelList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as Graph;
+                var item = model.Item as Graph;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = item.Levels.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as Graph;
+                var item = model.Item as Graph;
                 var items = item.Levels;
                 var N = model.IsExpandedLeft ? items.Count : 0;
 
@@ -7811,40 +8659,51 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E6 GraphLevel  ===============================================
+        ModelAction GraphLevel_X;
+        void Initialize_GraphLevel_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphLevel_X,
+            };
+        }
+        void Refresh_GraphLevel_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphLevel_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1 as Level;
+                var item = model.Item as Level;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = item.Name;
                         root.ModelCount = item.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var item = model.Item1 as Level;
+                var item = model.Item as Level;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -7870,40 +8729,51 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E7 GraphPath  ================================================
+        ModelAction GraphPath_X;
+        void Initialize_GraphPath_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphPath_X,
+            };
+        }
+        void Refresh_GraphPath_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphPath_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var path = model.Item1 as Path;
+                var path = model.Item as Path;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = GetPathKind(path);
                         root.ModelName = GetPathName(path);
                         root.ModelCount = path.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var path = model.Item1 as Path;
+                var path = model.Item as Path;
                 var items = path.Items;
                 var N = (model.IsExpandedLeft) ? path.Count : 0;
                 if (N > 0)
@@ -7945,40 +8815,51 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E8 GraphRoot  ================================================
+        ModelAction GraphRoot_X;
+        void Initialize_GraphRoot_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphRoot_X,
+            };
+        }
+        void Refresh_GraphRoot_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphRoot_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var tbl = model.Item1 as TableX;
-                var seg = model.Item2 as Query;
+                var tbl = model.Item as TableX;
+                var seg = model.Aux1 as Query;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = tbl.Name;
                         root.ModelCount = seg.ItemCount;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var tbl = model.Item1;
+                var tbl = model.Item;
                 var seg = model.Query;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
@@ -8005,37 +8886,48 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6E9 GraphNode  ================================================
+        ModelAction GraphNode_X;
+        void Initialize_GraphNode_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphNode_X,
+            };
+        }
+        void Refresh_GraphNode_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphNode_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var nd = model.Item1 as Node;
+                var nd = model.Item as Node;
                 var g = nd.Graph;
                 List<Edge> edges;
 
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = GetIdentity(nd.Item, IdentityStyle.Double);
                         root.ModelCount = g.Node_Edges.TryGetValue(nd, out edges) ? edges.Count : 0;
 
                         model.CanExpandRight = true;
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8044,7 +8936,7 @@ namespace ModelGraphSTD
             {
                 var level = (byte)(model.Level + 1);
                 List<Edge> edges = null;
-                var nd = model.Item1 as Node;
+                var nd = model.Item as Node;
                 var g = nd.Graph;
                 var sp = new Property[] { _nodeCenterXYProperty, _nodeSizeWHProperty, _nodeOrientationProperty, _nodeFlipRotateProperty, _nodeLabelingProperty, _nodeResizingProperty, _nodeBarWidthProperty };
                 var R = model.IsExpandedRight ? sp.Length : 0;
@@ -8079,22 +8971,33 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6EA GraphEdge  ================================================
+        ModelAction GraphEdge_X;
+        void Initialize_GraphEdge_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphEdge_X,
+            };
+        }
+        void Refresh_GraphEdge_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphEdge_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var edge = model.Item1 as Edge;
+                var edge = model.Item as Edge;
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = GetEdgeName(edge);
@@ -8102,7 +9005,7 @@ namespace ModelGraphSTD
                         model.CanExpandRight = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8134,39 +9037,50 @@ namespace ModelGraphSTD
 
 
         #region 6EB GraphOpenList  ============================================
+        ModelAction GraphOpenList_X;
+        void Initialize_GraphOpenList_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphOpenList_X,
+            };
+        }
+        void Refresh_GraphOpenList_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphOpenList_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = model.Graph.OpenQuerys.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
             }
             else  // validate the list of child models
             {
-                var g = model.Item1 as Graph;
+                var g = model.Item as Graph;
                 var level = (byte)(model.Level + 1);
                 var oldModels = model.ChildModels;
 
@@ -8193,39 +9107,50 @@ namespace ModelGraphSTD
         #endregion
 
         #region 6EC GraphOpen  ================================================
+        ModelAction GraphOpen_X;
+        void Initialize_GraphOpen_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_GraphOpen_X,
+            };
+        }
+        void Refresh_GraphOpen_X(RootModel root, ItemModel model)
+        {
+        }
         internal void GraphOpen_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
                         root.ModelKind = GraphOpenKind(model);
                         root.ModelName = GraphOpenName(model);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
                         break;
                 }
             }
         }
         private string GraphOpenKind(ItemModel model)
         {
-            var g = model.Item1 as Graph;
-            var h = model.Item2 as Query;
+            var g = model.Item as Graph;
+            var h = model.Aux1 as Query;
 
             return GetIdentity(h.Item, IdentityStyle.Double);
         }
         private string GraphOpenName(ItemModel model)
         {
-            var g = model.Item1 as Graph;
-            var t = model.Item3 as Query;
+            var g = model.Item as Graph;
+            var t = model.Aux2 as Query;
             Store head, tail;
             GetHeadTail(t.QueryX, out head, out tail);
             return $"{GetIdentity(t.Item, IdentityStyle.Double)}  -->  {GetIdentity(tail, IdentityStyle.Single)}: <?>";
@@ -8235,32 +9160,43 @@ namespace ModelGraphSTD
 
 
         #region 7D0 PrimeCompute  =============================================
+        ModelAction PrimeCompute_X;
+        void Initialize_PrimeCompute_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_PrimeCompute_X,
+            };
+        }
+        void Refresh_PrimeCompute_X(RootModel root, ItemModel model)
+        {
+        }
         internal void PrimeCompute_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(GetSummaryKey(Trait.PrimeCompute_M));
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(GetNameKey(Trait.PrimeCompute_M));
                         root.ModelCount = GetPrimeComputeCount();
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ModelDescription = _localize(GetDescriptionKey(Trait.PrimeCompute_M));
                         break;
@@ -8313,33 +9249,44 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7D1 ComputeStore  =============================================
+        ModelAction ComputeStore_X;
+        void Initialize_ComputeStore_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_ComputeStore_X,
+            };
+        }
+        void Refresh_ComputeStore_X(RootModel root, ItemModel model)
+        {
+        }
         internal void ComputeStore_X(ItemModel model, RootModel root)
         {
-            var sto = model.Item1 as Store;
+            var sto = model.Item as Store;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetIdentity(sto, IdentityStyle.Summary);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = GetIdentity(sto, IdentityStyle.Single);
                         root.ModelCount = Store_ComputeX.ChildCount(sto);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8373,29 +9320,40 @@ namespace ModelGraphSTD
 
 
         #region 7F0 InternlStoreZ  ============================================
+        ModelAction InternalStoreZ_X;
+        void Initialize_InternalStoreZ_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_InternalStoreZ_X,
+            };
+        }
+        void Refresh_InternalStoreZ_X(RootModel root, ItemModel model)
+        {
+        }
         internal void InternalStoreZ_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(GetSummaryKey(Trait.InternalStore_ZM));
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(GetNameKey(Trait.InternalStore_ZM));
 
                         model.CanExpandLeft = true;
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ModelDescription = _localize(GetDescriptionKey(Trait.InternalStore_ZM));
                         break;
@@ -8465,33 +9423,44 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F1 InternalStore  ============================================
+        ModelAction InternalStore_X;
+        void Initialize_InternalStore_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_InternalStore_X,
+            };
+        }
+        void Refresh_InternalStore_X(RootModel root, ItemModel model)
+        {
+        }
         internal void InternalStore_X(ItemModel model, RootModel root)
         {
-            var store = model.Item1 as Store;
+            var store = model.Item as Store;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(store.NameKey);
                         root.ModelCount = store.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8524,9 +9493,20 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F2 StoreItem  ================================================
+        ModelAction StoreItem_X;
+        void Initialize_StoreItem_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_StoreItem_X,
+            };
+        }
+        void Refresh_StoreItem_X(RootModel root, ItemModel model)
+        {
+        }
         internal void StoreItem_X(ItemModel model, RootModel root)
         {
-            var item = model.Item1;
+            var item = model.Item;
             var hasItems = (item is Store sto && sto.Count > 0) ? true : false;
             var hasLinks = (item is Relation rel && rel.GetLinksCount() > 0) ? true : false;
             var hasChildRels = (GetChildRelationCount(item, SubsetType.Used) > 0) ? true : false;
@@ -8542,26 +9522,26 @@ namespace ModelGraphSTD
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetIdentity(item, IdentityStyle.Summary);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
                         root.ModelKind = GetIdentity(item, IdentityStyle.Kind);
                         root.ModelName = GetIdentity(item, IdentityStyle.StoreItem);
                         root.ModelCount = count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ModelSummary = GetIdentity(item, IdentityStyle.Description);
                         if (item.IsExternal) root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
@@ -8612,33 +9592,44 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F4 StoreItemItemZ  ===========================================
+        ModelAction StoreItemItemZ_X;
+        void Initialize_StoreItemItemZ_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_StoreItemItemZ_X,
+            };
+        }
+        void Refresh_StoreItemItemZ_X(RootModel root, ItemModel model)
+        {
+        }
         internal void StoreItemItemZ_X(ItemModel model, RootModel root)
         {
-            var store = model.Item1 as Store;
+            var store = model.Item as Store;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = store.Count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8671,33 +9662,44 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F5 StoreRelationLinkZ  =======================================
+        ModelAction StoreRelationLinkZ_X;
+        void Initialize_StoreRelationLinkZ_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_StoreRelationLinkZ_X,
+            };
+        }
+        void Refresh_StoreRelationLinkZ_X(RootModel root, ItemModel model)
+        {
+        }
         internal void StoreRelationLinkZ_X(ItemModel model, RootModel root)
         {
-            var rel = model.Item1 as Relation;
+            var rel = model.Item as Relation;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = rel.GetLinksCount();
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8729,34 +9731,45 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F6 StoreChildRelationZ  ======================================
+        ModelAction StoreChildRelationZ_X;
+        void Initialize_StoreChildRelationZ_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_StoreChildRelationZ_X,
+            };
+        }
+        void Refresh_StoreChildRelationZ_X(RootModel root, ItemModel model)
+        {
+        }
         internal void StoreChildRelationZ_X(ItemModel model, RootModel root)
         {
-            var item = model.Item1;
+            var item = model.Item;
 
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = GetChildRelationCount(item, SubsetType.Used);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8787,34 +9800,45 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F7 StoreParentRelationZ  =====================================
+        ModelAction StoreParentRelationZ_X;
+        void Initialize_StoreParentRelationZ_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_StoreParentRelationZ_X,
+            };
+        }
+        void Refresh_StoreParentRelationZ_X(RootModel root, ItemModel model)
+        {
+        }
         internal void StoreParentRelationZ_X(ItemModel model, RootModel root)
         {
-            var item = model.Item1;
+            var item = model.Item;
 
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = _localize(model.SummaryKey);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelName = _localize(model.NameKey);
                         root.ModelCount = GetParentRelationCount(item, SubsetType.Used);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8845,29 +9869,40 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F8 StoreItemItem  ============================================
+        ModelAction StoreItemItem_X;
+        void Initialize_StoreItemItem_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_StoreItemItem_X,
+            };
+        }
+        void Refresh_StoreItemItem_X(RootModel root, ItemModel model)
+        {
+        }
         internal void StoreItemItem_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var item = model.Item1;
+                var item = model.Item;
 
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetIdentity(item, IdentityStyle.Summary);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
                         root.ModelKind = _localize(item.KindKey);
                         root.ModelName = GetIdentity(item, IdentityStyle.Double);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8876,31 +9911,42 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7F9 StoreRelationLink  ========================================
+        ModelAction StoreRelationLink_X;
+        void Initialize_StoreRelationLink_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_StoreRelationLink_X,
+            };
+        }
+        void Refresh_StoreRelationLink_X(RootModel root, ItemModel model)
+        {
+        }
         internal void StoreRelationLink_X(ItemModel model, RootModel root)
         {
             if (root != null)  // get the data for this root.ModelAction
             {
-                var rel = model.Item1 as Relation;
-                var parent = model.Item2;
-                var child = model.Item3;
+                var rel = model.Item as Relation;
+                var parent = model.Aux1;
+                var child = model.Aux2;
 
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetIdentity(rel, IdentityStyle.Summary);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
                         root.ModelKind = _localize(model.KindKey);
                         root.ModelName = $"({GetIdentity(parent, IdentityStyle.Double)}) --> ({GetIdentity(child, IdentityStyle.Double)})";
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8909,34 +9955,45 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7FA StoreChildRelation  =======================================
+        ModelAction StoreChildRelation_X;
+        void Initialize_StoreChildRelation_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_StoreChildRelation_X,
+            };
+        }
+        void Refresh_StoreChildRelation_X(RootModel root, ItemModel model)
+        {
+        }
         internal void StoreChildRelation_X(ItemModel model, RootModel root)
         {
-            var rel = model.Item1 as Relation;
+            var rel = model.Item as Relation;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetIdentity(rel, IdentityStyle.Summary);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = GetKind(rel.Trait);
                         root.ModelName = GetIdentity(rel, IdentityStyle.Single);
-                        root.ModelCount = rel.ChildCount(model.Item2);
+                        root.ModelCount = rel.ChildCount(model.Aux1);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -8949,7 +10006,7 @@ namespace ModelGraphSTD
                 if (model.IsExpandedLeft)
                 {
                     Item[] items;
-                    if (rel.TryGetChildren(model.Item2, out items))
+                    if (rel.TryGetChildren(model.Aux1, out items))
                     {
                         var N = items.Length;
                         var level = (byte)(model.Level + 1);
@@ -8968,34 +10025,45 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7FA StoreParentRelation  ======================================
+        ModelAction StoreParentRelation_X;
+        void Initialize_StoreParentRelation_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_StoreParentRelation_X,
+            };
+        }
+        void Refresh_StoreParentRelation_X(RootModel root, ItemModel model)
+        {
+        }
         internal void StoreParentRelation_X(ItemModel model, RootModel root)
         {
-            var rel = model.Item1 as Relation;
+            var rel = model.Item as Relation;
             if (root != null)  // get the data for this root.ModelAction
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetIdentity(rel, IdentityStyle.Summary);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
 
                         root.ModelKind = GetKind(rel.Trait);
                         root.ModelName = GetIdentity(rel, IdentityStyle.Single);
-                        root.ModelCount = rel.ParentCount(model.Item2);
+                        root.ModelCount = rel.ParentCount(model.Aux1);
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         break;
                 }
@@ -9008,7 +10076,7 @@ namespace ModelGraphSTD
                 if (model.IsExpandedLeft)
                 {
                     Item[] items;
-                    if (rel.TryGetParents(model.Item2, out items))
+                    if (rel.TryGetParents(model.Aux1, out items))
                     {
                         var N = items.Length;
                         var level = (byte)(model.Level + 1);
@@ -9027,9 +10095,20 @@ namespace ModelGraphSTD
         #endregion
 
         #region 7FC StoreRelatedItem  =========================================
+        ModelAction StoreRelatedItem_X;
+        void Initialize_StoreRelatedItem_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                Refresh = Refresh_StoreRelatedItem_X,
+            };
+        }
+        void Refresh_StoreRelatedItem_X(RootModel root, ItemModel model)
+        {
+        }
         internal void StoreRelatedItem_X(ItemModel model, RootModel root)
         {
-            var item = model.Item1;
+            var item = model.Item;
             var hasChildRels = (GetChildRelationCount(item, SubsetType.Used) > 0) ? true : false;
             var hasParentRels = (GetParentRelationCount(item, SubsetType.Used) > 0) ? true : false;
             var count = 0;
@@ -9041,26 +10120,26 @@ namespace ModelGraphSTD
             {
                 switch (root.ModelAction)
                 {
-                    case ModelAction.DragOver:
+                    case ModelActionX.DragOver:
 
                         break;
 
-                    case ModelAction.PointerOver:
+                    case ModelActionX.PointerOver:
 
                         root.ModelSummary = GetIdentity(item, IdentityStyle.Summary);
                         break;
 
-                    case ModelAction.ModelRefresh:
+                    case ModelActionX.ModelRefresh:
                         root.ModelKind = GetIdentity(item, IdentityStyle.Kind);
                         root.ModelName = GetIdentity(item, IdentityStyle.StoreItem);
                         root.ModelCount = count;
 
-                        model.CanExpandLeft = (root.ModelCount > 0);
-                        model.CanFilter = (root.ModelCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ModelCount > 1);
+                        model.CanExpandLeft = (root.ChildCount > 0);
+                        model.CanFilter = (root.ChildCount > 2);
+                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
                         break;
 
-                    case ModelAction.ModelSelect:
+                    case ModelActionX.ModelSelect:
 
                         root.ModelSummary = GetIdentity(item, IdentityStyle.Description);
                         if (item.IsExternal) root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));

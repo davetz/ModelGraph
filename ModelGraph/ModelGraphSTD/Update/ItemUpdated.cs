@@ -21,7 +21,7 @@
             OldValue = oldValue;
             NewValue = newValue;
 
-            owner.Append(this);
+            owner.Add(this);
         }
         #endregion
     }

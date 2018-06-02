@@ -659,7 +659,7 @@ namespace ModelGraphSTD
         }
         internal string RowSummary(ItemModel model)
         {
-            return RowSummary(model.Item1 as RowX);
+            return RowSummary(model.Item as RowX);
         }
         internal string RowSummary(RowX row)
         {

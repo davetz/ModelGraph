@@ -19,7 +19,7 @@
             Index1 = index1;
             Index2 = index2;
 
-            owner.Append(this);
+            owner.Add(this);
         }
         #endregion
     }

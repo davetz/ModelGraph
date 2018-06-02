@@ -714,7 +714,7 @@ namespace ModelGraphUWP
         }
         private void RefreshItemName(ItemModel model, TextBlock obj)
         {
-            obj.Text = _root.ModelName;
+            obj.Text = model.GetModelName();
         }
         private void ItemName_PointerEntered(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {

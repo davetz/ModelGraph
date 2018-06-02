@@ -19,7 +19,7 @@ namespace ModelGraphUWP
             _chef = root.Chef;
             _rootModel = root;
             _rootModel.ModelControl = this;
-            _graph = root.Item1 as Graph;
+            _graph = root.Item as Graph;
             _selector = new Selector(_graph);
 
             InitializeComponent();

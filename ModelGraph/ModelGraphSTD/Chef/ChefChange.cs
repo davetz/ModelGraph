@@ -53,7 +53,7 @@ namespace ModelGraphSTD
         {
             if (_changeSet.Count > 0)
             {
-                var item = _changeSet.Items[_changeSet.Count - 1];
+                var item = _changeSet.ToArray[_changeSet.Count - 1];
                 var changeText = $"{_localize(item.KindKey)}  {item.Name}";
                 if (_changeRootInfoItem != null && item.Trait == _changeRootInfoItem.Trait)
                     _changeRootInfoCount += 1;
@@ -67,7 +67,7 @@ namespace ModelGraphSTD
                 else
                     _changeRootInfoText = $"{GetName(item.Trait)}  {changeText}";
 
-                _changeRoot.Append(_changeSet);
+                _changeRoot.Add(_changeSet);
                 _changeSequence += 1;
                 _changeSet = new ChangeSet(_changeRoot, _changeSequence);
                 ResetCacheValues();
@@ -81,7 +81,7 @@ namespace ModelGraphSTD
 
         internal bool CanDelete(ChangeSet chng)
         {
-            var items = chng.Items;
+            var items = chng.ToArray;
             foreach (var item in items)
             {
                 if (!(item as ItemChange).IsUndone)
@@ -95,7 +95,7 @@ namespace ModelGraphSTD
         }
         internal void Undo(ChangeSet chng)
         {
-            var items = chng.Items;
+            var items = chng.ToArray;
             foreach (var item in items)
             {
                 if (item.IsItemUpdated) Undo(item as ItemUpdated);
@@ -111,7 +111,7 @@ namespace ModelGraphSTD
 
         internal void Redo(ChangeSet chng)
         {
-            var items = chng.Items;
+            var items = chng.ToArray;
             foreach (var item in items)
             {
                 if (item.IsItemUpdated) Redo(item as ItemUpdated);
@@ -241,8 +241,8 @@ namespace ModelGraphSTD
         #region ItemUpdated  ==================================================
         private void SetValue(ItemModel model, string newValue)
         {
-            var itm1 = model.Item1;
-            var itm2 = model.Item2;
+            var itm1 = model.Item;
+            var itm2 = model.Aux1;
             var prop = itm2 as Property;
             var oldValue = prop.Value.GetString(itm1);
 
@@ -459,7 +459,7 @@ namespace ModelGraphSTD
         /// </summary>
         internal void RemoveItem(ItemModel model)
         {
-            RemoveItem(model.Item1);
+            RemoveItem(model.Item);
         }
         private void RemoveItem(Item target)
         {

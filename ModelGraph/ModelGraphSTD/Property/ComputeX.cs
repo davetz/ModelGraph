@@ -29,7 +29,7 @@ namespace ModelGraphSTD
             Guid = Guid.NewGuid();
             AutoExpandRight = true;
 
-            owner.Append(this);
+            owner.Add(this);
         }
         internal ComputeX(StoreOf<ComputeX> owner, Guid guid)
         {
