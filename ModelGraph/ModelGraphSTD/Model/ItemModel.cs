@@ -13,9 +13,10 @@ namespace ModelGraphSTD
         public ItemModel ParentModel;   // allows bidirectional tree taversal
         public ItemModel[] ChildModels; // hierarchal subtree of models 
         internal ModelAction Get;
+
         internal Trait Trait;
-        private State1 _flags1;
-        private State2 _flags2;
+        private State _state;
+        private Flags _flags;
         public byte Level;
 
         #region Constructor  ==================================================
@@ -43,9 +44,19 @@ namespace ModelGraphSTD
         internal string DescriptionKey => GetDescriptionKey(IsProperty ? Item.Trait : Trait);
         #endregion
 
+        #region Trait  ========================================================
+        public bool IsProperty => (IsTextProperty || IsComboProperty || IsCheckProperty);
+        public bool IsTextProperty => Trait == Trait.TextProperty_M;
+        public bool IsComboProperty => Trait == Trait.ComboProperty_M;
+        public bool IsCheckProperty => Trait == Trait.CheckProperty_M;
+
+        public bool IsRowChildRelationModel => Trait == Trait.RowChildRelation_M;
+        public bool IsRowParentRelationModel => Trait == Trait.RowParentRelation_M;
+        #endregion
+
         #region State  ========================================================
         [Flags]
-        private enum State1 : ushort
+        private enum State : ushort
         {
             IsChanged = 0x8000,
             IsReadOnly = 0x4000,
@@ -61,47 +72,32 @@ namespace ModelGraphSTD
             IsUsedFilter = 0x20,
             IsNotUsedFilter = 0x10,
         }
-        [Flags]
-        private enum State2 : byte
+        private bool GetState(State state) => (_state & state) != 0;
+        private void SetState(State state, bool value) { if (value) _state |= state; else _state &= ~state; }
+
+        public bool IsChanged { get { return !GetState(State.IsChanged); } set { SetState(State.IsChanged, !value); } }
+        public bool IsReadOnly { get { return GetState(State.IsReadOnly); } set { SetState(State.IsReadOnly, !value); } }
+        public bool IsMultiline { get { return GetState(State.IsMultiline); } set { SetState(State.IsMultiline, !value); } }
+        public bool IsExpandedLeft { get { return GetState(State.IsExpandLeft); } set { var prev = GetState(State.IsExpandLeft); SetState(State.IsExpandLeft, value); if (prev != value) IsChanged = true; if (!value) IsExpandedRight = false; } }
+        public bool IsExpandedRight { get { return GetState(State.IsExpandRight); } set { var prev = GetState(State.IsExpandRight); SetState(State.IsExpandRight, value); if (prev != value) IsChanged = true; } }
+        public bool IsFilterFocus { get { return GetState(State.SetFilterFocus); } set { SetState(State.SetFilterFocus, value); } }
+
+        public bool IsExpandedFilter
         {
-            CanDrag = 0x80,
-            CanSort = 0x40,
-            CanFilter = 0x20,
-            CanMultiline = 0x10,
-
-            CanExpandLeft = 0x08,
-            CanExpandRight = 0x04,
-            CanFilterUsage = 0x02,
-        }
-        private bool GetFlag1(State1 state) => (_flags1 & state) != 0;
-        private void SetFlag1(State1 state, bool value) { if (value) _flags1 |= state; else _flags1 &= ~state; }
-        private bool GetFlag2(State2 state) => (_flags2 & state) != 0;
-        private void SetFlag2(State2 state, bool value) { if (value) _flags2 |= state; else _flags2 &= ~state; }
-
-        public bool CanDrag { get { return GetFlag2(State2.CanDrag); } set { SetFlag2(State2.CanDrag, value); } }
-        public bool CanSort { get { return GetFlag2(State2.CanSort); } set { SetFlag2(State2.CanSort, value); } }
-        public bool CanFilter { get { return GetFlag2(State2.CanFilter); } set { SetFlag2(State2.CanFilter, value); } }
-        public bool CanMultiline { get { return GetFlag2(State2.CanMultiline); } set { SetFlag2(State2.CanMultiline, value); } }
-        public bool CanExpandLeft { get { return GetFlag2(State2.CanExpandLeft); } set { SetFlag2(State2.CanExpandLeft, value); } }
-        public bool CanExpandRight { get { return GetFlag2(State2.CanExpandRight); } set { SetFlag2(State2.CanExpandRight, value); } }
-        public bool CanFilterUsage { get { return GetFlag2(State2.CanFilterUsage); } set { SetFlag2(State2.CanFilterUsage, value); } }
-
-        public bool IsChanged { get { return !GetFlag1(State1.IsChanged); } set { SetFlag1(State1.IsChanged, !value); } }
-        public bool IsReadOnly { get { return GetFlag1(State1.IsReadOnly); } set { SetFlag1(State1.IsReadOnly, !value); } }
-        public bool IsMultiline { get { return GetFlag1(State1.IsMultiline); } set { SetFlag1(State1.IsMultiline, !value); } }
-        public bool IsExpandedLeft { get { return GetFlag1(State1.IsExpandLeft); } set { var prev = GetFlag1(State1.IsExpandLeft); SetFlag1(State1.IsExpandLeft, value); if (prev != value) IsChanged = true; if (!value) IsExpandedRight = false; } }
-        public bool IsExpandedRight { get { return GetFlag1(State1.IsExpandRight); } set { var prev = GetFlag1(State1.IsExpandRight); SetFlag1(State1.IsExpandRight, value); if (prev != value) IsChanged = true; } }
-        public bool IsFilterFocus { get { return GetFlag1(State1.SetFilterFocus); } set { SetFlag1(State1.SetFilterFocus, value); } }
-
-        public bool IsExpandedFilter { get { return GetFlag1(State1.IsExpandFilter); } set { var prev = GetFlag1(State1.IsExpandFilter); SetExpandedFilter(value);
+            get { return GetState(State.IsExpandFilter); }
+            set
+            {
+                var prev = GetState(State.IsExpandFilter); SetExpandedFilter(value);
                 if (prev != value)
                 {
                     IsChanged = true;
                     if (value) IsFilterFocus = true;
-                } } }
+                }
+            }
+        }
         public void SetExpandedFilter(bool value)
         {
-            SetFlag1(State1.IsExpandFilter, value);
+            SetState(State.IsExpandFilter, value);
 
             if (value == false)
             {
@@ -109,37 +105,58 @@ namespace ModelGraphSTD
                 root.ViewFilter.Remove(this);
             }
         }
-        public bool IsSortAscending { get { return GetFlag1(State1.IsAscendingSort); } set { var prev = GetFlag1(State1.IsAscendingSort); SetFlag1(State1.IsAscendingSort, value); if (prev != value) IsChanged = true; } }
-        public bool IsSortDescending { get { return GetFlag1(State1.IsDescendingSort); } set { var prev = GetFlag1(State1.IsDescendingSort); SetFlag1(State1.IsDescendingSort, value); if (prev != value) IsChanged = true; } }
-        public bool IsUsedFilter { get { return GetFlag1(State1.IsUsedFilter); } set { var prev = GetFlag1(State1.IsUsedFilter); SetFlag1(State1.IsUsedFilter, value); if (prev != value) IsChanged = true; } }
-        public bool IsNotUsedFilter { get { return GetFlag1(State1.IsNotUsedFilter); } set { var prev = GetFlag1(State1.IsNotUsedFilter); SetFlag1(State1.IsNotUsedFilter, value); if (prev != value) IsChanged = true; } }
+        public bool IsSortAscending { get { return GetState(State.IsAscendingSort); } set { var prev = GetState(State.IsAscendingSort); SetState(State.IsAscendingSort, value); if (prev != value) IsChanged = true; } }
+        public bool IsSortDescending { get { return GetState(State.IsDescendingSort); } set { var prev = GetState(State.IsDescendingSort); SetState(State.IsDescendingSort, value); if (prev != value) IsChanged = true; } }
+        public bool IsUsedFilter { get { return GetState(State.IsUsedFilter); } set { var prev = GetState(State.IsUsedFilter); SetState(State.IsUsedFilter, value); if (prev != value) IsChanged = true; } }
+        public bool IsNotUsedFilter { get { return GetState(State.IsNotUsedFilter); } set { var prev = GetState(State.IsNotUsedFilter); SetState(State.IsNotUsedFilter, value); if (prev != value) IsChanged = true; } }
         #endregion
 
-        #region Trait  ========================================================
-        public bool IsProperty => (IsTextProperty || IsComboProperty || IsCheckProperty);
-        public bool IsTextProperty => Trait == Trait.TextProperty_M;
-        public bool IsComboProperty => Trait == Trait.ComboProperty_M;
-        public bool IsCheckProperty => Trait == Trait.CheckProperty_M;
+        #region Flags  ========================================================
+        [Flags]
+        private enum Flags : byte
+        {
+            CanDrag = 0x01,
+            CanSort = 0x02,
+            CanFilter = 0x04,
+            CanMultiline = 0x08,
 
-        public bool IsRowChildRelationModel => Trait == Trait.RowChildRelation_M;
-        public bool IsRowParentRelationModel => Trait == Trait.RowParentRelation_M;
+            CanExpandLeft = 0x10,
+            CanExpandRight = 0x20,
+            CanFilterUsage = 0x40,
+        }
+        private bool GetFlag(Flags flag) => (_flags & flag) != 0;
+        private void SetFlag(Flags flag, bool value) { if (value) _flags |= flag; else _flags &= ~flag; }
+        public bool CanDrag { get { return GetFlag(Flags.CanDrag); } set { SetFlag(Flags.CanDrag, value); } }
+        public bool CanSort { get { return GetFlag(Flags.CanSort); } set { SetFlag(Flags.CanSort, value); } }
+        public bool CanFilter { get { return GetFlag(Flags.CanFilter); } set { SetFlag(Flags.CanFilter, value); } }
+        public bool CanMultiline { get { return GetFlag(Flags.CanMultiline); } set { SetFlag(Flags.CanMultiline, value); } }
+        public bool CanExpandLeft { get { return GetFlag(Flags.CanExpandLeft); } set { SetFlag(Flags.CanExpandLeft, value); } }
+        public bool CanExpandRight { get { return GetFlag(Flags.CanExpandRight); } set { SetFlag(Flags.CanExpandRight, value); } }
+        public bool CanFilterUsage { get { return GetFlag(Flags.CanFilterUsage); } set { SetFlag(Flags.CanFilterUsage, value); } }
+
         #endregion
 
         #region Auxiliary Items  ==============================================
         public Graph Graph => Item as Graph;
-        public Query Query => Aux1 as Query;
-        public ColumnX ColumnX => Aux1 as ColumnX;
-        public ComputeX ComputeX => Aux1 as ComputeX;
-        public Property Property => Aux1 as Property;
-        public Relation Relation => Aux1 as Relation;
-        public Item RelatedItem => Aux2;
-        public EnumX EnumX => Aux2 as EnumX;
+        public Query Query => (Aux1 is Query aux) ? aux : Item as Query;
+        public ColumnX ColumnX => (Aux1 is ColumnX aux) ? aux : Item as ColumnX;
+        public ComputeX ComputeX => (Aux1 is ComputeX aux) ? aux : Item as ComputeX;
+        public Property Property => (Aux1 is Property aux) ? aux : Item as Property;
+        public Relation Relation => (Aux1 is Relation aux) ? aux : Item as Relation;
+        public EnumX EnumX => (Aux2 is EnumX aux) ? aux : Item as EnumX;
         public EnumZ EnumZ => Aux2 as EnumZ;
+        public ChangeSet ChangeSet => Item as ChangeSet;
+        public Error Error => Item as Error;
+        public ViewX ViewX => Item as ViewX;
+        public PairX PairX => Item as PairX;
+        public TableX TableX => Item as TableX;
+        public GraphX GraphX => Item as GraphX;
+        public SymbolX SymbolX => Item as SymbolX;
+        public RelationX RelationX => Item as RelationX;
+        public Store Store => Item as Store;
         #endregion
 
         #region ModelAction  ==================================================
-        public int ChildCount => (Get.ChildCount == null) ? 0 : Get.ChildCount(this);
-        public string  ModelKind => (Get.ModelKind == null) ? null : Get.ModelKind(this);
         public string  ModelInfo => (Get.ModelInfo == null) ? null : Get.ModelInfo(this);
         public string ModelSummary => (Get.ModelSummary == null) ? null : Get.ModelSummary(this);
         public string ModelDescription => (Get.ModelDescription == null) ? null : Get.ModelDescription(this);
@@ -149,12 +166,19 @@ namespace ModelGraphSTD
         public string TextValue => (Get.TextValue == null) ? null : Get.TextValue(this);
         public string[] ListValue => (Get.ListValue == null) ? null : Get.ListValue(this);
         //=====================================================================
-        public string ModelName
+        const string BlankName = "?-?-?";
+        public (string Kind, string Name, int Count, ModelType Type) ModelParms
         {
             get
             {
-                var val = (Get.ModelName == null) ? null : Get.ModelName(this);
-                return (string.IsNullOrWhiteSpace(val)) ? "?_?_?" : val;
+                if (Get.ModelParms == null) return (string.Empty, BlankName, 0, ModelType.Default);
+
+                var (kind, name, count, type) = Get.ModelParms(this);
+
+                if (kind == null) kind = string.Empty;
+                if (string.IsNullOrWhiteSpace(name)) name = BlankName;
+
+                return (kind, name, count, type);
             }
         }
         public bool MenuComands(List<ModelCommand> list)
