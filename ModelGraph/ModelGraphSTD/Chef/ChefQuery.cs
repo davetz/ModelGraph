@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ModelGraphSTD
 {/*
@@ -352,6 +353,9 @@ namespace ModelGraphSTD
         }
         #endregion
 
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
         bool TrySetWhereProperty(QueryX qx, string val)
         {
             MajorDelta += 1;
@@ -359,12 +363,84 @@ namespace ModelGraphSTD
             ValidateDependants(qx);
             return qx.IsValid;
         }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
         bool TrySetSelectProperty(QueryX qx, string val)
         {
             MajorDelta += 1;
             qx.SelectString = val;
             ValidateDependants(qx);
             return qx.IsValid;
+        }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        private string GetQueryXRelationName(ItemModel model)
+        {
+            if (Relation_QueryX.TryGetParent(m.Item, out Relation parent))
+            {
+                var rel = parent as RelationX;
+                return GetRelationName(rel);
+            }
+            return null;
+        }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        string QueryXLinkName(ItemModel model)
+        {
+            return QueryXFilterName(model.Item as QueryX);
+        }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        string QueryXFilterName(QueryX sd)
+        {
+            Store head, tail;
+            GetHeadTail(sd, out head, out tail);
+            if (head == null || tail == null) return InvalidItem;
+
+            var headName = GetIdentity(head, IdentityStyle.Single);
+            var tailName = GetIdentity(tail, IdentityStyle.Single);
+            {
+                if (sd.HasWhere)
+                    return $"{headName}{parentNameSuffix}{tailName}  ({sd.WhereString})";
+                else
+                    return $"{headName}{parentNameSuffix}{tailName}";
+            }
+        }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        string QueryXHeadName(ItemModel m)
+        {
+            var sd = m.Item as QueryX;
+
+            Store head1, tail1, head2, tail2;
+            GetHeadTail(sd, out head1, out tail1);
+            var sd2 = GetQueryXTail(sd);
+            GetHeadTail(sd2, out head2, out tail2);
+
+            StringBuilder sb = new StringBuilder(132);
+            sb.Append(GetIdentity(head1, IdentityStyle.Single));
+            sb.Append(parentNameSuffix);
+            sb.Append(GetIdentity(tail2, IdentityStyle.Single));
+            return sb.ToString();
+        }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        QueryX GetQueryXTail(QueryX sd)
+        {
+            var sd2 = sd;
+            var sd3 = sd2;
+            while (sd3 != null)
+            {
+                sd2 = sd3;
+                sd3 = QueryX_QueryX.GetChild(sd3);
+            }
+            return sd2;
         }
     }
 }

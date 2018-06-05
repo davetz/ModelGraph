@@ -242,7 +242,7 @@ namespace ModelGraphUWP
 
             obj.Text = " ";
             obj.DataContext = model;
-            obj.MinWidth = model.Level * _levelIndent;
+            obj.MinWidth = model.Depth * _levelIndent;
 
             _stackPanelCache[index].Children.Add(obj);
         }

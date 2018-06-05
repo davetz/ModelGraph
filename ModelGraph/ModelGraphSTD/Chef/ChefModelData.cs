@@ -616,7 +616,7 @@ namespace ModelGraphSTD
                 var col = cols[i];
                 if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, col))
                 {
-                    model.ChildModels[i] = NewPropertyModel(model, model.Level, item, col);
+                    model.ChildModels[i] = NewPropertyModel(model, model.Depth, item, col);
                 }
             }
         }
@@ -630,11 +630,11 @@ namespace ModelGraphSTD
                 if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, prop))
                 {
                     if (prop.IsColumnX)
-                        model.ChildModels[i] = NewPropertyModel(model, model.Level, item, (prop as ColumnX));
+                        model.ChildModels[i] = NewPropertyModel(model, model.Depth, item, (prop as ColumnX));
                     else if (prop.IsComputeX)
-                        model.ChildModels[i] = NewPropertyModel(model, model.Level, item, (prop as ComputeX));
+                        model.ChildModels[i] = NewPropertyModel(model, model.Depth, item, (prop as ComputeX));
                     else
-                        model.ChildModels[i] = NewPropertyModel(model, model.Level, item, prop);
+                        model.ChildModels[i] = NewPropertyModel(model, model.Depth, item, prop);
 
                     if (prop.IsReadOnly) model.ChildModels[i].IsReadOnly = true;
                     if (prop.CanMultiline) model.ChildModels[i].CanMultiline = true;
@@ -644,11 +644,11 @@ namespace ModelGraphSTD
         private ItemModel NewPropertyModel(ItemModel model, byte level, Item item, ColumnX col)
         {
             if (EnumX_ColumnX.TryGetParent(col, out EnumX enu))
-                return new ItemModel(model, Trait.ComboProperty_M, level, item, col, enu, ComboColomn_X);
+                return new ItemModel(model, Trait.ComboProperty_M, level, item, col, enu, ComboColumn_X);
             else if (col.Value.ValType == ValType.Bool)
                 return new ItemModel(model, Trait.CheckProperty_M, level, item, col, null, CheckColumn_X);
             else
-                return new ItemModel(model, Trait.TextProperty_M, level, item, col, null, TextColumn_M);
+                return new ItemModel(model, Trait.TextProperty_M, level, item, col, null, TextColumn_X);
         }
         private ItemModel NewPropertyModel(ItemModel model, byte level, Item item, ComputeX cx)
         {
@@ -817,7 +817,7 @@ namespace ModelGraphSTD
             var rootChef = root.Chef;
             var dataChef = new Chef(rootChef, null);
 
-            root.UIRequest = UIRequest.CreateNewView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_M);
+            root.UIRequest = UIRequest.CreateNewView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_X);
         }
         public void AppRootOpenModel(ItemModel model, Object parm1)
         {
@@ -826,7 +826,7 @@ namespace ModelGraphSTD
             var rootChef = root.Chef;
             var dataChef = new Chef(rootChef, repo);
 
-            root.UIRequest = UIRequest.CreateNewView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_M);
+            root.UIRequest = UIRequest.CreateNewView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_X);
         }
         internal void AppRootSaveAsModel(ItemModel model, Object parm1)
         {
@@ -878,13 +878,15 @@ namespace ModelGraphSTD
                 {
                     m.CanExpandLeft = true;
 
-                    return (string.Empty, _localize(m.NameKey), 0, ModelType.Default);
+                    return (null, _localize(m.NameKey), 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
                     var item = m.Item;
-                    var level = (byte)(m.Level + 1);
+                    var level = (byte)(m.Depth + 1);
                     var oldModels = m.ChildModels;
 
                     var N = 4;
@@ -917,11 +919,17 @@ namespace ModelGraphSTD
         {
             TextColumn_X = new ModelAction
             {
-                ModelParms = (m) => (string.Empty, m.ColumnX.Name, 0, ModelType.TextProperty),
+                ModelParms = (m) => (null, m.ColumnX.Name, 0, ModelType.TextProperty),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => m.ColumnX.Summary,
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelDescription = (m) => m.ColumnX.Description,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 TextValue = (m) => m.ColumnX.Value.GetString(m.Item),
             };
@@ -934,11 +942,17 @@ namespace ModelGraphSTD
         {
             CheckColumn_X = new ModelAction
             {
-                ModelParms = (m) => (string.Empty, m.ColumnX.Name, 0, ModelType.CheckProperty),
+                ModelParms = (m) => (null, m.ColumnX.Name, 0, ModelType.CheckProperty),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => m.ColumnX.Summary,
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelDescription = (m) => m.ColumnX.Description,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 BoolValue = (m) => m.ColumnX.Value.GetBool(m.Item),
             };
@@ -951,13 +965,21 @@ namespace ModelGraphSTD
         {
             ComboColumn_X = new ModelAction
             {
-                ModelParms = (m) => (string.Empty, m.ColumnX.Name, 0, ModelType.ComboProperty),
+                ModelParms = (m) => (null, m.ColumnX.Name, 0, ModelType.ComboProperty),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => m.ColumnX.Summary,
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelDescription = (m) => m.ColumnX.Description,
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ListValue = (m) => GetEnumDisplayValues(m.EnumX),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 IndexValue = (m) => GetComboSelectedIndex(m.Item, m.ColumnX, m.EnumX),
             };
@@ -1020,12 +1042,18 @@ namespace ModelGraphSTD
                     var name = _localize(m.Property.NameKey);
                     var fullname = m.Property.HasItemName ? $"{m.Property.GetItemName(m.Item)} {name}" : name;
 
-                    return (string.Empty, fullname, 0, ModelType.TextProperty);
+                    return (null, fullname, 0, ModelType.TextProperty);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => _localize(m.Property.SummaryKey),
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelDescription = (m) => _localize(m.Property.DescriptionKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 TextValue = (m) => m.Property.Value.GetString(m.Item),
             };
@@ -1043,12 +1071,18 @@ namespace ModelGraphSTD
                     var name = _localize(m.Property.NameKey);
                     var fullname = m.Property.HasItemName ? $"{m.Property.GetItemName(m.Item)} {name}" : name;
 
-                    return (string.Empty, fullname, 0, ModelType.CheckProperty);
+                    return (null, fullname, 0, ModelType.CheckProperty);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => _localize(m.Property.SummaryKey),
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelDescription = (m) => _localize(m.Property.DescriptionKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 BoolValue = (m) => m.Property.Value.GetBool(m.Item),
             };
@@ -1066,14 +1100,22 @@ namespace ModelGraphSTD
                     var name = _localize(m.Property.NameKey);
                     var fullname = m.Property.HasItemName ? $"{m.Property.GetItemName(m.Item)} {name}" : name;
 
-                    return (string.Empty, fullname, 0, ModelType.ComboProperty);
+                    return (null, fullname, 0, ModelType.ComboProperty);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => _localize(m.Property.SummaryKey),
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelDescription = (m) => _localize(m.Property.DescriptionKey),
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ListValue = (m) => GetEnumZNames(m.EnumZ),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 IndexValue = (m) => GetEnumZIndex(m.EnumZ, m.Property.Value.GetString(m.Item)),
             };
@@ -1086,11 +1128,17 @@ namespace ModelGraphSTD
         {
             TextCompute_X = new ModelAction
             {
-                ModelParms = (m) => (string.Empty, m.ComputeX.Name, 0, ModelType.TextProperty),
+                ModelParms = (m) => (null, m.ComputeX.Name, 0, ModelType.TextProperty),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => m.ComputeX.Summary,
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelDescription = (m) => m.ComputeX.Description,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 TextValue = (m) => m.ComputeX.Value.GetString(m.Item),
             };
@@ -1107,12 +1155,14 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var count = m.ErrorStore.Count;
+                    var count = _errorStore.Count;
 
                     m.CanExpandLeft = count > 0;
 
-                    return (string.Empty, _localize(m.NameKey), count, ModelType.Default);
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
@@ -1122,7 +1172,7 @@ namespace ModelGraphSTD
                     {
                         var items = _errorStore.Items;
                         var item = m.Item;
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -1155,16 +1205,22 @@ namespace ModelGraphSTD
 
                     m.CanExpandLeft = count > 0;
 
-                    return (string.Empty, _localize(m.NameKey), count, ModelType.Default);
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelInfo = (m) => m.IsExpandedLeft ? null : _changeRootInfoText,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ButtonCommands = (m, list) =>
                 {
                     if (_changeRoot.Count > 0 && m.IsExpandedLeft == false)
                         list.Add(new ModelCommand(this, m, Trait.ExpandAllCommand, ExpandAllChangeSets));
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
@@ -1179,7 +1235,7 @@ namespace ModelGraphSTD
                         {
                             var items = new List<ChangeSet>(_changeRoot.ToArray);
                             items.Reverse();
-                            var level = (byte)(m.Level + 1);
+                            var level = (byte)(m.Depth + 1);
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
@@ -1205,13 +1261,17 @@ namespace ModelGraphSTD
                 {
                     m.CanExpandLeft = true;
 
-                    return (string.Empty, _localize(m.NameKey), 0, ModelType.Default);
+                    return (null, _localize(m.NameKey), 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ButtonCommands = (m, bc) =>
                 {
                     bc.Add(new ModelCommand(this, m, Trait.ViewCommand, CreateSecondaryMetadataTree));
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
@@ -1219,14 +1279,14 @@ namespace ModelGraphSTD
 
                     if (N > 0)
                     {
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
                         var i = 0;
                         if (!TryGetOldModel(m, Trait.ViewXView_ZM, oldModels, i, _viewXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_ZM, level, _viewXStore, null, null, ViewXView_ZM);
+                            m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_ZM, level, _viewXStore, null, null, ViewXView_ZX);
 
                         i++;
                         if (!TryGetOldModel(m, Trait.EnumX_ZM, oldModels, i, _enumZStore))
@@ -1269,13 +1329,17 @@ namespace ModelGraphSTD
                 {
                     m.CanExpandLeft = true;
 
-                    return (string.Empty, _localize(m.NameKey), 0, ModelType.Default);
+                    return (null, _localize(m.NameKey), 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ButtonCommands = (m, bc) =>
                 {
                     bc.Add(new ModelCommand(this, m, Trait.ViewCommand, CreateSecondaryModelingTree));
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
@@ -1284,14 +1348,14 @@ namespace ModelGraphSTD
                     if (N > 0)
                     {
                         var item = m.Item;
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
                         var i = 0;
                         if (!TryGetOldModel(m, Trait.ViewView_ZM, oldModels, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.ViewView_ZM, level, item, null, null, ViewView_ZM);
+                            m.ChildModels[i] = new ItemModel(m, Trait.ViewView_ZM, level, item, null, null, ViewXView_ZX);
 
                         i++;
                         if (!TryGetOldModel(m, Trait.Table_ZM, oldModels, i, item))
@@ -1312,6 +1376,8 @@ namespace ModelGraphSTD
                 }
             };
 
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
             void CreateSecondaryModelingTree(ItemModel model)
             {
                 var root = model.GetRootModel();
@@ -1330,13 +1396,15 @@ namespace ModelGraphSTD
                 {
                     m.CanExpandLeft = true;
 
-                    return (string.Empty, _localize(m.NameKey), 0, ModelType.Default);
+                    return (null, _localize(m.NameKey), 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
                     var item = m.Item;
-                    var level = (byte)(m.Level + 1);
+                    var level = (byte)(m.Depth + 1);
                     var oldModels = m.ChildModels;
 
                     int N = (m.IsExpandedLeft) ? 2 : 0;
@@ -1374,15 +1442,19 @@ namespace ModelGraphSTD
 
                     m.CanExpandLeft = count > 0;
 
-                    return (string.Empty, _localize(m.Item.NameKey), count, ModelType.Default);
+                    return (null, _localize(m.Item.NameKey), count, ModelType.Default);
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.Item.SummaryKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
                     var error = m.Error;
-                    var level = (byte)(m.Level + 1);
+                    var level = (byte)(m.Depth + 1);
                     var oldModels = m.ChildModels;
 
                     var N = (m.IsExpandedLeft) ? error.Count : 0;
@@ -1419,7 +1491,7 @@ namespace ModelGraphSTD
                     var i = m.ParentModel.GetChildlIndex(m);
                     var name = (i < 0 || e.Count <= i) ? InvalidItem : e.Errors[i];
 
-                    return (string.Empty, name, 0, ModelType.Default);
+                    return (null, name, 0, ModelType.Default);
                 },
             };
         }
@@ -1439,8 +1511,10 @@ namespace ModelGraphSTD
 
                     m.CanExpandLeft = count > 0;
 
-                    return (string.Empty, name, count, ModelType.Default);
+                    return (null, name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ButtonCommands = (m, bc) =>
                 {
@@ -1453,6 +1527,8 @@ namespace ModelGraphSTD
                         bc.Add(new ModelCommand(this, m, Trait.RedoCommand, ModelRedo));
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var cs = m.ChangeSet;
@@ -1461,7 +1537,7 @@ namespace ModelGraphSTD
                     if (N > 0)
                     {
                         var items = (cs.IsReversed) ? cs.ToArray : cs.ItemsReversed;
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -1482,17 +1558,25 @@ namespace ModelGraphSTD
                 }
             };
 
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
             void ModelMerge(ItemModel model)
             {
                 var chg = model.Item as ChangeSet;
                 chg.Merge();
                 MajorDelta += 1;
             }
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
             void ModelUndo(ItemModel model)
             {
                 var chg = model.Item as ChangeSet;
                 Undo(chg);
             }
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
             void ModelRedo(ItemModel model)
             {
                 var chg = model.Item as ChangeSet;
@@ -1502,10 +1586,10 @@ namespace ModelGraphSTD
         #endregion
 
         #region 629 ItemChanged  ==============================================
-        ModelAction ItemChange_X;
+        ModelAction ItemChanged_X;
         void Initialize_ItemChange_X()
         {
-            ItemChange_X = new ModelAction
+            ItemChanged_X = new ModelAction
             {
                 ModelParms = (m) => (_localize(m.Item.KindKey), _localize(m.Item.NameKey), 0, ModelType.Default),
             };
@@ -1528,13 +1612,17 @@ namespace ModelGraphSTD
 
                     m.CanExpandLeft = count > 0;
 
-                    return (string.Empty, _localize(m.NameKey), count, ModelType.Default);
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ButtonCommands = (m, bc) =>
                 {
                     bc.Add(new ModelCommand(this, m, Trait.InsertCommand, Insert));
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelDrop = (m, d, doDrop) =>
                 {
@@ -1554,6 +1642,8 @@ namespace ModelGraphSTD
                     return DropAction.None;
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     int N = 0;
@@ -1565,7 +1655,7 @@ namespace ModelGraphSTD
 
                         if (N > 0)
                         {
-                            var level = (byte)(m.Level + 1);
+                            var level = (byte)(m.Depth + 1);
                             var oldModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
@@ -1573,13 +1663,15 @@ namespace ModelGraphSTD
                             {
                                 var itm = roots[i];
                                 if (!TryGetOldModel(m, Trait.ViewXView_M, oldModels, i, itm))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_M, level, itm, null, null, ViewXView_M);
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_M, level, itm, null, null, ViewXViewM_X);
                             }
                         }
                     }
                     if (N == 0) m.ChildModels = null;
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             void Insert(ItemModel model)
             {
@@ -1605,30 +1697,39 @@ namespace ModelGraphSTD
                     m.CanExpandLeft = count > 0;
                     m.CanExpandRight = true;
 
-                    return (string.Empty, _localize(vx.Name), count, ModelType.Default);
+                    return (null, _localize(vx.Name), count, ModelType.Default);
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => m.ViewX.Summary,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ButtonCommands = (m, bc) =>
                 {
                     bc.Add(new ModelCommand(this, m, Trait.InsertCommand, Insert));
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 MenuCommands = (m, mc) =>
                 {
                     mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ReorderItems = ReorderRelatedChild,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelDrop = (m, d, doDrop) =>
                 {
                     var view = m.ViewX;
                     if (view != null)
                     {
-                        var vx = d.Item as ViewX;
-                        if (vx != null)
+                        if (d.Item is ViewX vx)
                         {
                             if (vx.Owner == _viewXStore)
                             {
@@ -1646,8 +1747,7 @@ namespace ModelGraphSTD
                         }
                         else
                         {
-                            var st = d.Item as Store;
-                            if (st != null)
+                            if (d.Item is Store st)
                             {
                                 if (ViewX_ViewX.HasNoChildren(view) && ViewX_QueryX.HasNoChildren(view) && ViewX_Property.HasNoChildren(view))
                                 {
@@ -1660,8 +1760,7 @@ namespace ModelGraphSTD
                             }
                             else
                             {
-                                var re = d.Item as Relation;
-                                if (re != null)
+                                if (d.Item is Relation re)
                                 {
                                     if (ViewX_ViewX.HasNoChildren(view) && ViewX_Property.HasNoChildren(view))
                                     {
@@ -1672,26 +1771,25 @@ namespace ModelGraphSTD
                                         return DropAction.Link;
                                     }
                                 }
-                                else
+                                else if (d.Item is Property pr)
                                 {
-                                    var pr = d.Item as Property;
-                                    if (pr != null)
+                                    if (ViewX_ViewX.HasNoChildren(view) && ViewX_QueryX.HasNoChildren(view))
                                     {
-                                        if (ViewX_ViewX.HasNoChildren(view) && ViewX_QueryX.HasNoChildren(view))
+                                        if (doDrop)
                                         {
-                                            if (doDrop)
-                                            {
-                                                AppendLink(ViewX_Property, view, pr);
-                                            }
-                                            return DropAction.Link;
+                                            AppendLink(ViewX_Property, view, pr);
                                         }
+                                        return DropAction.Link;
                                     }
+
                                 }
                             }
                         }
                     }
                     return DropAction.None;
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
@@ -1726,7 +1824,7 @@ namespace ModelGraphSTD
                         N = R + L1 + L2 + L3;
                         if (N > 0)
                         {
-                            var level = (byte)(m.Level + 1);
+                            var level = (byte)(m.Depth + 1);
                             var oldModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
@@ -1741,7 +1839,7 @@ namespace ModelGraphSTD
                                     var px = propertyList[j];
 
                                     if (!TryGetOldModel(m, Trait.ViewXProperty_M, oldModels, i, px))
-                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXProperty_M, level, px, ViewX_Property, view, ViewXProperty_M);
+                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXProperty_M, level, px, ViewX_Property, view, ViewXProperty_X);
                                 }
                             }
                             if (L2 > 0)
@@ -1750,7 +1848,7 @@ namespace ModelGraphSTD
                                 {
                                     var qx = queryList[j];
                                     if (!TryGetOldModel(m, Trait.ViewXQuery_M, oldModels, i, qx))
-                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXQuery_M, level, qx, ViewX_QueryX, view, ViewXQuery_M);
+                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXQuery_M, level, qx, ViewX_QueryX, view, ViewXQuery_X);
                                 }
                             }
                             if (L3 > 0)
@@ -1759,7 +1857,7 @@ namespace ModelGraphSTD
                                 {
                                     var vx = viewList[j];
                                     if (!TryGetOldModel(m, Trait.ViewXView_M, oldModels, i, vx))
-                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_M, level, vx, ViewX_ViewX, view, ViewXView_M);
+                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_M, level, vx, ViewX_ViewX, view, ViewXViewM_X);
                                 }
                             }
                         }
@@ -1768,6 +1866,8 @@ namespace ModelGraphSTD
                 }
 
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             void Insert(ItemModel model)
             {
@@ -1813,17 +1913,25 @@ namespace ModelGraphSTD
                     }
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelDescription = (m) => _localize(m.DescriptionKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 MenuCommands = (m, mc) =>
                 {
                     mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ButtonCommands = (m, bc) =>
                 {
                     bc.Add(new ModelCommand(this, m, Trait.InsertCommand, Insert));
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelDrop = (m, d, doDrop) =>
                 {
@@ -1847,8 +1955,12 @@ namespace ModelGraphSTD
                     return DropAction.None;
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
+                    var qx = m.QueryX;
+
                     int N = 0;
                     if (m.IsExpandedLeft || m.IsExpandedRight)
                     {
@@ -1879,7 +1991,7 @@ namespace ModelGraphSTD
                         N = R + L1 + L2 + L3;
                         if (N > 0)
                         {
-                            var level = (byte)(m.Level + 1);
+                            var level = (byte)(m.Depth + 1);
                             var oldModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
@@ -1894,7 +2006,7 @@ namespace ModelGraphSTD
                                     var px = propertyList[j];
 
                                     if (!TryGetOldModel(m, Trait.ViewXProperty_M, oldModels, i, px))
-                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXProperty_M, level, px, QueryX_Property, qx, ViewXProperty_M);
+                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXProperty_M, level, px, QueryX_Property, qx, ViewXProperty_X);
                                 }
                             }
                             if (L2 > 0)
@@ -1903,7 +2015,7 @@ namespace ModelGraphSTD
                                 {
                                     var qr = queryList[j];
                                     if (!TryGetOldModel(m, Trait.ViewXQuery_M, oldModels, i, qr))
-                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXQuery_M, level, qr, QueryX_QueryX, qx, ViewXQuery_M);
+                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXQuery_M, level, qr, QueryX_QueryX, qx, ViewXQuery_X);
                                 }
                             }
                             if (L3 > 0)
@@ -1912,7 +2024,7 @@ namespace ModelGraphSTD
                                 {
                                     var vx = viewList[j];
                                     if (!TryGetOldModel(m, Trait.ViewXView_M, oldModels, i, vx))
-                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_M, level, vx, QueryX_ViewX, qx, ViewXView_M);
+                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_M, level, vx, QueryX_ViewX, qx, ViewXViewM_X);
                                 }
                             }
                         }
@@ -1921,6 +2033,8 @@ namespace ModelGraphSTD
                 }
 
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             void Insert(ItemModel model)
             {
@@ -1980,7 +2094,11 @@ namespace ModelGraphSTD
                     return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
@@ -1993,7 +2111,7 @@ namespace ModelGraphSTD
 
                         if (N > 0)
                         {
-                            var level = (byte)(m.Level + 1);
+                            var level = (byte)(m.Depth + 1);
                             var oldModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
@@ -2001,7 +2119,7 @@ namespace ModelGraphSTD
                             {
                                 var itm = roots[i];
                                 if (!TryGetOldModel(m, Trait.ViewView_M, oldModels, i, itm))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewView_M, level, itm, null, null, ViewView_M);
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewView_M, level, itm, null, null, ViewView_X);
                             }
                         }
                     }
@@ -2044,7 +2162,11 @@ namespace ModelGraphSTD
                     return (null, vx.Name, count, ModelType.Default);
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => m.ViewX.Summary,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
@@ -2064,7 +2186,7 @@ namespace ModelGraphSTD
                         if (L2 == 1 && Store_QueryX.HasParentLink(queryList[0]) && TryGetQueryItems(queryList[0], out Item[] items))
                         {
                             N = items.Length;
-                            var level = (byte)(m.Level + 1);
+                            var level = (byte)(m.Depth + 1);
                             var oldModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
@@ -2073,13 +2195,13 @@ namespace ModelGraphSTD
                                 var itm = items[i];
 
                                 if (!TryGetOldModel(m, Trait.ViewItem_M, oldModels, i, itm))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewItem_M, level, itm, queryList[0], null, ViewItem_M);
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewItem_M, level, itm, queryList[0], null, ViewItem_X);
                             }
                         }
                         else if (key != null && L2 > 0)
                         {
                             N = L2;
-                            var level = (byte)(m.Level + 1);
+                            var level = (byte)(m.Depth + 1);
                             var oldModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
@@ -2088,13 +2210,13 @@ namespace ModelGraphSTD
                                 var qx = queryList[i];
 
                                 if (!TryGetOldModel(m, Trait.ViewQuery_M, oldModels, i, qx))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewQuery_M, level, qx, key, null, ViewQuery_M);
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewQuery_M, level, qx, key, null, ViewQuery_X);
                             }
                         }
                         else if (L3 > 0)
                         {
                             N = L3;
-                            var level = (byte)(m.Level + 1);
+                            var level = (byte)(m.Depth + 1);
                             var oldModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
@@ -2103,7 +2225,7 @@ namespace ModelGraphSTD
                                 var v = viewList[i];
 
                                 if (!TryGetOldModel(m, Trait.ViewView_M, oldModels, i, v))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewView_M, level, v, null, null, ViewView_M);
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewView_M, level, v, null, null, ViewView_X);
                             }
                         }
                         //N = L1 + L2 + L3;
@@ -2160,15 +2282,17 @@ namespace ModelGraphSTD
                     var item = m.Item;
                     var qx = m.Aux1 as QueryX;
 
-                    var qc = GetQueryXChildren(qx);
-                    var count = (qc.L2 + qc.L3);
+                    var (L1, PropertyList, L2, QueryList, L3, ViewList) = GetQueryXChildren(qx);
+                    var count = (L2 + L3);
 
                     m.CanExpandLeft = (count > 0);
-                    m.CanExpandRight = qc.L1 > 0;
+                    m.CanExpandRight = L1 > 0;
                     m.CanFilterUsage = (m.IsExpandedLeft && count > 1);
 
                     return (GetIdentity(item.Owner, IdentityStyle.Single), GetIdentity(item, IdentityStyle.Single), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
@@ -2178,33 +2302,33 @@ namespace ModelGraphSTD
                     int N = 0;
                     if (m.IsExpandedLeft || m.IsExpandedRight)
                     {
-                        var qxc = GetQueryXChildren(qx);
+                        var (L1, PropertyList, L2, QueryList, L3, ViewList) = GetQueryXChildren(qx);
 
-                        int R = (m.IsExpandedRight) ? qxc.L1 : 0;
-                        int L = (m.IsExpandedLeft) ? (qxc.L2 + qxc.L3) : 0;
+                        int R = (m.IsExpandedRight) ? L1 : 0;
+                        int L = (m.IsExpandedLeft) ? (L2 + L3) : 0;
 
                         N = R + L;
                         if (N > 0)
                         {
-                            var level = (byte)(m.Level + 1);
+                            var level = (byte)(m.Depth + 1);
                             var oldModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             if (R > 0)
                             {
-                                AddProperyModels(m, oldModels, qxc.PropertyList);
+                                AddProperyModels(m, oldModels, PropertyList);
                             }
 
                             if (L > 0)
                             {
                                 int i = R;
-                                for (int j = 0; j < qxc.L2; i++, j++)
+                                for (int j = 0; j < L2; i++, j++)
                                 {
-                                    var q = qxc.QueryList[j];
+                                    var q = QueryList[j];
                                     if (!TryGetOldModel(m, Trait.ViewQuery_M, oldModels, i, item, q))
-                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewQuery_M, level, item, q, null, ViewQuery_M);
+                                        m.ChildModels[i] = new ItemModel(m, Trait.ViewQuery_M, level, item, q, null, ViewQuery_X);
                                 }
-                                for (int j = 0; j < qxc.L3; i++, j++)
+                                for (int j = 0; j < L3; i++, j++)
                                 {
 
                                 }
@@ -2236,6 +2360,8 @@ namespace ModelGraphSTD
                     return (_localize(m.KindKey), GetIdentity(qx, IdentityStyle.Single), count, ModelType.Default);
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var key = m.Item;
@@ -2247,7 +2373,7 @@ namespace ModelGraphSTD
 
                         if (N > 0)
                         {
-                            var level = (byte)(m.Level + 1);
+                            var level = (byte)(m.Depth + 1);
                             var oldModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
@@ -2255,7 +2381,7 @@ namespace ModelGraphSTD
                             {
                                 var itm = items[i];
                                 if (!TryGetOldModel(m, Trait.ViewItem_M, oldModels, i, itm))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewItem_M, level, itm, qx, null, ViewItem_M);
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ViewItem_M, level, itm, qx, null, ViewItem_X);
                             }
                         }
                     }
@@ -2285,6 +2411,15 @@ namespace ModelGraphSTD
                     return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ButtonCommands = (m, bc) =>
+                {
+                    bc.Add(new ModelCommand(this, m, Trait.InsertCommand, Insert));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var N = _enumXStore.Count;
@@ -2293,7 +2428,7 @@ namespace ModelGraphSTD
                     {
                         var items = _enumXStore.ToArray;
                         var item = m.Item;
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -2311,6 +2446,8 @@ namespace ModelGraphSTD
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             void Insert(ItemModel model)
             {
@@ -2336,12 +2473,18 @@ namespace ModelGraphSTD
                     return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ButtonCommands = (m, bc) =>
                 {
                     bc.Add(new ModelCommand(this, m, Trait.InsertCommand, Insert));
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
@@ -2351,7 +2494,7 @@ namespace ModelGraphSTD
                     {
                         var items = _tableXStore.ToArray;
                         var item = m.Item;
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -2370,6 +2513,8 @@ namespace ModelGraphSTD
 
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             void Insert(ItemModel model)
             {
@@ -2395,15 +2540,18 @@ namespace ModelGraphSTD
                     return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ButtonCommands = (m, bc) =>
                 {
                     bc.Add(new ModelCommand(this, m, Trait.InsertCommand, Insert));
                 },
 
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
@@ -2412,7 +2560,7 @@ namespace ModelGraphSTD
                     if (m.IsExpandedLeft && N > 0)
                     {
                         var items = _graphXStore.ToArray;
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -2431,6 +2579,7 @@ namespace ModelGraphSTD
                 }
             };
 
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             void Insert(ItemModel model)
             {
@@ -2499,7 +2648,7 @@ namespace ModelGraphSTD
                     if (m.IsExpandedLeft && N > 0)
                     {
                         var syms = GraphX_SymbolX.GetChildren(gd);
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -2558,7 +2707,7 @@ namespace ModelGraphSTD
                 Validate = (m) =>
                 {
                     var item = m.Item;
-                    var level = (byte)(m.Level + 1);
+                    var level = (byte)(m.Depth + 1);
                     var oldModels = m.ChildModels;
 
                     var N = _tableXStore.Count;
@@ -2609,7 +2758,7 @@ namespace ModelGraphSTD
                 Validate = (m) =>
                 {
                     var item = m.Item;
-                    var level = (byte)(m.Level + 1);
+                    var level = (byte)(m.Depth + 1);
                     var oldModels = m.ChildModels;
 
                     var N = _graphXStore.Count;
@@ -2712,7 +2861,7 @@ namespace ModelGraphSTD
 
                 ButtonCommands = (m, bc) =>
                 {
-                    bc.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
+                    bc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -2727,7 +2876,7 @@ namespace ModelGraphSTD
 
                     if (N > 0)
                     {
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -2740,7 +2889,7 @@ namespace ModelGraphSTD
                         {
                             var i = R;
                             if (!TryGetOldModel(m, Trait.EnumValue_ZM, oldModels, i, item))
-                                m.ChildModels[i] = new ItemModel(m, Trait.EnumValue_ZM, level, item, null, null, PairXList_Dx);
+                                m.ChildModels[i] = new ItemModel(m, Trait.EnumValue_ZM, level, item, null, null, PairXList_X);
 
                             i++;
                             if (!TryGetOldModel(m, Trait.EnumColumn_ZM, oldModels, i, item))
@@ -2798,7 +2947,7 @@ namespace ModelGraphSTD
                     if (N > 0)
                     {
                         var item = m.Item as TableX;
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
                         var oldModels = m.ChildModels;
 
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -2823,7 +2972,7 @@ namespace ModelGraphSTD
 
                             i++;
                             if (!TryGetOldModel(m, Trait.ParentRelatationX_ZM, oldModels, i, item))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ParentRelatationX_ZM, level, item, null, null, ParentRelatationXList_X);
+                                m.ChildModels[i] = new ItemModel(m, Trait.ParentRelatationX_ZM, level, item, null, null, ParentRelationXList_X);
 
                             i++;
                             if (!TryGetOldModel(m, Trait.MetaRelation_ZM, oldModels, i, item))
@@ -2881,7 +3030,7 @@ namespace ModelGraphSTD
                     if (N > 0)
                     {
                         var gx = m.GraphX;
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -3068,7 +3217,7 @@ namespace ModelGraphSTD
 
                 MenuCommands = (m, mc) =>
                 {
-                   mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3144,12 +3293,12 @@ namespace ModelGraphSTD
                             if (L > 0)
                             {
                                 var items = QueryX_QueryX.GetChildren(qx);
-                                var level = (byte)(m.Level + 1);
+                                var level = (byte)(m.Depth + 1);
                                 for (int i = R, j = 0; i < N; i++, j++)
                                 {
                                     var itm = items[j] as QueryX;
                                     if (!TryGetOldModel(m, Trait.ValueXHead_M, oldModels, i, itm))
-                                        m.ChildModels[i] = new ItemModel(m, Trait.ValueXHead_M, level, itm, null, null, ValueXHead_X);
+                                        m.ChildModels[i] = new ItemModel(m, Trait.ValueXHead_M, level, itm, null, null, ValueHead_X);
                                 }
                             }
                         }
@@ -3183,7 +3332,7 @@ namespace ModelGraphSTD
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), , ModelType.Default);
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3211,7 +3360,7 @@ namespace ModelGraphSTD
                     if (N > 0)
                     {
                         var items = TableX_ColumnX.GetChildren(tbl);
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -3283,7 +3432,7 @@ namespace ModelGraphSTD
                     {
                         var items = TableX_ChildRelationX.GetChildren(tbl);
 
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
@@ -3353,7 +3502,7 @@ namespace ModelGraphSTD
                     if (N > 0)
                     {
                         var items = TableX_ParentRelationX.GetChildren(tx);
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -3425,7 +3574,7 @@ namespace ModelGraphSTD
                     if (m.IsExpandedLeft && N > 0)
                     {
                         var items = enu.ToArray;
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -3501,7 +3650,7 @@ namespace ModelGraphSTD
                     if (N > 0)
                     {
                         var items = EnumX_ColumnX.GetChildren(ex);
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
@@ -3567,7 +3716,7 @@ namespace ModelGraphSTD
                     var N = (m.IsExpandedLeft) ? Store_ComputeX.ChildCount(sto) : 0;
                     if (N > 0)
                     {
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
                         var items = Store_ComputeX.GetChildren(sto);
 
                         var oldModels = m.ChildModels;
@@ -3577,7 +3726,7 @@ namespace ModelGraphSTD
                         {
                             var itm = items[i];
                             if (!TryGetOldModel(m, Trait.ComputeX_M, oldModels, i, itm))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ComputeX_M, level, itm, Store_ComputeX, sto, ComputeX_M);
+                                m.ChildModels[i] = new ItemModel(m, Trait.ComputeX_M, level, itm, Store_ComputeX, sto, ComputeX_X);
                         }
                     }
                     else
@@ -3789,11 +3938,10 @@ namespace ModelGraphSTD
                 Validate = (m) =>
                 {
                     var tbl = m.Item as TableX;
-                    Property prop;
 
-                    if (m.IsExpandedLeft && TableX_NameProperty.TryGetChild(tbl, out prop))
+                    if (m.IsExpandedLeft && TableX_NameProperty.TryGetChild(tbl, out Property prop))
                     {
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || oldModels.Length != 1) m.ChildModels = new ItemModel[1];
@@ -3869,11 +4017,10 @@ namespace ModelGraphSTD
                 Validate = (m) =>
                 {
                     var tbl = m.Item as TableX;
-                    Property prop = null;
 
-                    if (m.IsExpandedLeft && TableX_SummaryProperty.TryGetChild(tbl, out prop))
+                    if (m.IsExpandedLeft && TableX_SummaryProperty.TryGetChild(tbl, out Property prop))
                     {
-                        var level = (byte)(m.Level + 1);
+                        var level = (byte)(m.Depth + 1);
 
                         var oldModels = m.ChildModels;
                         if (oldModels == null || oldModels.Length != 1) m.ChildModels = new ItemModel[1];
@@ -3900,7 +4047,7 @@ namespace ModelGraphSTD
                 {
                     if (m.Item.IsColumnX) return (null, m.ColumnX.Name, 0, ModelType.Default);
                     if (m.Item.IsComputeX) return (null, m.ComputeX.Name, 0, ModelType.Default);
-                    throw new Exception("Corrupt ItemModelTree");                    
+                    throw new Exception("Corrupt ItemModelTree");
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3946,78 +4093,63 @@ namespace ModelGraphSTD
         ModelAction GraphXColoring_X;
         void Initialize_GraphXColoring_X()
         {
-            DataChef_X = new ModelAction
+            GraphXColoring_X = new ModelAction
             {
-                Refresh = Refresh_GraphXColoring_X,
-            };
-        }
-        void Refresh_GraphXColoring_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphXColoring_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var gd = model.Item as GraphX;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = GraphX_ColorColumnX.ChildCount(m.GraphX);
 
-                        root.ModelDrop = GraphXColoringDrop;
-                        break;
+                    m.CanExpandLeft = (count > 0);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = GraphX_ColorColumnX.ChildCount(gd);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
+                ModelDescription = (m) => _localize(m.DescriptionKey),
 
-                    case ModelActionX.ModelSelect:
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        root.ModelDescription = _localize(model.DescriptionKey);
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item;
-                ColumnX col = null;
-                TableX tbl = null;
-                if (model.IsExpandedLeft && GraphX_ColorColumnX.TryGetChild(item, out col) && TableX_ColumnX.TryGetParent(col, out tbl))
+                ModelDrop = (m, d, doDrop) =>
                 {
-                    var level = (byte)(model.Level + 1);
+                    var gx = m.GraphX;
+                    var col = d.ColumnX;
+                    if (!col.IsColumnX) return DropAction.None;
+                    if (!gx.IsGraphX) return DropAction.None;
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || oldModels.Length != 1) model.ChildModels = new ItemModel[1];
+                    if (doDrop)
+                    {
+                        AppendLink(GraphX_ColorColumnX, gx, col);
+                    }
+                    return DropAction.Link;
+                },
 
-                    if (!TryGetOldModel(model, Trait.GraphXColorColumn_M, oldModels, 0, col, tbl))
-                        model.ChildModels[0] = new ItemModel(model, Trait.GraphXColorColumn_M, level, col, tbl, null, GraphXColorColumn_X);
-                }
-                else
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
                 {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        private DropAction GraphXColoringDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            var gd = model.Item;
-            var col = drop.Item;
-            if (!col.IsColumnX) return DropAction.None;
-            if (!gd.IsGraphX) return DropAction.None;
+                    var item = m.Item;
 
-            if (doDrop)
-            {
-                AppendLink(GraphX_ColorColumnX, gd, col);
-            }
-            return DropAction.Link;
+                    if (m.IsExpandedLeft && GraphX_ColorColumnX.TryGetChild(item, out ColumnX col) && TableX_ColumnX.TryGetParent(col, out TableX tbl))
+                    {
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || oldModels.Length != 1) m.ChildModels = new ItemModel[1];
+
+                        if (!TryGetOldModel(m, Trait.GraphXColorColumn_M, oldModels, 0, col, tbl))
+                            m.ChildModels[0] = new ItemModel(m, Trait.GraphXColorColumn_M, level, col, tbl, null, GraphXColorColumn_X);
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
+                }
+            };        
         }
         #endregion
 
@@ -4025,92 +4157,83 @@ namespace ModelGraphSTD
         ModelAction GraphXRootList_X;
         void Initialize_GraphXRootList_X()
         {
-            DataChef_X = new ModelAction
+            GraphXRootList_X = new ModelAction
             {
-                Refresh = Refresh_GraphXRootList_X,
-            };
-        }
-        void Refresh_GraphXRootList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphXRootList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = GraphX_QueryX.ChildCount(m.Item);
 
-                        root.ModelDrop = GraphXRootListDrop;
-                        break;
+                    m.CanExpandLeft = (count > 0);
 
-                    case ModelActionX.PointerOver:
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                    case ModelActionX.ModelRefresh:
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = GraphX_QueryX.ChildCount(model.Item);
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelSelect:
+                ModelDescription = (m) => _localize(m.DescriptionKey),
 
-                        root.ModelDescription = _localize(model.DescriptionKey);
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var gd = model.Item as GraphX;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                var N = (model.IsExpandedLeft) ? GraphX_QueryX.ChildCount(gd): 0;
-                if (N > 0)
+                ModelDrop = (m, d, doDrop) =>
                 {
-                    var items = GraphX_QueryX.GetChildren(gd);
-                    var level = (byte)(model.Level + 1);
+                    if (!(m.Item is GraphX gx)) return DropAction.None;
+                    if (!(d.Item is Store st)) return DropAction.None;
+                    if (GraphXAlreadyHasThisRoot(gx, st)) return DropAction.None;
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    for (int i = 0; i < N; i++)
+                    if (doDrop)
                     {
-                        var itm = items[i];
-                        if (!TryGetOldModel(model, Trait.GraphXRoot_M, oldModels, i, itm, gd))
-                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXRoot_M, level, itm, gd, null, QueryXRoot_X);
+                        CreateQueryX(gx, st);
+                    }
+                    return DropAction.Link;
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var gd = m.Item as GraphX;
+
+                    var N = (m.IsExpandedLeft) ? GraphX_QueryX.ChildCount(gd) : 0;
+                    if (N > 0)
+                    {
+                        var items = GraphX_QueryX.GetChildren(gd);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i];
+                            if (!TryGetOldModel(m, Trait.GraphXRoot_M, oldModels, i, itm, gd))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXRoot_M, level, itm, gd, null, QueryXRoot_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        private DropAction GraphXRootListDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            if (!(model.Item is GraphX gx)) return DropAction.None;
-            if (!(drop.Item is Store st)) return DropAction.None;
-            if (GraphXAlreadyHasThisRoot(gx, st)) return DropAction.None;
+            };
 
-            if (doDrop)
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            bool GraphXAlreadyHasThisRoot(Item gd, Item table)
             {
-                CreateQueryX(gx, st);
-            }
-            return DropAction.Link;
-        }
-        private bool GraphXAlreadyHasThisRoot(Item gd, Item table)
-        {
-            if (GraphX_QueryX.ChildCount(gd) > 0)
-            {
-                var items = GraphX_QueryX.GetChildren(gd);
-                foreach (var sd in items)
+                if (GraphX_QueryX.ChildCount(gd) > 0)
                 {
-                    if (Store_QueryX.ContainsLink(table, sd)) return true;
+                    var items = GraphX_QueryX.GetChildren(gd);
+                    foreach (var sd in items)
+                    {
+                        if (Store_QueryX.ContainsLink(table, sd)) return true;
+                    }
                 }
+                return false;
             }
-            return false;
         }
         #endregion
 
@@ -4118,72 +4241,52 @@ namespace ModelGraphSTD
         ModelAction GraphXNodeList_X;
         void Initialize_GraphXNodeList_X()
         {
-            DataChef_X = new ModelAction
+            GraphXNodeList_X = new ModelAction
             {
-                Refresh = Refresh_GraphXNodeList_X,
-            };
-        }
-        void Refresh_GraphXNodeList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphXNodeList_X(ItemModel model, RootModel root)
-        {
-            var gx = model.Item as GraphX;
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = GetNodeOwners(m.GraphX).Count;
 
-                        break;
+                    m.CanExpandLeft = (count > 0);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = GetNodeOwners(gx).Count;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                if (model.IsExpandedLeft)
+                Validate = (m) =>
                 {
-                    var owners = GetNodeOwners(gx).ToArray();
-                    var N = owners.Length;
-                    if (N > 0)
+                    var gx = m.GraphX;
+
+                    if (m.IsExpandedLeft)
                     {
-                        var level = (byte)(model.Level + 1);
-
-                        var oldModels = model.ChildModels;
-                        if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
+                        var owners = GetNodeOwners(gx).ToArray();
+                        var N = owners.Length;
+                        if (N > 0)
                         {
-                            var sto = owners[i];
-                            if (!TryGetOldModel(model, Trait.GraphXNode_M, oldModels, i, sto, gx))
-                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXNode_M, level, sto, gx, null, GraphXNode_X);
+                            var level = (byte)(m.Depth + 1);
+
+                            var oldModels = m.ChildModels;
+                            if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                var sto = owners[i];
+                                if (!TryGetOldModel(m, Trait.GraphXNode_M, oldModels, i, sto, gx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXNode_M, level, sto, gx, null, GraphXNode_X);
+                            }
+                        }
+                        else
+                        {
+                            m.ChildModels = null;
                         }
                     }
                     else
                     {
-                        model.ChildModels = null;
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -4191,83 +4294,62 @@ namespace ModelGraphSTD
         ModelAction GraphXNode_X;
         void Initialize_GraphXNode_X()
         {
-            DataChef_X = new ModelAction
+            GraphXNode_X = new ModelAction
             {
-                Refresh = Refresh_GraphXNode_X,
-            };
-        }
-        void Refresh_GraphXNode_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphXNode_X(ItemModel model, RootModel root)
-        {
-            var sto = model.Item as Store;
-            var gx = model.Aux1 as GraphX;
-
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var item = model.Item as TableX;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = GetSymbolQueryXCount(m.GraphX, m.Store);
 
-                        root.ModelDrop = SymbolNodeOwnerDrop;
-                        break;
+                    m.CanExpandLeft = (count > 0);
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), GetIdentity(m.Item, IdentityStyle.Single), 0, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = item.Name;
-                        root.ModelCount = GetSymbolQueryXCount(gx, sto);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var N = (model.IsExpandedLeft) ? GetSymbolQueryXCount(gx, sto) : 0;
-
-                if (N > 0)
+                ModelDrop = (m, d, doDrop) =>
                 {
-                    var level = (byte)(model.Level + 1);
+                    if (!(m.Item is Store st)) return DropAction.None;
+                    if (!(m.Aux1 is GraphX gx)) return DropAction.None;
+                    if (!(d.Item is SymbolX sx)) return DropAction.None;
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    (var symbols, var querys) = GetSymbolXQueryX(gx, sto);
-                    for (int i = 0; i < N; i++)
+                    if (doDrop)
                     {
-                        var seg = querys[i];
-                        if (!TryGetOldModel(model, Trait.GraphXNodeSymbol_M, oldModels, i, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXNodeSymbol_M, level, seg, GraphX_SymbolQueryX, gx, GraphXNodeSymbol_X);
+                        CreateQueryX(gx, sx, st);
+                    }
+                    return DropAction.Link;
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var gx = m.GraphX;
+                    var st = m.Store;
+
+                    var N = (m.IsExpandedLeft) ? GetSymbolQueryXCount(gx, st) : 0;
+
+                    if (N > 0)
+                    {
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        (var symbols, var querys) = GetSymbolXQueryX(gx, st);
+                        for (int i = 0; i < N; i++)
+                        {
+                            var seg = querys[i];
+                            if (!TryGetOldModel(m, Trait.GraphXNodeSymbol_M, oldModels, i, seg))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXNodeSymbol_M, level, seg, GraphX_SymbolQueryX, gx, GraphXNodeSymbol_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        private DropAction SymbolNodeOwnerDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            if (!(model.Item is Store st)) return DropAction.None;
-            if (!(model.Aux1 is GraphX gx)) return DropAction.None;
-            if (!(drop.Item is SymbolX sx)) return DropAction.None;
-
-            if (doDrop)
-            {
-                CreateQueryX(gx, sx, st);
-            }
-            return DropAction.Link;
+            };
         }
         #endregion
 
@@ -4275,42 +4357,16 @@ namespace ModelGraphSTD
         ModelAction GraphXColorColumn_X;
         void Initialize_GraphXColorColumn_X()
         {
-            DataChef_X = new ModelAction
+            GraphXColorColumn_X = new ModelAction
             {
-                Refresh = Refresh_GraphXColorColumn_X,
-            };
-        }
-        void Refresh_GraphXColorColumn_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphXColorColumn_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var col = model.Item as ColumnX;
-                var tbl = model.Aux1 as TableX;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var col = m.Item as ColumnX;
+                    var tbl = m.Aux1 as TableX;
 
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = $"{tbl.Name} : {col.Name}";
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.ModelDescription = _localize(model.DescriptionKey);
-                        break;
-                }
-            }
+                    return (_localize(m.KindKey), $"{tbl.Name} : {col.Name}", 0, ModelType.Default);
+                },
+            };
         }
         #endregion
 
@@ -4320,148 +4376,133 @@ namespace ModelGraphSTD
         ModelAction QueryXRoot_X;
         void Initialize_QueryXRoot_X()
         {
-            DataChef_X = new ModelAction
+            QueryXRoot_X = new ModelAction
             {
-                Refresh = Refresh_QueryXRoot_X,
-            };
-        }
-        void Refresh_QueryXRoot_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryXRoot_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = QueryX_QueryX.ChildCount(m.Item);
 
-                        root.ModelDrop = QueryXRootHeadDrop;
-                        break;
+                    m.CanDrag = true;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanExpandRight = true;
 
-                    case ModelActionX.PointerOver:
+                    var tb = Store_QueryX.GetParent(m.Item);
 
-                        break;
+                    return (_localize(m.NameKey), GetIdentity(tb, IdentityStyle.Single), count, ModelType.Default);
+                },
 
-                    case ModelActionX.ModelRefresh:
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        root.ModelKind = _localize(model.NameKey);
-                        root.ModelName = QueryXRootName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
+                ModelDescription = (m) => _localize(m.DescriptionKey),
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanExpandRight = true;
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelSelect:
-
-                        root.ModelDescription = _localize(model.DescriptionKey);
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                int N = 0;
-                if (model.IsExpandedLeft || model.IsExpandedRight)
+                MenuCommands = (m, mc) =>
                 {
-                    var qx = model.Item as QueryX;
-                    var sp = new Property[] { };
-                    var R = model.IsExpandedRight ? sp.Length : 0;
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                },
 
-                    var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(qx) : 0;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    N = L + R;
-                    if (N > 0)
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    if (!(d.Item is Relation re)) return DropAction.None;
+                    if (!(m.Item is QueryX qx)) return DropAction.None;
+
+                    if (doDrop)
                     {
-                        var level = (byte)(model.Level + 1);
-                        var oldModels = model.ChildModels;
-                        model.ChildModels = new ItemModel[N];
+                        CreateQueryX(qx, re, QueryType.Graph);
+                    }
+                    return DropAction.Link;
+                },
 
-                        if (R > 0)
-                        {
-                            AddProperyModels(model, oldModels, sp);
-                        }
-                        if (L > 0)
-                        {
-                            var children = QueryX_QueryX.GetChildren(qx);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                            for (int i = R, j = 0; i < N; i++, j++)
+                Validate = (m) =>
+                {
+                    int N = 0;
+                    if (m.IsExpandedLeft || m.IsExpandedRight)
+                    {
+                        var qx = m.Item as QueryX;
+                        var sp = new Property[] { };
+                        var R = m.IsExpandedRight ? sp.Length : 0;
+
+                        var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(qx) : 0;
+
+                        N = L + R;
+                        if (N > 0)
+                        {
+                            var level = (byte)(m.Depth + 1);
+                            var oldModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
+
+                            if (R > 0)
                             {
-                                var child = children[j];
-                                if (child.IsPath)
+                                AddProperyModels(m, oldModels, sp);
+                            }
+                            if (L > 0)
+                            {
+                                var children = QueryX_QueryX.GetChildren(qx);
+
+                                for (int i = R, j = 0; i < N; i++, j++)
                                 {
-                                    if (child.IsHead)
+                                    var child = children[j];
+                                    if (child.IsPath)
                                     {
-                                        if (!TryGetOldModel(model, Trait.GraphXPathHead_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathHead_M, level, child, null, null, QueryXPathHead_X);
+                                        if (child.IsHead)
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXPathHead_M, oldModels, i, child))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathHead_M, level, child, null, null, QueryXPathHead_X);
+                                        }
+                                        else
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXPathLink_M, oldModels, i, child))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathLink_M, level, child, null, null, QueryXPathLink_X);
+                                        }
+                                    }
+                                    else if (child.IsGroup)
+                                    {
+                                        if (child.IsHead)
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXGroupHead_M, oldModels, i, child))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupHead_M, level, child, null, null, QueryXGroupHead_X);
+                                        }
+                                        else
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXGroupLink_M, oldModels, i, child))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupLink_M, level, child, null, null, QueryXGroupLink_X);
+                                        }
+                                    }
+                                    else if (child.IsSegue)
+                                    {
+                                        if (child.IsHead)
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXEgressHead_M, oldModels, i, child))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressHead_M, level, child, null, null, QueryXEgressHead_X);
+                                        }
+                                        else
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXEgressLink_M, oldModels, i, child))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressLink_M, level, child, null, null, QueryXEgressLink_X);
+                                        }
+                                    }
+                                    else if (child.IsRoot)
+                                    {
+                                        if (!TryGetOldModel(m, Trait.GraphXLink_M, oldModels, i, child))
+                                            m.ChildModels[i] = new ItemModel(m, Trait.GraphXLink_M, level, child, null, null, QueryXLink_X);
                                     }
                                     else
                                     {
-                                        if (!TryGetOldModel(model, Trait.GraphXPathLink_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathLink_M, level, child, null, null, QueryXPathLink_X);
+                                        if (!TryGetOldModel(m, Trait.GraphXLink_M, oldModels, i, child))
+                                            m.ChildModels[i] = new ItemModel(m, Trait.GraphXLink_M, level, child, null, null, QueryXLink_X);
                                     }
-                                }
-                                else if (child.IsGroup)
-                                {
-                                    if (child.IsHead)
-                                    {
-                                        if (!TryGetOldModel(model, Trait.GraphXGroupHead_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupHead_M, level, child, null, null, QueryXGroupHead_X);
-                                    }
-                                    else
-                                    {
-                                        if (!TryGetOldModel(model, Trait.GraphXGroupLink_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupLink_M, level, child, null, null, QueryXGroupLink_X);
-                                    }
-                                }
-                                else if (child.IsSegue)
-                                {
-                                    if (child.IsHead)
-                                    {
-                                        if (!TryGetOldModel(model, Trait.GraphXEgressHead_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressHead_M, level, child, null, null, QueryXEgressHead_X);
-                                    }
-                                    else
-                                    {
-                                        if (!TryGetOldModel(model, Trait.GraphXEgressLink_M, oldModels, i, child))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressLink_M, level, child, null, null, QueryXEgressLink_X);
-                                    }
-                                }
-                                else if (child.IsRoot)
-                                {
-                                    if (!TryGetOldModel(model, Trait.GraphXLink_M, oldModels, i, child))
-                                        model.ChildModels[i] = new ItemModel(model, Trait.GraphXLink_M, level, child, null, null, QueryXLink_X);
-                                }
-                                else
-                                {
-                                    if (!TryGetOldModel(model, Trait.GraphXLink_M, oldModels, i, child))
-                                        model.ChildModels[i] = new ItemModel(model, Trait.GraphXLink_M, level, child, null, null, QueryXLink_X);
                                 }
                             }
                         }
                     }
+                    if (N == 0) m.ChildModels = null;
                 }
-                if (N == 0)    model.ChildModels = null;
-            }
-        }
-        private DropAction QueryXRootHeadDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            if (!(drop.Item is Relation re)) return DropAction.None;
-            if (!(model.Item is QueryX qx)) return DropAction.None;
-
-            if (doDrop)
-            {
-                CreateQueryX(qx, re, QueryType.Graph);
-            }
-            return DropAction.Link;
-        }
-        private string QueryXRootName(ItemModel modle)
-        {
-            var sd = modle.Item;
-            var tb = Store_QueryX.GetParent(sd);
-            return GetIdentity(tb, IdentityStyle.Single);
+            };
         }
         #endregion
 
@@ -4469,197 +4510,144 @@ namespace ModelGraphSTD
         ModelAction QueryXLink_X;
         void Initialize_QueryXLink_X()
         {
-            DataChef_X = new ModelAction
+            QueryXLink_X = new ModelAction
             {
-                Refresh = Refresh_QueryXLink_X,
-            };
-        }
-        void Refresh_QueryXLink_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryXLink_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = QueryX_QueryX.ChildCount(m.Item);
 
-                        root.ModelDrop = QueryXRootLinkDrop;
-                        root.ReorderItems = ReorderRelatedChild;
-                        break;
+                    m.CanDrag = true;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanExpandRight = true;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = GetQueryXRelationName(model);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => GetQueryXRelationName(m),
 
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanExpandRight = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakePathHeadCommand, MakePathtHead));
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakeGroupHeadCommand, MakeGroupHead));
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakeEgressHeadCommand, MakeBridgeHead));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
-                var R = model.IsExpandedRight ? sp.Length : 0;
-
-                var sd = model.Item as QueryX;
-                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
-
-                var N = L + R;
-                if (N > 0)
+                MenuCommands = (m, mc) =>
                 {
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                    mc.Add(new ModelCommand(this, m, Trait.MakePathHeadCommand, MakePathtHead));
+                    mc.Add(new ModelCommand(this, m, Trait.MakeGroupHeadCommand, MakeGroupHead));
+                    mc.Add(new ModelCommand(this, m, Trait.MakeEgressHeadCommand, MakeBridgeHead));
+                },
 
-                    if (R > 0)
-                    {
-                        AddProperyModels(model, oldModels, sp);
-                    }
-                    if (L > 0)
-                    {
-                        var items = QueryX_QueryX.GetChildren(sd);
-                        var level = (byte)(model.Level + 1);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        for (int i = R, j = 0; i < N; i++, j++)
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    if (d.Item.IsRelationX)
+                    {
+                        if (doDrop)
                         {
-                            var qx = items[j];
-                            switch (qx.QueryKind)
+                            var qx = m.Item as QueryX;
+                            var re = d.Item as Relation;
+                            CreateQueryX(qx, re, QueryType.Graph);
+                        }
+                        return DropAction.Link;
+                    }
+                    else if (m.Item.IsQueryGraphLink)
+                    {
+                        if (doDrop)
+                        {
+                            RemoveItem(d);
+                        }
+                        return DropAction.Link;
+                    }
+                    return DropAction.None;
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
+                    var R = m.IsExpandedRight ? sp.Length : 0;
+
+                    var sd = m.Item as QueryX;
+                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
+
+                    var N = L + R;
+                    if (N > 0)
+                    {
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        if (R > 0)
+                        {
+                            AddProperyModels(m, oldModels, sp);
+                        }
+                        if (L > 0)
+                        {
+                            var items = QueryX_QueryX.GetChildren(sd);
+                            var level = (byte)(m.Depth + 1);
+
+                            for (int i = R, j = 0; i < N; i++, j++)
                             {
-                                case QueryType.Path:
-                                    if (qx.IsHead)
-                                    {
-                                        if (!TryGetOldModel(model, Trait.GraphXPathHead_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathHead_M, level, qx, null, null, QueryXPathHead_X);
-                                    }
-                                    else
-                                    {
-                                        if (!TryGetOldModel(model, Trait.GraphXPathLink_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathLink_M, level, qx, null, null, QueryXPathLink_X);
-                                    }
-                                    break;
+                                var qx = items[j];
+                                switch (qx.QueryKind)
+                                {
+                                    case QueryType.Path:
+                                        if (qx.IsHead)
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXPathHead_M, oldModels, i, qx))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathHead_M, level, qx, null, null, QueryXPathHead_X);
+                                        }
+                                        else
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXPathLink_M, oldModels, i, qx))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathLink_M, level, qx, null, null, QueryXPathLink_X);
+                                        }
+                                        break;
 
-                                case QueryType.Group:
-                                    if (qx.IsHead)
-                                    {
-                                        if (!TryGetOldModel(model, Trait.GraphXGroupHead_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupHead_M, level, qx, null, null, QueryXGroupHead_X);
-                                    }
-                                    else
-                                    {
-                                        if (!TryGetOldModel(model, Trait.GraphXGroupLink_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupLink_M, level, qx, null, null, QueryXGroupLink_X);
-                                    }
-                                    break;
+                                    case QueryType.Group:
+                                        if (qx.IsHead)
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXGroupHead_M, oldModels, i, qx))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupHead_M, level, qx, null, null, QueryXGroupHead_X);
+                                        }
+                                        else
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXGroupLink_M, oldModels, i, qx))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupLink_M, level, qx, null, null, QueryXGroupLink_X);
+                                        }
+                                        break;
 
-                                case QueryType.Segue:
-                                    if (qx.IsHead)
-                                    {
-                                        if (!TryGetOldModel(model, Trait.GraphXEgressHead_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressHead_M, level, qx, null, null, QueryXEgressHead_X);
-                                    }
-                                    else
-                                    {
-                                        if (!TryGetOldModel(model, Trait.GraphXEgressLink_M, oldModels, i, qx))
-                                            model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressLink_M, level, qx, null, null, QueryXEgressLink_X);
-                                    }
-                                    break;
+                                    case QueryType.Segue:
+                                        if (qx.IsHead)
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXEgressHead_M, oldModels, i, qx))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressHead_M, level, qx, null, null, QueryXEgressHead_X);
+                                        }
+                                        else
+                                        {
+                                            if (!TryGetOldModel(m, Trait.GraphXEgressLink_M, oldModels, i, qx))
+                                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressLink_M, level, qx, null, null, QueryXEgressLink_X);
+                                        }
+                                        break;
 
-                                case QueryType.Graph:
-                                    if (!TryGetOldModel(model, Trait.GraphXLink_M, oldModels, i, qx))
-                                        model.ChildModels[i] = new ItemModel(model, Trait.GraphXLink_M, level, qx, null, null, QueryXLink_X);
-                                    break;
+                                    case QueryType.Graph:
+                                        if (!TryGetOldModel(m, Trait.GraphXLink_M, oldModels, i, qx))
+                                            m.ChildModels[i] = new ItemModel(m, Trait.GraphXLink_M, level, qx, null, null, QueryXLink_X);
+                                        break;
 
-                                default:
-                                    throw new Exception("Invalid item trait");
+                                    default:
+                                        throw new Exception("Invalid item trait");
+                                }
                             }
                         }
                     }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-
-        private string GetQueryXRelationName(ItemModel model)
-        {
-            Relation parent;
-            if (Relation_QueryX.TryGetParent(model.Item, out parent))
-            {
-                var rel = parent as RelationX;
-                return GetRelationName(rel);
-            }
-            return null;
-        }
-        private DropAction QueryXRootLinkDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            if (drop.Item.IsRelationX)
-            {
-                if (doDrop)
-                {
-                    var qx = model.Item as QueryX;
-                    var re = drop.Item as Relation;
-                    CreateQueryX(qx, re, QueryType.Graph);
-                }
-                return DropAction.Link;
-            }
-            else if (model.Item.IsQueryGraphLink)
-            {
-                if (doDrop)
-                {
-                    RemoveItem(drop);
-                }
-                return DropAction.Link;
-            }
-            return DropAction.None;
-        }
-        string QueryXLinkName(ItemModel model)
-        {
-            return QueryXFilterName(model.Item as QueryX);
-        }
-        string QueryXFilterName(QueryX sd)
-        {
-            Store head, tail;
-            GetHeadTail(sd, out head, out tail);
-            if (head == null || tail == null) return InvalidItem;
-
-            var headName = GetIdentity(head, IdentityStyle.Single);
-            var tailName = GetIdentity(tail, IdentityStyle.Single);
-            {
-                if (sd.HasWhere)
-                    return $"{headName}{parentNameSuffix}{tailName}  ({sd.WhereString})";
-                else
-                    return $"{headName}{parentNameSuffix}{tailName}";
-            }
-        }
-        string QueryXSelectorName(QueryX sd)
-        {
-            Store head, tail;
-            GetHeadTail(sd, out head, out tail);
-
-
-            if (head == null || tail == null) return InvalidItem;
-            var headName = GetIdentity(head, IdentityStyle.Single);
-            var tailName = GetIdentity(tail, IdentityStyle.Single);
-            return $"{headName}{parentNameSuffix}{tailName}";
+            };
         }
         #endregion
 
@@ -4667,113 +4655,91 @@ namespace ModelGraphSTD
         ModelAction QueryXPathHead_X;
         void Initialize_QueryXPathHead_X()
         {
-            DataChef_X = new ModelAction
+            QueryXPathHead_X = new ModelAction
             {
-                Refresh = Refresh_QueryXPathHead_X,
-            };
-        }
-        void Refresh_QueryXPathHead_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryXPathHead_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = QueryX_QueryX.ChildCount(m.Item);
 
-                        root.ModelDrop = QueryXPathDrop;
-                        root.ReorderItems = ReorderRelatedChild;
-                        break;
+                    m.CanDrag = true;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanExpandRight = true;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXHeadName(m), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = GetQueryXRelationName(model);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => GetQueryXRelationName(m),
 
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryXHeadName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanExpandRight = true;
-                        break;
+                ReorderItems = ReorderRelatedChild,
 
-                    case ModelActionX.ModelSelect:
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakeRootLinkCommand, MakeRootLink));
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakeGroupHeadCommand, MakeGroupHead));
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakeEgressHeadCommand, MakeBridgeHead));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXIsBreakPointProperty, _queryXConnect1Property, _queryXConnect2Property, _queryXRootWhereProperty };
-                var R = model.IsExpandedRight ? sp.Length : 0;
-
-                var sd = model.Item as QueryX;
-                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
-
-                var N = L + R;
-                if (N > 0)
+                MenuCommands = (m, mc) =>
                 {
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                    mc.Add(new ModelCommand(this, m, Trait.MakeRootLinkCommand, MakeRootLink));
+                    mc.Add(new ModelCommand(this, m, Trait.MakeGroupHeadCommand, MakeGroupHead));
+                    mc.Add(new ModelCommand(this, m, Trait.MakeEgressHeadCommand, MakeBridgeHead));
+                },
 
-                    if (R > 0)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    if (!(m.Item is QueryX qx)) return DropAction.None;
+                    if (!(d.Item is Relation re)) return DropAction.None;
+                    if (!CanDropQueryXRelation(qx, d.Item as RelationX)) return DropAction.None;
+
+                    if (doDrop)
                     {
-                        AddProperyModels(model, oldModels, sp);
+                        CreateQueryX(qx, re, QueryType.Path);
                     }
-                    if (L > 0)
-                    {
-                        var items = QueryX_QueryX.GetChildren(sd);
-                        var level = (byte)(model.Level + 1);
+                    return DropAction.Link;
+                },
 
-                        for (int i = R, j = 0; i < N; i++, j++)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXIsBreakPointProperty, _queryXConnect1Property, _queryXConnect2Property, _queryXRootWhereProperty };
+                    var R = m.IsExpandedRight ? sp.Length : 0;
+
+                    var sd = m.Item as QueryX;
+                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
+
+                    var N = L + R;
+                    if (N > 0)
+                    {
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        if (R > 0)
                         {
-                            var itm = items[j];
-                            if (!TryGetOldModel(model, Trait.GraphXPathLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathLink_M, level, itm, null, null, QueryXPathLink_X);
+                            AddProperyModels(m, oldModels, sp);
+                        }
+                        if (L > 0)
+                        {
+                            var items = QueryX_QueryX.GetChildren(sd);
+                            var level = (byte)(m.Depth + 1);
+
+                            for (int i = R, j = 0; i < N; i++, j++)
+                            {
+                                var itm = items[j];
+                                if (!TryGetOldModel(m, Trait.GraphXPathLink_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathLink_M, level, itm, null, null, QueryXPathLink_X);
+                            }
                         }
                     }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        string QueryXHeadName(ItemModel model)
-        {
-            var sd = model.Item as QueryX;
-
-            Store head1, tail1, head2, tail2;
-            GetHeadTail(sd, out head1, out tail1);
-            var sd2 = GetQueryXTail(sd);
-            GetHeadTail(sd2, out head2, out tail2);
-
-            StringBuilder sb = new StringBuilder(132);
-            sb.Append(GetIdentity(head1, IdentityStyle.Single));
-            sb.Append(parentNameSuffix);
-            sb.Append(GetIdentity(tail2, IdentityStyle.Single));
-            return sb.ToString();       
-        }
-        private QueryX GetQueryXTail(QueryX sd)
-        {
-            var sd2 = sd;
-            var sd3 = sd2;
-            while (sd3 != null)
-            {
-                sd2 = sd3;
-                sd3 = QueryX_QueryX.GetChild(sd3);
-            }
-            return sd2;
+            };
         }
         #endregion
 
@@ -4781,95 +4747,84 @@ namespace ModelGraphSTD
         ModelAction QueryXPathLink_X;
         void Initialize_QueryXPathLink_X()
         {
-            DataChef_X = new ModelAction
+            QueryXPathLink_X = new ModelAction
             {
-                Refresh = Refresh_QueryXPathLink_X,
-            };
-        }
-        void Refresh_QueryXPathLink_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryXPathLink_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = QueryX_QueryX.ChildCount(m.Item);
 
-                        root.ModelDrop = QueryXPathDrop;
-                        break;
+                    m.CanDrag = true;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanExpandRight = true;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = GetQueryXRelationName(model);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => GetQueryXRelationName(m),
 
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanExpandRight = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXIsBreakPointProperty, _queryXRootWhereProperty };
-                var R = model.IsExpandedRight ? sp.Length : 0;
-
-                var sd = model.Item as QueryX;
-                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
-
-                var N = L + R;
-                if (N > 0)
+                MenuCommands = (m, mc) =>
                 {
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                },
 
-                    if (R > 0)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    if (!(m.Item is QueryX qx)) return DropAction.None;
+                    if (!(d.Item is Relation re)) return DropAction.None;
+                    if (!CanDropQueryXRelation(qx, d.Item as RelationX)) return DropAction.None;
+
+                    if (doDrop)
                     {
-                        AddProperyModels(model, oldModels, sp);
+                        CreateQueryX(qx, re, QueryType.Path);
                     }
-                    if (L > 0)
-                    {
-                        var items = QueryX_QueryX.GetChildren(sd);
-                        var level = (byte)(model.Level + 1);
+                    return DropAction.Link;
+                },
 
-                        for (int i = R, j = 0; i < N; i++, j++)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXIsBreakPointProperty, _queryXRootWhereProperty };
+                    var R = m.IsExpandedRight ? sp.Length : 0;
+
+                    var sd = m.Item as QueryX;
+                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
+
+                    var N = L + R;
+                    if (N > 0)
+                    {
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        if (R > 0)
                         {
-                            var itm = items[j];
-                            if (!TryGetOldModel(model, Trait.GraphXPathLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXPathLink_M, level, itm, null, null, QueryXPathLink_X);
+                            AddProperyModels(m, oldModels, sp);
+                        }
+                        if (L > 0)
+                        {
+                            var items = QueryX_QueryX.GetChildren(sd);
+                            var level = (byte)(m.Depth + 1);
+
+                            for (int i = R, j = 0; i < N; i++, j++)
+                            {
+                                var itm = items[j];
+                                if (!TryGetOldModel(m, Trait.GraphXPathLink_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathLink_M, level, itm, null, null, QueryXPathLink_X);
+                            }
                         }
                     }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        private DropAction QueryXPathDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            if (!(model.Item is QueryX qx)) return DropAction.None;
-            if (!(drop.Item is Relation re)) return DropAction.None;
-            if (!CanDropQueryXRelation(qx, drop.Item as RelationX)) return DropAction.None;
-
-            if (doDrop)
-            {
-                CreateQueryX(qx, re, QueryType.Path);
-            }
-            return DropAction.Link;
+            };
         }
         #endregion
 
@@ -4877,88 +4832,83 @@ namespace ModelGraphSTD
         ModelAction QueryXGroupHead_X;
         void Initialize_QueryXGroupHead_X()
         {
-            DataChef_X = new ModelAction
+            QueryXGroupHead_X = new ModelAction
             {
-                Refresh = Refresh_QueryXGroupHead_X,
+                ModelParms = (m) =>
+                {
+                    var count = QueryX_QueryX.ChildCount(m.Item);
+
+                    m.CanDrag = true;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanExpandRight = true;
+
+                    return (_localize(m.KindKey), QueryXHeadName(m), count, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                MenuCommands = (m, mc) =>
+                {
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                    mc.Add(new ModelCommand(this, m, Trait.MakeRootLinkCommand, MakeRootLink));
+                    mc.Add(new ModelCommand(this, m, Trait.MakePathHeadCommand, MakePathtHead));
+                    mc.Add(new ModelCommand(this, m, Trait.MakeEgressHeadCommand, MakeBridgeHead));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    if (!(m.Item is QueryX qx)) return DropAction.None;
+                    if (!(d.Item is Relation re)) return DropAction.None;
+                    if (!CanDropQueryXRelation(qx, d.Item as RelationX)) return DropAction.None;
+
+                    if (doDrop)
+                    {
+                        CreateQueryX(qx, re, QueryType.Group);
+                    }
+                    return DropAction.Link;
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
+                    var R = m.IsExpandedRight ? sp.Length : 0;
+
+                    var sd = m.Item as QueryX;
+                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
+
+                    var N = L + R;
+                    if (N > 0)
+                    {
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        if (R > 0)
+                        {
+                            AddProperyModels(m, oldModels, sp);
+                        }
+                        if (L > 0)
+                        {
+                            var items = QueryX_QueryX.GetChildren(sd);
+                            var level = (byte)(m.Depth + 1);
+
+                            for (int i = R, j = 0; i < N; i++, j++)
+                            {
+                                var itm = items[j];
+                                if (!TryGetOldModel(m, Trait.GraphXGroupLink_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupLink_M, level, itm, null, null, QueryXGroupLink_X);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
+                }
             };
-        }
-        void Refresh_QueryXGroupHead_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryXGroupHead_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
-
-                        root.ModelDrop = QueryXGroupDrop;
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryXHeadName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
-
-                        model.CanDrag = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanExpandRight = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        if (CanConvertQueryType(model))
-                        {
-                            root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                            root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakeRootLinkCommand, MakeRootLink));
-                            root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakePathHeadCommand, MakePathtHead));
-                            root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakeEgressHeadCommand, MakeBridgeHead));
-                        }
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
-                var R = model.IsExpandedRight ? sp.Length : 0;
-
-                var sd = model.Item as QueryX;
-                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
-
-                var N = L + R;
-                if (N > 0)
-                {
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    if (R > 0)
-                    {
-                        AddProperyModels(model, oldModels, sp);
-                    }
-                    if (L > 0)
-                    {
-                        var items = QueryX_QueryX.GetChildren(sd);
-                        var level = (byte)(model.Level + 1);
-
-                        for (int i = R, j = 0; i < N; i++, j++)
-                        {
-                            var itm = items[j];
-                            if (!TryGetOldModel(model, Trait.GraphXGroupLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupLink_M, level, itm, null, null, QueryXGroupLink_X);
-                        }
-                    }
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
         }
         #endregion
 
@@ -4966,95 +4916,84 @@ namespace ModelGraphSTD
         ModelAction QueryXGroupLink_X;
         void Initialize_QueryXGroupLink_X()
         {
-            DataChef_X = new ModelAction
+            QueryXGroupLink_X = new ModelAction
             {
-                Refresh = Refresh_QueryXGroupLink_X,
-            };
-        }
-        void Refresh_QueryXGroupLink_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryXGroupLink_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = QueryX_QueryX.ChildCount(m.Item);
 
-                        root.ModelDrop = QueryXGroupDrop;
-                        break;
+                    m.CanDrag = true;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanExpandRight = true;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = GetQueryXRelationName(model);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => GetQueryXRelationName(m),
 
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanExpandRight = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
-                var R = model.IsExpandedRight ? sp.Length : 0;
-
-                var sd = model.Item as QueryX;
-                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
-
-                var N = L + R;
-                if (N > 0)
+                MenuCommands = (m, mc) =>
                 {
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                },
 
-                    if (R > 0)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    if (!(m.Item is QueryX qx)) return DropAction.None;
+                    if (!(d.Item is Relation re)) return DropAction.None;
+                    if (!CanDropQueryXRelation(qx, d.Item as RelationX)) return DropAction.None;
+
+                    if (doDrop)
                     {
-                        AddProperyModels(model, oldModels, sp);
+                        CreateQueryX(qx, re, QueryType.Group);
                     }
-                    if (L > 0)
-                    {
-                        var items = QueryX_QueryX.GetChildren(sd);
-                        var level = (byte)(model.Level + 1);
+                    return DropAction.Link;
+                },
 
-                        for (int i = R, j = 0; i < N; i++, j++)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
+                    var R = m.IsExpandedRight ? sp.Length : 0;
+
+                    var sd = m.Item as QueryX;
+                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
+
+                    var N = L + R;
+                    if (N > 0)
+                    {
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        if (R > 0)
                         {
-                            var itm = items[j];
-                            if (!TryGetOldModel(model, Trait.GraphXGroupLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXGroupLink_M, level, itm, null, null, QueryXGroupLink_X);
+                            AddProperyModels(m, oldModels, sp);
+                        }
+                        if (L > 0)
+                        {
+                            var items = QueryX_QueryX.GetChildren(sd);
+                            var level = (byte)(m.Depth + 1);
+
+                            for (int i = R, j = 0; i < N; i++, j++)
+                            {
+                                var itm = items[j];
+                                if (!TryGetOldModel(m, Trait.GraphXGroupLink_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupLink_M, level, itm, null, null, QueryXGroupLink_X);
+                            }
                         }
                     }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        private DropAction QueryXGroupDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            if (!(model.Item is QueryX qx)) return DropAction.None;
-            if (!(drop.Item is Relation re)) return DropAction.None;
-            if (!CanDropQueryXRelation(qx, drop.Item as RelationX)) return DropAction.None;
-
-            if (doDrop)
-            {
-                CreateQueryX(qx, re, QueryType.Group);
-            }
-            return DropAction.Link;
+            };
         }
         #endregion
 
@@ -5062,89 +5001,87 @@ namespace ModelGraphSTD
         ModelAction QueryXEgressHead_X;
         void Initialize_QueryXEgressHead_X()
         {
-            DataChef_X = new ModelAction
+            QueryXEgressHead_X = new ModelAction
             {
-                Refresh = Refresh_QueryXEgressHead_X,
-            };
-        }
-        void Refresh_QueryXEgressHead_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryXEgressHead_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = QueryX_QueryX.ChildCount(m.Item);
 
-                        root.ModelDrop = QueryXBridgeDrop;
-                        break;
+                    m.CanDrag = true;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanExpandRight = true;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXHeadName(m), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = GetQueryXRelationName(model);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => GetQueryXRelationName(m),
 
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryXHeadName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanExpandRight = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        if (CanConvertQueryType(model))
-                        {
-                            root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                            root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakeRootLinkCommand, MakeRootLink));
-                            root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakePathHeadCommand, MakePathtHead));
-                            root.MenuCommands.Add(new ModelCommand(this, model, Trait.MakeGroupHeadCommand, MakeGroupHead));
-                        };
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
-                var R = model.IsExpandedRight ? sp.Length : 0;
-
-                var sd = model.Item as QueryX;
-                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
-
-                var N = L + R;
-                if (N > 0)
+                MenuCommands = (m, mc) =>
                 {
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                    mc.Add(new ModelCommand(this, m, Trait.MakeRootLinkCommand, MakeRootLink));
+                    mc.Add(new ModelCommand(this, m, Trait.MakePathHeadCommand, MakePathtHead));
+                    mc.Add(new ModelCommand(this, m, Trait.MakeGroupHeadCommand, MakeGroupHead));
+                },
 
-                    if (R > 0)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    if (!(m.Item is QueryX qx)) return DropAction.None;
+                    if (!(d.Item is Relation re)) return DropAction.None;
+                    if (!CanDropQueryXRelation(qx, d.Item as RelationX)) return DropAction.None;
+
+                    if (doDrop)
                     {
-                        AddProperyModels(model, oldModels, sp);
+                        CreateQueryX(qx, re, QueryType.Segue);
                     }
-                    if (L > 0)
-                    {
-                        var items = QueryX_QueryX.GetChildren(sd);
-                        var level = (byte)(model.Level + 1);
+                    return DropAction.Link;
+                },
 
-                        for (int i = R, j = 0; i < N; i++, j++)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
+                    var R = m.IsExpandedRight ? sp.Length : 0;
+
+                    var sd = m.Item as QueryX;
+                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
+
+                    var N = L + R;
+                    if (N > 0)
+                    {
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        if (R > 0)
                         {
-                            var itm = items[j];
-                            if (!TryGetOldModel(model, Trait.GraphXEgressLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressLink_M, level, itm, null, null, QueryXEgressLink_X);
+                            AddProperyModels(m, oldModels, sp);
+                        }
+                        if (L > 0)
+                        {
+                            var items = QueryX_QueryX.GetChildren(sd);
+                            var level = (byte)(m.Depth + 1);
+
+                            for (int i = R, j = 0; i < N; i++, j++)
+                            {
+                                var itm = items[j];
+                                if (!TryGetOldModel(m, Trait.GraphXEgressLink_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressLink_M, level, itm, null, null, QueryXEgressLink_X);
+                            }
                         }
                     }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -5152,95 +5089,84 @@ namespace ModelGraphSTD
         ModelAction QueryXEgressLink_X;
         void Initialize_QueryXEgressLink_X()
         {
-            DataChef_X = new ModelAction
+            QueryXEgressLink_X = new ModelAction
             {
-                Refresh = Refresh_QueryXEgressLink_X,
-            };
-        }
-        void Refresh_QueryXEgressLink_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryXEgressLink_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = QueryX_QueryX.ChildCount(m.Item);
 
-                        root.ModelDrop = QueryXBridgeDrop;
-                        break;
+                    m.CanDrag = true;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanExpandRight = true;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = GetQueryXRelationName(model);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => GetQueryXRelationName(m),
 
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanExpandRight = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
-                var R = model.IsExpandedRight ? sp.Length : 0;
-
-                var sd = model.Item as QueryX;
-                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
-
-                var N = L + R;
-                if (N > 0)
+                MenuCommands = (m, mc) =>
                 {
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                },
 
-                    if (R > 0)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    if (!(m.Item is QueryX qx)) return DropAction.None;
+                    if (!(d.Item is Relation re)) return DropAction.None;
+                    if (!CanDropQueryXRelation(qx, d.Item as RelationX)) return DropAction.None;
+
+                    if (doDrop)
                     {
-                        AddProperyModels(model, oldModels, sp);
+                        CreateQueryX(qx, re, QueryType.Segue);
                     }
-                    if (L > 0)
-                    {
-                        var items = QueryX_QueryX.GetChildren(sd);
-                        var level = (byte)(model.Level + 1);
+                    return DropAction.Link;
+                },
 
-                        for (int i = R, j = 0; i < N; i++, j++)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty };
+                    var R = m.IsExpandedRight ? sp.Length : 0;
+
+                    var sd = m.Item as QueryX;
+                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
+
+                    var N = L + R;
+                    if (N > 0)
+                    {
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        if (R > 0)
                         {
-                            var itm = items[j];
-                            if (!TryGetOldModel(model, Trait.GraphXEgressLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.GraphXEgressLink_M, level, itm, null, null, QueryXEgressLink_X);
+                            AddProperyModels(m, oldModels, sp);
+                        }
+                        if (L > 0)
+                        {
+                            var items = QueryX_QueryX.GetChildren(sd);
+                            var level = (byte)(m.Depth + 1);
+
+                            for (int i = R, j = 0; i < N; i++, j++)
+                            {
+                                var itm = items[j];
+                                if (!TryGetOldModel(m, Trait.GraphXEgressLink_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressLink_M, level, itm, null, null, QueryXEgressLink_X);
+                            }
                         }
                     }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        private DropAction QueryXBridgeDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            if (!(model.Item is QueryX qx)) return DropAction.None;
-            if (!(drop.Item is Relation re)) return DropAction.None;
-            if (!CanDropQueryXRelation(qx, drop.Item as RelationX)) return DropAction.None;
-
-            if (doDrop)
-            {
-                CreateQueryX(qx, re, QueryType.Segue);
-            }
-            return DropAction.Link;
+            };
         }
         #endregion
 
@@ -5248,68 +5174,53 @@ namespace ModelGraphSTD
         ModelAction GraphXNodeSymbol_X;
         void Initialize_GraphXNodeSymbol_X()
         {
-            DataChef_X = new ModelAction
+            GraphXNodeSymbol_X = new ModelAction
             {
-                Refresh = Refresh_GraphXNodeSymbol_X,
+                ModelParms = (m) =>
+                {
+                    m.CanDrag = true;
+                    m.CanExpandRight = true;
+
+                    var name = (SymbolX_QueryX.TryGetParent(m.Item, out SymbolX sym)) ? sym.Name : null;
+
+                    return (_localize(m.KindKey), name, 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => GetQueryXRelationName(m),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ReorderItems = ReorderRelatedChild,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                MenuCommands = (m, mc) =>
+                {
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var sp = new Property[] { _queryXWhereProperty };
+                    var N = m.IsExpandedRight ? sp.Length : 0;
+
+                    if (N > 0)
+                    {
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        AddProperyModels(m, oldModels, sp);
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
+                }
             };
-        }
-        void Refresh_GraphXNodeSymbol_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphXNodeSymbol_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
-
-                        root.ReorderItems = ReorderRelatedChild;
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        root.ModelSummary = GetQueryXRelationName(model);
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryXNodeSymbolName(model);
-
-                        model.CanDrag = true;
-                        model.CanExpandRight = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var sp = new Property[] { _queryXWhereProperty };
-                var N = model.IsExpandedRight ? sp.Length : 0;
-
-                if (N > 0)
-                {
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    AddProperyModels(model, oldModels, sp);
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        private string QueryXNodeSymbolName(ItemModel model)
-        {
-            var sd = model.Item;
-            SymbolX sym;
-            return (SymbolX_QueryX.TryGetParent(sd, out sym)) ? sym.Name : null;
         }
         #endregion
 
@@ -5318,85 +5229,88 @@ namespace ModelGraphSTD
         ModelAction ValueHead_X;
         void Initialize_ValueHead_X()
         {
-            DataChef_X = new ModelAction
+            ValueHead_X = new ModelAction
             {
-                Refresh = Refresh_ValueHead_X,
-            };
-        }
-        void Refresh_ValueHead_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void ValueXHead_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = QueryX_QueryX.ChildCount(m.Item);
 
-                        root.ModelDrop = ValueXLinkDrop;
-                        break;
+                    m.CanDrag = true;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanExpandRight = true;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = QueryXComputeName(model);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => QueryXComputeName(m),
 
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanExpandRight = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var qx = model.Item as QueryX;
-                var sp1 = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty};
-                var sp2 = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty, _queryXValueTypeProperty };
-                var sp = qx.HasSelect ? sp2 : sp1;
-                var R = model.IsExpandedRight ? sp.Length : 0;
-
-                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(qx) : 0;
-
-                var N = L + R;
-                if (N > 0)
+                MenuCommands = (m, mc) =>
                 {
-                    var items = QueryX_QueryX.GetChildren(qx);
-                    var level = (byte)(model.Level + 1);
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                },
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    if (R > 0)
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    if (!(d.Item is Relation re)) return DropAction.None;
+                    if (!(m.Item is QueryX qx)) return DropAction.None;
+                    GetHeadTail(qx, out Store tb1Head, out Store tb1Tail);
+                    GetHeadTail(re, out Store tb2Head, out Store tb2Tail);
+                    if ((tb1Head != tb2Head && tb1Head != tb2Tail) && (tb1Tail != tb2Head && tb1Tail != tb2Tail)) return DropAction.None;
+
+                    if (doDrop)
                     {
-                        AddProperyModels(model, oldModels, sp);
+                        CreateQueryX(qx, re, QueryType.Value).IsReversed = (tb1Tail == tb2Tail);
                     }
-                    if (L > 0)
+                    return DropAction.Link;
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var qx = m.Item as QueryX;
+                    var sp1 = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty };
+                    var sp2 = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty, _queryXValueTypeProperty };
+                    var sp = qx.HasSelect ? sp2 : sp1;
+                    var R = m.IsExpandedRight ? sp.Length : 0;
+
+                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(qx) : 0;
+
+                    var N = L + R;
+                    if (N > 0)
                     {
-                        for (int i = R, j = 0; i < N; i++, j++)
+                        var items = QueryX_QueryX.GetChildren(qx);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        if (R > 0)
                         {
-                            var itm = items[j];
-                            if (!TryGetOldModel(model, Trait.ValueXLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.ValueXLink_M, level, itm, null, null, ValueXLink_X);
+                            AddProperyModels(m, oldModels, sp);
+                        }
+                        if (L > 0)
+                        {
+                            for (int i = R, j = 0; i < N; i++, j++)
+                            {
+                                var itm = items[j];
+                                if (!TryGetOldModel(m, Trait.ValueXLink_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ValueXLink_M, level, itm, null, null, ValueLink_X);
+                            }
                         }
                     }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -5404,254 +5318,225 @@ namespace ModelGraphSTD
         ModelAction ValueLink_X;
         void Initialize_ValueLink_X()
         {
-            DataChef_X = new ModelAction
+            ValueLink_X = new ModelAction
             {
-                Refresh = Refresh_ValueLink_X,
-            };
-        }
-        void Refresh_ValueLink_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void ValueXLink_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = QueryX_QueryX.ChildCount(m.Item);
 
-                        root.ModelDrop = ValueXLinkDrop;
-                        break;
+                    m.CanDrag = true;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanExpandRight = true;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = QueryXComputeName(model);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => QueryXComputeName(m),
 
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryXLinkName(model);
-                        root.ModelCount = QueryX_QueryX.ChildCount(model.Item);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanExpandRight = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty, _queryXValueTypeProperty };
-                var R = model.IsExpandedRight ? sp.Length : 0;
-
-                var vd = model.Item as QueryX;
-                var L = (model.IsExpandedLeft) ? QueryX_QueryX.ChildCount(vd) : 0;
-
-                var N = L + R;
-                if (N > 0)
+                MenuCommands = (m, mc) =>
                 {
-                    var items = QueryX_QueryX.GetChildren(vd);
-                    var level = (byte)(model.Level + 1);
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                },
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    if (R > 0)
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    if (!(d.Item is Relation re)) return DropAction.None;
+                    if (!(m.Item is QueryX qx)) return DropAction.None;
+                    GetHeadTail(qx, out Store tb1Head, out Store tb1Tail);
+                    GetHeadTail(re, out Store tb2Head, out Store tb2Tail);
+                    if ((tb1Head != tb2Head && tb1Head != tb2Tail) && (tb1Tail != tb2Head && tb1Tail != tb2Tail)) return DropAction.None;
+
+                    if (doDrop)
                     {
-                        AddProperyModels(model, oldModels, sp);
+                        CreateQueryX(qx, re, QueryType.Value).IsReversed = (tb1Tail == tb2Tail);
                     }
-                    if (L > 0)
+                    return DropAction.Link;
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXRootWhereProperty, _queryXSelectProperty, _queryXValueTypeProperty };
+                    var R = m.IsExpandedRight ? sp.Length : 0;
+
+                    var vd = m.Item as QueryX;
+                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(vd) : 0;
+
+                    var N = L + R;
+                    if (N > 0)
                     {
-                        for (int i = R, j = 0; i < N; i++, j++)
+                        var items = QueryX_QueryX.GetChildren(vd);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        if (R > 0)
                         {
-                            var itm = items[j];
-                            if (!TryGetOldModel(model, Trait.ValueXLink_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.ValueXLink_M, level, itm, null, null, ValueXLink_X);
+                            AddProperyModels(m, oldModels, sp);
+                        }
+                        if (L > 0)
+                        {
+                            for (int i = R, j = 0; i < N; i++, j++)
+                            {
+                                var itm = items[j];
+                                if (!TryGetOldModel(m, Trait.ValueXLink_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ValueXLink_M, level, itm, null, null, ValueLink_X);
+                            }
                         }
                     }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
-        private DropAction ValueXLinkDrop(ItemModel model, ItemModel drop, bool doDrop)
+        string QueryXComputeName(ItemModel m)
         {
-            if (!(drop.Item is Relation re)) return DropAction.None;
-            if (!(model.Item is QueryX qx)) return DropAction.None;
+            var sd = m.Item as QueryX;
 
-            Store tb1Head, tb1Tail, tb2Head, tb2Tail;
-            GetHeadTail(qx,out tb1Head, out tb1Tail);
-            GetHeadTail(re, out tb2Head, out tb2Tail);
-            if ((tb1Head != tb2Head && tb1Head != tb2Tail) && (tb1Tail != tb2Head && tb1Tail != tb2Tail)) return DropAction.None;
-
-            if (doDrop)
-            {
-                CreateQueryX(qx, re, QueryType.Value).IsReversed = (tb1Tail == tb2Tail);
-            }
-            return DropAction.Link;
-        }
-        string QueryXComputeName(ItemModel model)
-        {
-            var sd = model.Item as QueryX;
-
-            Store head1, tail1, head2, tail2;
-            GetHeadTail(sd, out head1, out tail1);
+            GetHeadTail(sd, out Store head1, out Store tail1);
             var sd2 = GetValueeDefTail(sd);
-            GetHeadTail(sd2, out head2, out tail2);
+            GetHeadTail(sd2, out Store head2, out Store tail2);
 
             StringBuilder sb = new StringBuilder(132);
             sb.Append(GetIdentity(head1, IdentityStyle.Single));
             sb.Append(parentNameSuffix);
             sb.Append(GetIdentity(tail2, IdentityStyle.Single));
             return sb.ToString();
-        }
-        private QueryX GetValueeDefTail(QueryX sd)
-        {
-            var sd2 = sd;
-            var sd3 = sd2;
-            while (sd3 != null)
+
+            QueryX GetValueeDefTail(QueryX q)
             {
-                sd2 = sd3;
-                sd3 = QueryX_QueryX.GetChild(sd3);
+                var q2 = q;
+                var q3 = q2;
+                while (q3 != null)
+                {
+                    q2 = q3;
+                    q3 = QueryX_QueryX.GetChild(q3);
+                }
+                return q2;
             }
-            return sd2;
         }
         #endregion
 
 
 
         #region 6A1 RowX  =====================================================
-        ModelAction Row_X;
+        ModelAction RowX_X;
         void Initialize_Row_X()
         {
-            DataChef_X = new ModelAction
+            RowX_X = new ModelAction
             {
-                Refresh = Refresh_Row_X,
+                ModelParms = (m) =>
+                {
+                    m.CanDrag = true;
+                    m.CanExpandLeft = true;
+                    m.CanExpandRight = m.RowX.TableX.HasChoiceColumns;
+
+                    return (null, GetIdentity(m.Item, IdentityStyle.Single), 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => GetIdentity(m.Item, IdentityStyle.Summary),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                MenuCommands = (m, mc) =>
+                {
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    RowX_VX(m);
+                }
             };
         }
-        void Refresh_Row_X(RootModel root, ItemModel model)
+        private void RowX_VX(ItemModel m)
         {
-        }
-        internal void RowX_X(ItemModel model, RootModel root)
-        {
-            var row = model.Item as RowX;
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
-
-                        root.ReorderItems = ReorderStoreItem;
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        root.ModelSummary = GetIdentity(model.Item, IdentityStyle.Summary);
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = GetIdentity(model.Item, IdentityStyle.Single);
-
-                        model.CanDrag = true;
-                        model.CanExpandLeft = true;
-                        model.CanExpandRight = row.TableX.HasChoiceColumns;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                RowX_VX(model);
-            }
-        }
-        private void RowX_VX(ItemModel model)
-        {
-            var row = model.Item as RowX;
+            var row = m.Item as RowX;
             ColumnX[] cols = null;
-            var R = (model.IsExpandedRight && TryGetChoiceColumns(row.Owner, out cols)) ? cols.Length : 0;
-            var L = (model.IsExpandedLeft) ? 7 : 0;
+            var R = (m.IsExpandedRight && TryGetChoiceColumns(row.Owner, out cols)) ? cols.Length : 0;
+            var L = (m.IsExpandedLeft) ? 7 : 0;
             var N = R + L;
 
             if (N > 0)
             {
-                var level = (byte)(model.Level + 1);
+                var level = (byte)(m.Depth + 1);
 
-                var oldModels = model.ChildModels;
-                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                var oldModels = m.ChildModels;
+                if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
 
                 if (R > 0)
                 {
-                    AddProperyModels(model, oldModels, cols);
+                    AddProperyModels(m, oldModels, cols);
                 }
                 if (L > 0)
                 {
-                    int usedColumnCount, unusedColumnCount, usedChidRelationCount, unusedChildRelationCount, usedParentRelationCount, unusedParentRelationCount;
-                    GetColumnCount(row, out usedColumnCount, out unusedColumnCount);
-                    GetChildRelationCount(row, out usedChidRelationCount, out unusedChildRelationCount);
-                    GetParentRelationCount(row, out usedParentRelationCount, out unusedParentRelationCount);
+                    GetColumnCount(row, out int usedColumnCount, out int unusedColumnCount);
+                    GetChildRelationCount(row, out int usedChidRelationCount, out int unusedChildRelationCount);
+                    GetParentRelationCount(row, out int usedParentRelationCount, out int unusedParentRelationCount);
 
                     int i = R;
-                    if (!TryGetOldModel(model, Trait.RowProperty_ZM, oldModels, i))
-                        model.ChildModels[i] = new ItemModel(model, Trait.RowProperty_ZM, level, row, TableX_ColumnX, null, RowPropertyList_X);
+                    if (!TryGetOldModel(m, Trait.RowProperty_ZM, oldModels, i))
+                        m.ChildModels[i] = new ItemModel(m, Trait.RowProperty_ZM, level, row, TableX_ColumnX, null, RowPropertyList_X);
 
                     i++;
-                    if (!TryGetOldModel(model, Trait.RowCompute_ZM, oldModels, i))
-                        model.ChildModels[i] = new ItemModel(model, Trait.RowCompute_ZM, level, row, Store_ComputeX, null, RowComputeList_X);
+                    if (!TryGetOldModel(m, Trait.RowCompute_ZM, oldModels, i))
+                        m.ChildModels[i] = new ItemModel(m, Trait.RowCompute_ZM, level, row, Store_ComputeX, null, RowComputeList_X);
 
                     i++;
-                    if (!TryGetOldModel(model, Trait.RowChildRelation_ZM, oldModels, i))
-                        model.ChildModels[i] = new ItemModel(model, Trait.RowChildRelation_ZM, level, row, TableX_ChildRelationX, null, RowChildRelationList_X);
+                    if (!TryGetOldModel(m, Trait.RowChildRelation_ZM, oldModels, i))
+                        m.ChildModels[i] = new ItemModel(m, Trait.RowChildRelation_ZM, level, row, TableX_ChildRelationX, null, RowChildRelationList_X);
 
                     i++;
-                    if (!TryGetOldModel(model, Trait.RowParentRelation_ZM, oldModels, i))
-                        model.ChildModels[i] = new ItemModel(model, Trait.RowParentRelation_ZM, level, row, TableX_ParentRelationX, null, RowParentRelationList_X);
+                    if (!TryGetOldModel(m, Trait.RowParentRelation_ZM, oldModels, i))
+                        m.ChildModels[i] = new ItemModel(m, Trait.RowParentRelation_ZM, level, row, TableX_ParentRelationX, null, RowParentRelationList_X);
 
                     i++;
-                    if (!TryGetOldModel(model, Trait.RowDefaultProperty_ZM, oldModels, i))
-                        model.ChildModels[i] = new ItemModel(model, Trait.RowDefaultProperty_ZM, level, row, TableX_ColumnX, null, RowDefaultPropertyList_X);
+                    if (!TryGetOldModel(m, Trait.RowDefaultProperty_ZM, oldModels, i))
+                        m.ChildModels[i] = new ItemModel(m, Trait.RowDefaultProperty_ZM, level, row, TableX_ColumnX, null, RowDefaultPropertyList_X);
 
                     i++;
-                    if (!TryGetOldModel(model, Trait.RowUnusedChildRelation_ZM, oldModels, i))
-                        model.ChildModels[i] = new ItemModel(model, Trait.RowUnusedChildRelation_ZM, level, row, TableX_ChildRelationX, null, RowUnusedChildRelationList_X);
+                    if (!TryGetOldModel(m, Trait.RowUnusedChildRelation_ZM, oldModels, i))
+                        m.ChildModels[i] = new ItemModel(m, Trait.RowUnusedChildRelation_ZM, level, row, TableX_ChildRelationX, null, RowUnusedChildRelationList_X);
 
                     i++;
-                    if (!TryGetOldModel(model, Trait.RowUnusedParentRelation_ZM, oldModels, i))
-                        model.ChildModels[i] = new ItemModel(model, Trait.RowUnusedParentRelation_ZM, level, row, TableX_ParentRelationX, null, RowUnusedParentRelationList_X);
+                    if (!TryGetOldModel(m, Trait.RowUnusedParentRelation_ZM, oldModels, i))
+                        m.ChildModels[i] = new ItemModel(m, Trait.RowUnusedParentRelation_ZM, level, row, TableX_ParentRelationX, null, RowUnusedParentRelationList_X);
                 }
             }
             else
             {
-                model.ChildModels = null;
+                m.ChildModels = null;
             }
         }
-        private DropAction ReorderStoreItem(ItemModel model, ItemModel drop, bool doDrop)
+        private DropAction ReorderStoreItem(ItemModel m, ItemModel d, bool doDrop)
         {
-            if (!(model.Item.Owner is Store sto)) return DropAction.None;
-            if (!model.IsSiblingModel(drop)) return DropAction.None;
+            if (!(m.Item.Owner is Store sto)) return DropAction.None;
+            if (!m.IsSiblingModel(d)) return DropAction.None;
             
-            var item1 = drop.Item;
-            var item2 = model.Item;
+            var item1 = d.Item;
+            var item2 = m.Item;
             var index1 = sto.IndexOf(item1);
             var index2 = sto.IndexOf(item2);
             if (index1 < 0 || index2 < 0 || index1 == index2) return DropAction.None;
 
             if (doDrop)
             {
-                ItemMoved(drop.Item, index1, index2);
+                ItemMoved(d.Item, index1, index2);
             }
             return DropAction.Move;
         }
@@ -5661,40 +5546,14 @@ namespace ModelGraphSTD
         ModelAction View_X;
         void Initialize_View_X()
         {
-            DataChef_X = new ModelAction
+            View_X = new ModelAction
             {
-                Refresh = Refresh_View_X,
+                ModelParms = (m) => (null, m.ViewX.Name, 0, ModelType.Default),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => m.ViewX.Summary,
             };
-        }
-        void Refresh_View_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void View_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var item = model.Item as ViewX;
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
-
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        root.ModelSummary = item.Summary;
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = item.Name;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
         }
         #endregion
 
@@ -5702,77 +5561,71 @@ namespace ModelGraphSTD
         ModelAction Table_X;
         void Initialize_Table_X()
         {
-            DataChef_X = new ModelAction
+            Table_X = new ModelAction
             {
-                Refresh = Refresh_Table_X,
-            };
-        }
-        void Refresh_Table_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void Table_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var tbl = model.Item as TableX;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.TableX.Count;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, m.TableX.Name, count, ModelType.Default);
+                },
 
-                        root.ModelSummary = tbl.Summary;
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => m.TableX.Summary,
 
-                        root.ModelName = tbl.Name;
-                        root.ModelCount = tbl.Count;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
+                ReorderItems = ReorderStoreItem,
 
-                    case ModelActionX.ModelSelect:
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        root.ButtonCommands.Add(new ModelCommand(this, model, Trait.InsertCommand, TableInsert));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var tbl = model.Item as TableX;
-                var col = TableX_NameProperty.GetChild(tbl);
-                var N = model.IsExpandedLeft ? tbl.Count : 0;
-
-                if (N > 0)
+                ButtonCommands = (m, bc) =>
                 {
-                    var items = tbl.ToArray;
-                    var level = (byte)(model.Level + 1);
+                    bc.Add(new ModelCommand(this, m, Trait.InsertCommand, Insert));
+                },
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    for (int i = 0; i < N; i++)
+                Validate = (m) =>
+                {
+                    var tbl = m.Item as TableX;
+                    var col = TableX_NameProperty.GetChild(tbl);
+                    var N = m.IsExpandedLeft ? tbl.Count : 0;
+
+                    if (N > 0)
                     {
-                        var row = items[i];
-                        if (!TryGetOldModel(model, Trait.Row_M, oldModels, i, row, tbl, col))
-                            model.ChildModels[i] = new ItemModel(model, Trait.Row_M, level, row, tbl, col, RowX_X);
+                        var items = tbl.ToArray;
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var row = items[i];
+                            if (!TryGetOldModel(m, Trait.Row_M, oldModels, i, row, tbl, col))
+                                m.ChildModels[i] = new ItemModel(m, Trait.Row_M, level, row, tbl, col, RowX_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
+            };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            void Insert(ItemModel model)
+            {
+                var tbl = model.Item as TableX;
+                ItemCreated(new RowX(tbl));
             }
-        }
-        private void TableInsert(ItemModel model)
-        {
-            var tbl = model.Item as TableX;
-            ItemCreated(new RowX(tbl));
         }
         #endregion
 
@@ -5780,86 +5633,73 @@ namespace ModelGraphSTD
         ModelAction Graph_X;
         void Initialize_Graph_X()
         {
-            DataChef_X = new ModelAction
+            Graph_X = new ModelAction
             {
-                Refresh = Refresh_Graph_X,
+                ModelParms = (m) =>
+                {
+                    m.CanExpandLeft = true;
+
+                    return (_localize(m.KindKey), m.Graph.GraphX.Name, 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => m.Graph.GraphX.Summary,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ButtonCommands = (m, bc) =>
+                {
+                    bc.Add(new ModelCommand(this, m, Trait.ViewCommand, CreateSecondaryModelGraph));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var N = (m.IsExpandedLeft) ? 5 : 0;
+                    if (N > 0)
+                    {
+                        var item = m.Item as Graph;
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        var i = 0;
+                        if (!TryGetOldModel(m, Trait.GraphNode_ZM, oldModels, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.GraphNode_ZM, level, item, null, null, GraphNodeList_X);
+
+                        i++;
+                        if (!TryGetOldModel(m, Trait.GraphEdge_ZM, oldModels, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.GraphEdge_ZM, level, item, null, null, GraphEdgeList_X);
+
+                        i++;
+                        if (!TryGetOldModel(m, Trait.GraphOpen_ZM, oldModels, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.GraphOpen_ZM, level, item, null, null, GraphOpenList_X);
+
+                        i++;
+                        if (!TryGetOldModel(m, Trait.GraphRoot_ZM, oldModels, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.GraphRoot_ZM, level, item, null, null, GraphRootList_X);
+
+                        i++;
+                        if (!TryGetOldModel(m, Trait.GraphLevel_ZM, oldModels, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.GraphLevel_ZM, level, item, null, null, GraphLevelList_X);
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
+                }
             };
-        }
-        void Refresh_Graph_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void Graph_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            void CreateSecondaryModelGraph(ItemModel m)
             {
-                var g = model.Item as Graph;
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
-
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        root.ModelSummary = g.GraphX.Summary;
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = g.Name;
-
-                        model.CanExpandLeft = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.ButtonCommands.Add(new ModelCommand(this, model, Trait.ViewCommand, CreateSecondaryModelGraph));
-                        //root.ButtonCommands.Add(new ModelCommand(this, model, Trait.RefreshCommand, RefreshGraph));
-                        break;
-                }
+                var root = m.GetRootModel();
+                root.UIRequest = m.BuildViewRequest(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X);
             }
-            else  // validate the list of child models
-            {
-                var N = (model.IsExpandedLeft) ? 5 : 0;
-                if (N > 0)
-                {
-                    var item = model.Item as Graph;
-                    var level = (byte)(model.Level + 1);
-
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    var i = 0;
-                    if (!TryGetOldModel(model, Trait.GraphNode_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ItemModel(model, Trait.GraphNode_ZM, level, item, null, null, GraphNodeList_X);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.GraphEdge_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ItemModel(model, Trait.GraphEdge_ZM, level, item, null, null, GraphEdgeList_X);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.GraphOpen_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ItemModel(model, Trait.GraphOpen_ZM, level, item, null, null, GraphOpenList_X);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.GraphRoot_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ItemModel(model, Trait.GraphRoot_ZM, level, item, null, null, GraphRootList_X);
-
-                    i++;
-                    if (!TryGetOldModel(model, Trait.GraphLevel_ZM, oldModels, i, item))
-                        model.ChildModels[i] = new ItemModel(model, Trait.GraphLevel_ZM, level, item, null, null, GraphLevelList_X);
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        private void CreateSecondaryModelGraph(ItemModel model)
-        {
-            var root = model.GetRootModel();
-            root.UIRequest = model.BuildViewRequest(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X);
         }
         #endregion
 
@@ -5867,46 +5707,17 @@ namespace ModelGraphSTD
         ModelAction GraphRef_X;
         void Initialize_GraphRef_X()
         {
-            DataChef_X = new ModelAction
+            GraphRef_X = new ModelAction
             {
-                Refresh = Refresh_GraphRef_X,
-            };
-        }
-        void Refresh_GraphRef_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphRef_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var graph = model.Item as Graph;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    return (_localize(m.KindKey), m.Graph.GraphX.Name, 0, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.PointerOver:
-
-                        root.ModelSummary = graph.GraphX.Summary;
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = graph.Name;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else
-            {
-                var graph = model.Item as Graph;
-                //graph.GraphRefValidate(model as RootModel);
-            }
+                ModelSummary = (m) => m.Graph.GraphX.Summary,
+            };
         }
         #endregion
 
@@ -5914,93 +5725,74 @@ namespace ModelGraphSTD
         ModelAction RowChildRelation_X;
         void Initialize_RowChildRelation_X()
         {
-            DataChef_X = new ModelAction
+            RowChildRelation_X = new ModelAction
             {
-                Refresh = Refresh_RowChildRelation_X,
-            };
-        }
-        void Refresh_RowChildRelation_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowChildRelation_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var rel = model.Aux1 as RelationX;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Relation.ChildCount(m.Item);
 
-                        root.ModelDrop = RowChildRelationDrop;
-                        break;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanFilter = (count > 2);
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), GetRelationName(m.RelationX), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = rel.Summary;
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => m.RelationX.Summary,
 
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = GetRelationName(rel);
-                        root.ModelCount = model.Relation.ChildCount(model.Item);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var row1 = model.Item as RowX;
-                var rel = model.Aux1 as RelationX;
-
-                var N = (model.IsExpandedLeft) ? rel.ChildCount(row1) : 0;
-
-                if (N > 0)
+                ModelDrop = (m, d, doDrop) =>
                 {
-                    var items = rel.GetChildren(row1);
-                    var level = (byte)(model.Level + 1);
+                    if (!d.Item.IsRowX) return DropAction.None;
+                    if (!m.Item.IsRowX) return DropAction.None;
+                    if (!m.Aux1.IsRelationX) return DropAction.None;
+                    if (!TableX_ParentRelationX.TryGetParent(m.Aux1, out TableX expectedOwner)) return DropAction.None;
+                    if (d.Item.Owner != expectedOwner) return DropAction.None;
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    for (int i = 0; i < N; i++)
+                    if (doDrop)
                     {
-                        var row2 = items[i];
-                        if (!TryGetOldModel(model, Trait.RowRelatedChild_M, oldModels, i, row2))
-                            model.ChildModels[i] = new ItemModel(model, Trait.RowRelatedChild_M, level, row2, rel, row1, RowRelatedChild_X);
+                        var rel = m.Aux1 as RelationX;
+                        if (m.IsChildModel(d))
+                            RemoveLink(rel, m.Item, d.Item);
+                        else
+                            AppendLink(rel, m.Item, d.Item);
+                    }
+                    return DropAction.Link;
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var row1 = m.Item as RowX;
+                    var rel = m.Aux1 as RelationX;
+
+                    var N = (m.IsExpandedLeft) ? rel.ChildCount(row1) : 0;
+
+                    if (N > 0)
+                    {
+                        var items = rel.GetChildren(row1);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var row2 = items[i];
+                            if (!TryGetOldModel(m, Trait.RowRelatedChild_M, oldModels, i, row2))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowRelatedChild_M, level, row2, rel, row1, RowRelatedChild_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        private DropAction RowChildRelationDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            TableX expectedOwner;
-            if (!drop.Item.IsRowX) return DropAction.None;
-            if (!model.Item.IsRowX) return DropAction.None;
-            if (!model.Aux1.IsRelationX) return DropAction.None;
-            if (!TableX_ParentRelationX.TryGetParent(model.Aux1, out expectedOwner)) return DropAction.None;
-            if (drop.Item.Owner != expectedOwner) return DropAction.None;
-
-            if (doDrop)
-            {
-                var rel = model.Aux1 as RelationX;
-                if (model.IsChildModel(drop))
-                    RemoveLink(rel, model.Item, drop.Item);
-                else
-                    AppendLink(rel, model.Item, drop.Item);
-            }
-            return DropAction.Link;
+            };
         }
         #endregion
 
@@ -6008,91 +5800,72 @@ namespace ModelGraphSTD
         ModelAction RowParentRelation_X;
         void Initialize_RowParentRelation_X()
         {
-            DataChef_X = new ModelAction
+            RowParentRelation_X = new ModelAction
             {
-                Refresh = Refresh_RowParentRelation_X,
-            };
-        }
-        void Refresh_RowParentRelation_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowParentRelation_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var rel = model.Aux1 as RelationX;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Relation.ParentCount(m.Item);
 
-                        root.ModelDrop = RowParentRelationDrop;
-                        break;
+                    m.CanExpandLeft = (count > 0);
+                    m.CanFilter = (count > 2);
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), GetRelationName(m.RelationX), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = rel.Summary;
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = GetRelationName(rel);
-                        root.ModelCount = model.Relation.ParentCount(model.Item);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item as RowX;
-                var rel = model.Aux1 as RelationX;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Item[] items = null;
-                var N = (model.IsExpandedLeft && rel.TryGetParents(item, out items)) ? items.Length : 0;
-                if (N > 0)
+                ModelDrop = (m, d, doDrop) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    if (!d.Item.IsRowX) return DropAction.None;
+                    if (!m.Item.IsRowX) return DropAction.None;
+                    if (!m.Aux1.IsRelationX) return DropAction.None;
+                    if (!TableX_ChildRelationX.TryGetParent(m.Aux1, out TableX expectedOwner)) return DropAction.None;
+                    if (d.Item.Owner != expectedOwner) return DropAction.None;
 
-                    for (int i = 0; i < N; i++)
+                    if (doDrop)
                     {
-                        var itm = items[i];
-                        if (!TryGetOldModel(model, Trait.RowRelatedParent_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ItemModel(model, Trait.RowRelatedParent_M, level, itm, rel, item, RowRelatedParent_X);
+                        var rel = m.Aux1 as RelationX;
+                        if (m.IsChildModel(d))
+                            RemoveLink(rel, d.Item, m.Item);
+                        else
+                            AppendLink(rel, d.Item, m.Item);
+                    }
+                    return DropAction.Link;
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var item = m.Item as RowX;
+                    var rel = m.Aux1 as RelationX;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
+
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && rel.TryGetParents(item, out items)) ? items.Length : 0;
+                    if (N > 0)
+                    {
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i];
+                            if (!TryGetOldModel(m, Trait.RowRelatedParent_M, oldModels, i, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowRelatedParent_M, level, itm, rel, item, RowRelatedParent_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-        }
-        private DropAction RowParentRelationDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            TableX expectedOwner;
-            if (!drop.Item.IsRowX) return DropAction.None;
-            if (!model.Item.IsRowX) return DropAction.None;
-            if (!model.Aux1.IsRelationX) return DropAction.None;
-            if (!TableX_ChildRelationX.TryGetParent(model.Aux1, out expectedOwner)) return DropAction.None;
-            if (drop.Item.Owner != expectedOwner) return DropAction.None;
-
-            if (doDrop)
-            {
-                var rel = model.Aux1 as RelationX;
-                if (model.IsChildModel(drop))
-                    RemoveLink(rel, drop.Item, model.Item);
-                else
-                    AppendLink(rel, drop.Item, model.Item);
-            }
-            return DropAction.Link;
+            };
         }
         #endregion
 
@@ -6100,81 +5873,49 @@ namespace ModelGraphSTD
         ModelAction RowRelatedChild_X;
         void Initialize_RowRelatedChild_X()
         {
-            DataChef_X = new ModelAction
+            RowRelatedChild_X = new ModelAction
             {
-                Refresh = Refresh_RowRelatedChild_X,
-            };
-        }
-        void Refresh_RowRelatedChild_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowRelatedChild_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var row = model.Item as RowX;
-                var rel = model.Aux1 as RelationX;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    m.CanDrag = true;
+                    m.CanExpandLeft = true;
 
-                        root.ReorderItems = ReorderRelatedChild;
-                        break;
+                    return (m.RowX.TableX.Name, GetRowName(m.RowX), m.RelationX.ChildCount(m.RowX), ModelType.Default);
+                },
 
-                    case ModelActionX.PointerOver:
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        root.ModelSummary = RowSummary(model);
+                ModelSummary = (m) => RowSummary(m.RowX),
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = true;
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ReorderItems = ReorderRelatedChild,
 
-                        root.ModelKind = row.TableX.Name;
-                        root.ModelName = GetRowName(row);
-                        root.ModelCount = rel.ChildCount(row);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = true;
-                        break;
+                MenuCommands = (m, mc) =>
+                {
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, UnlinkRelatedChild));
+                },
 
-                    case ModelActionX.ModelSelect:
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, UnlinkRelatedChild));
-                        break;
-                }
-            }
-            else  // validate the list of child models
+                Validate = (m) => RowX_VX(m),
+            };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            void UnlinkRelatedChild(ItemModel m)
             {
-                RowX_VX(model);
+                var key = m.Aux2;
+                var rel = m.Aux1 as Relation;
+                var item = m.Item;
+                RemoveLink(rel, key, item);
             }
         }
-        private void UnlinkRelatedChild(ItemModel model)
-        {
-            var key = model.Aux2;
-            var rel = model.Aux1 as Relation;
-            var item = model.Item;
-            RemoveLink(rel, key, item);
-        }
-        private void UnlinkRelatedRow(ItemModel model)
-        {
-            var parent = model.ParentModel;
-            if (parent.IsRowChildRelationModel)
-            {
-                var row2 = model.Item;
-                var row1 = parent.Item;
-                var rel = parent.Aux1 as Relation;
-                RemoveLink(rel, row1, row2);
-            }
-            else if (parent.IsRowParentRelationModel)
-            {
-                var row1 = model.Item;
-                var row2 = parent.Item;
-                var rel = parent.Aux1 as Relation;
-                RemoveLink(rel, row1, row2);
-            }
-        }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
         private DropAction ReorderRelatedChild (ItemModel model, ItemModel drop, bool doDrop)
         {
             if (model.Aux2 == null) return DropAction.None;
@@ -6197,75 +5938,62 @@ namespace ModelGraphSTD
         ModelAction RowRelatedParent_X;
         void Initialize_RowRelatedParent_X()
         {
-            DataChef_X = new ModelAction
+            RowRelatedParent_X = new ModelAction
             {
-                Refresh = Refresh_RowRelatedParent_X,
-            };
-        }
-        void Refresh_RowRelatedParent_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowRelatedParent_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var row = model.Item as RowX;
-                var rel = model.Aux1 as RelationX;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Relation.ParentCount(m.RowX);
 
-                        root.ReorderItems = ReorderRelatedParent;
-                        break;
+                    m.CanDrag = true;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return (m.RowX.TableX.Name, GetRowName(m.RowX), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = RowSummary(model);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => RowSummary(m.RowX),
 
-                        root.ModelKind = row.TableX.Name;
-                        root.ModelName = GetRowName(row);
-                        root.ModelCount = rel.ParentCount(row);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanDrag = true;
-                        model.CanExpandLeft = true;
-                        break;
+                ReorderItems = (m, d, doDrop) =>
+                {
+                    if (m.Aux2 == null) return DropAction.None;
+                    if (m.Aux1 == null || !(m.Aux1 is Relation rel)) return DropAction.None;
 
-                    case ModelActionX.ModelSelect:
+                    var key = m.Aux2;
+                    var item1 = d.Item;
+                    var item2 = m.Item;
+                    (int index1, int index2) = rel.GetParentsIndex(key, item1, item2);
 
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, UnlinkRelatedParent));
-                        break;
-                }
-            }
-            else  // validate the list of child models
+                    if (index1 < 0 || index2 < 0 || index1 == index2) return DropAction.None;
+
+                    if (doDrop) ItemParentMoved(rel, key, item1, index1, index2);
+
+                    return DropAction.Move;
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                MenuCommands = (m, mc) =>
+                {
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, UnlinkRelatedParent));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) => RowX_VX(m),
+            };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            void UnlinkRelatedParent(ItemModel m)
             {
-                RowX_VX(model);
+                var key = m.Item;
+                var rel = m.Aux1 as Relation;
+                var item = m.Aux2;
+                RemoveLink(rel, key, item);
             }
-        }
-        private void UnlinkRelatedParent(ItemModel model)
-        {
-            var key = model.Item;
-            var rel = model.Aux1 as Relation;
-            var item = model.Aux2;
-            RemoveLink(rel, key, item);
-        }
-        private DropAction ReorderRelatedParent(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            if (model.Aux2 == null) return DropAction.None;
-            if (model.Aux1 == null || !(model.Aux1 is Relation rel)) return DropAction.None;
-
-            var key = model.Aux2;
-            var item1 = drop.Item;
-            var item2 = model.Item;
-            (int index1, int index2) = rel.GetParentsIndex(key, item1, item2);
-
-            if (index1 < 0 || index2 < 0 || index1 == index2) return DropAction.None;
-
-            if (doDrop) ItemParentMoved(rel, key, item1, index1, index2);
-            
-            return DropAction.Move;
         }
         #endregion
 
@@ -6273,50 +6001,27 @@ namespace ModelGraphSTD
         ModelAction EnumRelatedColumn_X;
         void Initialize_EnumRelatedColumn_X()
         {
-            DataChef_X = new ModelAction
+            EnumRelatedColumn_X = new ModelAction
             {
-                Refresh = Refresh_EnumRelatedColumn_X,
-            };
-        }
-        void Refresh_EnumRelatedColumn_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void EnumRelatedColumn_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var col = model.Item as ColumnX;
-                var tbl = model.Aux1 as TableX;
+                ModelParms = (m) => (_localize(m.KindKey), $"{m.TableX.Name}: {m.ColumnX.Name}", 0, ModelType.Default),
 
-                switch (root.ModelAction)
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                MenuCommands = (m, mc) =>
                 {
-                    case ModelActionX.DragOver:
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, UnlinkRelatedColumn));
+                },
+            };
 
-                        break;
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.PointerOver:
-
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = $"{tbl.Name}: {col.Name}";
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, UnlinkRelatedColumn));
-                        break;
-                }
+            void UnlinkRelatedColumn(ItemModel m)
+            {
+                var col = m.Item;
+                var tbl = m.Aux1;
+                var enu = m.Aux2;
+                RemoveLink(EnumX_ColumnX, enu, col);
             }
-        }
-        private void UnlinkRelatedColumn(ItemModel model)
-        {
-            var col = model.Item;
-            var tbl = model.Aux1;
-            var enu = model.Aux2;
-            RemoveLink(EnumX_ColumnX, enu, col);
         }
         #endregion
 
@@ -6326,69 +6031,47 @@ namespace ModelGraphSTD
         ModelAction RowPropertyList_X;
         void Initialize_RowPropertyList_X()
         {
-            DataChef_X = new ModelAction
+            RowPropertyList_X = new ModelAction
             {
-                Refresh = Refresh_RowPropertyList_X,
-            };
-        }
-        void Refresh_RowPropertyList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowPropertyList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                int n;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    GetColumnCount(m.Item, out int count, out int _);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        GetColumnCount(model.Item, out root.ModelCount, out n);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var row = model.Item as RowX;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Item[] items = null;
-                var N = (model.IsExpandedLeft && TryGetUsedColumns(row, out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var row = m.Item as RowX;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && TryGetUsedColumns(row, out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        var col = items[i] as ColumnX;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
-                        if (!TryGetOldModel(model, Trait.Empty, oldModels, i, row, col))
-                            model.ChildModels[i] = NewPropertyModel(model, level, row, col);
+                        for (int i = 0; i < N; i++)
+                        {
+                            var col = items[i] as ColumnX;
+
+                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, row, col))
+                                m.ChildModels[i] = NewPropertyModel(m, level, row, col);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -6396,69 +6079,47 @@ namespace ModelGraphSTD
         ModelAction RowChildRelationList_X;
         void Initialize_RowChildRelationList_X()
         {
-            DataChef_X = new ModelAction
+            RowChildRelationList_X = new ModelAction
             {
-                Refresh = Refresh_RowChildRelationList_X,
-            };
-        }
-        void Refresh_RowChildRelationList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowChildRelationList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                int n;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    GetChildRelationCount(m.Item, out int count, out int _);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        GetChildRelationCount(model.Item, out root.ModelCount, out n);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item as RowX;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Item[] items = null;
-                var N = (model.IsExpandedLeft && TryGetUsedChildRelations(item, out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var item = m.Item as RowX;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && TryGetUsedChildRelations(item, out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        var rel = items[i] as RelationX;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
-                        if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, rel))
-                            model.ChildModels[i] = new ItemModel(model, Trait.RowChildRelation_M, level, item, rel, null, RowChildRelation_X);
+                        for (int i = 0; i < N; i++)
+                        {
+                            var rel = items[i] as RelationX;
+
+                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, rel))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowChildRelation_M, level, item, rel, null, RowChildRelation_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -6466,69 +6127,47 @@ namespace ModelGraphSTD
         ModelAction RowParentRelationList_X;
         void Initialize_RowParentRelationList_X()
         {
-            DataChef_X = new ModelAction
+            RowParentRelationList_X = new ModelAction
             {
-                Refresh = Refresh_RowParentRelationList_X,
-            };
-        }
-        void Refresh_RowParentRelationList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowParentRelationList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                int n;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    GetParentRelationCount(m.Item, out int count, out int _);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        GetParentRelationCount(model.Item, out root.ModelCount, out n);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item as RowX;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Item[] items = null;
-                var N = (model.IsExpandedLeft && TryGetUsedParentRelations(item, out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var item = m.Item as RowX;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && TryGetUsedParentRelations(item, out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        var rel = items[i] as RelationX;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
-                        if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, rel))
-                            model.ChildModels[i] = new ItemModel(model, Trait.RowParentRelation_M, level, item, rel, null, RowParentRelation_X);
+                        for (int i = 0; i < N; i++)
+                        {
+                            var rel = items[i] as RelationX;
+
+                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, rel))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowParentRelation_M, level, item, rel, null, RowParentRelation_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -6536,69 +6175,47 @@ namespace ModelGraphSTD
         ModelAction RowDefaultPropertyList_X;
         void Initialize_RowDefaultPropertyList_X()
         {
-            DataChef_X = new ModelAction
+            RowDefaultPropertyList_X = new ModelAction
             {
-                Refresh = Refresh_RowDefaultPropertyList_X,
-            };
-        }
-        void Refresh_RowDefaultPropertyList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowDefaultPropertyList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                int n;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    GetColumnCount(m.Item, out int _, out int count);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        GetColumnCount(model.Item, out n, out root.ModelCount);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item as RowX;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Item[] items = null;
-                var N = (model.IsExpandedLeft && TryGetUnusedColumns(item, out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var item = m.Item as RowX;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && TryGetUnusedColumns(item, out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        var prop = items[i] as Property;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
-                        if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, prop))
-                            model.ChildModels[i] = NewPropertyModel(model, level, item, prop);
+                        for (int i = 0; i < N; i++)
+                        {
+                            var prop = items[i] as Property;
+
+                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, prop))
+                                m.ChildModels[i] = NewPropertyModel(m, level, item, prop);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -6606,69 +6223,47 @@ namespace ModelGraphSTD
         ModelAction RowUnusedChildRelationList_X;
         void Initialize_RowUnusedChildRelationList_X()
         {
-            DataChef_X = new ModelAction
+            RowUnusedChildRelationList_X = new ModelAction
             {
-                Refresh = Refresh_RowUnusedChildRelationList_X,
-            };
-        }
-        void Refresh_RowUnusedChildRelationList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowUnusedChildRelationList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                int n;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    GetChildRelationCount(m.Item, out int _, out int count);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        GetChildRelationCount(model.Item, out n, out root.ModelCount);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item as RowX;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Item[] items = null;
-                var N = (model.IsExpandedLeft && TryGetUnusedChildRelations(item, out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var item = m.Item as RowX;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && TryGetUnusedChildRelations(item, out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        var rel = items[i] as RelationX;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
-                        if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, rel))
-                            model.ChildModels[i] = new ItemModel(model, Trait.RowChildRelation_M, level, item, rel, null, RowChildRelation_X);
+                        for (int i = 0; i < N; i++)
+                        {
+                            var rel = items[i] as RelationX;
+
+                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, rel))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowChildRelation_M, level, item, rel, null, RowChildRelation_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -6676,69 +6271,47 @@ namespace ModelGraphSTD
         ModelAction RowUnusedParentRelationList_X;
         void Initialize_RowUnusedParentRelationList_X()
         {
-            DataChef_X = new ModelAction
+            RowUnusedParentRelationList_X = new ModelAction
             {
-                Refresh = Refresh_RowUnusedParentRelationList_X,
-            };
-        }
-        void Refresh_RowUnusedParentRelationList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowUnusedParentRelationList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                int n;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    GetParentRelationCount(m.Item, out int _, out int count);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        GetParentRelationCount(model.Item, out n, out root.ModelCount);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item as RowX;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Item[] items = null;
-                var N = (model.IsExpandedLeft && TryGetUnusedParentRelations(item, out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var item = m.Item as RowX;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && TryGetUnusedParentRelations(item, out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        var rel = items[i] as RelationX;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
-                        if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, rel))
-                            model.ChildModels[i] = new ItemModel(model, Trait.RowParentRelation_M, level, item, rel, null, RowParentRelation_X);
+                        for (int i = 0; i < N; i++)
+                        {
+                            var rel = items[i] as RelationX;
+
+                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, rel))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowParentRelation_M, level, item, rel, null, RowParentRelation_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -6746,68 +6319,48 @@ namespace ModelGraphSTD
         ModelAction RowComputeList_X;
         void Initialize_RowComputeList_X()
         {
-            DataChef_X = new ModelAction
+            RowComputeList_X = new ModelAction
             {
-                Refresh = Refresh_RowComputeList_X,
-            };
-        }
-        void Refresh_RowComputeList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void RowComputeList_X(ItemModel model, RootModel root)
-        {
-            var item = model.Item;
-            var sto = item.Owner;
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = Store_ComputeX.ChildCount(m.Item.Owner);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = Store_ComputeX.ChildCount(sto);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var N = (model.IsExpandedLeft) ? Store_ComputeX.ChildCount(sto) : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    var level = (byte)(model.Level + 1);
+                    var item = m.Item;
+                    var sto = item.Owner;
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    var list = Store_ComputeX.GetChildren(sto);
-                    for (int i = 0; i < N; i++)
+                    var N = (m.IsExpandedLeft) ? Store_ComputeX.ChildCount(sto) : 0;
+                    if (N > 0)
                     {
-                        var itm = list[i];
-                        if (!TryGetOldModel(model, Trait.TextProperty_M, oldModels, i, item, itm))
-                            model.ChildModels[i] = new ItemModel(model, Trait.TextProperty_M, level, item, itm, null, TextCompute_X);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        var list = Store_ComputeX.GetChildren(sto);
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = list[i];
+                            if (!TryGetOldModel(m, Trait.TextProperty_M, oldModels, i, item, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.TextProperty_M, level, item, itm, null, TextCompute_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -6817,66 +6370,44 @@ namespace ModelGraphSTD
         ModelAction QueryRootLink_X;
         void Initialize_QueryRootLink_X()
         {
-            DataChef_X = new ModelAction
+            QueryRootLink_X = new ModelAction
             {
-                Refresh = Refresh_QueryRootLink_X,
-            };
-        }
-        void Refresh_QueryRootLink_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryRootLink_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.ItemCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryLinkName(model);
-                        root.ModelCount = model.Query.ItemCount;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var seg = model.Query;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Item[] items = null;
-                var N = (model.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var seg = m.Query;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        var itm = items[i];
-                        if (!TryGetOldModel(model, Trait.QueryRootItem_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryRootItem_M, level, itm, seg, null, QueryRootItem_X);
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i];
+                            if (!TryGetOldModel(m, Trait.QueryRootItem_M, oldModels, i, itm, seg))
+                                m.ChildModels[i] = new ItemModel(m, Trait.QueryRootItem_M, level, itm, seg, null, QueryRootItem_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         private string QueryLinkName(ItemModel modle)
         {
@@ -6889,46 +6420,21 @@ namespace ModelGraphSTD
         ModelAction QueryPathHead_X;
         void Initialize_QueryPathHead_X()
         {
-            DataChef_X = new ModelAction
+            QueryPathHead_X = new ModelAction
             {
-                Refresh = Refresh_QueryPathHead_X,
-            };
-        }
-        void Refresh_QueryPathHead_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryPathHead_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.ItemCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryLinkName(model);
-                        root.ModelCount = model.Query.ItemCount;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                QueryPathLink_VX(model);
-            }
+                Validate = (m) => QueryPathLink_VX(m),
+            };
         }
         #endregion
 
@@ -6936,58 +6442,30 @@ namespace ModelGraphSTD
         ModelAction QueryPathLink_X;
         void Initialize_QueryPathLink_X()
         {
-            DataChef_X = new ModelAction
+            QueryPathLink_X = new ModelAction
             {
-                Refresh = Refresh_QueryPathLink_X,
-            };
-        }
-        void Refresh_QueryPathLink_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryPathLink_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var seg = model.Aux1 as Query;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.ItemCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryLinkName(model);
-                        root.ModelCount = model.Query.ItemCount;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                QueryPathLink_VX(model);
-            }
+                Validate = (m) => QueryPathLink_VX(m),
+            };
         }
         private void QueryPathLink_VX(ItemModel model)
         {
             var seg = model.Query;
 
-            Item[] items;
-            if (seg.TryGetItems(out items))
+            if (seg.TryGetItems(out Item[] items))
             {
                 var N = items.Length;
-                var level = (byte)(model.Level + 1);
+                var level = (byte)(model.Depth + 1);
                 var oldModels = model.ChildModels;
                 model.ChildModels = new ItemModel[N];
 
@@ -7017,46 +6495,21 @@ namespace ModelGraphSTD
         ModelAction QueryGroupHead_X;
         void Initialize_QueryGroupHead_X()
         {
-            DataChef_X = new ModelAction
+            QueryGroupHead_X = new ModelAction
             {
-                Refresh = Refresh_QueryGroupHead_X,
-            };
-        }
-        void Refresh_QueryGroupHead_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryGroupHead_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.ItemCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryLinkName(model);
-                        root.ModelCount = model.Query.ItemCount;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                QueryGroupLink_VX(model);
-            }
+                Validate = (m) => QueryGroupLink_VX(m),
+            };
         }
         #endregion
 
@@ -7064,51 +6517,26 @@ namespace ModelGraphSTD
         ModelAction QueryGroupLink_X;
         void Initialize_QueryGroupLink_X()
         {
-            DataChef_X = new ModelAction
+            QueryGroupLink_X = new ModelAction
             {
-                Refresh = Refresh_QueryGroupLink_X,
-            };
-        }
-        void Refresh_QueryGroupLink_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryGroupLink_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.ItemCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryLinkName(model);
-                        root.ModelCount = model.Query.ItemCount;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                QueryGroupLink_VX(model);
-            }
+                Validate = (m) => QueryGroupLink_VX(m),
+            };
         }
         private void QueryGroupLink_VX(ItemModel model)
         {
             var seg = model.Query;
-            var level = (byte)(model.Level + 1);
+            var level = (byte)(model.Depth + 1);
             var oldModels = model.ChildModels;
 
             Item[] items = null;
@@ -7143,46 +6571,21 @@ namespace ModelGraphSTD
         ModelAction QueryEgressHead_X;
         void Initialize_QueryEgressHead_X()
         {
-            DataChef_X = new ModelAction
+            QueryEgressHead_X = new ModelAction
             {
-                Refresh = Refresh_QueryEgressHead_X,
-            };
-        }
-        void Refresh_QueryEgressHead_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryEgressHead_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.ItemCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryLinkName(model);
-                        root.ModelCount = model.Query.ItemCount;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                QueryEgressLink_VX(model);
-            }
+                Validate = (m) => QueryEgressLink_VX(m),
+            };
         }
         #endregion
 
@@ -7190,51 +6593,26 @@ namespace ModelGraphSTD
         ModelAction QueryEgressLink_X;
         void Initialize_QueryEgressLink_X()
         {
-            DataChef_X = new ModelAction
+            QueryEgressLink_X = new ModelAction
             {
-                Refresh = Refresh_QueryEgressLink_X,
-            };
-        }
-        void Refresh_QueryEgressLink_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryEgressLink_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.ItemCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = QueryLinkName(model);
-                        root.ModelCount = model.Query.ItemCount;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                QueryEgressLink_VX(model);
-            }
+                Validate = (m) => QueryEgressLink_VX(m),
+            };
         }
         private void QueryEgressLink_VX(ItemModel model)
         {
             var seg = model.Query;
-            var level = (byte)(model.Level + 1);
+            var level = (byte)(model.Depth + 1);
             var oldModels = model.ChildModels;
 
             Item[] items = null;
@@ -7271,93 +6649,65 @@ namespace ModelGraphSTD
         ModelAction QueryRootItem_X;
         void Initialize_QueryRootItem_X()
         {
-            DataChef_X = new ModelAction
+            QueryRootItem_X = new ModelAction
             {
-                Refresh = Refresh_QueryRootItem_X,
-            };
-        }
-        void Refresh_QueryRootItem_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryRootItem_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var row = model.Item as RowX;
-                var seg = model.Query;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.QueryCount(m.Item);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return (m.RowX.TableX.Name, GetRowName(m.RowX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = (row.Owner as TableX).Name;
-                        root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                ValidateQueryModel(model);
-            }
-        }
-        private void ValidateQueryModel(ItemModel model)
-        {
-            var itm = model.Item;
-            var seg = model.Query;
-            var level = (byte)(model.Level + 1);
-            var oldModels = model.ChildModels;
-
-            Query[] items = null;
-            var N = (model.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
-            if (N > 0)
-            {
-                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                for (int i = 0; i < N; i++)
+                Validate = (m) =>
                 {
-                    seg = items[i];
-                    if (seg.IsGraphLink)
+                    var itm = m.Item;
+                    var seg = m.Query;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
+
+                    Query[] items = null;
+                    var N = (m.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        if (!TryGetOldModel(model, Trait.QueryRootLink_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryRootLink_M, level, itm, seg, null, QueryRootLink_X);
-                    }
-                    else if (seg.IsPathHead)
-                    {
-                        if (!TryGetOldModel(model, Trait.QueryPathHead_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryPathHead_M, level, itm, seg, null, QueryPathHead_X);
-                    }
-                    else if (seg.IsGroupHead)
-                    {
-                        if (!TryGetOldModel(model, Trait.QueryGroupHead_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryGroupHead_M, level, itm, seg, null, QueryGroupHead_X);
-                    }
-                    else if (seg.IsSegueHead)
-                    {
-                        if (!TryGetOldModel(model, Trait.QueryEgressHead_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryEgressHead_M, level, itm, seg, null, QueryEgressHead_X);
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            seg = items[i];
+                            if (seg.IsGraphLink)
+                            {
+                                if (!TryGetOldModel(m, Trait.QueryRootLink_M, oldModels, i, itm, seg))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryRootLink_M, level, itm, seg, null, QueryRootLink_X);
+                            }
+                            else if (seg.IsPathHead)
+                            {
+                                if (!TryGetOldModel(m, Trait.QueryPathHead_M, oldModels, i, itm, seg))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryPathHead_M, level, itm, seg, null, QueryPathHead_X);
+                            }
+                            else if (seg.IsGroupHead)
+                            {
+                                if (!TryGetOldModel(m, Trait.QueryGroupHead_M, oldModels, i, itm, seg))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryGroupHead_M, level, itm, seg, null, QueryGroupHead_X);
+                            }
+                            else if (seg.IsSegueHead)
+                            {
+                                if (!TryGetOldModel(m, Trait.QueryEgressHead_M, oldModels, i, itm, seg))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryEgressHead_M, level, itm, seg, null, QueryEgressHead_X);
+                            }
+                            else
+                                throw new Exception("Invalid Query");
+                        }
                     }
                     else
-                        throw new Exception("Invalid Query");
+                    {
+                        m.ChildModels = null;
+                    }
                 }
-            }
-            else
-            {
-                model.ChildModels = null;
-            }
+            };
         }
         #endregion
 
@@ -7365,69 +6715,45 @@ namespace ModelGraphSTD
         ModelAction QueryPathStep_X;
         void Initialize_QueryPathStep_X()
         {
-            DataChef_X = new ModelAction
+            QueryPathStep_X = new ModelAction
             {
-                Refresh = Refresh_QueryPathStep_X,
-            };
-        }
-        void Refresh_QueryPathStep_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryPathStep_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var row = model.Item as RowX;
-                var seg = model.Query;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.QueryCount(m.Item);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = $"{_localize(model.KindKey)} {(row.Owner as TableX).Name}";
-                        root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var itm = model.Item;
-                var seg = model.Query;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Query[] items = null;
-                var N = (model.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var itm = m.Item;
+                    var seg = m.Query;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Query[] items = null;
+                    var N = (m.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        seg = items[i];
-                        if (!TryGetOldModel(model, Trait.QueryPathLink_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryPathLink_M, level, itm, seg, null, QueryPathLink_X);
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            seg = items[i];
+                            if (!TryGetOldModel(m, Trait.QueryPathLink_M, oldModels, i, itm, seg))
+                                m.ChildModels[i] = new ItemModel(m, Trait.QueryPathLink_M, level, itm, seg, null, QueryPathLink_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -7435,44 +6761,17 @@ namespace ModelGraphSTD
         ModelAction QueryPathTail_X;
         void Initialize_QueryPathTail_X()
         {
-            DataChef_X = new ModelAction
+            QueryPathTail_X = new ModelAction
             {
-                Refresh = Refresh_QueryPathTail_X,
-            };
-        }
-        void Refresh_QueryPathTail_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryPathTail_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var row = model.Item as RowX;
-                var seg = model.Query;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.QueryCount(m.Item);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
-
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = $"{_localize(model.KindKey)} {(row.Owner as TableX).Name}";
-                        root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
+                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                },
+            };
         }
         #endregion
 
@@ -7480,69 +6779,45 @@ namespace ModelGraphSTD
         ModelAction QueryGroupStep_X;
         void Initialize_QueryGroupStep_X()
         {
-            DataChef_X = new ModelAction
+            QueryGroupStep_X = new ModelAction
             {
-                Refresh = Refresh_QueryGroupStep_X,
-            };
-        }
-        void Refresh_QueryGroupStep_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryGroupStep_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var row = model.Item as RowX;
-                var seg = model.Query;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.QueryCount(m.Item);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = $"{_localize(KindKey)} {(row.Owner as TableX).Name}";
-                        root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var itm = model.Item;
-                var seg = model.Query;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Query[] items = null;
-                var N = (model.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var itm = m.Item;
+                    var seg = m.Query;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Query[] items = null;
+                    var N = (m.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        seg = items[i];
-                        if (!TryGetOldModel(model, Trait.QueryGroupLink_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryGroupLink_M, level, itm, seg, null, QueryGroupLink_X);
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            seg = items[i];
+                            if (!TryGetOldModel(m, Trait.QueryGroupLink_M, oldModels, i, itm, seg))
+                                m.ChildModels[i] = new ItemModel(m, Trait.QueryGroupLink_M, level, itm, seg, null, QueryGroupLink_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -7550,44 +6825,17 @@ namespace ModelGraphSTD
         ModelAction QueryGroupTail_X;
         void Initialize_QueryGroupTail_X()
         {
-            DataChef_X = new ModelAction
+            QueryGroupTail_X = new ModelAction
             {
-                Refresh = Refresh_QueryGroupTail_X,
-            };
-        }
-        void Refresh_QueryGroupTail_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryGroupTail_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var row = model.Item as RowX;
-                var seg = model.Query;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.QueryCount(m.Item);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
-
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = $"{_localize(model.KindKey)} {(row.Owner as TableX).Name}";
-                        root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
+                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                },
+            };
         }
         #endregion
 
@@ -7595,69 +6843,45 @@ namespace ModelGraphSTD
         ModelAction QueryEgressStep_X;
         void Initialize_QueryEgressStep_X()
         {
-            DataChef_X = new ModelAction
+            QueryEgressStep_X = new ModelAction
             {
-                Refresh = Refresh_QueryEgressStep_X,
-            };
-        }
-        void Refresh_QueryEgressStep_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryEgressStep_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var row = model.Item as RowX;
-                var seg = model.Query;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.QueryCount(m.Item);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = $"{_localize(model.KindKey)} {(row.Owner as TableX).Name}";
-                        root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var itm = model.Item;
-                var seg = model.Query;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Query[] items = null;
-                var N = (model.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var itm = m.Item;
+                    var seg = m.Query;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Query[] items = null;
+                    var N = (m.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        seg = items[i];
-                        if (!TryGetOldModel(model, Trait.QueryEgressLink_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryEgressLink_M, level, itm, seg, null, QueryEgressLink_X);
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            seg = items[i];
+                            if (!TryGetOldModel(m, Trait.QueryEgressLink_M, oldModels, i, itm, seg))
+                                m.ChildModels[i] = new ItemModel(m, Trait.QueryEgressLink_M, level, itm, seg, null, QueryEgressLink_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -7665,44 +6889,17 @@ namespace ModelGraphSTD
         ModelAction QueryEgressTail_X;
         void Initialize_QueryEgressTail_X()
         {
-            DataChef_X = new ModelAction
+            QueryEgressTail_X = new ModelAction
             {
-                Refresh = Refresh_QueryEgressTail_X,
-            };
-        }
-        void Refresh_QueryEgressTail_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void QueryEgressTail_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var row = model.Item as RowX;
-                var seg = model.Query;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.QueryCount(m.Item);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
-
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = $"{_localize(model.KindKey)} {(row.Owner as TableX).Name}";
-                        root.ModelName = GetRowName(row);
-                        root.ModelCount = seg.QueryCount(model.Item);
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
+                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                },
+            };
         }
         #endregion
 
@@ -7712,114 +6909,101 @@ namespace ModelGraphSTD
         ModelAction GraphXRef_X;
         void Initialize_GraphXRef_X()
         {
-            DataChef_X = new ModelAction
+            GraphXRef_X = new ModelAction
             {
-                Refresh = Refresh_GraphXRef_X,
-            };
-        }
-        void Refresh_GraphXRef_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphXRef_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var gx = model.Item as GraphX;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.GraphX.Count;
 
-                        root.ModelDrop = GraphXModDrop;
-                        break;
+                    m.CanExpandLeft = count > 0;
 
-                    case ModelActionX.PointerOver:
+                    return (m.GraphX.Trait.ToString(), m.GraphX.Name, count, ModelType.Default);
+                },
 
-                        root.ModelSummary = gx.Summary;
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => m.GraphX.Summary,
 
-                        root.ModelKind = gx.Trait.ToString();
-                        root.ModelName = gx.Name;
-                        root.ModelCount = gx.Count;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.ButtonCommands.Add(new ModelCommand(this, model, Trait.CreateCommand, CreateGraph));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var gx = model.Item as GraphX;
-                var N = model.IsExpandedLeft ? gx.Count : 0;
-
-                if (N > 0)
+                ButtonCommands = (m, bc) =>
                 {
-                    var items = gx.ToArray;
-                    var level = (byte)(model.Level + 1);
+                    bc.Add(new ModelCommand(this, m, Trait.CreateCommand, CreateGraph));
+                },
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    for (int i = 0; i < N; i++)
+                ModelDrop = (m, d, doDrop) =>
+                {
+                    var gx = m.GraphX;
+                    Store tbl = null;
+
+                    if (GraphX_QueryX.ChildCount(gx) == 0) return DropAction.None;
+
+                    var items = GraphX_QueryX.GetChildren(gx);
+                    foreach (var item in items)
                     {
-                        var g = items[i] as Graph;
-                        if (!TryGetOldModel(model, Trait.Graph_M, oldModels, i, g))
-                            model.ChildModels[i] = new ItemModel(model, Trait.Graph_M, level, g, null, null, Graph_X);
+                        if (item.IsQueryGraphRoot && Store_QueryX.TryGetParent(item, out tbl) && d.Item.Owner == tbl) break;
+                    }
+                    if (tbl == null) return DropAction.None;
+
+                    foreach (var tg in gx.ToArray)
+                    {
+                        if (tg.RootItem == d.Item) return DropAction.None;
+                    }
+
+                    if (doDrop)
+                    {
+                        CreateGraph(gx, out Graph g, d.Item);
+
+                        m.IsExpandedLeft = true;
+                        MajorDelta += 1;
+
+                        var root = m.GetRootModel();
+                        root.UIRequest = UIRequest.CreateNewView(ControlType.GraphDisplay, Trait.GraphRef_M, this, g, null, null, GraphRef_X, true);
+                    }
+                    return DropAction.Copy;
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var gx = m.Item as GraphX;
+                    var N = m.IsExpandedLeft ? gx.Count : 0;
+
+                    if (N > 0)
+                    {
+                        var items = gx.ToArray;
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var g = items[i] as Graph;
+                            if (!TryGetOldModel(m, Trait.Graph_M, oldModels, i, g))
+                                m.ChildModels[i] = new ItemModel(m, Trait.Graph_M, level, g, null, null, Graph_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
-        private void CreateGraph(ItemModel model)
-        {
-            var gx = model.Item as GraphX;
-            CreateGraph(gx, out Graph g);
 
-            model.IsExpandedLeft = true;
+        void CreateGraph(ItemModel m)
+        {
+            CreateGraph(m.GraphX, out Graph g);
+
+            m.IsExpandedLeft = true;
             MajorDelta += 1;
 
-            var root = model.GetRootModel();
+            var root = m.GetRootModel();
             root.UIRequest = UIRequest.CreateNewView(ControlType.GraphDisplay, Trait.GraphRef_M, this, g, null, null, GraphRef_X, true);
-        }
-        private DropAction GraphXModDrop(ItemModel model, ItemModel drop, bool doDrop)
-        {
-            var gd = model.Item as GraphX;
-            Graph g;
-            Store tbl = null;
-
-            if (GraphX_QueryX.ChildCount(gd) == 0) return DropAction.None;
-
-            var items = GraphX_QueryX.GetChildren(gd);
-            foreach (var item in items)
-            {
-                if (item.IsQueryGraphRoot && Store_QueryX.TryGetParent(item, out tbl) && drop.Item.Owner == tbl) break;
-            }
-            if (tbl == null) return DropAction.None;
-
-            foreach (var tg in gd.ToArray)
-            {
-                if (tg.RootItem == drop.Item) return DropAction.None;
-            }
-
-            if (doDrop)
-            {
-                CreateGraph(gd, out g, drop.Item);
-
-                model.IsExpandedLeft = true;
-                MajorDelta += 1;
-
-                var root = model.GetRootModel();
-                root.UIRequest = UIRequest.CreateNewView(ControlType.GraphDisplay, Trait.GraphRef_M, this, g, null, null, GraphRef_X, true);
-            }
-            return DropAction.Copy;
         }
         #endregion
 
@@ -7827,68 +7011,50 @@ namespace ModelGraphSTD
         ModelAction GraphNodeList_X;
         void Initialize_GraphNodeList_X()
         {
-            DataChef_X = new ModelAction
+            GraphNodeList_X = new ModelAction
             {
-                Refresh = Refresh_GraphNodeList_X,
-            };
-        }
-        void Refresh_GraphNodeList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphNodeList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Graph.NodeCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = model.Graph.NodeCount;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item as Graph;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                var items = item.Nodes;
-                var N = items.Count;
-                if (model.IsExpandedLeft && N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var item = m.Item as Graph;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    var items = item.Nodes;
+                    var N = items.Count;
+                    if (m.IsExpandedLeft && N > 0)
                     {
-                        var itm = items[i];
-                        if (!TryGetOldModel(model, Trait.GraphNode_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ItemModel(model, Trait.GraphNode_M, level, itm, null, null, GraphNode_X);
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i];
+                            if (!TryGetOldModel(m, Trait.GraphNode_M, oldModels, i, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphNode_M, level, itm, null, null, GraphNode_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -7896,68 +7062,50 @@ namespace ModelGraphSTD
         ModelAction GraphEdgeList_X;
         void Initialize_GraphEdgeList_X()
         {
-            DataChef_X = new ModelAction
+            GraphEdgeList_X = new ModelAction
             {
-                Refresh = Refresh_GraphEdgeList_X,
-            };
-        }
-        void Refresh_GraphEdgeList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphEdgeList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Graph.EdgeCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = model.Graph.EdgeCount;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item as Graph;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                var items = item.Edges;
-                var N = items.Count;
-                if (model.IsExpandedLeft && N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var item = m.Item as Graph;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    var items = item.Edges;
+                    var N = items.Count;
+                    if (m.IsExpandedLeft && N > 0)
                     {
-                        var itm = items[i];
-                        if (!TryGetOldModel(model, Trait.GraphEdge_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ItemModel(model, Trait.GraphEdge_M, level, itm, null, null, GraphEdge_X);
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i];
+                            if (!TryGetOldModel(m, Trait.GraphEdge_M, oldModels, i, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphEdge_M, level, itm, null, null, GraphEdge_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -7965,69 +7113,51 @@ namespace ModelGraphSTD
         ModelAction GraphRootList_X;
         void Initialize_GraphRootList_X()
         {
-            DataChef_X = new ModelAction
+            GraphRootList_X = new ModelAction
             {
-                Refresh = Refresh_GraphRootList_X,
-            };
-        }
-        void Refresh_GraphRootList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphRootList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Graph.QueryCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = model.Graph.QueryCount;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
+                Validate = (m) =>
             {
-                var item = model.Item as Graph;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
+                var item = m.Item as Graph;
+                var level = (byte)(m.Depth + 1);
+                var oldModels = m.ChildModels;
 
                 Query[] items = item.Forest;
                 var N = item.QueryCount;
-                if (model.IsExpandedLeft && N > 0)
+                if (m.IsExpandedLeft && N > 0)
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var seg = items[i];
                         var tbl = seg.Item;
-                        if (!TryGetOldModel(model, Trait.GraphRoot_M, oldModels, i, tbl, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.GraphRoot_M, level, tbl, seg, null, GraphRoot_X);
+                        if (!TryGetOldModel(m, Trait.GraphRoot_M, oldModels, i, tbl, seg))
+                            m.ChildModels[i] = new ItemModel(m, Trait.GraphRoot_M, level, tbl, seg, null, GraphRoot_X);
                     }
                 }
                 else
                 {
-                    model.ChildModels = null;
+                    m.ChildModels = null;
                 }
             }
+            };
         }
         #endregion
 
@@ -8035,70 +7165,51 @@ namespace ModelGraphSTD
         ModelAction GraphLevelList_X;
         void Initialize_GraphLevelList_X()
         {
-            DataChef_X = new ModelAction
+            GraphLevelList_X = new ModelAction
             {
-                Refresh = Refresh_GraphLevelList_X,
-            };
-        }
-        void Refresh_GraphLevelList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphLevelList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var item = model.Item as Graph;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Graph.Levels.Count;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = item.Levels.Count;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item as Graph;
-                var items = item.Levels;
-                var N = model.IsExpandedLeft ? items.Count : 0;
-
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    var level = (byte)(model.Level + 1);
+                    var item = m.Item as Graph;
+                    var items = item.Levels;
+                    var N = m.IsExpandedLeft ? items.Count : 0;
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    for (int i = 0; i < N; i++)
+                    if (N > 0)
                     {
-                        var itm = items[i] as Level;
-                        if (!TryGetOldModel(model, Trait.GraphLevel_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ItemModel(model, Trait.GraphLevel_M, level, itm, null, null, GraphLevel_X);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i] as Level;
+                            if (!TryGetOldModel(m, Trait.GraphLevel_M, oldModels, i, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphLevel_M, level, itm, null, null, GraphLevel_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -8106,69 +7217,46 @@ namespace ModelGraphSTD
         ModelAction GraphLevel_X;
         void Initialize_GraphLevel_X()
         {
-            DataChef_X = new ModelAction
+            GraphLevel_X = new ModelAction
             {
-                Refresh = Refresh_GraphLevel_X,
-            };
-        }
-        void Refresh_GraphLevel_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphLevel_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var item = model.Item as Level;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Level.Count;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), m.Level.Name, count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = item.Name;
-                        root.ModelCount = item.Count;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var item = model.Item as Level;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                var items = item.Paths;
-                var N = (model.IsExpandedLeft) ? items.Count : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSortAscending || model.IsSortDescending || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var item = m.Item as Level;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    var items = item.Paths;
+                    var N = (m.IsExpandedLeft) ? items.Count : 0;
+                    if (N > 0)
                     {
-                        var itm = items[i];
-                        if (!TryGetOldModel(model, Trait.GraphPath_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ItemModel(model, Trait.GraphPath_M, level, itm, null, null, GraphPath_X);
+                        if (oldModels == null || m.IsSortAscending || m.IsSortDescending || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i];
+                            if (!TryGetOldModel(m, Trait.GraphPath_M, oldModels, i, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphPath_M, level, itm, null, null, GraphPath_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -8176,85 +7264,71 @@ namespace ModelGraphSTD
         ModelAction GraphPath_X;
         void Initialize_GraphPath_X()
         {
-            DataChef_X = new ModelAction
+            GraphPath_X = new ModelAction
             {
-                Refresh = Refresh_GraphPath_X,
-            };
-        }
-        void Refresh_GraphPath_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphPath_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var path = model.Item as Path;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Path.Count;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (GetPathKind(m.Path), GetPathName(m.Path), 0, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = GetPathKind(path);
-                        root.ModelName = GetPathName(path);
-                        root.ModelCount = path.Count;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var path = model.Item as Path;
-                var items = path.Items;
-                var N = (model.IsExpandedLeft) ? path.Count : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    var level = (byte)(model.Level + 1);
-
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    for (int i = 0; i < N; i++)
+                    var path = m.Item as Path;
+                    var items = path.Items;
+                    var N = (m.IsExpandedLeft) ? path.Count : 0;
+                    if (N > 0)
                     {
-                        var itm = items[i] as Path;
-                        if (!TryGetOldModel(model, Trait.GraphPath_M, oldModels, i, itm))
-                            model.ChildModels[i] = new ItemModel(model, Trait.GraphPath_M, level, itm, null, null, GraphPath_X);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i] as Path;
+                            if (!TryGetOldModel(m, Trait.GraphPath_M, oldModels, i, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphPath_M, level, itm, null, null, GraphPath_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
+            };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            string GetPathName(Path path)
+            {
+                return GetHeadTailName(path.Head, path.Tail);
+            }
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            string GetPathKind(Path path)
+            {
+                var name = _localize(path.NameKey);
+                var kind = path.IsRadial ? _localize(GetKindKey(Trait.RadialPath)) : _localize(GetKindKey(Trait.LinkPath));
+                return $"{name}{kind}";
             }
         }
-        private string GetPathName(Path path)
-        {
-            return GetHeadTailName(path.Head, path.Tail);
-        }
-        private string GetHeadTailName(Item head, Item tail)
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        string GetHeadTailName(Item head, Item tail)
         {
             var headName = GetIdentity(head, IdentityStyle.Double);
             var tailName = GetIdentity(tail, IdentityStyle.Double);
             return $"{headName} --> {tailName}";
-        }
-        private string GetPathKind(Path path)
-        {
-            var name = _localize(path.NameKey);
-            var kind = path.IsRadial ? _localize(GetKindKey(Trait.RadialPath)) : _localize(GetKindKey(Trait.LinkPath));
-            return $"{name}{kind}";
         }
         #endregion
 
@@ -8262,70 +7336,47 @@ namespace ModelGraphSTD
         ModelAction GraphRoot_X;
         void Initialize_GraphRoot_X()
         {
-            DataChef_X = new ModelAction
+            GraphRoot_X = new ModelAction
             {
-                Refresh = Refresh_GraphRoot_X,
-            };
-        }
-        void Refresh_GraphRoot_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphRoot_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var tbl = model.Item as TableX;
-                var seg = model.Aux1 as Query;
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Query.ItemCount;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, m.TableX.Name, count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = tbl.Name;
-                        root.ModelCount = seg.ItemCount;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var tbl = model.Item;
-                var seg = model.Query;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                Item[] items = null;
-                var N = (model.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var tbl = m.Item;
+                    var seg = m.Query;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
+                    if (N > 0)
                     {
-                        var itm = items[i];
-                        if (!TryGetOldModel(model, Trait.QueryRootItem_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryRootItem_M, level, itm, seg, null, QueryRootItem_X);
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i];
+                            if (!TryGetOldModel(m, Trait.QueryRootItem_M, oldModels, i, itm, seg))
+                                m.ChildModels[i] = new ItemModel(m, Trait.QueryRootItem_M, level, itm, seg, null, QueryRootItem_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -8333,84 +7384,58 @@ namespace ModelGraphSTD
         ModelAction GraphNode_X;
         void Initialize_GraphNode_X()
         {
-            DataChef_X = new ModelAction
+            GraphNode_X = new ModelAction
             {
-                Refresh = Refresh_GraphNode_X,
-            };
-        }
-        void Refresh_GraphNode_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphNode_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var nd = model.Item as Node;
-                var g = nd.Graph;
-                List<Edge> edges;
-
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Node.Graph.Node_Edges.TryGetValue(m.Node, out List<Edge> edges) ? edges.Count : 0;
 
-                        break;
+                    m.CanExpandRight = true;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (_localize(m.KindKey), GetIdentity(m.Node.Item, IdentityStyle.Double), count, ModelType.Default);
+                },
 
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = GetIdentity(nd.Item, IdentityStyle.Double);
-                        root.ModelCount = g.Node_Edges.TryGetValue(nd, out edges) ? edges.Count : 0;
-
-                        model.CanExpandRight = true;
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var level = (byte)(model.Level + 1);
-                List<Edge> edges = null;
-                var nd = model.Item as Node;
-                var g = nd.Graph;
-                var sp = new Property[] { _nodeCenterXYProperty, _nodeSizeWHProperty, _nodeOrientationProperty, _nodeFlipRotateProperty, _nodeLabelingProperty, _nodeResizingProperty, _nodeBarWidthProperty };
-                var R = model.IsExpandedRight ? sp.Length : 0;
-                var L = (model.IsExpandedLeft && g.Node_Edges.TryGetValue(nd, out edges)) ? edges.Count : 0;
-                var N = L + R;
-
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var level = (byte)(m.Depth + 1);
+                    List<Edge> edges = null;
+                    var nd = m.Item as Node;
+                    var g = nd.Graph;
+                    var sp = new Property[] { _nodeCenterXYProperty, _nodeSizeWHProperty, _nodeOrientationProperty, _nodeFlipRotateProperty, _nodeLabelingProperty, _nodeResizingProperty, _nodeBarWidthProperty };
+                    var R = m.IsExpandedRight ? sp.Length : 0;
+                    var L = (m.IsExpandedLeft && g.Node_Edges.TryGetValue(nd, out edges)) ? edges.Count : 0;
+                    var N = L + R;
 
-                    if (R > 0)
+                    if (N > 0)
                     {
-                        AddProperyModels(model, oldModels, sp);
-                    }
-                    if (L > 0)
-                    {
-                        for (int i = R, j = 0; i < N; i++, j++)
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        if (R > 0)
                         {
-                            var edge = edges[j];
-                            if (!TryGetOldModel(model, Trait.GraphEdge_M, oldModels, i, edge))
-                                model.ChildModels[i] = new ItemModel(model, Trait.GraphEdge_M, level, edge, null, null, GraphEdge_X);
+                            AddProperyModels(m, oldModels, sp);
+                        }
+                        if (L > 0)
+                        {
+                            for (int i = R, j = 0; i < N; i++, j++)
+                            {
+                                var edge = edges[j];
+                                if (!TryGetOldModel(m, Trait.GraphEdge_M, oldModels, i, edge))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphEdge_M, level, edge, null, null, GraphEdge_X);
+                            }
                         }
                     }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -8418,64 +7443,37 @@ namespace ModelGraphSTD
         ModelAction GraphEdge_X;
         void Initialize_GraphEdge_X()
         {
-            DataChef_X = new ModelAction
+            GraphEdge_X = new ModelAction
             {
-                Refresh = Refresh_GraphEdge_X,
+                ModelParms = (m) =>
+                {
+                    var edge = m.Edge;
+
+                    m.CanExpandRight = true;
+                    
+
+                    return (_localize(m.KindKey), GetHeadTailName(edge.Node1.Item, edge.Node2.Item), 0, ModelType.Default);
+                },
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var sp = new Property[] { _edgeFace1Property, _edgeFace2Property, _edgeGnarl1Property, _edgeGnarl2Property, _edgeConnect1Property, _edgeConnect2Property };
+                    var N = m.IsExpandedRight ? sp.Length : 0;
+
+                    if (N > 0)
+                    {
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        AddProperyModels(m, oldModels, sp);
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
+                }
             };
-        }
-        void Refresh_GraphEdge_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphEdge_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var edge = model.Item as Edge;
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
-
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = GetEdgeName(edge);
-
-                        model.CanExpandRight = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var sp = new Property[] { _edgeFace1Property, _edgeFace2Property, _edgeGnarl1Property, _edgeGnarl2Property, _edgeConnect1Property, _edgeConnect2Property };
-                var N = model.IsExpandedRight ? sp.Length : 0;
-
-                if (N > 0)
-                {
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    AddProperyModels(model, oldModels, sp);
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
-
-            }
-        }
-        private string GetEdgeName(Edge edge)
-        {
-            return GetHeadTailName(edge.Node1.Item, edge.Node2.Item);
         }
         #endregion
 
@@ -8484,69 +7482,46 @@ namespace ModelGraphSTD
         ModelAction GraphOpenList_X;
         void Initialize_GraphOpenList_X()
         {
-            DataChef_X = new ModelAction
+            GraphOpenList_X = new ModelAction
             {
-                Refresh = Refresh_GraphOpenList_X,
-            };
-        }
-        void Refresh_GraphOpenList_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphOpenList_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Graph.OpenQuerys.Count;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = model.Graph.OpenQuerys.Count;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var g = model.Item as Graph;
-                var level = (byte)(model.Level + 1);
-                var oldModels = model.ChildModels;
-
-                var N = g.OpenQuerys.Count;
-                if (model.IsExpandedLeft && N > 0)
+                Validate = (m) =>
                 {
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                    var g = m.Item as Graph;
+                    var level = (byte)(m.Depth + 1);
+                    var oldModels = m.ChildModels;
 
-                    for (int i = 0; i < N; i++)
+                    var N = g.OpenQuerys.Count;
+                    if (m.IsExpandedLeft && N > 0)
                     {
-                        var h = g.OpenQuerys[i].Query1;
-                        var t = g.OpenQuerys[i].Query2;
-                        if (!TryGetOldModel(model, Trait.GraphOpen_M, oldModels, i, g, h, t))
-                            model.ChildModels[i] = new ItemModel(model, Trait.GraphOpen_M, level, g, h, t, GraphOpen_X);
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var h = g.OpenQuerys[i].Query1;
+                            var t = g.OpenQuerys[i].Query2;
+                            if (!TryGetOldModel(m, Trait.GraphOpen_M, oldModels, i, g, h, t))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphOpen_M, level, g, h, t, GraphOpen_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-
-            }
+            };
         }
         #endregion
 
@@ -8554,52 +7529,17 @@ namespace ModelGraphSTD
         ModelAction GraphOpen_X;
         void Initialize_GraphOpen_X()
         {
-            DataChef_X = new ModelAction
+            GraphOpen_X = new ModelAction
             {
-                Refresh = Refresh_GraphOpen_X,
+                ModelParms = (m) =>
+                {
+                    GetHeadTail(m.Query.QueryX, out Store head, out Store tail);
+                    var name = $"{GetIdentity(m.Item, IdentityStyle.Double)}  -->  {GetIdentity(tail, IdentityStyle.Single)}: <?>";
+
+                    return (GetIdentity(m.Item, IdentityStyle.Double), name, 0, ModelType.Default);
+                },
             };
         }
-        void Refresh_GraphOpen_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void GraphOpen_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
-                        break;
-
-                    case ModelActionX.PointerOver:
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-                        root.ModelKind = GraphOpenKind(model);
-                        root.ModelName = GraphOpenName(model);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-                        break;
-                }
-            }
-        }
-        private string GraphOpenKind(ItemModel model)
-        {
-            var g = model.Item as Graph;
-            var h = model.Aux1 as Query;
-
-            return GetIdentity(h.Item, IdentityStyle.Double);
-        }
-        private string GraphOpenName(ItemModel model)
-        {
-            var g = model.Item as Graph;
-            var t = model.Aux2 as Query;
-            Store head, tail;
-            GetHeadTail(t.QueryX, out head, out tail);
-            return $"{GetIdentity(t.Item, IdentityStyle.Double)}  -->  {GetIdentity(tail, IdentityStyle.Single)}: <?>";
-        }
-
         #endregion
 
 
@@ -8607,88 +7547,59 @@ namespace ModelGraphSTD
         ModelAction PrimeCompute_X;
         void Initialize_PrimeCompute_X()
         {
-            DataChef_X = new ModelAction
+            PrimeCompute_X = new ModelAction
             {
-                Refresh = Refresh_PrimeCompute_X,
-            };
-        }
-        void Refresh_PrimeCompute_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void PrimeCompute_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = 0;
+                    foreach (var sto in _primeStores) { if (Store_ComputeX.HasChildLink(sto)) count += 1; }
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(GetNameKey(Trait.PrimeCompute_M)), 0, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(GetSummaryKey(Trait.PrimeCompute_M));
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(GetSummaryKey(Trait.PrimeCompute_M)),
 
-                        root.ModelName = _localize(GetNameKey(Trait.PrimeCompute_M));
-                        root.ModelCount = GetPrimeComputeCount();
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
+                ModelDescription = (m) => _localize(GetDescriptionKey(Trait.PrimeCompute_M)),
 
-                    case ModelActionX.ModelSelect:
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        root.ModelDescription = _localize(GetDescriptionKey(Trait.PrimeCompute_M));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var N = (model.IsExpandedLeft) ? GetPrimeComputeCount() : 0;
-
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    var level = (byte)(model.Level + 1);
+                    var childList = new List<Store>();
+                    foreach (var sto in _primeStores) { if (Store_ComputeX.HasChildLink(sto)) childList.Add(sto); }
+                    var N = childList.Count;
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    var list = GetPrimeComputeStores();
-
-                    for (int i = 0; i < N; i++)
+                    if (N > 0)
                     {
-                        var sto = list[i];
-                        if (!TryGetOldModel(model, Trait.ComputeStore_M, oldModels, i, sto))
-                            model.ChildModels[i] = new ItemModel(model, Trait.ComputeStore_M, level, sto, null, null, ComputeStore_X);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        var list = new List<Store>();
+                        foreach (var sto in _primeStores) { if (Store_ComputeX.HasChildLink(sto)) list.Add(sto); }
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var sto = childList[i];
+                            if (!TryGetOldModel(m, Trait.ComputeStore_M, oldModels, i, sto))
+                                m.ChildModels[i] = new ItemModel(m, Trait.ComputeStore_M, level, sto, null, null, ComputeStore_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
-            int GetPrimeComputeCount()
-            {
-                var count = 0;
-                foreach (var sto in _primeStores)
-                {
-                    if (Store_ComputeX.HasChildLink(sto)) count += 1;
-                }
-                return count;
-            }
-            List<Store> GetPrimeComputeStores()
-            {
-                var list = new List<Store>();
-                foreach (var sto in _primeStores)
-                {
-                    if (Store_ComputeX.HasChildLink(sto)) list.Add(sto);
-                }
-                return list;
-            }
+            };
         }
         #endregion
 
@@ -8696,69 +7607,52 @@ namespace ModelGraphSTD
         ModelAction ComputeStore_X;
         void Initialize_ComputeStore_X()
         {
-            DataChef_X = new ModelAction
+            ComputeStore_X = new ModelAction
             {
-                Refresh = Refresh_ComputeStore_X,
-            };
-        }
-        void Refresh_ComputeStore_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void ComputeStore_X(ItemModel model, RootModel root)
-        {
-            var sto = model.Item as Store;
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var st = m.Store;
+                    var count = Store_ComputeX.ChildCount(st);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, GetIdentity(st, IdentityStyle.Single), 0, ModelType.Default);
+                },
 
-                        root.ModelSummary = GetIdentity(sto, IdentityStyle.Summary);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => GetIdentity(m.Store, IdentityStyle.Summary),
 
-                        root.ModelName = GetIdentity(sto, IdentityStyle.Single);
-                        root.ModelCount = Store_ComputeX.ChildCount(sto);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var N = (model.IsExpandedLeft) ? Store_ComputeX.ChildCount(sto) : 0;
-
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    var level = (byte)(model.Level + 1);
+                    var st = m.Store;
+                    var N = (m.IsExpandedLeft) ? Store_ComputeX.ChildCount(st) : 0;
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    var list = Store_ComputeX.GetChildren(sto);
-                    for (int i = 0; i < N; i++)
+                    if (N > 0)
                     {
-                        var itm = list[i];
-                        if (!TryGetOldModel(model, Trait.TextProperty_M, oldModels, i, sto, itm))
-                            model.ChildModels[i] = new ItemModel(model, Trait.TextProperty_M, level, sto, itm, null, TextCompute_X);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        var list = Store_ComputeX.GetChildren(st);
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = list[i];
+                            if (!TryGetOldModel(m, Trait.TextProperty_M, oldModels, i, st, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.TextProperty_M, level, st, itm, null, TextCompute_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -8767,102 +7661,87 @@ namespace ModelGraphSTD
         ModelAction InternalStoreZ_X;
         void Initialize_InternalStoreZ_X()
         {
-            DataChef_X = new ModelAction
+            InternalStoreZ_X = new ModelAction
             {
-                Refresh = Refresh_InternalStoreZ_X,
+                ModelParms = (m) =>
+                {
+                    m.CanExpandLeft = true;
+
+                    return (null, _localize(GetNameKey(Trait.InternalStore_ZM)), 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => _localize(GetSummaryKey(Trait.InternalStore_ZM)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+                ModelDescription = (m) => _localize(GetDescriptionKey(Trait.InternalStore_ZM)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var N = (m.IsExpandedLeft) ? 11 : 0;
+
+                    if (N > 0)
+                    {
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        int i = 0;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _viewXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _viewXStore, null, null, InternalStore_X);
+
+                        i += 1;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _enumXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _enumXStore, null, null, InternalStore_X);
+
+                        i += 1;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _tableXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _tableXStore, null, null, InternalStore_X);
+
+                        i += 1;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _graphXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _graphXStore, null, null, InternalStore_X);
+
+                        i += 1;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _queryXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _queryXStore, null, null, InternalStore_X);
+
+                        i += 1;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _symbolXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _symbolXStore, null, null, InternalStore_X);
+
+                        i += 1;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _columnXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _columnXStore, null, null, InternalStore_X);
+
+                        i += 1;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _relationXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _relationXStore, null, null, InternalStore_X);
+
+                        i += 1;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _computeXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _computeXStore, null, null, InternalStore_X);
+
+                        i += 1;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _relationStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _relationStore, null, null, InternalStore_X);
+
+                        i += 1;
+                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _propertyStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, level, _propertyStore, null, null, InternalStore_X);
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
+                }
             };
-        }
-        void Refresh_InternalStoreZ_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void InternalStoreZ_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
-
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        root.ModelSummary = _localize(GetSummaryKey(Trait.InternalStore_ZM));
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-
-                        root.ModelName = _localize(GetNameKey(Trait.InternalStore_ZM));
-
-                        model.CanExpandLeft = true;
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.ModelDescription = _localize(GetDescriptionKey(Trait.InternalStore_ZM));
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var N = (model.IsExpandedLeft) ? 11 : 0;
-
-                if (N > 0)
-                {
-                    var level = (byte)(model.Level + 1);
-
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    int i = 0;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _viewXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _viewXStore, null, null, InternalStore_X);
-
-                    i += 1;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _enumXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _enumXStore, null, null, InternalStore_X);
-
-                    i += 1;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _tableXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _tableXStore, null, null, InternalStore_X);
-
-                    i += 1;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _graphXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _graphXStore, null, null, InternalStore_X);
-
-                    i += 1;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _queryXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _queryXStore, null, null, InternalStore_X);
-
-                    i += 1;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _symbolXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _symbolXStore, null, null, InternalStore_X);
-
-                    i += 1;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _columnXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _columnXStore, null, null, InternalStore_X);
-
-                    i += 1;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _relationXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _relationXStore, null, null, InternalStore_X);
-
-                    i += 1;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _computeXStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _computeXStore, null, null, InternalStore_X);
-
-                    i += 1;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _relationStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _relationStore, null, null, InternalStore_X);
-
-                    i += 1;
-                    if (!TryGetOldModel(model, Trait.InternalStore_M, oldModels, i, _propertyStore))
-                        model.ChildModels[i] = new ItemModel(model, Trait.InternalStore_M, level, _propertyStore, null, null, InternalStore_X);
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
         }
         #endregion
 
@@ -8870,69 +7749,52 @@ namespace ModelGraphSTD
         ModelAction InternalStore_X;
         void Initialize_InternalStore_X()
         {
-            DataChef_X = new ModelAction
+            InternalStore_X = new ModelAction
             {
-                Refresh = Refresh_InternalStore_X,
-            };
-        }
-        void Refresh_InternalStore_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void InternalStore_X(ItemModel model, RootModel root)
-        {
-            var store = model.Item as Store;
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var st = m.Store;
+                    var count = st.Count;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(st.NameKey), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelName = _localize(store.NameKey);
-                        root.ModelCount = store.Count;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var N = (model.IsExpandedLeft) ? store.Count : 0;
-
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    var level = (byte)(model.Level + 1);
+                    var st = m.Item as Store;
+                    var N = (m.IsExpandedLeft) ? st.Count : 0;
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    var list = store.GetItems();
-                    for (int i = 0; i < N; i++)
+                    if (N > 0)
                     {
-                        var item = list[i];
-                        if (!TryGetOldModel(model, Trait.StoreItem_M, oldModels, i, item))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreItem_M, level, item, null, null, StoreItem_X);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        var list = st.GetItems();
+                        for (int i = 0; i < N; i++)
+                        {
+                            var item = list[i];
+                            if (!TryGetOldModel(m, Trait.StoreItem_M, oldModels, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreItem_M, level, item, null, null, StoreItem_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -8940,98 +7802,99 @@ namespace ModelGraphSTD
         ModelAction StoreItem_X;
         void Initialize_StoreItem_X()
         {
-            DataChef_X = new ModelAction
+            StoreItem_X = new ModelAction
             {
-                Refresh = Refresh_StoreItem_X,
+                ModelParms = (m) =>
+                {
+                    var item = m.Item;
+                    var (hasItems, hasLinks, hasChildRels, hasParentRels, count) = GetItemParms(item);
+
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
+
+                    return (GetIdentity(item, IdentityStyle.Kind), GetIdentity(item, IdentityStyle.StoreItem), count, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => GetIdentity(m.Item, IdentityStyle.Summary),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelDescription = (m) => GetIdentity(m.Item, IdentityStyle.Description),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                MenuCommands = (m, mc) =>
+                {
+                    if (m.Item.IsExternal) mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var item = m.Item;
+                    var (hasItems, hasLinks, hasChildRels, hasParentRels, count) = GetItemParms(item);
+
+                    if (m.IsExpandedLeft && count > 0)
+                    {
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != count) m.ChildModels = new ItemModel[count];
+
+                        int i = -1;
+                        if (hasItems)
+                        {
+                            i++;
+                            if (!TryGetOldModel(m, Trait.StoreItemItem_ZM, oldModels, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreItemItem_ZM, level, item, null, null, StoreItemItemZ_X);
+                        }
+                        if (hasLinks)
+                        {
+                            i++;
+                            if (!TryGetOldModel(m, Trait.StoreRelationLink_ZM, oldModels, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreRelationLink_ZM, level, item, null, null, StoreRelationLinkZ_X);
+                        }
+                        if (hasChildRels)
+                        {
+                            i++;
+                            if (!TryGetOldModel(m, Trait.StoreChildRelation_ZM, oldModels, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreChildRelation_ZM, level, item, null, null, StoreChildRelationZ_X);
+                        }
+                        if (hasParentRels)
+                        {
+                            i++;
+                            if (!TryGetOldModel(m, Trait.StoreParentRelation_ZM, oldModels, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreParentRelation_ZM, level, item, null, null, StoreParentRelationZ_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
+                }
             };
         }
-        void Refresh_StoreItem_X(RootModel root, ItemModel model)
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        (bool, bool, bool, bool, int) GetItemParms(Item item)
         {
-        }
-        internal void StoreItem_X(ItemModel model, RootModel root)
-        {
-            var item = model.Item;
-            var hasItems = (item is Store sto && sto.Count > 0) ? true : false;
-            var hasLinks = (item is Relation rel && rel.GetLinksCount() > 0) ? true : false;
-            var hasChildRels = (GetChildRelationCount(item, SubsetType.Used) > 0) ? true : false;
-            var hasParentRels = (GetParentRelationCount(item, SubsetType.Used) > 0) ? true : false;
+            var hasItems = (item is Store sto && sto.Count > 0);
+            var hasLinks = (item is Relation rel && rel.GetLinksCount() > 0);
+            var hasChildRels = (GetChildRelationCount(item, SubsetType.Used) > 0);
+            var hasParentRels = (GetParentRelationCount(item, SubsetType.Used) > 0);
+
             var count = 0;
             if (hasItems) count++;
             if (hasLinks) count++;
             if (hasChildRels) count++;
             if (hasParentRels) count++;
 
-
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
-
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        root.ModelSummary = GetIdentity(item, IdentityStyle.Summary);
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-                        root.ModelKind = GetIdentity(item, IdentityStyle.Kind);
-                        root.ModelName = GetIdentity(item, IdentityStyle.StoreItem);
-                        root.ModelCount = count;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.ModelSummary = GetIdentity(item, IdentityStyle.Description);
-                        if (item.IsExternal) root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        break;
-                }
-            }
-            else
-            {
-                if (model.IsExpandedLeft && count > 0)
-                {
-                    var level = (byte)(model.Level + 1);
-
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != count) model.ChildModels = new ItemModel[count];
-
-                    int i = -1;
-                    if (hasItems)
-                    {
-                        i++;
-                        if (!TryGetOldModel(model, Trait.StoreItemItem_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreItemItem_ZM, level, item, null, null, StoreItemItemZ_X);
-                    }
-                    if (hasLinks)
-                    {
-                        i++;
-                        if (!TryGetOldModel(model, Trait.StoreRelationLink_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreRelationLink_ZM, level, item, null, null, StoreRelationLinkZ_X);
-                    }
-                    if (hasChildRels)
-                    {
-                        i++;
-                        if (!TryGetOldModel(model, Trait.StoreChildRelation_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreChildRelation_ZM, level, item, null, null, StoreChildRelationZ_X);
-                    }
-                    if (hasParentRels)
-                    {
-                        i++;
-                        if (!TryGetOldModel(model, Trait.StoreParentRelation_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreParentRelation_ZM, level, item, null, null, StoreParentRelationZ_X);
-                    }
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            return (hasItems, hasLinks, hasChildRels, hasParentRels, count);
         }
         #endregion
 
@@ -9039,69 +7902,51 @@ namespace ModelGraphSTD
         ModelAction StoreItemItemZ_X;
         void Initialize_StoreItemItemZ_X()
         {
-            DataChef_X = new ModelAction
+            StoreItemItemZ_X = new ModelAction
             {
-                Refresh = Refresh_StoreItemItemZ_X,
-            };
-        }
-        void Refresh_StoreItemItemZ_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void StoreItemItemZ_X(ItemModel model, RootModel root)
-        {
-            var store = model.Item as Store;
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Store.Count;
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = store.Count;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var N = (model.IsExpandedLeft) ? store.Count : 0;
-
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    var level = (byte)(model.Level + 1);
+                    var st = m.Store;
+                    var N = (m.IsExpandedLeft) ? st.Count : 0;
 
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    var list = store.GetItems();
-                    for (int i = 0; i < N; i++)
+                    if (N > 0)
                     {
-                        var item = list[i];
-                        if (!TryGetOldModel(model, Trait.StoreItemItem_M, oldModels, i, item))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreItemItem_M, level, item, null, null, StoreItemItem_X);
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        var list = st.GetItems();
+                        for (int i = 0; i < N; i++)
+                        {
+                            var item = list[i];
+                            if (!TryGetOldModel(m, Trait.StoreItemItem_M, oldModels, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreItemItem_M, level, item, null, null, StoreItemItem_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -9109,68 +7954,50 @@ namespace ModelGraphSTD
         ModelAction StoreRelationLinkZ_X;
         void Initialize_StoreRelationLinkZ_X()
         {
-            DataChef_X = new ModelAction
+            StoreRelationLinkZ_X = new ModelAction
             {
-                Refresh = Refresh_StoreRelationLinkZ_X,
-            };
-        }
-        void Refresh_StoreRelationLinkZ_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void StoreRelationLinkZ_X(ItemModel model, RootModel root)
-        {
-            var rel = model.Item as Relation;
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = m.Relation.GetLinksCount();
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = rel.GetLinksCount();
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var oldModels = model.ChildModels;
-                model.ChildModels = null;
-
-                Item[] parents = null;
-                Item[] children = null;
-                var N = (model.IsExpandedLeft) ? rel.GetLinks(out parents, out children) : 0;
-
-                if (N > 0)
+                Validate = (m) =>
                 {
-                    var level = (byte)(model.Level + 1);
-                    model.ChildModels = new ItemModel[N];
+                    var rel = m.Relation;
+                    var oldModels = m.ChildModels;
+                    m.ChildModels = null;
 
-                    for (int i = 0; i < N; i++)
+                    Item[] parents = null;
+                    Item[] children = null;
+                    var N = (m.IsExpandedLeft) ? rel.GetLinks(out parents, out children) : 0;
+
+                    if (N > 0)
                     {
-                        var parent = parents[i];
-                        var child = children[i];
-                        if (!TryGetOldModel(model, Trait.StoreRelationLink_M, oldModels, i, rel, parent, child))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreRelationLink_M, level, rel, parent, child, StoreRelationLink_X);
+                        var level = (byte)(m.Depth + 1);
+                        m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var parent = parents[i];
+                            var child = children[i];
+                            if (!TryGetOldModel(m, Trait.StoreRelationLink_M, oldModels, i, rel, parent, child))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreRelationLink_M, level, rel, parent, child, StoreRelationLink_X);
+                        }
                     }
                 }
-            }
+            };
         }
         #endregion
 
@@ -9178,68 +8005,49 @@ namespace ModelGraphSTD
         ModelAction StoreChildRelationZ_X;
         void Initialize_StoreChildRelationZ_X()
         {
-            DataChef_X = new ModelAction
+            StoreChildRelationZ_X = new ModelAction
             {
-                Refresh = Refresh_StoreChildRelationZ_X,
-            };
-        }
-        void Refresh_StoreChildRelationZ_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void StoreChildRelationZ_X(ItemModel model, RootModel root)
-        {
-            var item = model.Item;
-
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = GetChildRelationCount(m.Item, SubsetType.Used);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = GetChildRelationCount(item, SubsetType.Used);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                if (model.IsExpandedLeft && TryGetChildRelations(item, out Relation[] relations, SubsetType.Used))
+                Validate = (m) =>
                 {
-                    var N = relations.Length;
-                    var level = (byte)(model.Level + 1);
-
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    for (int i = 0; i < N; i++)
+                    var item = m.Item;
+                    if (m.IsExpandedLeft && TryGetChildRelations(item, out Relation[] relations, SubsetType.Used))
                     {
-                        var rel = relations[i];
-                        if (!TryGetOldModel(model, Trait.StoreChildRelation_M, oldModels, i, rel, item))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreChildRelation_M, level, rel, item, null, StoreChildRelation_X);
+                        var N = relations.Length;
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var rel = relations[i];
+                            if (!TryGetOldModel(m, Trait.StoreChildRelation_M, oldModels, i, rel, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreChildRelation_M, level, rel, item, null, StoreChildRelation_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -9247,68 +8055,49 @@ namespace ModelGraphSTD
         ModelAction StoreParentRelationZ_X;
         void Initialize_StoreParentRelationZ_X()
         {
-            DataChef_X = new ModelAction
+            StoreParentRelationZ_X = new ModelAction
             {
-                Refresh = Refresh_StoreParentRelationZ_X,
-            };
-        }
-        void Refresh_StoreParentRelationZ_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void StoreParentRelationZ_X(ItemModel model, RootModel root)
-        {
-            var item = model.Item;
-
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var count = GetParentRelationCount(m.Item, SubsetType.Used);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = _localize(model.SummaryKey);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
-                        root.ModelName = _localize(model.NameKey);
-                        root.ModelCount = GetParentRelationCount(item, SubsetType.Used);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                if (model.IsExpandedLeft && TryGetParentRelations(item, out Relation[] relations, SubsetType.Used))
+                Validate = (m) =>
                 {
-                    var N = relations.Length;
-                    var level = (byte)(model.Level + 1);
-
-                    var oldModels = model.ChildModels;
-                    if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
-
-                    for (int i = 0; i < N; i++)
+                    var item = m.Item;
+                    if (m.IsExpandedLeft && TryGetParentRelations(item, out Relation[] relations, SubsetType.Used))
                     {
-                        var rel = relations[i];
-                        if (!TryGetOldModel(model, Trait.StoreParentRelation_M, oldModels, i, rel, item))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreParentRelation_M, level, rel, item, null, StoreParentRelation_X);
+                        var N = relations.Length;
+                        var level = (byte)(m.Depth + 1);
+
+                        var oldModels = m.ChildModels;
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var rel = relations[i];
+                            if (!TryGetOldModel(m, Trait.StoreParentRelation_M, oldModels, i, rel, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreParentRelation_M, level, rel, item, null, StoreParentRelation_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
                     }
                 }
-                else
-                {
-                    model.ChildModels = null;
-                }
-            }
+            };
         }
         #endregion
 
@@ -9316,41 +8105,14 @@ namespace ModelGraphSTD
         ModelAction StoreItemItem_X;
         void Initialize_StoreItemItem_X()
         {
-            DataChef_X = new ModelAction
+            StoreItemItem_X = new ModelAction
             {
-                Refresh = Refresh_StoreItemItem_X,
+                ModelParms = (m) => (_localize(m.Item.KindKey), GetIdentity(m.Item, IdentityStyle.Double), 0, ModelType.Default),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => GetIdentity(m.Item, IdentityStyle.Summary),
             };
-        }
-        void Refresh_StoreItemItem_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void StoreItemItem_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var item = model.Item;
-
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
-
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        root.ModelSummary = GetIdentity(item, IdentityStyle.Summary);
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-                        root.ModelKind = _localize(item.KindKey);
-                        root.ModelName = GetIdentity(item, IdentityStyle.Double);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
         }
         #endregion
 
@@ -9358,43 +8120,21 @@ namespace ModelGraphSTD
         ModelAction StoreRelationLink_X;
         void Initialize_StoreRelationLink_X()
         {
-            DataChef_X = new ModelAction
+            StoreRelationLink_X = new ModelAction
             {
-                Refresh = Refresh_StoreRelationLink_X,
-            };
-        }
-        void Refresh_StoreRelationLink_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void StoreRelationLink_X(ItemModel model, RootModel root)
-        {
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                var rel = model.Item as Relation;
-                var parent = model.Aux1;
-                var child = model.Aux2;
-
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var parent = m.Aux1;
+                    var child = m.Aux2;
+                    var name = $"({GetIdentity(parent, IdentityStyle.Double)}) --> ({GetIdentity(child, IdentityStyle.Double)})";
 
-                        break;
+                    return (_localize(m.KindKey), null, 0, ModelType.Default);
+                },
 
-                    case ModelActionX.PointerOver:
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        root.ModelSummary = GetIdentity(rel, IdentityStyle.Summary);
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-                        root.ModelKind = _localize(model.KindKey);
-                        root.ModelName = $"({GetIdentity(parent, IdentityStyle.Double)}) --> ({GetIdentity(child, IdentityStyle.Double)})";
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
+                ModelSummary = (m) => GetIdentity(m.Relation, IdentityStyle.Summary),
+            };
         }
         #endregion
 
@@ -9402,69 +8142,50 @@ namespace ModelGraphSTD
         ModelAction StoreChildRelation_X;
         void Initialize_StoreChildRelation_X()
         {
-            DataChef_X = new ModelAction
+            StoreChildRelation_X = new ModelAction
             {
-                Refresh = Refresh_StoreChildRelation_X,
-            };
-        }
-        void Refresh_StoreChildRelation_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void StoreChildRelation_X(ItemModel model, RootModel root)
-        {
-            var rel = model.Item as Relation;
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var rel = m.Relation;
+                    var count = rel.ChildCount(m.Aux1);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (GetKind(rel.Trait), GetIdentity(rel, IdentityStyle.Single), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = GetIdentity(rel, IdentityStyle.Summary);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => GetIdentity(m.Relation, IdentityStyle.Summary),
 
-                        root.ModelKind = GetKind(rel.Trait);
-                        root.ModelName = GetIdentity(rel, IdentityStyle.Single);
-                        root.ModelCount = rel.ChildCount(model.Aux1);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var oldModels = model.ChildModels;
-                model.ChildModels = null;
-
-                if (model.IsExpandedLeft)
+                Validate = (m) =>
                 {
-                    Item[] items;
-                    if (rel.TryGetChildren(model.Aux1, out items))
+                    var rel = m.Item as Relation;
+                    var oldModels = m.ChildModels;
+                    m.ChildModels = null;
+
+                    if (m.IsExpandedLeft)
                     {
-                        var N = items.Length;
-                        var level = (byte)(model.Level + 1);
-                        model.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
+                        if (rel.TryGetChildren(m.Aux1, out Item[] items))
                         {
-                            var itm = items[i];
-                            if (!TryGetOldModel(model, Trait.StoreRelatedItem_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.StoreRelatedItem_M, level, itm, null, null, StoreRelatedItem_X);
+                            var N = items.Length;
+                            var level = (byte)(m.Depth + 1);
+                            m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                var itm = items[i];
+                                if (!TryGetOldModel(m, Trait.StoreRelatedItem_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.StoreRelatedItem_M, level, itm, null, null, StoreRelatedItem_X);
+                            }
                         }
                     }
                 }
-            }
+            };
         }
         #endregion
 
@@ -9472,69 +8193,50 @@ namespace ModelGraphSTD
         ModelAction StoreParentRelation_X;
         void Initialize_StoreParentRelation_X()
         {
-            DataChef_X = new ModelAction
+            StoreParentRelation_X = new ModelAction
             {
-                Refresh = Refresh_StoreParentRelation_X,
-            };
-        }
-        void Refresh_StoreParentRelation_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void StoreParentRelation_X(ItemModel model, RootModel root)
-        {
-            var rel = model.Item as Relation;
-            if (root != null)  // get the data for this root.ModelAction
-            {
-                switch (root.ModelAction)
+                ModelParms = (m) =>
                 {
-                    case ModelActionX.DragOver:
+                    var rel = m.Item as Relation;
+                    var count = rel.ParentCount(m.Aux1);
 
-                        break;
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    case ModelActionX.PointerOver:
+                    return (GetKind(rel.Trait), GetIdentity(rel, IdentityStyle.Single), count, ModelType.Default);
+                },
 
-                        root.ModelSummary = GetIdentity(rel, IdentityStyle.Summary);
-                        break;
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                    case ModelActionX.ModelRefresh:
+                ModelSummary = (m) => GetIdentity(m.Relation, IdentityStyle.Summary),
 
-                        root.ModelKind = GetKind(rel.Trait);
-                        root.ModelName = GetIdentity(rel, IdentityStyle.Single);
-                        root.ModelCount = rel.ParentCount(model.Aux1);
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        break;
-                }
-            }
-            else  // validate the list of child models
-            {
-                var oldModels = model.ChildModels;
-                model.ChildModels = null;
-
-                if (model.IsExpandedLeft)
+                Validate = (m) =>
                 {
-                    Item[] items;
-                    if (rel.TryGetParents(model.Aux1, out items))
+                    var rel = m.Item as Relation;
+                    var oldModels = m.ChildModels;
+                    m.ChildModels = null;
+
+                    if (m.IsExpandedLeft)
                     {
-                        var N = items.Length;
-                        var level = (byte)(model.Level + 1);
-                        model.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
+                        if (rel.TryGetParents(m.Aux1, out Item[] items))
                         {
-                            var itm = items[i];
-                            if (!TryGetOldModel(model, Trait.StoreRelatedItem_M, oldModels, i, itm))
-                                model.ChildModels[i] = new ItemModel(model, Trait.StoreRelatedItem_M, level, itm, null, null, StoreRelatedItem_X);
+                            var N = items.Length;
+                            var level = (byte)(m.Depth + 1);
+                            m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                var itm = items[i];
+                                if (!TryGetOldModel(m, Trait.StoreRelatedItem_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.StoreRelatedItem_M, level, itm, null, null, StoreRelatedItem_X);
+                            }
                         }
                     }
                 }
-            }
+            };
         }
         #endregion
 
@@ -9542,82 +8244,81 @@ namespace ModelGraphSTD
         ModelAction StoreRelatedItem_X;
         void Initialize_StoreRelatedItem_X()
         {
-            DataChef_X = new ModelAction
+            StoreRelatedItem_X = new ModelAction
             {
-                Refresh = Refresh_StoreRelatedItem_X,
+                ModelParms = (m) =>
+                {
+                    var item = m.Item;
+                    var (hasChildRels, hasParentRels, count) = GetItemParms(item);
+
+                    m.CanExpandLeft = count > 0;
+                    m.CanFilter = count > 2;
+                    m.CanSort = (m.IsExpandedLeft && count > 1);
+
+                    return (GetIdentity(item, IdentityStyle.Kind), GetIdentity(item, IdentityStyle.StoreItem), count, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => GetIdentity(m.Item, IdentityStyle.Summary),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelDescription = (m) => GetIdentity(m.Item, IdentityStyle.Description),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                MenuCommands = (m, mc) =>
+                {
+                    if (m.Item.IsExternal) mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    var item = m.Item;
+                    var (hasChildRels, hasParentRels, count) = GetItemParms(item);
+                    var oldModels = m.ChildModels;
+                    m.ChildModels = null;
+
+                    if (m.IsExpandedLeft && count > 0)
+                    {
+                        var level = (byte)(m.Depth + 1);
+                        m.ChildModels = new ItemModel[count];
+
+                        int i = -1;
+                        if (hasChildRels)
+                        {
+                            i++;
+                            if (!TryGetOldModel(m, Trait.StoreChildRelation_ZM, oldModels, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreChildRelation_ZM, level, item, null, null, StoreChildRelationZ_X);
+                        }
+                        if (hasParentRels)
+                        {
+                            i++;
+                            if (!TryGetOldModel(m, Trait.StoreParentRelation_ZM, oldModels, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreParentRelation_ZM, level, item, null, null, StoreParentRelationZ_X);
+                        }
+                    }
+                    else
+                    {
+                        m.ChildModels = null;
+                    }
+                }
             };
-        }
-        void Refresh_StoreRelatedItem_X(RootModel root, ItemModel model)
-        {
-        }
-        internal void StoreRelatedItem_X(ItemModel model, RootModel root)
-        {
-            var item = model.Item;
-            var hasChildRels = (GetChildRelationCount(item, SubsetType.Used) > 0) ? true : false;
-            var hasParentRels = (GetParentRelationCount(item, SubsetType.Used) > 0) ? true : false;
-            var count = 0;
-            if (hasChildRels) count++;
-            if (hasParentRels) count++;
 
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            if (root != null)  // get the data for this root.ModelAction
+            (bool, bool, int) GetItemParms(Item item)
             {
-                switch (root.ModelAction)
-                {
-                    case ModelActionX.DragOver:
+                var hasChildRels = (GetChildRelationCount(item, SubsetType.Used) > 0);
+                var hasParentRels = (GetParentRelationCount(item, SubsetType.Used) > 0);
+                var count = 0;
+                if (hasChildRels) count++;
+                if (hasParentRels) count++;
 
-                        break;
-
-                    case ModelActionX.PointerOver:
-
-                        root.ModelSummary = GetIdentity(item, IdentityStyle.Summary);
-                        break;
-
-                    case ModelActionX.ModelRefresh:
-                        root.ModelKind = GetIdentity(item, IdentityStyle.Kind);
-                        root.ModelName = GetIdentity(item, IdentityStyle.StoreItem);
-                        root.ModelCount = count;
-
-                        model.CanExpandLeft = (root.ChildCount > 0);
-                        model.CanFilter = (root.ChildCount > 2);
-                        model.CanSort = (model.IsExpandedLeft && root.ChildCount > 1);
-                        break;
-
-                    case ModelActionX.ModelSelect:
-
-                        root.ModelSummary = GetIdentity(item, IdentityStyle.Description);
-                        if (item.IsExternal) root.MenuCommands.Add(new ModelCommand(this, model, Trait.RemoveCommand, RemoveItem));
-                        break;
-                }
-            }
-            else
-            {
-                var oldModels = model.ChildModels;
-                model.ChildModels = null;
-
-                if (model.IsExpandedLeft && count > 0)
-                {
-                    var level = (byte)(model.Level + 1);
-                     model.ChildModels = new ItemModel[count];
-
-                    int i = -1;
-                    if (hasChildRels)
-                    {
-                        i++;
-                        if (!TryGetOldModel(model, Trait.StoreChildRelation_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreChildRelation_ZM, level, item, null, null, StoreChildRelationZ_X);
-                    }
-                    if (hasParentRels)
-                    {
-                        i++;
-                        if (!TryGetOldModel(model, Trait.StoreParentRelation_ZM, oldModels, i, item))
-                            model.ChildModels[i] = new ItemModel(model, Trait.StoreParentRelation_ZM, level, item, null, null, StoreParentRelationZ_X);
-                    }
-                }
-                else
-                {
-                    model.ChildModels = null;
-                }
+                return (hasChildRels, hasParentRels, count);
             }
         }
         #endregion

@@ -17,13 +17,13 @@ namespace ModelGraphSTD
         internal Trait Trait;
         private State _state;
         private Flags _flags;
-        public byte Level;
+        public byte Depth;
 
         #region Constructor  ==================================================
         internal ItemModel(ItemModel parent, Trait trait, byte level, Item item, Item aux1, Item aux2, ModelAction action)
         {
             Trait = trait;
-            Level = level;
+            Depth = level;
             Item = item;
             Aux1 = aux1;
             Aux2 = aux2;
@@ -137,23 +137,29 @@ namespace ModelGraphSTD
         #endregion
 
         #region Auxiliary Items  ==============================================
-        public Graph Graph => Item as Graph;
-        public Query Query => (Aux1 is Query aux) ? aux : Item as Query;
-        public ColumnX ColumnX => (Aux1 is ColumnX aux) ? aux : Item as ColumnX;
-        public ComputeX ComputeX => (Aux1 is ComputeX aux) ? aux : Item as ComputeX;
-        public Property Property => (Aux1 is Property aux) ? aux : Item as Property;
-        public Relation Relation => (Aux1 is Relation aux) ? aux : Item as Relation;
-        public EnumX EnumX => (Aux2 is EnumX aux) ? aux : Item as EnumX;
-        public EnumZ EnumZ => Aux2 as EnumZ;
-        public ChangeSet ChangeSet => Item as ChangeSet;
-        public Error Error => Item as Error;
-        public ViewX ViewX => Item as ViewX;
-        public PairX PairX => Item as PairX;
-        public TableX TableX => Item as TableX;
-        public GraphX GraphX => Item as GraphX;
-        public SymbolX SymbolX => Item as SymbolX;
-        public RelationX RelationX => Item as RelationX;
-        public Store Store => Item as Store;
+        public RowX RowX => (Item is RowX item) ? item : (Aux1 is RowX aux1) ? aux1 : Aux2 as RowX;
+        public Node Node => (Item is Node item) ? item : (Aux1 is Node aux1) ? aux1 : Aux2 as Node;
+        public Edge Edge => (Item is Edge item) ? item : (Aux1 is Edge aux1) ? aux1 : Aux2 as Edge;
+        public Path Path => (Item is Path item) ? item : (Aux1 is Path aux1) ? aux1 : Aux2 as Path;
+        public Store Store => (Aux1 is Store aux1) ? aux1 : (Item is Store item) ? item : Aux2 as Store;
+        public Level Level => (Item is Level item) ? item : (Aux1 is Level aux1) ? aux1 : Aux2 as Level;
+        public Graph Graph => (Item is Graph item) ? item : (Aux1 is Graph aux1) ? aux1 : Aux2 as Graph;
+        public Query Query => (Item is Query item) ? item : (Aux1 is Query aux1) ? aux1 : Aux2 as Query;
+        public EnumX EnumX => (Item is EnumX item) ? item : (Aux2 is EnumX aux2) ? aux2 : Aux1 as EnumX;
+        public EnumZ EnumZ => (Aux2 is EnumZ aux2) ? aux2 : (Aux1 is EnumZ aux1) ? aux1 : Item as EnumZ;
+        public Error Error => (Item is Error item) ? item : (Aux1 is Error aux1) ? aux1 : Aux2 as Error;
+        public ViewX ViewX => (Item is ViewX item) ? item : (Aux1 is ViewX aux1) ? aux1 : Aux2 as ViewX;
+        public PairX PairX => (Item is PairX item) ? item : (Aux1 is PairX aux1) ? aux1 : Aux2 as PairX;
+        public TableX TableX => (Item is TableX item) ? item : (Aux1 is TableX aux1) ? aux1 : Aux2 as TableX;
+        public GraphX GraphX => (Item is GraphX item) ? item : (Aux1 is GraphX aux1) ? aux1 : Aux2 as GraphX;
+        public QueryX QueryX => (Item is QueryX item) ? item : (Aux1 is QueryX aux1) ? aux1 : Aux2 as QueryX;
+        public ColumnX ColumnX => (Item is ColumnX item) ? item : (Aux1 is ColumnX aux1) ? aux1 : Aux2 as ColumnX;
+        public SymbolX SymbolX => (Item is SymbolX item) ? item : (Aux1 is SymbolX aux1) ? aux1 : Aux2 as SymbolX;
+        public ComputeX ComputeX => (Item is ComputeX item) ? item : (Aux1 is ComputeX aux1) ? aux1 : Aux2 as ComputeX;
+        public Property Property => (Item is Property item) ? item : (Aux1 is Property aux1) ? aux1 : Aux2 as Property;
+        public Relation Relation => (Item is Relation item) ? item : (Aux1 is Relation aux1) ? aux1 : Aux2 as Relation;
+        public ChangeSet ChangeSet => (Item is ChangeSet item) ? item : (Aux1 is ChangeSet aux1) ? aux1 : Aux2 as ChangeSet;
+        public RelationX RelationX => (Item is RelationX item) ? item : (Aux1 is RelationX aux1) ? aux1 : Aux2 as RelationX;
         #endregion
 
         #region ModelAction  ==================================================
