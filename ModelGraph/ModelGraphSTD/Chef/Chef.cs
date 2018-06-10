@@ -18,6 +18,7 @@ namespace ModelGraphSTD
         internal Chef() : base(null, Trait.RootChef, Guid.Empty, 10)
         {
             Owner = this;
+            Initialize_RootChef_X();
         }
         #endregion
 
@@ -41,8 +42,7 @@ namespace ModelGraphSTD
         #region Close  ========================================================
         public void Close()
         {
-            var rootChef = Owner as Chef;
-            if (rootChef != null && rootChef != this)
+            if (Owner is Chef rootChef && rootChef != this)
             {
                 rootChef.Remove(this);
                 rootChef.MajorDelta += 1;
@@ -60,20 +60,17 @@ namespace ModelGraphSTD
         {
             if (PrimaryRootModel == null) PrimaryRootModel = root;
 
-            var g = root.Item as Graph;
-            if (g != null) g.AddRootModel(root);
+            if (root.Item is Graph g) g.AddRootModel(root);
 
             MajorDelta += 1;
             _rootModels.Add(root);
         }
         internal void RemoveRootModel(RootModel root)
         {
-            var g = root.Item as Graph;
-            if (g != null) g.RemoveRootModel(root);
+            if (root.Item is Graph g) g.RemoveRootModel(root);
             MajorDelta += 1;
 
             _rootModels.Remove(root);
-            PostRefresh(PrimaryRootModel);
         }
         #endregion
 
@@ -100,6 +97,8 @@ namespace ModelGraphSTD
             InitializeProperties();
 
             InitializeReferences();
+
+            Initialize_ModelActions();
         }
         #endregion
     }

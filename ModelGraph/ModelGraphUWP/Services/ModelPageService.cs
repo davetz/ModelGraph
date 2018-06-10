@@ -62,7 +62,10 @@ namespace ModelGraphUWP.Services
 
                 foreach (var e in _modelPages)
                 {
-                    if (model.Chef == e.Key.Chef) hitList.Add((e.Key, e.Value));
+                    if (model.Chef == e.Key.Chef)
+                    {
+                        hitList.Add((e.Key, e.Value));
+                    }
                 }
 
                 foreach (var e in hitList)
@@ -105,13 +108,18 @@ namespace ModelGraphUWP.Services
         void UpdateNavigationPane(RootModel selectedModed)
         {
             if (_rootModel == null || _updateNavigationPane == null)
+            {
                 return;
+            }
 
             var modelList = new List<RootModel>(8);
 
             foreach (var e in _modelPages)
             {
-                if (_rootPage == e.Value && e.Key != _rootModel) modelList.Add((e.Key));
+                if (_rootPage == e.Value && e.Key != _rootModel)
+                {
+                    modelList.Add((e.Key));
+                }
             }
             _updateNavigationPane(_rootModel, _compareModel, modelList, selectedModed);
         }

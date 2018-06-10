@@ -27,9 +27,8 @@ namespace ModelGraphSTD
         //
         internal void SetError(Error error)
         {
-            List<Error> errors;
             var item = error.Item1;
-            if (!_itemError.TryGetValue(item, out errors))
+            if (!_itemError.TryGetValue(item, out List<Error> errors))
             {
                 errors = new List<Error>(2);
                 _itemError.Add(item, errors);
@@ -41,8 +40,7 @@ namespace ModelGraphSTD
         #region GetError  =====================================================
         internal string GetError(Item item)
         {
-            List<Error> errors;
-            if (!_itemError.TryGetValue(item, out errors)) return null;
+            if (!_itemError.TryGetValue(item, out List<Error> errors)) return null;
             if (errors.Count == 0)
             {
                 _itemError.Remove(item);
@@ -86,8 +84,7 @@ namespace ModelGraphSTD
         }
         internal void ClearErrors(Item item1, Item item2)
         {
-            List<Error> errors;
-            if (!_itemError.TryGetValue(item1, out errors)) return;
+            if (!_itemError.TryGetValue(item1, out List<Error> errors)) return;
 
             var last = errors.Count - 1;
             for (int i = last; i >= 0; i--)
@@ -100,8 +97,7 @@ namespace ModelGraphSTD
         }
         internal void ClearErrors(Item item, Item related, Trait trait)
         {
-            List<Error> errors;
-            if (!_itemError.TryGetValue(item, out errors)) return;
+            if (!_itemError.TryGetValue(item, out List<Error> errors)) return;
 
             var last = errors.Count - 1;
             for (int i = last; i >= 0; i--)

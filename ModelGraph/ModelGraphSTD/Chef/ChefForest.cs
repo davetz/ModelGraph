@@ -253,8 +253,7 @@ namespace ModelGraphSTD
             var M = input.Length;
             var N = M;
 
-            List<ItemPair> itemPairs;
-            if (!keyPairs.TryGetValue(sd.ExclusiveKey, out itemPairs))
+            if (!keyPairs.TryGetValue(sd.ExclusiveKey, out List<ItemPair> itemPairs))
             {
                 itemPairs = new List<ItemPair>(M);
                 keyPairs.Add(sd.ExclusiveKey, itemPairs);

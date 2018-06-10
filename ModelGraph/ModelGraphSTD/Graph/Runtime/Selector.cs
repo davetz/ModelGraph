@@ -77,12 +77,9 @@ namespace ModelGraphSTD
                 }
                 var anyHits = (region.Nodes.Count > 0);
 
-                int index1, index2;
-                bool isInterior;
-
                 foreach (var edge in Graph.Edges)
                 {
-                    if (region.HitTest(edge, out index1, out index2, out isInterior))
+                    if (region.HitTest(edge, out int index1, out int index2, out bool isInterior))
                     {
                         anyHits = true;
                         if (isInterior)
@@ -207,8 +204,7 @@ namespace ModelGraphSTD
                 HitPoint = r.pnt;
 
                 HitNode = PrevNode;
-                List<Edge> nodeEdges;
-                if (Graph.Node_Edges.TryGetValue(HitNode, out nodeEdges))
+                if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> nodeEdges))
                 {
                     var len = nodeEdges.Count;
                     HitNodeEdgeCuts = new EdgeCut[len];
@@ -237,8 +233,7 @@ namespace ModelGraphSTD
                 HitPoint = r.pnt;
 
                 HitNode = node;
-                List<Edge> nodeEdges;
-                if (Graph.Node_Edges.TryGetValue(HitNode, out nodeEdges))
+                if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> nodeEdges))
                 {
                     var len = nodeEdges.Count;
                     HitNodeEdgeCuts = new EdgeCut[len];

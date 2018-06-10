@@ -87,12 +87,19 @@ namespace ModelGraphUWP.Views
             {
                 if (item is NavigationViewItem n)
                 {
-                    if (n.Tag != select) continue;
+                    if (n.Tag != select)
+                    {
+                        continue;
+                    }
 
                     if (modelList.Contains(n.Tag))
+                    {
                         n.Loaded += NewNavItem_Loaded;  // for new navItems
+                    }
                     else
+                    {
                         n.IsSelected = true;            // for existing navItems
+                    }
 
                     break;
                 }
@@ -140,10 +147,16 @@ namespace ModelGraphUWP.Views
             else
             {
                 var item = args.SelectedItem as NavigationViewItem;
-                if (item == null) return;
+                if (item == null)
+                {
+                    return;
+                }
 
                 var model = item.Tag as RootModel;
-                if (model == null) return;
+                if (model == null)
+                {
+                    return;
+                }
 
                 ModelPageService.Current.ShowModelControl(model);
             }

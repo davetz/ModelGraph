@@ -138,13 +138,12 @@ namespace ModelGraphSTD
         internal T2 GetChild(Item key)
         {
             T2 child = null;
-            List<T2> children;
 
             if (_children1 != null)
             {
                 _children1.TryGetVal(key, out child);
             }
-            else if (_children2 != null && _children2.TryGetVals(key, out children))
+            else if (_children2 != null && _children2.TryGetVals(key, out List<T2> children))
             {
                 child = children[0];
             }
@@ -166,10 +165,9 @@ namespace ModelGraphSTD
         }
         internal T2[] GetChildren(Item key)
         {
-            T2 child;
             List<T2> children = null;
 
-            if (_children1 != null && _children1.TryGetVal(key, out child))
+            if (_children1 != null && _children1.TryGetVal(key, out T2 child))
             {
                 children = new List<T2>(1);
                 children.Add(child);
@@ -189,13 +187,12 @@ namespace ModelGraphSTD
         internal T1 GetParent(Item key)
         {
             T1 parent = null;
-            List<T1> parents;
 
             if (_parents1 != null)
             {
                 _parents1.TryGetVal(key, out parent);
             }
-            else if (_parents2 != null && _parents2.TryGetVals(key, out parents))
+            else if (_parents2 != null && _parents2.TryGetVals(key, out List<T1> parents))
             {
                 parent = parents[0];
             }
@@ -209,10 +206,9 @@ namespace ModelGraphSTD
         }
         internal T1[] GetParents(Item key)
         {
-            T1 parent;
             List<T1> parents = null;
 
-            if (_parents1 != null && _parents1.TryGetVal(key, out parent))
+            if (_parents1 != null && _parents1.TryGetVal(key, out T1 parent))
             {
                 parents = new List<T1>(1);
                 parents.Add(parent);

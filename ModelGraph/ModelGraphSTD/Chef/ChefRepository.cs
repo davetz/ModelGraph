@@ -36,9 +36,7 @@ namespace ModelGraphSTD
         #region GetGuidItems  =================================================
         internal Dictionary<Guid, Item> GetGuidItems()
         {
-            Guid[] guids;
-            Dictionary<Item, int> itemIndex;
-            var count = GetGuidItemIndex(out guids, out itemIndex);
+            var count = GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var guidItems = new Dictionary<Guid, Item>(count);
             foreach (var e in itemIndex)
             {
@@ -200,12 +198,9 @@ namespace ModelGraphSTD
         {
             var relationList = new List<Relation>(_relationStore.Count + _relationXStore.Count);
 
-            Item[] parents;
-            Item[] children;
-
             foreach (var rel in _relationStore.ToArray)
             {
-                var len = rel.GetLinks(out parents, out children);
+                var len = rel.GetLinks(out Item[] parents, out Item[] children);
                 for (int i = 0; i < len; i++)
                 {
                     if (parents[i].IsExternal || children[i].IsExternal)

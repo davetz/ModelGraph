@@ -16,14 +16,6 @@ namespace ModelGraphSTD
 
             PostModelRequest(model, action);
         }
-        public void PostRefresh(ItemModel model)
-        {/*
-            Model refresh runs after each execution. We only
-            need to invoke an execution on the background thread.
-         */
-            PostModelRequest(model, () => { DoNothing(); });
-        }
-        private static void DoNothing() { }
         internal void PostCommand(ModelCommand command)
         {
             var model = command.Model;
@@ -31,6 +23,10 @@ namespace ModelGraphSTD
                 PostModelRequest(model, () => { command.Action(model); });
             else if (command.Action1 != null)
                 PostModelRequest(model, () => { command.Action1(model, command.Parameter1); });
+        }
+        internal void PostRefreshViewList(RootModel root, int scroll, ChangeType change)
+        {
+            PostModelRequest(root, () => RefreshViewList(root, scroll, change));
         }
         internal void PostSetValue(ItemModel model, bool value)
         {
@@ -78,7 +74,7 @@ namespace ModelGraphSTD
             //(some time later the worker task completes and signals the ui thread)
 
             //===> the ui thread returns here and continues executing the following code            
-            foreach (var root in _rootModels) { root.PageDispatch(); }            
+            foreach (var root in _rootModels) { if (root.UIRequestQueue.Count > 0) root.PageDispatch(); }            
         }
 
         private void ExecuteRequest(ModelRequest request)
@@ -94,7 +90,7 @@ namespace ModelGraphSTD
         class ModelRequest
         {
             ItemModel _model;
-            Action _action;
+            readonly Action _action;
             internal ModelRequest(ItemModel model, Action action)
             {
                 _model = model;

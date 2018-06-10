@@ -98,15 +98,13 @@ namespace ModelGraphSTD
         internal int GetIndex(Item key, T val)
         {
             int index = -1;
-            T value;
-            if (TryGetValue(key, out value) && value == val) index = 0;
+            if (TryGetValue(key, out T value) && value == val) index = 0;
             return index;
         }
 
         internal void RemoveLink(Item key, T val)
         {
-            T value;
-            if (TryGetValue(key, out value) && val == value)
+            if (TryGetValue(key, out T value) && val == value)
                 Remove(key);
         }
 
@@ -117,8 +115,7 @@ namespace ModelGraphSTD
 
         internal bool TryGetVals(Item key, out Item[] vals)
         {
-            T value;
-            if (TryGetValue(key, out value))
+            if (TryGetValue(key, out T value))
             {
                 vals = new Item[] { value };
                 return true;
@@ -129,8 +126,7 @@ namespace ModelGraphSTD
 
         internal bool TryGetVals(Item key, out List<T> vals)
         {
-            T value;
-            if (TryGetValue(key, out value))
+            if (TryGetValue(key, out T value))
             {
                 vals = new List<T>(1);
                 vals.Add(value);
@@ -148,8 +144,7 @@ namespace ModelGraphSTD
 
         internal bool ContainsLink(Item key, T val)
         {
-            T value;
-            return (TryGetValue(key, out value) && value == val);
+            return (TryGetValue(key, out T value) && value == val);
         }
 
         internal bool CanMapToOne { get { return true; } }

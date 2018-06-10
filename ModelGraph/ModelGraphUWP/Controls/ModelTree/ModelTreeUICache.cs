@@ -7,33 +7,33 @@ namespace ModelGraphUWP
     public sealed partial class ModelTreeControl
     {
         static int initSize = 60; // visible lines on the screen
-        private int _cacheSize = initSize;
+        int _cacheSize = initSize;
 
-        private TextBlock[] _itemKindCache = new TextBlock[initSize];
-        private TextBlock[] _itemNameCache = new TextBlock[initSize];
-        private TextBlock[] _itemInfoCache = new TextBlock[initSize];
-        private TextBlock[] _totalCountCache = new TextBlock[initSize];
-        private TextBlock[] _indentTreeCache = new TextBlock[initSize];
-        private TextBlock[] _expandLeftCache = new TextBlock[initSize];
-        private TextBlock[] _expandRightCache = new TextBlock[initSize];
-        private TextBlock[] _sortModeCache = new TextBlock[initSize];
-        private TextBlock[] _usageModeCache = new TextBlock[initSize];
-        private TextBlock[] _filterModeCache = new TextBlock[initSize];
-        private TextBlock[] _filterCountCache = new TextBlock[initSize];
-        private TextBlock[] _propertyNameCache = new TextBlock[initSize];
-        private TextBlock[] _modelIdentityCache = new TextBlock[initSize];
+        TextBlock[] _itemKindCache = new TextBlock[initSize];
+        TextBlock[] _itemNameCache = new TextBlock[initSize];
+        TextBlock[] _itemInfoCache = new TextBlock[initSize];
+        TextBlock[] _totalCountCache = new TextBlock[initSize];
+        TextBlock[] _indentTreeCache = new TextBlock[initSize];
+        TextBlock[] _expandLeftCache = new TextBlock[initSize];
+        TextBlock[] _expandRightCache = new TextBlock[initSize];
+        TextBlock[] _sortModeCache = new TextBlock[initSize];
+        TextBlock[] _usageModeCache = new TextBlock[initSize];
+        TextBlock[] _filterModeCache = new TextBlock[initSize];
+        TextBlock[] _filterCountCache = new TextBlock[initSize];
+        TextBlock[] _propertyNameCache = new TextBlock[initSize];
+        TextBlock[] _modelIdentityCache = new TextBlock[initSize];
 
-        private TextBox[] _filterTextCache = new TextBox[initSize];
-        private TextBox[] _textPropertyCache = new TextBox[initSize];
-        private CheckBox[] _checkPropertyCache = new CheckBox[initSize];
-        private ComboBox[] _comboPropertyCache = new ComboBox[initSize];
-        private Border[] _propertyBorderCache = new Border[initSize];
-        private StackPanel[] _stackPanelCache = new StackPanel[initSize];
+        TextBox[] _filterTextCache = new TextBox[initSize];
+        TextBox[] _textPropertyCache = new TextBox[initSize];
+        CheckBox[] _checkPropertyCache = new CheckBox[initSize];
+        ComboBox[] _comboPropertyCache = new ComboBox[initSize];
+        Border[] _propertyBorderCache = new Border[initSize];
+        StackPanel[] _stackPanelCache = new StackPanel[initSize];
 
         #region ValidateCache  ================================================
-        private int _prevCount;
-        private int _prevModelIndex1;
-        private int _prevModelIndex2;
+        int _prevCount;
+        int _prevModelIndex1;
+        int _prevModelIndex2;
         /// <summary>
         /// Validate the UI cache and return true if the cache has been reset
         /// </summary>
@@ -41,17 +41,19 @@ namespace ModelGraphUWP
         {
             ValidateScroll();
 
-            if (_prevModelIndex1 != _root.ViewIndex1 || _prevModelIndex2 != _root.ViewIndex2 || _prevCount != Count)
+            if (_prevCount != Count)
             {
                 //either the scroll or or the model count has changed, so reset the UI cache
                 _prevCount = Count;
-                _prevModelIndex1 = _root.ViewIndex1;
-                _prevModelIndex2 = _root.ViewIndex2;
 
                 var hidden = -8 * _elementHieght;
                 foreach (var sp in _stackPanelCache)
                 {
-                    if (sp == null) break;  //we reached the end of the cache 
+                    if (sp == null)
+                    {
+                        break;  //we reached the end of the cache 
+                    }
+
                     Canvas.SetTop(sp, hidden); //hide the stackPanel
                 }
                 return true; //the cache has been reset
@@ -62,7 +64,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region ExpandCache  ==================================================
-        private void ExpandCache()
+        void ExpandCache()
         {
             var size = _cacheSize + 30; // new size of the cache
 
@@ -139,7 +141,7 @@ namespace ModelGraphUWP
 
 
         #region AddItemKind  ==================================================
-        private void AddItemKind(int index, ItemModel model)
+        void AddItemKind(int index, string kind, ItemModel model)
         {
             var obj = _itemKindCache[index];
             if (obj == null)
@@ -156,7 +158,7 @@ namespace ModelGraphUWP
                 ToolTipService.SetToolTip(obj, _itemIdentityTip);
             }
 
-            obj.Text = _root.ModelKind;
+            obj.Text = kind;
             obj.CanDrag = model.CanDrag;
             obj.AllowDrop = true;
             obj.DataContext = model;
@@ -166,7 +168,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddItemName  ==================================================
-        private void AddItemName(int index, ItemModel model)
+        private void AddItemName(int index, string name, ItemModel model)
         {
             var obj = _itemNameCache[index];
             if (obj == null)
@@ -183,7 +185,7 @@ namespace ModelGraphUWP
                 ToolTipService.SetToolTip(obj, _itemIdentityTip);
             }
 
-            obj.Text = _root.ModelName;
+            obj.Text = name;
             obj.CanDrag = model.CanDrag;
             obj.AllowDrop = true;
             obj.DataContext = model;
@@ -211,7 +213,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region AddTotalCount  ================================================
-        private void AddTotalCount(int index, ItemModel model)
+        void AddTotalCount(int index, int count, ItemModel model)
         {
             var obj = _totalCountCache[index];
             if (obj == null)
@@ -222,7 +224,7 @@ namespace ModelGraphUWP
                 ToolTipService.SetToolTip(obj, _totalCountTip);
             }
 
-            obj.Text = _root.ChildCount.ToString();
+            obj.Text = count.ToString();
 
             _stackPanelCache[index].Children.Add(obj);
         }
@@ -264,9 +266,13 @@ namespace ModelGraphUWP
             }
 
             if (model.CanExpandLeft)
+            {
                 obj.Text = model.IsExpandedLeft ? _leftIsExtended : _leftCanExtend;
+            }
             else
+            {
                 obj.Text = " ";
+            }
 
             obj.DataContext = model;
 
@@ -399,7 +405,10 @@ namespace ModelGraphUWP
             }
 
             obj.DataContext = model;
-            if (_root.ViewFilter.TryGetValue(model, out string filter)) obj.Text = filter;
+            if (_viewFilter.TryGetValue(model, out string filter))
+            {
+                obj.Text = filter;
+            }
 
             _stackPanelCache[index].Children.Add(obj);
         }
@@ -425,7 +434,7 @@ namespace ModelGraphUWP
 
 
         #region AddPropertyName  ==============================================
-        private void AddPropertyName(int index, ItemModel model)
+        private void AddPropertyName(int index, string name, ItemModel model)
         {
             var obj = _propertyNameCache[index];
             var bdr = _propertyBorderCache[index];
@@ -447,7 +456,7 @@ namespace ModelGraphUWP
 
             bdr.DataContext = model;
             obj.DataContext = model;
-            obj.Text = _root.ModelName;
+            obj.Text = name;
 
             _stackPanelCache[index].Children.Add(bdr);
         }
@@ -467,7 +476,7 @@ namespace ModelGraphUWP
             }
 
             obj.DataContext = model;
-            obj.Text = (_root.ModelValue == null) ? string.Empty : _root.ModelValue;
+            obj.Text = model.TextValue;
             obj.Tag = obj.Text;
             obj.IsReadOnly = model.IsReadOnly;
 
@@ -490,7 +499,7 @@ namespace ModelGraphUWP
             }
 
             obj.DataContext = model;
-            obj.IsChecked = _root.ModelIsChecked;
+            obj.IsChecked = model.BoolValue;
 
             _stackPanelCache[index].Children.Add(obj);
         }
@@ -509,8 +518,8 @@ namespace ModelGraphUWP
             }
 
             obj.DataContext = model;
-            obj.ItemsSource = _root.ModelValueList;
-            obj.SelectedIndex = _root.ValueIndex;
+            obj.ItemsSource = model.ListValue;
+            obj.SelectedIndex = model.IndexValue;
 
             _stackPanelCache[index].Children.Add(obj);
         }
@@ -540,7 +549,10 @@ namespace ModelGraphUWP
         #region AddStackPanel  ================================================
         private void AddStackPanel(int index, ItemModel model)
         {
-            if (index >= _cacheSize) ExpandCache();
+            if (index >= _cacheSize)
+            {
+                ExpandCache();
+            }
 
             var obj = _stackPanelCache[index];
             if (obj == null)
@@ -568,40 +580,55 @@ namespace ModelGraphUWP
             AddTreeIndent(index, model);
             AddExpandLeft(index, model);
 
-            if (model.IsProperty)
+            var (kind, name, count, type) = model.ModelParms;
+            switch (type)
             {
-                AddPropertyName(index, model);
+                case ModelType.TextProperty:
+                    AddPropertyName(index, name, model);
+                    AddTextProperty(index, model);
+                    break;
 
-                if (model.IsTextProperty) AddTextProperty(index, model);
-                else if (model.IsComboProperty) AddComboProperty(index, model);
-                else if (model.IsCheckProperty) AddCheckProperty(index, model);
-            }
-            else
-            {
-                AddItemKind(index, model);
-                AddItemName(index, model);
-                if (model.CanExpandRight) AddExpandRight(index, model);
+                case ModelType.CheckProperty:
+                    AddPropertyName(index, name, model);
+                    AddCheckProperty(index, model);
+                    break;
 
-                if (_root.ChildCount > 0)
-                {
-                    AddSortMode(index, model, (model.CanSort));
+                case ModelType.ComboProperty:
+                    AddPropertyName(index, name, model);
+                    AddComboProperty(index, model);
+                    break;
 
-                    AddTotalCount(index, model);
-                    AddUsageMode(index, model, (model.CanFilterUsage));
-                    AddFilterMode(index, model, model.CanFilter);
-
-                    if (model.CanFilter)
+                default:
+                    AddItemKind(index, kind, model);
+                    AddItemName(index, name, model);
+                    if (model.CanExpandRight)
                     {
-                        if (model.IsExpandedFilter)
+                        AddExpandRight(index, model);
+                    }
+
+                    if (count > 0)
+                    {
+                        AddSortMode(index, model, (model.CanSort));
+
+                        AddTotalCount(index, count, model);
+                        AddUsageMode(index, model, (model.CanFilterUsage));
+                        AddFilterMode(index, model, model.CanFilter);
+
+                        if (model.CanFilter)
                         {
-                            AddFilterText(index, model);
-                            AddFilterCount(index, model);
+                            if (model.IsExpandedFilter)
+                            {
+                                AddFilterText(index, model);
+                                AddFilterCount(index, model);
+                            }
+                        }
+                        if (_root.ModelInfo != null)
+                        {
+                            AddItemInfo(index, model);
                         }
                     }
-                    if (_root.ModelInfo != null) AddItemInfo(index, model);
-                }
+                    break;
             }
-
             Canvas.SetTop(obj, index * _elementHieght);
         }
         #endregion

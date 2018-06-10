@@ -37,11 +37,8 @@ namespace ModelGraphSTD
             var identity = string.IsNullOrWhiteSpace(rel.Name) ? string.Empty : rel.Name;
             var childName = BlankName;
             var parentName = BlankName;
-
-            TableX childTable;
-            TableX parentTable;
-            if (TableX_ParentRelationX.TryGetParent(rel, out childTable)) childName = childTable.Name;
-            if (TableX_ChildRelationX.TryGetParent(rel, out parentTable)) parentName = parentTable.Name;
+            if (TableX_ParentRelationX.TryGetParent(rel, out TableX childTable)) childName = childTable.Name;
+            if (TableX_ChildRelationX.TryGetParent(rel, out TableX parentTable)) parentName = parentTable.Name;
             StringBuilder sb = new StringBuilder(132);
             sb.Append(parentName);
             sb.Append(parentNameSuffix);
@@ -55,11 +52,8 @@ namespace ModelGraphSTD
         {
             var childName = BlankName;
             var parentName = BlankName;
-
-            TableX childTable;
-            TableX parentTable;
-            if (TableX_ParentRelationX.TryGetParent(rel, out childTable)) childName = childTable.Name;
-            if (TableX_ChildRelationX.TryGetParent(rel, out parentTable)) parentName = parentTable.Name;
+            if (TableX_ParentRelationX.TryGetParent(rel, out TableX childTable)) childName = childTable.Name;
+            if (TableX_ChildRelationX.TryGetParent(rel, out TableX parentTable)) parentName = parentTable.Name;
             StringBuilder sb = new StringBuilder(value);
             sb.Replace(parentName + parentNameSuffix, "");
             sb.Replace(childName + childNameSuffix, "");
@@ -68,8 +62,7 @@ namespace ModelGraphSTD
         }
         string GetRelationName(QueryX sd)
         {
-            Relation rel;
-            return (Relation_QueryX.TryGetParent(sd, out rel) ? GetRelationName(rel as RelationX) : null);
+            return (Relation_QueryX.TryGetParent(sd, out Relation rel) ? GetRelationName(rel as RelationX) : null);
         }
         #endregion
 

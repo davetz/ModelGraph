@@ -79,8 +79,7 @@ namespace ModelGraphSTD
 
         internal void SetLink(Item key, T val, int capacity = 0)
         {
-            List<T> values;
-            if (TryGetValue(key, out values))
+            if (TryGetValue(key, out List<T> values))
             {
                 values.Add(val);
                 return;
@@ -93,14 +92,12 @@ namespace ModelGraphSTD
 
         internal int GetValCount(Item key)
         {
-            List<T> values;
-            return TryGetValue(key, out values) ? values.Count : 0;
+            return TryGetValue(key, out List<T> values) ? values.Count : 0;
         }
 
         internal void AppendLink(Item key, T val)
         {
-            List<T> values;
-            if (TryGetValue(key, out values)) { values.Remove(val); values.Add(val); return; }
+            if (TryGetValue(key, out List<T> values)) { values.Remove(val); values.Add(val); return; }
 
             values = new List<T>(1);
             values.Add(val);
@@ -109,8 +106,7 @@ namespace ModelGraphSTD
 
         internal void InsertLink(Item key, T val, int index)
         {
-            List<T> values;
-            if (TryGetValue(key, out values))
+            if (TryGetValue(key, out List<T> values))
             {
                 values.Remove(val);
                 if (index < 0) values.Insert(0, val);
@@ -126,16 +122,14 @@ namespace ModelGraphSTD
 
         internal int GetCount(Item key)
         {
-            List<T> values;
-            return TryGetValue(key, out values) ? values.Count : 0;
+            return TryGetValue(key, out List<T> values) ? values.Count : 0;
         }
 
         internal int GetIndex(Item key, T val)
         {
             int index = -1;
-            List<T> values;
 
-            if (TryGetValue(key, out values)) index = values.IndexOf(val);
+            if (TryGetValue(key, out List<T> values)) index = values.IndexOf(val);
 
             return index;
         }
@@ -199,8 +193,7 @@ namespace ModelGraphSTD
 
         internal bool ContainsLink(Item key, T val)
         {
-            List<T> values;
-            return (TryGetValue(key, out values) && values.Contains(val));
+            return (TryGetValue(key, out List<T> values) && values.Contains(val));
         }
 
         /// <summary>

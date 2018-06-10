@@ -24,7 +24,6 @@ namespace ModelGraphSTD
 
         #region Count/Items/ItemsReversed  ====================================
         internal IList<T> Items => _items.AsReadOnly(); // protected from accidental corruption
-        // outsiders can only get a copy of the List<T> _items 
         internal T[] ToArray => _items.ToArray();
         internal T[] ItemsReversed => GetItemsReversed();
         private T[] GetItemsReversed()
@@ -36,7 +35,7 @@ namespace ModelGraphSTD
             return items;
         }
         internal override int Count => (_items == null) ? 0 : _items.Count;
-        internal override IEnumerable<Item> GetItems() => Items;
+        internal override Item[] GetItems() => _items.ToArray();
         internal override void RemoveAll() { _items.Clear(); }
         #endregion
 

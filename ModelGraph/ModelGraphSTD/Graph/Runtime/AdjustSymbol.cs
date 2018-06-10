@@ -204,8 +204,7 @@ namespace ModelGraphSTD
         private void AdjustSymbol(Node node)
         {
             #region Fields  ===================================================
-            List<Edge> edges;
-            if (!Node_Edges.TryGetValue(node, out edges)) return;
+            if (!Node_Edges.TryGetValue(node, out List<Edge> edges)) return;
 
             var isym = node.Core.Symbol - 2;
             var symbol = Symbols[isym];

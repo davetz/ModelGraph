@@ -39,8 +39,7 @@ namespace ModelGraphSTD
         private void AddNodeEdges(Node node, HashSet<Node> nodeHash, HashSet<Edge> edgeHash)
         {
             nodeHash.Add(node);
-            List<Edge> edges;
-            if (Node_Edges.TryGetValue(node, out edges))
+            if (Node_Edges.TryGetValue(node, out List<Edge> edges))
             {
                 foreach (var edge in edges) { edgeHash.Add(edge); }
             }

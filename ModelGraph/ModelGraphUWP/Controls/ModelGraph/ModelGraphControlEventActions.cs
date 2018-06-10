@@ -30,7 +30,11 @@ namespace ModelGraphUWP
         private EventAction _eventAction;
         private bool SetEventAction(EventAction eventAction)
         {
-            if (_eventAction == eventAction) return false;
+            if (_eventAction == eventAction)
+            {
+                return false;
+            }
+
             Debug.WriteLine($"{eventAction}");
             _eventAction = eventAction;
             return true;
@@ -69,7 +73,10 @@ namespace ModelGraphUWP
         #region SetIdleOnVoid  ================================================
         private void SetIdleOnVoid()
         {
-            if (!SetEventAction(EventAction.IdleOnVoid)) return;
+            if (!SetEventAction(EventAction.IdleOnVoid))
+            {
+                return;
+            }
 
             HideTootlip();
             //DisableAutoPan();
@@ -82,7 +89,7 @@ namespace ModelGraphUWP
             WheelAction = WheelPanZoom;
             ArrowAction = null;
             CancelAction = () => { RemoveSelectors(); };
-            Begin1Action = () => { if (_modifier == Modifier.Shift) SetAutoPanning(); };
+            Begin1Action = () => { if (_modifier == Modifier.Shift) { SetAutoPanning(); } };
             Begin3Action = null;
             ExecuteAction = () => { RemoveSelectors(); _ignorePointerMoved = true; ZoomToExtent(_graph.Extent); };
             ShortCutAction = null;
@@ -92,7 +99,10 @@ namespace ModelGraphUWP
         #region SetAutoPanning  ===============================================
         private void SetAutoPanning()
         {
-            if (!SetEventAction(EventAction.AutoPanning)) return;
+            if (!SetEventAction(EventAction.AutoPanning))
+            {
+                return;
+            }
 
             //HideTootlip();
             //Cursor = Cursors.Arrow;
@@ -155,7 +165,7 @@ namespace ModelGraphUWP
             DragAction = null;
             HoverAction = IdleHitTest;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector);  _rootModel.PostModelRefresh(); }; 
+            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); }; 
             CancelAction = null;
             Begin1Action = SetMovingNode;
             Begin3Action = null;
@@ -172,7 +182,7 @@ namespace ModelGraphUWP
             //    else if (_keyName == "A") _hitNode.Node.Resizing = Resizing.Auto;
             //    else if (_keyName == "M") _hitNode.Node.Resizing = Resizing.Manual;
             //}
-            //if (_hitNode.IsModified) Model.PostModelRefresh();
+            //if (_hitNode.IsModified) Model.PostRefreshGraph();
         }
         #endregion
 
@@ -217,23 +227,26 @@ namespace ModelGraphUWP
             ExecuteAction = null;
             ShortCutAction = null;
         }
-        //private bool NodeResize(Vector d) { var anyChange = _hitNode.Node.AddLength(d.X, d.Y, HitTop, HitLeft); if (anyChange) Model.PostModelRefresh(); return anyChange; }
+        //private bool NodeResize(Vector d) { var anyChange = _hitNode.Node.AddLength(d.X, d.Y, HitTop, HitLeft); if (anyChange) Model.PostRefreshGraph(); return anyChange; }
         #endregion
 
         #region SetMovingNode  ================================================
         private void SetMovingNode()
         {
-            if (!SetEventAction(EventAction.MovingNode)) return;
+            if (!SetEventAction(EventAction.MovingNode))
+            {
+                return;
+            }
 
             HideTootlip();
             //Cursor = Cursors.ScrollAll;
             _enableHitTest = false;
 
-            EndAction = () => { SetIdleOnNode(); _graph.AdjustGraph(_selector); _rootModel.PostModelRefresh(); };
+            EndAction = () => { SetIdleOnNode(); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); };
             DragAction = () => { _selector.Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
             HoverAction = null;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); _rootModel.PostModelRefresh(); };
+            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); };
             CancelAction = null;
             Begin1Action = null;
             Begin3Action = null;
@@ -249,7 +262,10 @@ namespace ModelGraphUWP
         #region SetIdleOnEdge  ================================================
         private void SetIdleOnEdge()
         {
-            if (!SetEventAction(EventAction.IdleOnEdge)) return;
+            if (!SetEventAction(EventAction.IdleOnEdge))
+            {
+                return;
+            }
 
             ShowEdgeTooltip(_selector.HitEdge);
             //Cursor = Cursors.Hand;
@@ -283,14 +299,14 @@ namespace ModelGraphUWP
             //            if (n > 7) n = 0;
             //            _hitEdge.Edge.Gnarl1 = (FacetOf)n;
             //            _hitEdge.Edge.SetIsModified();
-            //            Model.PostModelRefresh();
+            //            Model.PostRefreshGraph();
             //            break;
             //        case "C":
             //            n = (int)_hitEdge.Edge.Contact1 + 1;
             //            if (n > 15) n = 0;
             //            _hitEdge.Edge.Contact1 = (Contact)n;
             //            _hitEdge.Edge.SetIsModified();
-            //            Model.PostModelRefresh();
+            //            Model.PostRefreshGraph();
             //            break;
             //    }
             //}
@@ -303,14 +319,14 @@ namespace ModelGraphUWP
             //            if (n > 7) n = 0;
             //            _hitEdge.Edge.Gnarl2 = (FacetOf)n;
             //            _hitEdge.Edge.SetIsModified();
-            //            Model.PostModelRefresh();
+            //            Model.PostRefreshGraph();
             //            break;
             //        case "C":
             //            n = (int)_hitEdge.Edge.Contact2 + 1;
             //            if (n > 15) n = 0;
             //            _hitEdge.Edge.Contact2 = (Contact)n;
             //            _hitEdge.Edge.SetIsModified();
-            //            Model.PostModelRefresh();
+            //            Model.PostRefreshGraph();
             //            break;
             //    }
             //}
@@ -324,7 +340,10 @@ namespace ModelGraphUWP
         #region SetIdleOnRegion  ==============================================
         private void SetIdleOnRegion()
         {
-            if (!SetEventAction(EventAction.IdleOnRegion)) return;
+            if (!SetEventAction(EventAction.IdleOnRegion))
+            {
+                return;
+            }
 
             HideTootlip();
             //Cursor = Cursors.Hand;
@@ -334,7 +353,7 @@ namespace ModelGraphUWP
             DragAction = null;
             HoverAction = IdleHitTest;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); _rootModel.PostModelRefresh(); };
+            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); };
             CancelAction = () => { RemoveSelectors(); SetIdleOnVoid(); };
             Begin1Action = SetMovingRegion;
             Begin3Action = null;
@@ -348,8 +367,8 @@ namespace ModelGraphUWP
                 switch (_keyName)
                 {
                 //    case "A": Allign(); break;
-                    case "V": _selector.AlignVertical(); _graph.AdjustGraph(_selector); _rootModel.PostModelRefresh(); break;
-                    case "H": _selector.AlignHorizontal(); _graph.AdjustGraph(_selector); _rootModel.PostModelRefresh(); break;
+                    case "V": _selector.AlignVertical(); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); break;
+                    case "H": _selector.AlignHorizontal(); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); break;
                 //    case "R": RegionRotate(); break;
                 //    case "Delete": DeleteRegionNodes(); break;
                 }
@@ -360,12 +379,15 @@ namespace ModelGraphUWP
         #region SetMovingRegion  ==============================================
         private void SetMovingRegion()
         {
-            if (!SetEventAction(EventAction.MovingRegion)) return;
+            if (!SetEventAction(EventAction.MovingRegion))
+            {
+                return;
+            }
 
             //Cursor = Cursors.ScrollAll;
             _enableHitTest = false;
 
-            EndAction = () => { SetIdleOnRegion(); _graph.AdjustGraph(_selector); _rootModel.PostModelRefresh(); };
+            EndAction = () => { SetIdleOnRegion(); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); };
             DragAction = () => { _selector.Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
             HoverAction = null;
             WheelAction = null;
@@ -381,9 +403,12 @@ namespace ModelGraphUWP
         #region SetTracingRegion  =============================================
         private void SetTracingRegion()
         {
-            if (!SetEventAction(EventAction.TracingRegion)) return;
+            if (!SetEventAction(EventAction.TracingRegion))
+            {
+                return;
+            }
 
-           // Cursor = Cursors.Pen;
+            // Cursor = Cursors.Pen;
             _enableHitTest = false;
 
             EndAction = () => { CloseRegion();  };
@@ -399,12 +424,22 @@ namespace ModelGraphUWP
         }
         private void TraceRegion()
         {
-            if (_traceRegion == null) return;
-            if (_traceRegion.Add(_drawRef.Point2)) DrawCanvas.Invalidate();
+            if (_traceRegion == null)
+            {
+                return;
+            }
+
+            if (_traceRegion.Add(_drawRef.Point2))
+            {
+                DrawCanvas.Invalidate();
+            }
         }
         private void CloseRegion()
         {
-            if (_traceRegion == null) return;
+            if (_traceRegion == null)
+            {
+                return;
+            }
 
             _traceRegion.Close(_drawRef.Point2);
             _selector.TryAddRegion(_traceRegion);
@@ -421,11 +456,13 @@ namespace ModelGraphUWP
         private void IdleHitTest()
         {
             if (_selector.IsVoidHit)
+            {
                 SetIdleOnVoid();
-
+            }
             else if (_selector.IsRegionHit)
+            {
                 SetIdleOnRegion();
-
+            }
             else if (_selector.IsNodeHit)
             {
                 //if (_hitNode.Node.IsNode && ((_hitNode.Node.IsVertical && (HitTop || HitBottom)) || (_hitNode.Node.IsHorizontal && (HitLeft || HitRignt))))
@@ -436,7 +473,9 @@ namespace ModelGraphUWP
             }
 
             else if (_selector.IsEdgeHit)
+            {
                 SetIdleOnEdge();
+            }
         }
         #endregion
 

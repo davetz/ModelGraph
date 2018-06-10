@@ -48,14 +48,22 @@ namespace ModelGraphUWP
 
         public void SetSize(double width, double height)
         {
-            if (DrawCanvas == null) return;
+            if (DrawCanvas == null)
+            {
+                return;
+            }
+
             RootGrid.Width = RootCanvas.Width = DrawCanvas.Width = this.Width = width;
             RootGrid.Height = RootCanvas.Height = DrawCanvas.Height = this.Height = height;
         }
 
         public void Close()
         {
-            if (DrawCanvas == null) return;
+            if (DrawCanvas == null)
+            {
+                return;
+            }
+
             DrawCanvas.RemoveFromVisualTree();
             DrawCanvas = null;
         }
@@ -64,14 +72,22 @@ namespace ModelGraphUWP
 
         public void Refresh()
         {
-            if (DrawCanvas == null) return;
+            if (DrawCanvas == null)
+            {
+                return;
+            }
+
             DrawCanvas.Invalidate();
         }
 
         // needed because win2D.uwp canvaseControl is implemented in c++ (prevent memory leaks)
         private void ModelGraphControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            if (DrawCanvas == null) return;
+            if (DrawCanvas == null)
+            {
+                return;
+            }
+
             DrawCanvas.RemoveFromVisualTree();
             DrawCanvas = null;
         }
@@ -140,11 +156,15 @@ namespace ModelGraphUWP
         {
             // No loading task?
             if (levelLoadTask == null)
+            {
                 return false;
+            }
 
             // Loading task is still running?
             if (!levelLoadTask.IsCompleted)
+            {
                 return true;
+            }
 
             // Query the load task results and re-throw any exceptions
             // so Win2D can see them. This implements requirement #2.

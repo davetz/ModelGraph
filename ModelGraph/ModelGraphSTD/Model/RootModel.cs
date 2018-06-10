@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace ModelGraphSTD
@@ -16,39 +16,38 @@ namespace ModelGraphSTD
         public IPageControl PageControl { get; set; } // reference the UI PageControl
         public IModelControl ModelControl { get; set; }
 
+        public readonly ConcurrentQueue<UIRequest> UIRequestQueue = new ConcurrentQueue<UIRequest>();
+
+        public int ViewCapacity;
+        public ItemModel SelectModel;
+        public List<ItemModel> ViewModels;
+
         public int MinorDelta;
         public int MajorDelta;
-
-        public int ViewIndex1; //index of first visible model
-        public int ViewIndex2; //index one beyond the last visible model
-        public int ViewCapacity; //max number of visible models
-        public ItemModel ViewSelectModel; //currently selected model
-        public ItemModel[] ViewModels; //flattend list of itemModel tree
-        public Dictionary<object, string> ViewFilter = new Dictionary<object, string>();
 
         public ControlType ControlType;
 
         #region Constructors  =================================================
         // AppRootChef: Created by PageControl.xaml.cs
         public RootModel()
-            : base(null, Trait.RootChef_M, 0, new Chef())
-        {
-            Chef = Item as Chef;
+        { 
+            Trait = Trait.RootChef_M;
+            Chef = new Chef();
+            Get = Chef.RootChef_X;
             Chef.AddRootModel(this);
 
-            _getData = Chef.RootChef_M;
             ControlType = ControlType.AppRootChef;
         }
 
         // (Primary & Secondary) RootModels: Created by PrimaryRoot
         public RootModel(UIRequest rq)
-            : base(null, rq.Trait, 0, rq.Item1, rq.Item2, rq.Item3, rq.GetData)
+            : base(null, rq.Trait, 0, rq.Item, rq.Aux1, rq.Aux2, rq.Get)
         {
             Chef = rq.Chef;
+            Get = rq.Get;
             ControlType = rq.Type;
 
             Chef.AddRootModel(this);
-
             IsExpandedLeft = true;
         }
         #endregion
@@ -66,25 +65,12 @@ namespace ModelGraphSTD
         #endregion
 
         #region PageDispatch  =================================================
-        private UIRequest _uiRequest;
-        internal UIRequest UIRequest { get { return _uiRequest; } set { if (_uiRequest == null && value != null) _uiRequest = value; } }
-        
         internal void PageDispatch()
         {
             if (PageControl != null)
             {
-                if (_uiRequest == null)
+                while (UIRequestQueue.TryDequeue(out UIRequest request))
                 {
-                    if (MajorDelta != Chef.MajorDelta || MinorDelta != Chef.MinorDelta)
-                    {
-                        PageControl.Dispatch(UIRequest.Refresh(this));
-                    }
-                }
-                else
-                {
-                    var request = _uiRequest;
-                    _uiRequest = null;
-
                     PageControl.Dispatch(request);
                 }
             }

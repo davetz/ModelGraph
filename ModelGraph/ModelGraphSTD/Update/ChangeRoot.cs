@@ -51,7 +51,7 @@
         {
             if (chg.IsCongealed) return false;
 
-            var index = _items.IndexOf(chg);
+            var index = IndexOf(chg);
             if (index < 0) return false;
             var prev = index - 1;
             if (prev < 0) return false;
@@ -62,7 +62,7 @@
 
             if (onlyTestMerge) return true;
 
-            _items.Remove(chg2);
+            Remove(chg2);
             var items = chg2.ToArray;
             foreach (var item in items) { chg.Add(item); }
             chg2.RemoveAll();
@@ -81,7 +81,7 @@
                     if (chg.IsCongealed) continue;
                     if (chg.IsUndone)
                     {
-                        _items.Remove(chg);
+                        Remove(chg);
                     }
                     else
                         save = chg;

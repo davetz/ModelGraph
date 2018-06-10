@@ -11,15 +11,18 @@ namespace ModelGraphSTD
         public Item Aux1;
         public Item Aux2;
         public ItemModel ParentModel;   // allows bidirectional tree taversal
-        public ItemModel[] ChildModels; // hierarchal subtree of models 
+        public ItemModel[] ChildModels; // hierarchal subtree of models
+        public string ViewFilter;       // UI imposed child model Kind/Name filter
         internal ModelAction Get;
 
         internal Trait Trait;
         private State _state;
         private Flags _flags;
+        public byte Delta;
         public byte Depth;
 
         #region Constructor  ==================================================
+        internal ItemModel() { }
         internal ItemModel(ItemModel parent, Trait trait, byte level, Item item, Item aux1, Item aux2, ModelAction action)
         {
             Trait = trait;
@@ -56,7 +59,7 @@ namespace ModelGraphSTD
 
         #region State  ========================================================
         [Flags]
-        private enum State : ushort
+        enum State : ushort
         {
             IsChanged = 0x8000,
             IsReadOnly = 0x4000,
@@ -102,7 +105,6 @@ namespace ModelGraphSTD
             if (value == false)
             {
                 var root = GetRootModel();
-                root.ViewFilter.Remove(this);
             }
         }
         public bool IsSortAscending { get { return GetState(State.IsAscendingSort); } set { var prev = GetState(State.IsAscendingSort); SetState(State.IsAscendingSort, value); if (prev != value) IsChanged = true; } }
@@ -163,7 +165,14 @@ namespace ModelGraphSTD
         #endregion
 
         #region ModelAction  ==================================================
-        public string  ModelInfo => (Get.ModelInfo == null) ? null : Get.ModelInfo(this);
+        public bool Validate()
+        {
+            if (Get.Validate == null) return false;
+
+            Get.Validate(this);
+            return (ChildModels != null && ChildModels.Length > 0);
+        }
+        public string ModelInfo => (Get.ModelInfo == null) ? null : Get.ModelInfo(this);
         public string ModelSummary => (Get.ModelSummary == null) ? null : Get.ModelSummary(this);
         public string ModelDescription => (Get.ModelDescription == null) ? null : Get.ModelDescription(this);
 
@@ -190,7 +199,7 @@ namespace ModelGraphSTD
         public bool MenuComands(List<ModelCommand> list)
         {
             if (Get.MenuCommands == null) return false;
-            
+
             list.Clear();
             Get.MenuCommands(this, list);
             return list.Count > 0;
@@ -212,7 +221,7 @@ namespace ModelGraphSTD
             Chef.DragDropSource = null;
             if (drop == null) return;
 
-             PostAction( () => { ModelDrop(this, drop, true); } );
+            PostAction(() => { ModelDrop(this, drop, true); });
         }
 
         #region ModelDrop  ====================================================
@@ -233,11 +242,12 @@ namespace ModelGraphSTD
         #endregion
 
         #region PostAction  ===================================================
-        void PostModelRefresh() => DataChef?.PostRefresh(this);
-        void PostSetValue(int value) => DataChef?.PostSetValue(this, value);
-        void PostSetValue(bool value) => DataChef?.PostSetValue(this, value);
-        void PostSetValue(string value) => DataChef?.PostSetValue(this, value);
-        void PostAction(Action action) => DataChef?.PostAction(this, action);
+        public void PostRefreshGraph() { }
+        public void PostRefreshViewList(int scroll, ChangeType change) => DataChef?.PostRefreshViewList(GetRootModel(), scroll, change);
+        public void PostSetValue(int value) => DataChef?.PostSetValue(this, value);
+        public void PostSetValue(bool value) => DataChef?.PostSetValue(this, value);
+        public void PostSetValue(string value) => DataChef?.PostSetValue(this, value);
+        public void PostAction(Action action) => DataChef?.PostAction(this, action);
         Chef DataChef
         {
             get
@@ -256,11 +266,11 @@ namespace ModelGraphSTD
         #region Properties/Methods  ===========================================
         public UIRequest BuildViewRequest(ControlType controlType)
         {
-            return UIRequest.CreateNewView(controlType, Trait, Item.GetChef(), Item, Aux1, Aux2, Get, true);
+            return UIRequest.CreateView(GetRootModel(), controlType, Trait, Item.GetChef(), Item, Aux1, Aux2, Get, true);
         }
         internal UIRequest BuildViewRequest(ControlType controlType, Trait trait, ModelAction action)
         {
-            return UIRequest.CreateNewView(controlType, trait, Item.GetChef(), Item, Aux1, Aux2, action, true);
+            return UIRequest.CreateView(GetRootModel(), controlType, trait, Item.GetChef(), Item, Aux1, Aux2, action, true);
         }
         public int FilterCount { get { return (ChildModels == null) ? 0 : ChildModels.Length; } }
         public bool HasError { get { return false; } }

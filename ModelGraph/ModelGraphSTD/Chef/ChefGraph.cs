@@ -53,15 +53,13 @@ namespace ModelGraphSTD
 
             if (g.NodeItems.Count > 0)
             {
-                Dictionary<Item, Dictionary<Item, List<Item>>> rtSdParams;
-                Dictionary<Item, List<Item>> sdParams;
 
-                if (!_graphParms.TryGetValue(gx, out rtSdParams))
+                if (!_graphParms.TryGetValue(gx, out Dictionary<Item, Dictionary<Item, List<Item>>> rtSdParams))
                 {
-                     rtSdParams = new Dictionary<Item, Dictionary<Item, List<Item>>>();
+                    rtSdParams = new Dictionary<Item, Dictionary<Item, List<Item>>>();
                     _graphParms.Add(gx, rtSdParams);
                 }
-                if (!rtSdParams.TryGetValue(rt, out sdParams))
+                if (!rtSdParams.TryGetValue(rt, out Dictionary<Item, List<Item>> sdParams))
                 {
                     sdParams = new Dictionary<Item, List<Item>>();
                     rtSdParams.Add(rt, sdParams);
@@ -149,12 +147,14 @@ namespace ModelGraphSTD
                     }
                     if (sdParams[e1.Key].Count == 0) sdParams.Remove(e1.Key);
                 }
+
+                #endregion
+                #region Add new SdParams  =====================================
                 #endregion
 
                 #region Add new SdParams  =====================================
 
-                List<Item> parmList;
-                if (!sdParams.TryGetValue(_dummy, out parmList))
+                if (!sdParams.TryGetValue(_dummy, out List<Item> parmList))
                 {
                     // there weren't any existing node parms,
                     // so create all new ones
@@ -197,13 +197,12 @@ namespace ModelGraphSTD
                     }
                 }
 
-                List<Item> paramList;
                 foreach (var e1 in validPathPairs)
                 {
                     // skip over the nodes, they are already done
                     if (e1.Key == _dummy) continue;
 
-                    if (!sdParams.TryGetValue(e1.Key, out paramList))
+                    if (!sdParams.TryGetValue(e1.Key, out List<Item> paramList))
                     {
                         // there weren't any existing edge parms,
                         // so create all new ones
@@ -254,14 +253,16 @@ namespace ModelGraphSTD
                         }
                     }
                 }
+
+                #endregion
+                #region populate g.Node_Edges  ================================
                 #endregion
 
                 #region populate g.Node_Edges  ================================
 
-                List<Edge> edgeList;
                 foreach (var edge in g.Edges)
                 {
-                    if (!g.Node_Edges.TryGetValue(edge.Node1, out edgeList))
+                    if (!g.Node_Edges.TryGetValue(edge.Node1, out List<Edge> edgeList))
                     {
                         edgeList = new List<Edge>(2);
                         g.Node_Edges.Add(edge.Node1, edgeList);
@@ -290,8 +291,7 @@ namespace ModelGraphSTD
                 var item = g.OpenQuerys[i].Query1.Item;
                 var j = i + 1;
                 for (; j < N; j++) { if (g.OpenQuerys[j].Query1.Item != item) break; }
-                Node node;
-                if (g.Item_Node.TryGetValue(item, out node)) { node.OpenPathIndex = i; }
+                if (g.Item_Node.TryGetValue(item, out Node node)) { node.OpenPathIndex = i; }
                 i = j;
             }
             #endregion
@@ -407,10 +407,8 @@ namespace ModelGraphSTD
         #region TryGetColorCriteria  ==========================================
         private bool TryGetColorCriteria(Graph g)
         {
-            ColumnX col;
-            TableX tbl;
-          
-            if (GraphX_ColorColumnX.TryGetChild(g.GraphX, out col) && TableX_ColumnX.TryGetParent(col, out tbl))
+
+            if (GraphX_ColorColumnX.TryGetChild(g.GraphX, out ColumnX col) && TableX_ColumnX.TryGetParent(col, out TableX tbl))
             {
                 var N = tbl.Count;
                 if (N > 0)
@@ -440,8 +438,7 @@ namespace ModelGraphSTD
                     foreach (var pair in g.GroupQuerys)
                     {
                         var grp = pair.Query2.Items[0];
-                        int inx;
-                        if (g.Group_ColorIndex.TryGetValue(grp, out inx))
+                        if (g.Group_ColorIndex.TryGetValue(grp, out int inx))
                         {
                             var itm = pair.Query1.Item;
                             g.Item_ColorIndex.Add(itm, inx);

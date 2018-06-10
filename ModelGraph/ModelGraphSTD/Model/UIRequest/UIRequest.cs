@@ -1,81 +1,66 @@
-﻿using System;
-
+﻿
 namespace ModelGraphSTD
 {/*
     This is how the ModelGraphSTD requests UI control action.
-  
-    rootModel.PageControl.Dispatch( UIRequest.Refresh(rootModel) );
  */
     public class UIRequest
     {
-        public RootModel RootModel { get; private set; }
-
         // parameters for new view
+        public RootModel Root { get; private set; }
         public Chef Chef { get; private set; }
-        public Item Item1 { get; private set; }
-        public Item Item2 { get; private set; }
-        public Item Item3 { get; private set; }
+        public Item Item { get; private set; }
+        public Item Aux1 { get; private set; }
+        public Item Aux2 { get; private set; }
         public ControlType Type { get; private set; }
-        internal ModelAction ModelAction { get; private set; }
+        internal ModelAction Get { get; private set; }
         public Trait Trait { get; private set; }
 
-        public bool DoRefresh { get; private set; }
-        public bool DoSaveModel { get; private set; }
-        public bool DoCloseModel { get; private set; }
-        public bool DoReloadModel { get; private set; }
-        public bool DoCreateNewView { get; private set; }
-        public bool DoCreateNewPage { get; private set; }
+        public RequestType RequestType;
 
-        #region Constructors  =================================================
-        private UIRequest(RootModel model)
-        {
-            RootModel = model;
-        }
-        private UIRequest(ControlType type, Trait trait, Chef chef, Item item1, Item item2, Item item3, ModelAction modelAction, bool openInNewPage = false)
-        {
-            Chef = chef;
-            Type = type;
-            Trait = trait;
-            Item1 = item1;
-            Item2 = item2;
-            Item3 = item3;
-            ModelAction = modelAction;
-            DoCreateNewView = true;
-            DoCreateNewPage = openInNewPage;
-        }
-        #endregion
+        private UIRequest() { }
 
-        public static UIRequest Refresh(RootModel model)
+        public static UIRequest SaveModel()
         {
-            return new UIRequest(model)
+            return new UIRequest()
             {
-                DoRefresh = true
+                RequestType = RequestType.Save
             };
         }
-        public static UIRequest SaveModel(RootModel model)
+        public static UIRequest CloseModel()
         {
-            return new UIRequest(model)
+            return new UIRequest()
             {
-                DoSaveModel = true
+                RequestType = RequestType.Close
             };
         }
-        public static UIRequest CloseModel(RootModel model)
+        public static UIRequest ReloadModel()
         {
-            return new UIRequest(model)
+            return new UIRequest()
             {
-                DoCloseModel = true
+                RequestType = RequestType.Reload
             };
         }
-        public static UIRequest ReloadModel(RootModel model)
+        public static UIRequest RefreshModel()
         {
-            return new UIRequest(model)
+            return new UIRequest()
             {
-                DoReloadModel = true
+                RequestType = RequestType.Refresh
             };
         }
-        internal static UIRequest CreateNewView(ControlType type, Trait trait, Chef chef, Item item1, Item item2, Item item3, ModelAction modelAction, bool openInNewPage = false)
+        internal static UIRequest CreateView(RootModel root, ControlType type, Trait trait, Chef chef, Item item, Item aux1, Item aux2, ModelAction modelAction, bool openInNewPage = false)
         {
-            return new UIRequest(type, trait, chef, item1, item2, item3, modelAction, openInNewPage);
+            return new UIRequest()
+            {
+                Root = root,
+                Chef = chef,
+                Type = type,
+                Trait = trait,
+                Item = item,
+                Aux1 = aux1,
+                Aux2 = aux2,
+                Get = modelAction,
+                RequestType = (openInNewPage) ? RequestType.CreatePage : RequestType.CreateView,
+            };
         }
     }
 }

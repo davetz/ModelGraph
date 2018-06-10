@@ -116,9 +116,13 @@ namespace ModelGraphUWP
                     }
                     pen.Initialize();
                     if (node.Core.IsPointNode)
+                    {
                         pen.DrawPoint(node.Core);
+                    }
                     else
+                    {
                         pen.DrawBusBar(node.Core.X, node.Core.Y, node.Core.DX, node.Core.DY);
+                    }
                 }
                 else
                 {
@@ -238,9 +242,14 @@ namespace ModelGraphUWP
                 Vector2 p2 = (point - _offset) * _zoom;
 
                 if (_firstItteration)
+                {
                     _firstItteration = false;
+                }
                 else
+                {
                     _session.DrawLine(_p1, p2, Color, Width, Style);
+                }
+
                 _p1 = p2;
             }
             internal void DrawRectangle(Extent e) => DrawRectangle(new Rect(e.Xmin, e.Ymin, e.Width, e.Hieght));
@@ -305,8 +314,15 @@ namespace ModelGraphUWP
                 d = slave.Initialize(data, d);
 
                 var pc = data[d++];
-                if (pc < 2) continue;               // abort, point count too small
-                if ((d + (2 * pc)) > len) continue; // abort, point count too large
+                if (pc < 2)
+                {
+                    continue;               // abort, point count too small
+                }
+
+                if ((d + (2 * pc)) > len)
+                {
+                    continue; // abort, point count too large
+                }
 
                 for (int j = 0; j < pc; j++)
                 {
@@ -329,8 +345,15 @@ namespace ModelGraphUWP
                 d = slave.Initialize(data, d);
 
                 var pc = data[d++];
-                if (pc < 2) continue;               // abort, point count too small
-                if ((d + (2 * pc)) > len) continue; // abort, point count too large
+                if (pc < 2)
+                {
+                    continue;               // abort, point count too small
+                }
+
+                if ((d + (2 * pc)) > len)
+                {
+                    continue; // abort, point count too large
+                }
 
                 for (int j = 0; j < pc; j++)
                 {
@@ -353,8 +376,15 @@ namespace ModelGraphUWP
                 d = slave.Initialize(data, d);
 
                 var pc = data[d++];
-                if (pc < 2) continue;               // abort, point count too small
-                if ((d + (2 * pc)) > len) continue; // abort, point count too large
+                if (pc < 2)
+                {
+                    continue;               // abort, point count too small
+                }
+
+                if ((d + (2 * pc)) > len)
+                {
+                    continue; // abort, point count too large
+                }
 
                 for (int j = 0; j < pc; j++)
                 {
@@ -377,8 +407,15 @@ namespace ModelGraphUWP
                 d = slave.Initialize(data, d);
 
                 var pc = data[d++];
-                if (pc < 2) continue;               // abort, point count too small
-                if ((d + (2 * pc)) > len) continue; // abort, point count too large
+                if (pc < 2)
+                {
+                    continue;               // abort, point count too small
+                }
+
+                if ((d + (2 * pc)) > len)
+                {
+                    continue; // abort, point count too large
+                }
 
                 for (int j = 0; j < pc; j++)
                 {
@@ -401,8 +438,15 @@ namespace ModelGraphUWP
                 d = slave.Initialize(data, d);
 
                 var pc = data[d++];
-                if (pc < 2) continue;               // abort, point count too small
-                if ((d + (2 * pc)) > len) continue; // abort, point count too large
+                if (pc < 2)
+                {
+                    continue;               // abort, point count too small
+                }
+
+                if ((d + (2 * pc)) > len)
+                {
+                    continue; // abort, point count too large
+                }
 
                 for (int j = 0; j < pc; j++)
                 {
@@ -425,8 +469,15 @@ namespace ModelGraphUWP
                 d = slave.Initialize(data, d);
 
                 var pc = data[d++];
-                if (pc < 2) continue;               // abort, point count too small
-                if ((d + (2 * pc)) > len) continue; // abort, point count too large
+                if (pc < 2)
+                {
+                    continue;               // abort, point count too small
+                }
+
+                if ((d + (2 * pc)) > len)
+                {
+                    continue; // abort, point count too large
+                }
 
                 for (int j = 0; j < pc; j++)
                 {
@@ -449,8 +500,15 @@ namespace ModelGraphUWP
                 d = slave.Initialize(data, d);
 
                 var pc = data[d++];
-                if (pc < 2) continue;               // abort, point count too small
-                if ((d + (2 * pc)) > len) continue; // abort, point count too large
+                if (pc < 2)
+                {
+                    continue;               // abort, point count too small
+                }
+
+                if ((d + (2 * pc)) > len)
+                {
+                    continue; // abort, point count too large
+                }
 
                 for (int j = 0; j < pc; j++)
                 {
@@ -473,8 +531,15 @@ namespace ModelGraphUWP
                 d = slave.Initialize(data, d);
 
                 var pc = data[d++];
-                if (pc < 2) continue;               // abort, point count too small
-                if ((d + (2 * pc)) > len) continue; // abort, point count too large
+                if (pc < 2)
+                {
+                    continue;               // abort, point count too small
+                }
+
+                if ((d + (2 * pc)) > len)
+                {
+                    continue; // abort, point count too large
+                }
 
                 for (int j = 0; j < pc; j++)
                 {
@@ -530,7 +595,9 @@ namespace ModelGraphUWP
         {
             var z = (zoom < maxZommFactor) ? zoom : maxZommFactor;
             if (_graph.Extent.Diagonal * z < minZoomDiagonal)
+            {
                 z = minZoomDiagonal / _graph.Extent.Diagonal;
+            }
 
             _zoomFactor = z;
 
@@ -551,24 +618,48 @@ namespace ModelGraphUWP
             var ah = (float)this.ActualHeight;
             var ew = (float)extent.Width;
             var eh = (float)extent.Hieght;
-            if (aw < 1) aw = 1;
-            if (ah < 1) ah = 1;
-            if (ew < 1) ew = 1;
-            if (eh < 1) eh = 1;
+            if (aw < 1)
+            {
+                aw = 1;
+            }
+
+            if (ah < 1)
+            {
+                ah = 1;
+            }
+
+            if (ew < 1)
+            {
+                ew = 1;
+            }
+
+            if (eh < 1)
+            {
+                eh = 1;
+            }
 
             var zw = (float)(aw / ew);
             var zh = (float)(ah / eh);
             var z = (zw < zh) ? zw : zh;
-            if (z > maxZommFactor) z = maxZommFactor;
+            if (z > maxZommFactor)
+            {
+                z = maxZommFactor;
+            }
 
             _zoomFactor = z;
             _viewExtent = extent;
 
             var dx = (int)(aw - (ew * z));
-            if (dx > 0) _viewExtent.ScrollHorizontal((int)(dx / (-2 * z)));
+            if (dx > 0)
+            {
+                _viewExtent.ScrollHorizontal((int)(dx / (-2 * z)));
+            }
 
             var dy = (int)(ah - (eh * z));
-            if (dy > 0) _viewExtent.ScrollVertical((int)(dy / (-2 * z)));
+            if (dy > 0)
+            {
+                _viewExtent.ScrollVertical((int)(dy / (-2 * z)));
+            }
 
             DrawCanvas.Invalidate();
         }

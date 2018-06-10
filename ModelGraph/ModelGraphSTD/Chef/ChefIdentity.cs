@@ -648,8 +648,7 @@ namespace ModelGraphSTD
         #region Legacy  =======================================================
         internal string GetRowName(RowX row)
         {
-            Property prop;
-            if (TableX_NameProperty.TryGetChild(row.Owner, out prop))
+            if (TableX_NameProperty.TryGetChild(row.Owner, out Property prop))
             {
                 return prop.Value.GetString(row);
             }
@@ -663,8 +662,7 @@ namespace ModelGraphSTD
         }
         internal string RowSummary(RowX row)
         {
-            Property prop;
-            if (TableX_SummaryProperty.TryGetChild(row.Owner, out prop))
+            if (TableX_SummaryProperty.TryGetChild(row.Owner, out Property prop))
             {
                 return prop.Value.GetString(row);
             }

@@ -9,8 +9,7 @@ namespace ModelGraphSTD
     {
         private void AdjustAutoNode(Node node, int spL)
         {
-            List<Edge> edges;
-            if (!Node_Edges.TryGetValue(node, out edges)) return;
+            if (!Node_Edges.TryGetValue(node, out List<Edge> edges)) return;
 
             var order = new LineOrder(node, edges);
 
@@ -117,8 +116,7 @@ namespace ModelGraphSTD
 
         private void AdjustFixedNode(Node node)
         {
-            List<Edge> edges;
-            if (!Node_Edges.TryGetValue(node, out edges)) return;
+            if (!Node_Edges.TryGetValue(node, out List<Edge> edges)) return;
 
             var order = new LineOrder(node, edges);
 

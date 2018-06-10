@@ -216,9 +216,8 @@ namespace ModelGraphSTD
 
         private void GetUsedUnsedCount(Item owner, out int used, out int unused, Relation relation, Func<Item, bool> isUsed)
         {
-            Item[] titm;
             used = unused = 0;
-            if (relation.TryGetChildren(owner, out titm))
+            if (relation.TryGetChildren(owner, out Item[] titm))
             {
                 for (int i = 0; i < titm.Length; i++)
                 {
@@ -229,8 +228,7 @@ namespace ModelGraphSTD
         }
         private bool TryGetUsed(Item owner, out Item[] items, Relation relation, Func<Item, bool> isUsed)
         {
-            Item[] titm;
-            if (relation.TryGetChildren(owner, out titm))
+            if (relation.TryGetChildren(owner, out Item[] titm))
             {
                 int count = 0;
                 for (int i = 0; i < titm.Length; i++)
@@ -254,8 +252,7 @@ namespace ModelGraphSTD
         }
         private bool TryGetUnused(Item owner, out Item[] items, Relation relation, Func<Item, bool> isUsed)
         {
-            Item[] titm;
-            if (relation.TryGetChildren(owner, out titm))
+            if (relation.TryGetChildren(owner, out Item[] titm))
             {
                 int count = 0;
                 for (int i = 0; i < titm.Length; i++)

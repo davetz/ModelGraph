@@ -11,7 +11,7 @@ namespace ModelGraphSTD
         public abstract void Remove(Item item);
         internal abstract void RemoveAll();
         internal abstract int IndexOf(Item item);
-        internal abstract IList<Item> GetItems();
+        internal abstract Item[] GetItems();
         internal abstract int Count { get; }
 
         internal bool TryLookUpProperty(string name, out Property property, out int index)

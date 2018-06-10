@@ -24,8 +24,7 @@ namespace ModelGraphSTD
         #region TryPathReduction  =============================================
         internal bool TryPathReduction(Graph G)
         {
-            Level L;
-            if (!G.TryGetTopLevel(out L)) return false;
+            if (!G.TryGetTopLevel(out Level L)) return false;
 
             var inputPaths = L.Paths.ToArray();
             var N = inputPaths.Length;
@@ -43,10 +42,9 @@ namespace ModelGraphSTD
             {
                 var path = inputPaths[i];
 
-                List<int> indexList = null;
 
                 var head = path.Head;
-                if (!nodeIndex.TryGetValue(head, out indexList)) nodeIndex.Add(head, (indexList = new List<int>(4)));
+                if (!nodeIndex.TryGetValue(head, out List<int> indexList)) nodeIndex.Add(head, (indexList = new List<int>(4)));
                 indexList.Add(i);
 
                 var tail = path.Tail;

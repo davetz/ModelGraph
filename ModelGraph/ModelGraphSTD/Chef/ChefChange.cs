@@ -468,8 +468,6 @@ namespace ModelGraphSTD
             hitList.Reverse();
 
             Item[] items;
-            Item[] parents;
-            Item[] children;
 
             var relItems = new Dictionary<Relation, Dictionary<Item, List<Item>>>();
 
@@ -477,7 +475,7 @@ namespace ModelGraphSTD
             {
                 if (item is Relation r)
                 {
-                    var N = r.GetLinks(out parents, out children);
+                    var N = r.GetLinks(out Item[] parents, out Item[] children);
                     for (int i = 0; i < N; i++)
                     {
                         var item1 = parents[i];
@@ -522,9 +520,8 @@ namespace ModelGraphSTD
         private bool IsAreadyRemoved(Relation rel, Item item1, Item item2, Dictionary<Relation, Dictionary<Item, List<Item>>> relItems)
         {
             List<Item> items;
-            Dictionary<Item, List<Item>> itemItems;
 
-            if (relItems.TryGetValue(rel, out itemItems))
+            if (relItems.TryGetValue(rel, out Dictionary<Item, List<Item>> itemItems))
             {
                 if (itemItems.TryGetValue(item1, out items))
                 {
@@ -553,8 +550,6 @@ namespace ModelGraphSTD
         /// </summary>
         private void FindDependents(Item target, List<Item> hitList)
         {
-            Item[] children;
-            Relation[] relations;
 
             hitList.Add(target);
             if (target is Store store)
@@ -562,11 +557,11 @@ namespace ModelGraphSTD
                 var items = store.GetItems();
                 foreach (var item in items) FindDependents(item, hitList);
             }
-            if (TryGetChildRelations(target, out relations))
+            if (TryGetChildRelations(target, out Relation[] relations))
             {
                 foreach (var rel in relations)
                 {
-                    if (rel.IsRequired && rel.TryGetChildren(target, out children))
+                    if (rel.IsRequired && rel.TryGetChildren(target, out Item[] children))
                     {
                         foreach (var child in children)
                         {

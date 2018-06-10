@@ -25,8 +25,14 @@ namespace ModelGraphUWP
 
             var cp = e.GetCurrentPoint(RootGrid);
 
-            if (cp.Properties.IsLeftButtonPressed && Begin1Action != null) Begin1Action();
-            else if (cp.Properties.IsRightButtonPressed && Begin3Action != null) Begin3Action();
+            if (cp.Properties.IsLeftButtonPressed && Begin1Action != null)
+            {
+                Begin1Action();
+            }
+            else if (cp.Properties.IsRightButtonPressed && Begin3Action != null)
+            {
+                Begin3Action();
+            }
 
             // somewhere, up the visual tree, there is a rogue scrollView that gets focus
             var obj = FocusManager.GetFocusedElement();
@@ -55,7 +61,11 @@ namespace ModelGraphUWP
             if (_isPointerPressed && DragAction != null)
             {
                 DragAction?.Invoke();
-                if (_enableHitTest) _selector.HitTest(_drawRef.Point2);
+                if (_enableHitTest)
+                {
+                    _selector.HitTest(_drawRef.Point2);
+                }
+
                 DrawCanvas.Invalidate();
             }
             else if (HoverAction != null)
@@ -132,8 +142,8 @@ namespace ModelGraphUWP
                 case VirtualKey.Left: _arrowDelta = new XYPoint(-1, 0); ArrowAction?.Invoke(); break;
                 case VirtualKey.Right: _arrowDelta = new XYPoint(1, 0); ArrowAction?.Invoke(); break;
                 case VirtualKey.Home: ZoomToExtent(_graph.Extent); break;
-                case VirtualKey.Z: if (_modifier == Modifier.Ctrl) { _graph.TryUndo(); _rootModel.PostModelRefresh();} break;
-                case VirtualKey.Y: if (_modifier == Modifier.Ctrl) { _graph.TryRedo(); _rootModel.PostModelRefresh(); } break;
+                case VirtualKey.Z: if (_modifier == Modifier.Ctrl) { _graph.TryUndo(); _rootModel.PostRefreshGraph();} break;
+                case VirtualKey.Y: if (_modifier == Modifier.Ctrl) { _graph.TryRedo(); _rootModel.PostRefreshGraph(); } break;
                 default: _keyName = e.Key.ToString(); ShortCutAction?.Invoke(); break;
             }
         }

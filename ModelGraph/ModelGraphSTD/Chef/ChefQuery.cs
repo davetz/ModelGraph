@@ -190,8 +190,7 @@ namespace ModelGraphSTD
 
         private bool TryGetQueryXList(QueryX qx, out List<QueryX> list)
         {
-            list = new List<QueryX>();
-            list.Add(qx);
+            list = new List<QueryX>() { qx };
             QueryX[] children;
             while ((children = QueryX_QueryX.GetChildren(qx)) != null)
             {
@@ -376,7 +375,7 @@ namespace ModelGraphSTD
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-        private string GetQueryXRelationName(ItemModel model)
+        private string GetQueryXRelationName(ItemModel m)
         {
             if (Relation_QueryX.TryGetParent(m.Item, out Relation parent))
             {
@@ -397,8 +396,7 @@ namespace ModelGraphSTD
 
         string QueryXFilterName(QueryX sd)
         {
-            Store head, tail;
-            GetHeadTail(sd, out head, out tail);
+            GetHeadTail(sd, out Store head, out Store tail);
             if (head == null || tail == null) return InvalidItem;
 
             var headName = GetIdentity(head, IdentityStyle.Single);
@@ -416,11 +414,9 @@ namespace ModelGraphSTD
         string QueryXHeadName(ItemModel m)
         {
             var sd = m.Item as QueryX;
-
-            Store head1, tail1, head2, tail2;
-            GetHeadTail(sd, out head1, out tail1);
+            GetHeadTail(sd, out Store head1, out Store tail1);
             var sd2 = GetQueryXTail(sd);
-            GetHeadTail(sd2, out head2, out tail2);
+            GetHeadTail(sd2, out Store head2, out Store tail2);
 
             StringBuilder sb = new StringBuilder(132);
             sb.Append(GetIdentity(head1, IdentityStyle.Single));

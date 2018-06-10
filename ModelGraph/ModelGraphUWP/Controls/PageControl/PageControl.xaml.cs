@@ -67,7 +67,10 @@ namespace ModelGraphUWP
         {
             _activeModel = model;
             ControlGrid.Children.Clear();
-            if (model == null) return;
+            if (model == null)
+            {
+                return;
+            }
 
             switch (model.ControlType)
             {
@@ -90,15 +93,17 @@ namespace ModelGraphUWP
             }
             (model.ModelControl as UserControl).Loaded += ModelControl_Loaded;
 
-            model.GetAppCommands();
-            var N = model.AppButtonCommands.Count;
+            var buttonCommands = new List<ModelCommand>();
+            model.ButtonComands(buttonCommands);
+
+            var N = buttonCommands.Count;
             var M = ButtonPanel.Children.Count;
             for (int i = 0; i < M; i++)
             {
                 var btn = ButtonPanel.Children[i] as Button;
                 if (i < N)
                 {
-                    var cmd = model.AppButtonCommands[i];
+                    var cmd = buttonCommands[i];
                     btn.Tag = cmd;
                     btn.Content = cmd.Name;
                     btn.Visibility = Visibility.Visible;
@@ -171,39 +176,39 @@ namespace ModelGraphUWP
         #region IPageControl  =================================================
         public async void Dispatch(UIRequest rq)
         {
-            if (rq.DoSaveModel)
+            switch (rq.RequestType)
             {
-                if (rq.RootModel.ControlType == ControlType.SymbolEditor)
-                {
-                    var editor = rq.RootModel.ModelControl as SymbolEditControl;
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.Save(); });
-                }
+                case RequestType.Save:
+                    if (rq.Root.ControlType == ControlType.SymbolEditor)
+                    {
+                        var editor = rq.Root.ModelControl as SymbolEditControl;
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.Save(); });
+                    }
+                    break;
+                case RequestType.Close:
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { CloseModel(rq.Root); });
+                    break;
+                case RequestType.Reload:
+                    if (rq.Root.ControlType == ControlType.SymbolEditor)
+                    {
+                        var editor = rq.Root.ModelControl as SymbolEditControl;
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.Save(); });
+                    }
+                    else
+                    {
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ReloadModel(rq.Root); });
+                    }
+                    break;
+                case RequestType.Refresh:
+                    ModelRefresh();
+                    break;
+                case RequestType.CreateView:
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InitializeModel(new RootModel(rq)));
+                    break;
+                case RequestType.CreatePage:
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new RootModel(rq)));
+                    break;
             }
-            else if (rq.DoCloseModel)
-            {
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { CloseModel(rq.RootModel); });
-            }
-            else if (rq.DoReloadModel)
-            {
-                if (rq.RootModel.ControlType == ControlType.SymbolEditor)
-                {
-                    var editor = rq.RootModel.ModelControl as SymbolEditControl;
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.Save(); });
-                }
-                else
-                {
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ReloadModel(rq.RootModel); });
-                }
-            }
-            else if (rq.DoCreateNewView)
-            {
-                if (rq.DoCreateNewPage)
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new RootModel(rq)));
-                else
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InitializeModel(new RootModel(rq)));
-            }
-
-            ModelRefresh();
         }
         internal async void ModelRefresh()
         {
@@ -213,7 +218,9 @@ namespace ModelGraphUWP
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     if (!(ctrl is ModelTreeControl) || _activeModel.Chef.ValidateModelTree(_activeModel))
+                    {
                         ctrl.Refresh();
+                    }
                 });
             }
         }

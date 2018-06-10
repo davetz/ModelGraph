@@ -68,15 +68,50 @@ namespace ModelGraphUWP
             }
             internal void Set(LineStyle p, LineStyle s)
             {
-                if (p.A == A) A = s.A;
-                if (p.R == R) R = s.R;
-                if (p.G == G) G = s.G;
-                if (p.B == B) B = s.B;
-                if (p.W == W) W = s.W;
-                if (p.SC == SC) SC = s.SC;
-                if (p.EC == EC) EC = s.EC;
-                if (p.DC == DC) DC = s.DC;
-                if (p.DS == DS) DS = s.DS;
+                if (p.A == A)
+                {
+                    A = s.A;
+                }
+
+                if (p.R == R)
+                {
+                    R = s.R;
+                }
+
+                if (p.G == G)
+                {
+                    G = s.G;
+                }
+
+                if (p.B == B)
+                {
+                    B = s.B;
+                }
+
+                if (p.W == W)
+                {
+                    W = s.W;
+                }
+
+                if (p.SC == SC)
+                {
+                    SC = s.SC;
+                }
+
+                if (p.EC == EC)
+                {
+                    EC = s.EC;
+                }
+
+                if (p.DC == DC)
+                {
+                    DC = s.DC;
+                }
+
+                if (p.DS == DS)
+                {
+                    DS = s.DS;
+                }
             }
             const int max = 24;
 
@@ -95,23 +130,74 @@ namespace ModelGraphUWP
             internal int Width { get { return W; } set { W = (byte)((value < 1) ? 1 : ((value > max) ? max : value)); } }
             internal void Validate( byte maxCap, byte maxDash)
             {
-                if (SC > maxCap) SC = 0;
-                if (EC > maxCap) EC = 0;
-                if (DC > maxCap) DC = 0;
-                if (DS > maxDash) DS = maxDash;
+                if (SC > maxCap)
+                {
+                    SC = 0;
+                }
+
+                if (EC > maxCap)
+                {
+                    EC = 0;
+                }
+
+                if (DC > maxCap)
+                {
+                    DC = 0;
+                }
+
+                if (DS > maxDash)
+                {
+                    DS = maxDash;
+                }
             }
 
             internal bool Equals(LineStyle s)
             {
-                if (A != s.A) return false;
-                if (R != s.R) return false;
-                if (G != s.G) return false;
-                if (B != s.B) return false;
-                if (W != s.W) return false;
-                if (SC != s.SC) return false;
-                if (EC != s.EC) return false;
-                if (DC != s.DC) return false;
-                if (DS != s.DS) return false;
+                if (A != s.A)
+                {
+                    return false;
+                }
+
+                if (R != s.R)
+                {
+                    return false;
+                }
+
+                if (G != s.G)
+                {
+                    return false;
+                }
+
+                if (B != s.B)
+                {
+                    return false;
+                }
+
+                if (W != s.W)
+                {
+                    return false;
+                }
+
+                if (SC != s.SC)
+                {
+                    return false;
+                }
+
+                if (EC != s.EC)
+                {
+                    return false;
+                }
+
+                if (DC != s.DC)
+                {
+                    return false;
+                }
+
+                if (DS != s.DS)
+                {
+                    return false;
+                }
+
                 return true;
             }
 
@@ -127,7 +213,10 @@ namespace ModelGraphUWP
             static string valid = "0123456789ABCDEF";
             private void SetHex(string s)
             {
-                if (string.IsNullOrWhiteSpace(s)) return;
+                if (string.IsNullOrWhiteSpace(s))
+                {
+                    return;
+                }
 
                 var ca = s.ToUpper().ToCharArray();
                 var n = ca.Length;
@@ -137,10 +226,17 @@ namespace ModelGraphUWP
                 {
                     var c = ca[i];
                     var v = valid.IndexOf(c);
-                    if (v < 0) continue;
+                    if (v < 0)
+                    {
+                        continue;
+                    }
+
                     vals[j++] = (byte)v;
                 }
-                if (j == 0) return;
+                if (j == 0)
+                {
+                    return;
+                }
 
                 // don't be picky, just do something
                 A = (byte)((vals[0] << 4) + vals[1]);
@@ -182,8 +278,8 @@ namespace ModelGraphUWP
             internal List<XYPoint> Points = new List<XYPoint>();
             internal readonly LineStyle Style = new LineStyle();
 
-            private int last { get { return Points.Count - 1; } }
-            internal XYPoint LastPoint { get { return Points[last]; } }
+            private int Last { get { return Points.Count - 1; } }
+            internal XYPoint LastPoint { get { return Points[Last]; } }
             internal XYPoint FirstPoint { get { return Points[0]; } }
 
             internal bool IsSamePoint(XYPoint p, XYPoint q) { return (p.X == q.X && p.Y == q.Y); }
@@ -191,13 +287,27 @@ namespace ModelGraphUWP
 
             internal bool TryExtendLine(Extent e, LineStyle s)
             {
-                if (!Style.Equals(s)) return false;
+                if (!Style.Equals(s))
+                {
+                    return false;
+                }
 
                 var p = FirstPoint;
                 var q = LastPoint;
-                if (IsSamePoint(p, q)) return false;
-                if (MidPointMatch(e.Point1)) return false;
-                if (MidPointMatch(e.Point2)) return false;
+                if (IsSamePoint(p, q))
+                {
+                    return false;
+                }
+
+                if (MidPointMatch(e.Point1))
+                {
+                    return false;
+                }
+
+                if (MidPointMatch(e.Point2))
+                {
+                    return false;
+                }
 
                 if (IsSamePoint(p, e.Point1))
                 {
@@ -224,10 +334,13 @@ namespace ModelGraphUWP
 
             private bool MidPointMatch(XYPoint p)
             {
-                var n = last;
+                var n = Last;
                 for (int i = 1; i < n; i++)
                 {
-                    if (IsSamePoint(p, Points[i])) return true;
+                    if (IsSamePoint(p, Points[i]))
+                    {
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -292,7 +405,10 @@ namespace ModelGraphUWP
         {
             _workingLines.Clear();
 
-            if (data == null) return;
+            if (data == null)
+            {
+                return;
+            }
 
             int len = data.Length;
             int max = len - 13; // the last valid line data record must begin before this value
@@ -311,8 +427,15 @@ namespace ModelGraphUWP
 
                 var pc = data[i++]; // 9
 
-                if (pc < 2) return;             // abort, point count too small
-                if ((i + (2 * pc)) > len) return; // abort, point count too large
+                if (pc < 2)
+                {
+                    return;             // abort, point count too small
+                }
+
+                if ((i + (2 * pc)) > len)
+                {
+                    return; // abort, point count too large
+                }
 
                 var line = new LineData(_lineStyle);
                 _workingLines.Add(line);
@@ -339,8 +462,11 @@ namespace ModelGraphUWP
             int len = 0;
             foreach (var line in _workingLines)
             {
-                int cnt;
-                if (!TryGetCount(line, out cnt)) continue;
+                if (!TryGetCount(line, out int cnt))
+                {
+                    continue;
+                }
+
                 len += (_SZ + (2 * cnt));
             }
             len += 2;
@@ -353,8 +479,10 @@ namespace ModelGraphUWP
             {
                 foreach (var line in _workingLines)
                 {
-                    int cnt = 0;
-                    if (!TryGetCount(line, out cnt)) continue;
+                    if (!TryGetCount(line, out int cnt))
+                    {
+                        continue;
+                    }
 
                     var style = line.Style;
                     data[i++] = style.A;  // 0
@@ -383,8 +511,16 @@ namespace ModelGraphUWP
         private bool TryGetCount(LineData line, out int count)
         {
             count = line.Points.Count;
-            if (count > 255) count = 255;
-            if (count < 2) return false;
+            if (count > 255)
+            {
+                count = 255;
+            }
+
+            if (count < 2)
+            {
+                return false;
+            }
+
             return true;
         }
         #endregion
@@ -456,7 +592,10 @@ namespace ModelGraphUWP
             {
                 var points = line.Points;
                 var n = points.Count;
-                if (n < 2) return;
+                if (n < 2)
+                {
+                    return;
+                }
 
                 var p1 = points[0];
 
@@ -502,7 +641,10 @@ namespace ModelGraphUWP
 
             var points = line.Points;
             var n = points.Count;
-            if (n < 2) return;
+            if (n < 2)
+            {
+                return;
+            }
 
             var p1 = points[0];
 
@@ -541,7 +683,10 @@ namespace ModelGraphUWP
 
             var points = line.Points;
             var n = points.Count;
-            if (n < 2) return;
+            if (n < 2)
+            {
+                return;
+            }
 
             var c = line.Color;
             var w = line.Width;
@@ -713,8 +858,11 @@ namespace ModelGraphUWP
         {
             foreach (var line in _selectLines)
             {
-                var newLine = new LineData(line.Style);
-                newLine.IsSelected = true;
+                LineData lineData = new LineData(line.Style)
+                {
+                    IsSelected = true
+                };
+                var newLine = lineData;
                 line.IsSelected = false;
 
                 foreach (var p in line.Points)
@@ -730,7 +878,10 @@ namespace ModelGraphUWP
 
         private void PasteButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            if (_pasteLines.Count == 0) return;
+            if (_pasteLines.Count == 0)
+            {
+                return;
+            }
 
             foreach (var line in _pasteLines)
             {
@@ -845,14 +996,17 @@ namespace ModelGraphUWP
         }
 
         private void MoveSelectedPoints()
-        { 
-            XYPoint delta;
-            if (_drawRef.TryGetDelta(out delta) && _selectLines.Count > 0)
+        {
+            if (_drawRef.TryGetDelta(out XYPoint delta) && _selectLines.Count > 0)
             {
                 foreach (var line in _selectLines)
                 {
                     var i = line.HitPointIndex;
-                    if (i < 0) continue;
+                    if (i < 0)
+                    {
+                        continue;
+                    }
+
                     line.Points[i] = line.Points[i].Move(delta);
                 }
                 Consolidate();
@@ -860,8 +1014,7 @@ namespace ModelGraphUWP
         }
         private void MoveSelectedLines()
         {
-            XYPoint delta;
-            if (_drawRef.TryGetDelta(out delta) && _selectLines.Count > 0)
+            if (_drawRef.TryGetDelta(out XYPoint delta) && _selectLines.Count > 0)
             {
                 foreach (var line in _selectLines)
                 {
@@ -901,7 +1054,11 @@ namespace ModelGraphUWP
             var gotHit = false;
             foreach (var line in _workingLines)
             {
-                if (!line.IsSelected) continue;
+                if (!line.IsSelected)
+                {
+                    continue;
+                }
+
                 line.HitPointIndex = -1;
                 var points = line.Points;
                 var n = points.Count;
@@ -924,7 +1081,11 @@ namespace ModelGraphUWP
             var e = new Extent();
             foreach (var line in _workingLines)
             {
-                if (!line.IsSelected) continue;
+                if (!line.IsSelected)
+                {
+                    continue;
+                }
+
                 var points = line.Points;
                 var n = points.Count;
                 e.SetPoint1(points[0], _zoomFactor);
@@ -939,7 +1100,10 @@ namespace ModelGraphUWP
                 }
             }
             if (gotHit)
+            {
                 SetAddPointAction();
+            }
+
             SetMoveSelectedLineAction();
         }
         #endregion
@@ -957,18 +1121,41 @@ namespace ModelGraphUWP
                     var Li = _workingLines[i];
                     var Pi = Li.Points;
                     var Ni = Pi.Count - 1;
-                    if (Ni < 0) continue;
-                    if (Ni > 1 && Pi[0].Equals(Pi[Ni])) continue;
+                    if (Ni < 0)
+                    {
+                        continue;
+                    }
+
+                    if (Ni > 1 && Pi[0].Equals(Pi[Ni]))
+                    {
+                        continue;
+                    }
 
                     for (int j = i + 1; j < n; j++)
                     {
                         var Lj = _workingLines[j];
                         var Pj = Lj.Points;
                         var Nj = Pj.Count - 1;
-                        if (Nj < 0) continue;
-                        if (!Li.Style.Equals(Lj.Style)) continue;
-                        if (Nj > 1 && Pj[0].Equals(Pj[Nj])) continue;
-                        if (HasSameInteriorPoint(Pi, Pj)) continue;
+                        if (Nj < 0)
+                        {
+                            continue;
+                        }
+
+                        if (!Li.Style.Equals(Lj.Style))
+                        {
+                            continue;
+                        }
+
+                        if (Nj > 1 && Pj[0].Equals(Pj[Nj]))
+                        {
+                            continue;
+                        }
+
+                        if (HasSameInteriorPoint(Pi, Pj))
+                        {
+                            continue;
+                        }
+
                         if (Pi[0].Equals(Pj[0]) && !Pi[Ni].Equals(Pj[Nj]))
                         {
                             for (int k = 1; k < Nj; k++)
@@ -1014,7 +1201,11 @@ namespace ModelGraphUWP
             }
             for (int i = (n - 1); i >=0 ; i--)
             {
-                if (_workingLines[i].Points.Count > 0) continue;
+                if (_workingLines[i].Points.Count > 0)
+                {
+                    continue;
+                }
+
                 _workingLines.RemoveAt(i);
             }
             TryGetSelected();
@@ -1031,7 +1222,10 @@ namespace ModelGraphUWP
             {
                 for (int j = j1; j < j2; j++)
                 {
-                    if (p1[i].Equals(p2[j])) return true;
+                    if (p1[i].Equals(p2[j]))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -1052,7 +1246,10 @@ namespace ModelGraphUWP
 
                 var points = line.Points;
                 var n = points.Count;
-                if (n < 2) continue;
+                if (n < 2)
+                {
+                    continue;
+                }
 
                 var p1 =points[0];
                 if (firstPass) { firstPass = false; x = new Extent(p1, p1); }
@@ -1160,9 +1357,13 @@ namespace ModelGraphUWP
             else if (x.Width % 2 == 1)
             {
                 if (x.X1 % 2 == 1 && x.X2 % 2 == 0)
+                {
                     x.X2 = (x.X2 + 1);
+                }
                 else
+                {
                     x.X1 = (x.X1 + 1);
+                }
             }
             if (x.Hieght == 0)
             {
@@ -1172,9 +1373,13 @@ namespace ModelGraphUWP
             else if (x.Hieght % 2 == 1)
             {
                 if (x.Y1 % 2 == 1 && x.Y2 % 2 == 0)
+                {
                     x.Y2 = (x.Y2 + 1);
+                }
                 else
+                {
                     x.Y1 = (x.Y1 + 1);
+                }
             }
             return x;
         }
@@ -1196,15 +1401,25 @@ namespace ModelGraphUWP
             for (int i = last; i >= 0; i--)
             {
                 var line = _selectLines[i];
-                if (_workingLines.Contains(line) && line.IsSelected) continue;
+                if (_workingLines.Contains(line) && line.IsSelected)
+                {
+                    continue;
+                }
+
                 _selectLines.RemoveAt(i);
             }
             // add new lines that are selected
             foreach (var line in _workingLines)
             {
-                if (_selectLines.Contains(line)) continue;
+                if (_selectLines.Contains(line))
+                {
+                    continue;
+                }
 
-                if (_isAllSelected || line.IsSelected) _selectLines.Add(line);
+                if (_isAllSelected || line.IsSelected)
+                {
+                    _selectLines.Add(line);
+                }
             }
             return _selectLines.Count > 0;
         }
@@ -1315,13 +1530,15 @@ namespace ModelGraphUWP
         }
         private void AddGrid(double x, double y, double dx, double dy, byte[] argb, Windows.UI.Xaml.Thickness gBT, SolidColorBrush gBB)
         {
-            var g = new Grid();
-            g.BorderThickness = gBT;
-            g.BorderBrush = gBB;
-            g.Width = dx;
-            g.Height = dy;
-            g.Tag = argb;
-            g.Background = new SolidColorBrush(Color.FromArgb(argb[0], argb[1], argb[2], argb[3]));
+            var g = new Grid
+            {
+                BorderThickness = gBT,
+                BorderBrush = gBB,
+                Width = dx,
+                Height = dy,
+                Tag = argb,
+                Background = new SolidColorBrush(Color.FromArgb(argb[0], argb[1], argb[2], argb[3]))
+            };
             g.PointerPressed += ColorGrid_PointerPressed;
             ColorCanvas.Children.Add(g);
             Canvas.SetTop(g, y);
@@ -1426,18 +1643,66 @@ namespace ModelGraphUWP
         {
             if (_isValidUI == false)
             {
-                if (EndCapType == null) return;
-                if (StartCapType == null) return;
-                if (WidthSlider == null) return;
-                if (SliderColorA == null) return;
-                if (SliderColorR == null) return;
-                if (SliderColorG == null) return;
-                if (SliderColorB == null) return;
-                if (ColorHexValue == null) return;
-                if (ColorSample == null) return;
-                if (DrawCanvas == null) return;
-                if (SelectCanvas == null) return;
-                if (ColorCanvas == null) return;
+                if (EndCapType == null)
+                {
+                    return;
+                }
+
+                if (StartCapType == null)
+                {
+                    return;
+                }
+
+                if (WidthSlider == null)
+                {
+                    return;
+                }
+
+                if (SliderColorA == null)
+                {
+                    return;
+                }
+
+                if (SliderColorR == null)
+                {
+                    return;
+                }
+
+                if (SliderColorG == null)
+                {
+                    return;
+                }
+
+                if (SliderColorB == null)
+                {
+                    return;
+                }
+
+                if (ColorHexValue == null)
+                {
+                    return;
+                }
+
+                if (ColorSample == null)
+                {
+                    return;
+                }
+
+                if (DrawCanvas == null)
+                {
+                    return;
+                }
+
+                if (SelectCanvas == null)
+                {
+                    return;
+                }
+
+                if (ColorCanvas == null)
+                {
+                    return;
+                }
+
                 _isValidUI = true;
             }
 
@@ -1446,18 +1711,47 @@ namespace ModelGraphUWP
             strokeStyle.StartCap = StartCap = CapStyles[_lineStyle.SC];
             strokeStyle.DashStyle = DashStyle = DashStyles[_lineStyle.DS];
 
-            if (EndCapType.SelectedItem != (object)EndCap) EndCapType.SelectedItem = EndCap;
-            if (StartCapType.SelectedItem != (object)StartCap) StartCapType.SelectedItem = StartCap;
+            if (EndCapType.SelectedItem != (object)EndCap)
+            {
+                EndCapType.SelectedItem = EndCap;
+            }
 
-            if (WidthSlider.Value != _lineStyle.Width) WidthSlider.Value = _lineStyle.Width;
- 
-            if (SliderColorA.Value != _lineStyle.A) SliderColorA.Value = _lineStyle.A;
-            if (SliderColorR.Value != _lineStyle.R) SliderColorR.Value = _lineStyle.R;
-            if (SliderColorG.Value != _lineStyle.G) SliderColorG.Value = _lineStyle.G;
-            if (SliderColorB.Value != _lineStyle.B) SliderColorB.Value = _lineStyle.B;
+            if (StartCapType.SelectedItem != (object)StartCap)
+            {
+                StartCapType.SelectedItem = StartCap;
+            }
+
+            if (WidthSlider.Value != _lineStyle.Width)
+            {
+                WidthSlider.Value = _lineStyle.Width;
+            }
+
+            if (SliderColorA.Value != _lineStyle.A)
+            {
+                SliderColorA.Value = _lineStyle.A;
+            }
+
+            if (SliderColorR.Value != _lineStyle.R)
+            {
+                SliderColorR.Value = _lineStyle.R;
+            }
+
+            if (SliderColorG.Value != _lineStyle.G)
+            {
+                SliderColorG.Value = _lineStyle.G;
+            }
+
+            if (SliderColorB.Value != _lineStyle.B)
+            {
+                SliderColorB.Value = _lineStyle.B;
+            }
 
             var s1 = ColorHexValue.Text;
-            if (string.IsNullOrWhiteSpace(s1)) s1 = "";
+            if (string.IsNullOrWhiteSpace(s1))
+            {
+                s1 = "";
+            }
+
             var s2 = _lineStyle.HexColor;
             if (s1 != s2)
             {
@@ -1473,7 +1767,10 @@ namespace ModelGraphUWP
             {
                 line.Style.Set(_prevStyle, _lineStyle);
             }
-            if (_isValidUI) DrawCanvas.Invalidate();
+            if (_isValidUI)
+            {
+                DrawCanvas.Invalidate();
+            }
         }
         #endregion
 
@@ -1491,7 +1788,10 @@ namespace ModelGraphUWP
         private void DrawCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
             _drawRef.Point2 = DrawPoint(e);
-            if (_pointerIsPressed && DragAction != null) DragAction();
+            if (_pointerIsPressed && DragAction != null)
+            {
+                DragAction();
+            }
         }
 
         private void DrawCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
