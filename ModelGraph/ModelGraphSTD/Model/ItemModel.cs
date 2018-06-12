@@ -243,7 +243,7 @@ namespace ModelGraphSTD
 
         #region PostAction  ===================================================
         public void PostRefreshGraph() { }
-        public void PostRefreshViewList(int scroll, ChangeType change) => DataChef?.PostRefreshViewList(GetRootModel(), scroll, change);
+        public void PostRefreshViewList(int scroll = 0, ChangeType change = ChangeType.NoChange) => DataChef?.PostRefreshViewList(GetRootModel(), scroll, change);
         public void PostSetValue(int value) => DataChef?.PostSetValue(this, value);
         public void PostSetValue(bool value) => DataChef?.PostSetValue(this, value);
         public void PostSetValue(string value) => DataChef?.PostSetValue(this, value);
@@ -256,7 +256,7 @@ namespace ModelGraphSTD
                 {
                     if (item == null) return null;
                     if (item.IsInvalid) return null;
-                    if (item.IsDataChef) return item as Chef;
+                    if (item is Chef chef) return chef;
                 }
             }
         }

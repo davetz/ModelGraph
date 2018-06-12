@@ -17,7 +17,6 @@ namespace ModelGraphUWP
             _root = root;
             _root.ModelControl = this;
 
-
             InitializeComponent();
 
             Initialize();
@@ -30,16 +29,17 @@ namespace ModelGraphUWP
             TreeCanvas.Width = Width = width;
             TreeCanvas.Height = Height = height;
 
-            _viewCapacity =(int)(Height / _elementHieght);
-            //RefreshVisibleModels();
+            _root.ViewCapacity =(int)(Height / _elementHieght);
+            _root.PostRefreshViewList();
         }
+
         void TreeCanvas_Loaded(object sender, RoutedEventArgs e)
         {
             IsLoaded = true;
 
             TreeCanvas.Loaded -= TreeCanvas_Loaded;
-            _viewCapacity = (int)(ActualHeight / _elementHieght);
-            //RefreshVisibleModels();
+            _root.ViewCapacity = (int)(ActualHeight / _elementHieght);
+            _root.PostRefreshViewList();
         }
         bool IsLoaded;
 
@@ -59,7 +59,6 @@ namespace ModelGraphUWP
 
         int _levelIndent;
         int _elementHieght;
-        int _viewCapacity;
         bool _ignoreRefresh;
 
         Style _expanderStyle;
@@ -567,10 +566,7 @@ namespace ModelGraphUWP
         #region Refresh  ======================================================
         public void Refresh()
         {
-            if (_ignoreRefresh)
-            {
-                return;
-            }
+            if (_ignoreRefresh) return;
 
             _viewList.Clear();
 
@@ -590,13 +586,10 @@ namespace ModelGraphUWP
         #region RefreshVisibleModels  =========================================
         void RefreshVisibleModels()
         {
+            if (!IsLoaded) return;
+
             _ignoreRefresh = true;
             _pointWheelEnabled = false;
-
-            if (IsLoaded == false)
-            {
-                return;
-            }
 
             SaveKeyboardFocus();
 
@@ -635,7 +628,7 @@ namespace ModelGraphUWP
 
             //find stackPanel index of selected model
             var index = -1;
-            var N = _viewCapacity + 1;
+            var N = _root.ViewCapacity + 1;
             if (N >= _cacheSize)
             {
                 N = _cacheSize;
@@ -890,7 +883,7 @@ namespace ModelGraphUWP
                 obj.Text = " ";
             }
         }
-        async void ExpandTree_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        void ExpandTree_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             if (_previousModel == PointerModel(e))
             {
@@ -902,7 +895,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region ExpandRight  ==================================================
-        async void ExpandChoice_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        void ExpandChoice_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             if (_previousModel == PointerModel(e))
             {
@@ -931,7 +924,7 @@ namespace ModelGraphUWP
                 ExecuteSort(obj);
             }
         }
-        async void ExecuteSort(TextBlock obj)
+        void ExecuteSort(TextBlock obj)
         {
             if (obj == null)
             {
@@ -969,7 +962,7 @@ namespace ModelGraphUWP
                 ExecuteUsage(obj);
             }
         }
-        async void ExecuteUsage(TextBlock obj)
+        void ExecuteUsage(TextBlock obj)
         {
             if (obj == null)
             {
@@ -1008,7 +1001,7 @@ namespace ModelGraphUWP
                 ExecuteFilterMode(obj);
             }
         }
-        async void ExecuteFilterMode(TextBlock obj)
+        void ExecuteFilterMode(TextBlock obj)
         {
             if (obj == null)
             {
@@ -1022,7 +1015,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region FilterText  ===================================================
-        async void FilterText_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        void FilterText_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             var obj = sender as TextBox;
             var mdl = obj.DataContext as ItemModel;

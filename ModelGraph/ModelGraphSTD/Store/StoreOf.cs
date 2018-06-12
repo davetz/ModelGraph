@@ -5,11 +5,11 @@ namespace ModelGraphSTD
 {
     public class StoreOf<T> : Store where T: Item
     {
-        private List<T> _items;   // protected from acidental corruption
+        private List<T> _items = new List<T>(0);
         internal Guid Guid;       // all stores have a Guid
 
         #region Constructor  ==================================================
-        internal StoreOf() { } // dummy parameterless constructor
+        internal StoreOf() { }
         internal StoreOf(Chef owner, Trait trait, Guid guid, int capacity)
         {
             Owner = owner;
@@ -45,8 +45,7 @@ namespace ModelGraphSTD
         {
             var cap = (int)((exactCount + 1) * 1.1); // allow for modest expansion
 
-            if (_items == null) _items = new List<T>(cap);
-            else _items.Capacity = cap;
+            _items.Capacity = cap;
         }
 
         // Add  =============================================================

@@ -20,7 +20,7 @@ namespace ModelGraphSTD
 
         public int ViewCapacity;
         public ItemModel SelectModel;
-        public List<ItemModel> ViewModels;
+        public List<ItemModel> ViewModels = new List<ItemModel>();
 
         public int MinorDelta;
         public int MajorDelta;
@@ -32,7 +32,7 @@ namespace ModelGraphSTD
         public RootModel()
         { 
             Trait = Trait.RootChef_M;
-            Chef = new Chef();
+            Item = Chef = new Chef();
             Get = Chef.RootChef_X;
             Chef.AddRootModel(this);
 

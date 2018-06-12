@@ -264,6 +264,9 @@ namespace ModelGraphSTD
             var capacity = root.ViewCapacity;
             var viewList = root.ViewModels;
 
+            if (root.ChildModels == null || root.ChildModels.Length == 0)
+                root.Validate();
+
             if (root.ChildModels != null && root.ChildModels.Length > 0)
             {
                 if (prevCount == 0)
@@ -271,14 +274,14 @@ namespace ModelGraphSTD
                     foreach (var m in root.ChildModels)
                     {
                         if (viewList.Count >= capacity) break;
+                        viewList.Add(m);
 
                         if (m.Validate() && FilterSort(m))
                         {
-                            foreach (var child in m.ChildModels)
+                            foreach (var c in m.ChildModels)
                             {
                                 if (viewList.Count >= capacity) break;
-
-                                viewList.Add(child);
+                                viewList.Add(c);
                             }
                         }
                     }
@@ -885,9 +888,9 @@ namespace ModelGraphSTD
 
                         for (int i = 0; i < N; i++)
                         {
-                            var itm = items[i] as Chef;
-                            if (!TryGetOldModel(m, Trait.MockChef_M, oldModels, i, itm))
-                                m.ChildModels[i] = new ItemModel(m, Trait.MockChef_M, 0, itm, null, null, DataChef_X);
+                            var child = items[i] as Chef;
+                            if (!TryGetOldModel(m, Trait.MockChef_M, oldModels, i, child))
+                                m.ChildModels[i] = new ItemModel(m, Trait.DataChef_M, 0, child, null, null, child.DataChef_X);
                         }
                     }
                     if (N == 0) m.ChildModels = null;
@@ -903,6 +906,7 @@ namespace ModelGraphSTD
                 var dataChef = new Chef(rootChef, null);
 
                 root.UIRequestQueue.Enqueue(UIRequest.CreateView(root, ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_X));
+                root.UIRequestQueue.Enqueue(UIRequest.RefreshModel());
             }
             void OpenModel(ItemModel model, Object parm1)
             {
@@ -912,6 +916,7 @@ namespace ModelGraphSTD
                 var dataChef = new Chef(rootChef, repo);
 
                 root.UIRequestQueue.Enqueue(UIRequest.CreateView(root, ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_X));
+                root.UIRequestQueue.Enqueue(UIRequest.RefreshModel());
             }
             void SaveAsModel(ItemModel model, Object parm1)
             {
@@ -1283,7 +1288,7 @@ namespace ModelGraphSTD
         ModelAction ChangeRoot_X;
         void Initialize_ChangeRoot_X()
         {
-            DataChef_X = new ModelAction
+            ChangeRoot_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -1341,7 +1346,7 @@ namespace ModelGraphSTD
         ModelAction MetadataRoot_X;
         void Initialize_MetadataRoot_X()
         {
-            DataChef_X = new ModelAction
+            MetadataRoot_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -1409,7 +1414,7 @@ namespace ModelGraphSTD
         ModelAction ModelingRoot_X;
         void Initialize_ModelingRoot_X()
         {
-            DataChef_X = new ModelAction
+            ModelingRoot_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -1476,7 +1481,7 @@ namespace ModelGraphSTD
         ModelAction MetaRelationList_X;
         void Initialize_MetaRelationList_X()
         {
-            DataChef_X = new ModelAction
+            MetaRelationList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -2822,7 +2827,7 @@ namespace ModelGraphSTD
         ModelAction GraphList_X;
         void Initialize_GraphList_X()
         {
-            DataChef_X = new ModelAction
+            GraphList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {

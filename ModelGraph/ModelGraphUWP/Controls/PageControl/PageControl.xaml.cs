@@ -67,10 +67,7 @@ namespace ModelGraphUWP
         {
             _activeModel = model;
             ControlGrid.Children.Clear();
-            if (model == null)
-            {
-                return;
-            }
+            if (model == null) return;
 
             switch (model.ControlType)
             {
@@ -91,7 +88,6 @@ namespace ModelGraphUWP
                 default:
                     throw new ArgumentException("Unknown ControlType");
             }
-            (model.ModelControl as UserControl).Loaded += ModelControl_Loaded;
 
             var buttonCommands = new List<ModelCommand>();
             model.ButtonComands(buttonCommands);
@@ -115,15 +111,6 @@ namespace ModelGraphUWP
                 }
             }
             ModelTitle.Text = model.TitleName;
-        }
-
-        private void ModelControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            var ctl = sender as UserControl;
-            ctl.Loaded -= ModelControl_Loaded;
-
-            _activeModel?.ModelControl?.SetSize(ActualWidth, ActualHeight);
-            ModelRefresh();
         }
         #endregion
 
@@ -200,7 +187,7 @@ namespace ModelGraphUWP
                     }
                     break;
                 case RequestType.Refresh:
-                    ModelRefresh();
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { _activeModel?.ModelControl?.Refresh(); });
                     break;
                 case RequestType.CreateView:
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InitializeModel(new RootModel(rq)));
@@ -208,20 +195,6 @@ namespace ModelGraphUWP
                 case RequestType.CreatePage:
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new RootModel(rq)));
                     break;
-            }
-        }
-        internal async void ModelRefresh()
-        {
-            if (_activeModel != null && _activeModel.ModelControl != null)
-            {
-                var ctrl = _activeModel.ModelControl;
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    if (!(ctrl is ModelTreeControl) || _activeModel.Chef.ValidateModelTree(_activeModel))
-                    {
-                        ctrl.Refresh();
-                    }
-                });
             }
         }
 
