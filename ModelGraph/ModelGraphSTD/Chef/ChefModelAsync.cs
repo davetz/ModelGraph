@@ -26,6 +26,8 @@ namespace ModelGraphSTD
         }
         internal void PostRefreshViewList(RootModel root, int scroll, ChangeType change)
         {
+            if (root.ControlType == ControlType.AppRootChef) return;
+
             PostModelRequest(root, () => RefreshViewList(root, scroll, change));
         }
         internal void PostSetValue(ItemModel model, bool value)

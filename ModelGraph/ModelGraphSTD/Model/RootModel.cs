@@ -18,7 +18,7 @@ namespace ModelGraphSTD
 
         public readonly ConcurrentQueue<UIRequest> UIRequestQueue = new ConcurrentQueue<UIRequest>();
 
-        public int ViewCapacity;
+        public int ViewCapacity = 10; // initial minimum capacity
         public ItemModel SelectModel;
         public List<ItemModel> ViewModels = new List<ItemModel>();
 

@@ -248,6 +248,35 @@ namespace ModelGraphSTD
         public void PostSetValue(bool value) => DataChef?.PostSetValue(this, value);
         public void PostSetValue(string value) => DataChef?.PostSetValue(this, value);
         public void PostAction(Action action) => DataChef?.PostAction(this, action);
+        public static ItemModel FirstValidModel(List<ItemModel> viewList)
+        {
+            if (viewList.Count > 0)
+            {
+                foreach (var m in viewList)
+                {
+                    if (m.DataChef != null) return m;
+                }
+                foreach (var m in viewList)
+                {
+                    var p = m?.ParentModel;
+                    if (p != null && p.DataChef != null) return p;
+                }
+                foreach (var m in viewList)
+                {
+                    var p = m.ParentModel;
+                    var q = p?.ParentModel;
+                    if (q != null && q.DataChef != null) return q;
+                }
+                foreach (var m in viewList)
+                {
+                    var p = m.ParentModel;
+                    var q = p?.ParentModel;
+                    var r = q?.ParentModel;
+                    if (r != null && r.DataChef != null) return r;
+                }
+            }
+            return null;
+        }
         Chef DataChef
         {
             get

@@ -71,9 +71,11 @@ namespace ModelGraphUWP
 
             switch (model.ControlType)
             {
+                case ControlType.AppRootChef:
+                    break;
+
                 case ControlType.PrimaryTree:
                 case ControlType.PartialTree:
-                case ControlType.AppRootChef:
                     ControlGrid.Children.Add(new ModelTreeControl(model));
                     break;
 

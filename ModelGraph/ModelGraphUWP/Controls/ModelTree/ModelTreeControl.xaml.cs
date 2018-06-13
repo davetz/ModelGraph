@@ -38,7 +38,6 @@ namespace ModelGraphUWP
             IsLoaded = true;
 
             TreeCanvas.Loaded -= TreeCanvas_Loaded;
-            _root.ViewCapacity = (int)(ActualHeight / _elementHieght);
             _root.PostRefreshViewList();
         }
         bool IsLoaded;
@@ -47,7 +46,6 @@ namespace ModelGraphUWP
 
         #region Fields  =======================================================
         RootModel _root;
-        ItemModel _selectModel;
         ItemModel _previousModel;
         List<ItemModel> _viewList = new List<ItemModel>();
         List<ModelCommand> _menuCommands = new List<ModelCommand>();
@@ -254,7 +252,7 @@ namespace ModelGraphUWP
                 return;
             }
 
-            _selectModel = mdl;
+            _root.SelectModel = mdl;
 
             if (e.Key == Windows.System.VirtualKey.Shift)
             {
@@ -290,7 +288,7 @@ namespace ModelGraphUWP
             {
                 if (_isCtrlDown && mdl.ParentModel != null && mdl.ParentModel != _root)
                 {
-                    mdl = _selectModel = mdl.ParentModel;
+                    mdl = _root.SelectModel = mdl.ParentModel;
                 }
 
                 if (mdl.CanExpandLeft)
@@ -414,7 +412,7 @@ namespace ModelGraphUWP
             }
 
             var i = (int)(Count / 2);
-            _selectModel = _viewList[i];
+            _root.SelectModel = _viewList[i];
             RefreshSelectionGrid();
         }
         void TryGetPrevModel()
@@ -422,7 +420,7 @@ namespace ModelGraphUWP
             ValidateScroll();
             for (int i = 0; i < Count; i++)
             {
-                if (_viewList[i] != _selectModel)
+                if (_viewList[i] != _root.SelectModel)
                 {
                     continue;
                 }
@@ -438,7 +436,7 @@ namespace ModelGraphUWP
             var N = Count - 1;
             for (int i = 0; i < Count; i++)
             {
-                if (_viewList[i] != _selectModel)
+                if (_viewList[i] != _root.SelectModel)
                 {
                     continue;
                 }
@@ -504,7 +502,7 @@ namespace ModelGraphUWP
         #region PointerPressed  ===============================================
         void TreeGrid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            _previousModel = _selectModel = PointerModel(e);
+            _previousModel = _root.SelectModel = PointerModel(e);
             TailButton.Focus(FocusState.Keyboard);
             RefreshSelectionGrid();
         }
@@ -577,7 +575,7 @@ namespace ModelGraphUWP
             {
                 select = (_viewList.Count > 0) ? _viewList[0] : null;
             }
-            _previousModel = _selectModel = select;
+            _previousModel = _root.SelectModel = select;
 
             RefreshVisibleModels();
         }
@@ -593,7 +591,7 @@ namespace ModelGraphUWP
 
             SaveKeyboardFocus();
 
-            var obj = _selectModel;
+            var obj = _root.SelectModel;
 
             var cacheReset = ValidateCache();
             for (int i = 0; i < _viewList.Count; i++)
@@ -615,7 +613,7 @@ namespace ModelGraphUWP
             _sortControl = _filterControl = null;
             _insertCommand = _removeCommand = null;
 
-            var select = _selectModel;
+            var select = _root.SelectModel;
             if (Count == 0 || select == null)
             {
                 // hide leftover buttons
@@ -797,7 +795,7 @@ namespace ModelGraphUWP
         {
             if (_previousModel == PointerModel(e))
             {
-                _selectModel = _previousModel;
+                _root.SelectModel = _previousModel;
                 RefreshSelectionGrid();
             }
         }
@@ -888,7 +886,7 @@ namespace ModelGraphUWP
             if (_previousModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
-                _selectModel = obj.DataContext as ItemModel;
+                _root.SelectModel = obj.DataContext as ItemModel;
                 _root.PostRefreshViewList(0, ChangeType.ToggleLeft);
             }
         }
@@ -900,7 +898,7 @@ namespace ModelGraphUWP
             if (_previousModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
-                _selectModel = obj.DataContext as ItemModel;
+                _root.SelectModel = obj.DataContext as ItemModel;
                 _root.PostRefreshViewList(0, ChangeType.ToggleRight);
             }
         }

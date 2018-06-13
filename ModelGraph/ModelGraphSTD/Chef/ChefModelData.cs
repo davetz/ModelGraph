@@ -254,50 +254,191 @@ namespace ModelGraphSTD
         #region RefreshViewList  ==============================================
         internal void RefreshViewList(RootModel root, int scroll = 0, ChangeType change = ChangeType.NoChange)
         {
-            var prevCount = root.ViewModels.Count;
-            var prevModels = root.ViewModels.ToArray();
-            var prevSelect = root.SelectModel;
-
-            root.ViewModels.Clear();
-            root.SelectModel = null;
-
-            var capacity = root.ViewCapacity;
+            var select = root.SelectModel;
             var viewList = root.ViewModels;
+            var capacity = root.ViewCapacity;
+
+            var first = ItemModel.FirstValidModel(viewList);
+            var start = (first == null);
+
+            viewList.Clear();
+            UpdateSelectModel(select, change);
 
             if (root.ChildModels == null || root.ChildModels.Length == 0)
                 root.Validate();
 
             if (root.ChildModels != null && root.ChildModels.Length > 0)
             {
-                if (prevCount == 0)
-                {
-                    foreach (var m in root.ChildModels)
-                    {
-                        if (viewList.Count >= capacity) break;
-                        viewList.Add(m);
 
-                        if (m.Validate() && FilterSort(m))
+                var S = (scroll < 0) ? -scroll : scroll;
+                var N = capacity;
+
+                var buffer = new CircularBuffer(N + S);
+
+                foreach (var m in root.ChildModels)
+                {
+                    if (N == 0 && S == 0) break;
+
+                    buffer.Add(m);
+                    if (!start && m == first) start = true;
+                    if (start) { if (N > 0) N--; else S--; }
+
+                    if (ValidateModel(m))
+                    {
+                        foreach (var c in m.ChildModels)
                         {
-                            foreach (var c in m.ChildModels)
-                            {
-                                if (viewList.Count >= capacity) break;
-                                viewList.Add(c);
-                            }
+                            if (N == 0 && S == 0) break;
+
+                            buffer.Add(m);
+                            if (!start && m == first) start = true;
+                            if (start) { if (N > 0) N--; else S--; }
                         }
                     }
                 }
+
+                if (scroll < 0)
+                    buffer.GetTail(viewList, capacity);
                 else
-                {
-                }
+                    buffer.GetHead(viewList, capacity);
             }
 
-            if (prevSelect != null && viewList.Contains(prevSelect))
-                root.SelectModel = prevSelect;
+            if (select != null && viewList.Contains(select))
+                root.SelectModel = select;
             else if (viewList.Count > 0)
                 root.SelectModel = (scroll < 0) ? viewList[viewList.Count - 1] : viewList[0];
+            else
+                root.SelectModel = null;
 
             root.UIRequestQueue.Enqueue(UIRequest.RefreshModel());
         }
+
+        #region CircularBuffer  ===============================================
+        class CircularBuffer
+        {
+            ItemModel[] _buffer;
+            int _count;
+            int _index;
+
+            internal CircularBuffer(int capacity)
+            {
+                _buffer = new ItemModel[capacity];
+            }
+
+            internal void Add(ItemModel m)
+            {
+                _buffer[AddIndex] = m;
+                _count++;
+            }
+
+
+            internal void GetHead(List<ItemModel> list, int count)
+            {
+                CopyBuffer(0, Validate(count), list);
+            }
+
+            internal void GetTail(List<ItemModel> list, int count)
+            {
+                var N = Validate(count);
+                var M = Validate(_buffer.Length);
+                CopyBuffer((M - N), N, list);
+            }
+
+            #region PrivateMethods  ===========================================
+            int AddIndex { get { var inx = _index; _index = (_index + 1) % _buffer.Length; return inx; } }
+            int Validate(int count)
+            {
+                var N = (_count < _buffer.Length) ? _count : _buffer.Length;
+                return (count > N) ? N : count;
+            }
+            void CopyBuffer(int start, int count, List<ItemModel> list)
+            {
+                for (int i = 0, j = start; i < count; i++, j = ((j + 1) % _buffer.Length))
+                {
+                    list.Add(_buffer[j]);
+                }
+            }
+            #endregion
+        }
+        #endregion
+
+        #region UpdateSelectModel  ========================================
+        void UpdateSelectModel(ItemModel m, ChangeType change)
+        {
+            if (m != null)
+            {
+                switch (change)
+                {
+                    case ChangeType.ToggleLeft:
+                        m.IsExpandedLeft = !m.IsExpandedLeft;
+                        break;
+
+                    case ChangeType.ExpandLeft:
+                        m.IsExpandedLeft = true;
+                        break;
+
+                    case ChangeType.CollapseLeft:
+                        m.IsExpandedLeft = false;
+                        m.IsExpandedRight = false;
+                        m.IsExpandedFilter = false;
+                        m.ViewFilter = null;
+                        break;
+
+                    case ChangeType.ToggleRight:
+                        m.IsExpandedRight = !m.IsExpandedRight;
+                        break;
+
+                    case ChangeType.ExpandRight:
+                        m.IsExpandedRight = true;
+                        break;
+
+                    case ChangeType.CollapseRight:
+                        m.IsExpandedRight = false;
+                        break;
+
+                    case ChangeType.ToggleFilter:
+                        m.IsExpandedFilter = !m.IsExpandedFilter;
+                        if (m.IsExpandedFilter)
+                            m.ViewFilter = string.Empty;
+                        else
+                            m.ViewFilter = null;
+                        break;
+
+                    case ChangeType.ExpandFilter:
+                        m.IsExpandedFilter = true;
+                        m.ViewFilter = string.Empty;
+                        break;
+
+                    case ChangeType.CollapseFilter:
+                        m.IsExpandedFilter = false;
+                        m.ViewFilter = null;
+                        break;
+                }
+            }
+        }
+        #endregion
+
+        #region ValidateModel  ============================================
+        bool ValidateModel(ItemModel model)
+        {
+            if (model.Item.AutoExpandRight)
+            {
+                model.IsExpandedRight = true;
+                model.Item.AutoExpandRight = false;
+            }
+
+            if (model.IsChanged)
+            {
+                model.IsChanged = false;
+
+                if (model.IsExpandedLeft || model.IsExpandedRight || model.ChildModels != null)
+                {
+                    model.Validate();
+                    return FilterSort(model);
+                }
+            }
+            return (model.ChildModels != null && model.ChildModels.Length > 0);
+        }
+        #endregion
         #endregion
 
         #region ValidateModelTree =============================================
@@ -477,87 +618,6 @@ namespace ModelGraphSTD
 
             //return anyChange;
 
-            //#region UpdateSelectModel  ========================================
-            //void UpdateSelectModel()
-            //{
-            //    if (root.SelectModel != null)
-            //    {
-            //        switch (change)
-            //        {
-            //            case ChangeType.ToggleLeft:
-            //                root.SelectModel.IsExpandedLeft = !root.SelectModel.IsExpandedLeft;
-            //                break;
-
-            //            case ChangeType.ExpandLeft:
-            //                root.SelectModel.IsExpandedLeft = true;
-            //                break;
-
-            //            case ChangeType.CollapseLeft:
-            //                root.SelectModel.IsExpandedLeft = false;
-            //                root.SelectModel.IsExpandedRight = false;
-            //                root.SelectModel.IsExpandedFilter = false;
-            //                root.ViewFilter.Remove(root.SelectModel);
-            //                break;
-
-            //            case ChangeType.ToggleRight:
-            //                root.SelectModel.IsExpandedRight = !root.SelectModel.IsExpandedRight;
-            //                break;
-
-            //            case ChangeType.ExpandRight:
-            //                root.SelectModel.IsExpandedRight = true;
-            //                break;
-
-            //            case ChangeType.CollapseRight:
-            //                root.SelectModel.IsExpandedRight = false;
-            //                break;
-
-            //            case ChangeType.ToggleFilter:
-            //                root.SelectModel.IsExpandedFilter = !root.SelectModel.IsExpandedFilter;
-            //                if (root.SelectModel.IsExpandedFilter)
-            //                    root.ViewFilter[root.SelectModel] = string.Empty;
-            //                else
-            //                    root.ViewFilter.Remove(root.SelectModel);
-            //                break;
-
-            //            case ChangeType.ExpandFilter:
-            //                root.SelectModel.IsExpandedFilter = true;
-            //                root.ViewFilter[root.SelectModel] = string.Empty;
-            //                break;
-
-            //            case ChangeType.CollapseFilter:
-            //                root.SelectModel.IsExpandedFilter = false;
-            //                root.ViewFilter.Remove(root.SelectModel);
-            //                break;
-            //        }
-            //    }
-            //}
-            //#endregion
-
-            //#region ValidateModel  ============================================
-            //void ValidateModel(ItemModel model)
-            //{
-            //    if (model.Item.AutoExpandRight)
-            //    {
-            //        model.IsExpandedRight = true;
-            //        model.Item.AutoExpandRight = false;
-            //    }
-
-            //    if (rebuildTree || model.IsChanged)
-            //    {
-            //        model.IsChanged = false;
-
-            //        if (model.IsExpandedLeft || model.IsExpandedRight || model.ChildModels != null)
-            //        {
-            //            model.Validate();
-            //            CheckFilterSort(model);
-            //        }
-            //        else
-            //        {
-            //            model.ChildModels = null;
-            //        }
-            //    }
-            //}
-            //#endregion
 
             //#region ValidateViewFilters  ======================================
             //void ValidateViewFilters()
