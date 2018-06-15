@@ -29,7 +29,7 @@ namespace ModelGraphUWP
             TreeCanvas.Width = Width = width;
             TreeCanvas.Height = Height = height;
 
-            _root.ViewCapacity =(int)(Height / _elementHieght);
+            _root.ViewCapacity =(int)(Height / _elementHieght) - 1;
             _root.PostRefreshViewList();
         }
 
@@ -245,7 +245,7 @@ namespace ModelGraphUWP
             }
         }
 
-        async void TailButton_KeyDown(object sender, KeyRoutedEventArgs e)
+        void TailButton_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (!(TailButton.DataContext is ItemModel mdl))
             {
@@ -265,13 +265,11 @@ namespace ModelGraphUWP
             else if (e.Key == Windows.System.VirtualKey.PageDown)
             {
                 ChangeScroll(Count - 2);
-                SelectMidleModel();
                 e.Handled = true;
             }
             else if (e.Key == Windows.System.VirtualKey.PageUp)
             {
                 ChangeScroll(2 - Count);
-                SelectMidleModel();
                 e.Handled = true;
             }
             if (e.Key == Windows.System.VirtualKey.Down)
@@ -404,47 +402,27 @@ namespace ModelGraphUWP
         };
         #endregion
 
-        void SelectMidleModel()
-        {
-            if (Count == 0)
-            {
-                return;
-            }
-
-            var i = (int)(Count / 2);
-            _root.SelectModel = _viewList[i];
-            RefreshSelectionGrid();
-        }
         void TryGetPrevModel()
         {
-            ValidateScroll();
-            for (int i = 0; i < Count; i++)
+            var i = _viewList.IndexOf(_root.SelectModel) - 1;
+            if (i >= 0 && i < _viewList.Count)
             {
-                if (_viewList[i] != _root.SelectModel)
-                {
-                    continue;
-                }
-
-                ChangeScroll(-1);
+                _root.SelectModel = _viewList[i];
                 RefreshSelectionGrid();
-                return;
             }
+            else
+                ChangeScroll(-1);
         }
         void TryGetNextModel()
         {
-            ValidateScroll();
-            var N = Count - 1;
-            for (int i = 0; i < Count; i++)
+            var i = _viewList.IndexOf(_root.SelectModel) + 1;
+            if (i > 0 && i < _viewList.Count)
             {
-                if (_viewList[i] != _root.SelectModel)
-                {
-                    continue;
-                }
-
-                ChangeScroll(1);
+                _root.SelectModel = _viewList[i];
                 RefreshSelectionGrid();
-                return;
             }
+            else
+                ChangeScroll(1);
         }
         #endregion
 
@@ -462,11 +440,7 @@ namespace ModelGraphUWP
         }
         void ChangeScroll(int delta)
         {
-            ValidateScroll();
-            RefreshVisibleModels();
-        }
-        void ValidateScroll()
-        {
+            _root.PostRefreshViewList(delta);
         }
         #endregion
 

@@ -45,6 +45,12 @@ namespace ModelGraphSTD
         internal string NameKey => GetNameKey(IsProperty ? Item.Trait : Trait);
         internal string SummaryKey => GetSummaryKey(IsProperty ? Item.Trait : Trait);
         internal string DescriptionKey => GetDescriptionKey(IsProperty ? Item.Trait : Trait);
+
+        public override string ToString()
+        {
+            var (kind, name, count, type) = ModelParms;
+            return $"{NameKey} {Trait} {kind} {name} {count}";
+        }
         #endregion
 
         #region Trait  ========================================================
@@ -165,13 +171,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region ModelAction  ==================================================
-        public bool Validate()
-        {
-            if (Get.Validate == null) return false;
-
-            Get.Validate(this);
-            return (ChildModels != null && ChildModels.Length > 0);
-        }
+        public void Validate() => Get?.Validate.Invoke(this);
         public string ModelInfo => (Get.ModelInfo == null) ? null : Get.ModelInfo(this);
         public string ModelSummary => (Get.ModelSummary == null) ? null : Get.ModelSummary(this);
         public string ModelDescription => (Get.ModelDescription == null) ? null : Get.ModelDescription(this);
@@ -181,17 +181,16 @@ namespace ModelGraphSTD
         public string TextValue => (Get.TextValue == null) ? null : Get.TextValue(this);
         public string[] ListValue => (Get.ListValue == null) ? null : Get.ListValue(this);
         //=====================================================================
-        const string BlankName = "?-?-?";
         public (string Kind, string Name, int Count, ModelType Type) ModelParms
         {
             get
             {
-                if (Get.ModelParms == null) return (string.Empty, BlankName, 0, ModelType.Default);
+                if (Get.ModelParms == null) return (string.Empty, Chef.BlankName, 0, ModelType.Default);
 
                 var (kind, name, count, type) = Get.ModelParms(this);
 
                 if (kind == null) kind = string.Empty;
-                if (string.IsNullOrWhiteSpace(name)) name = BlankName;
+                if (string.IsNullOrWhiteSpace(name)) name = Chef.BlankName;
 
                 return (kind, name, count, type);
             }

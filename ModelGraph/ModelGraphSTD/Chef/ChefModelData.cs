@@ -127,6 +127,7 @@ namespace ModelGraphSTD
             Initialize_QueryEgressStep_X();
             Initialize_QueryEgressTail_X();
 
+            Initialize_GraphXRef_X();
             Initialize_GraphRef_X();
             Initialize_GraphNodeList_X();
             Initialize_GraphEdgeList_X();
@@ -264,50 +265,55 @@ namespace ModelGraphSTD
             viewList.Clear();
             UpdateSelectModel(select, change);
 
-            if (root.ChildModels == null || root.ChildModels.Length == 0)
-                root.Validate();
+            ValidateModel(root);
+            var modelStack = new TreeModelStack();
+            modelStack.PushChildren(root);
 
-            if (root.ChildModels != null && root.ChildModels.Length > 0)
+            var S = (scroll < 0) ? -scroll : scroll;
+            var N = capacity;
+            var buffer = new CircularBuffer(N, S);
+
+            if (scroll < 0) S = 0;
+            while (modelStack.IsNotEmpty && (N + S) > 0)
             {
+                var m = modelStack.PopNext();
+                buffer.Add(m);
 
-                var S = (scroll < 0) ? -scroll : scroll;
-                var N = capacity;
+                if (!start && m == first) start = buffer.SetFirst();
+                if (start) { if (N > 0) N--; else S--; }
 
-                var buffer = new CircularBuffer(N + S);
-
-                foreach (var m in root.ChildModels)
-                {
-                    if (N == 0 && S == 0) break;
-
-                    buffer.Add(m);
-                    if (!start && m == first) start = true;
-                    if (start) { if (N > 0) N--; else S--; }
-
-                    if (ValidateModel(m))
-                    {
-                        foreach (var c in m.ChildModels)
-                        {
-                            if (N == 0 && S == 0) break;
-
-                            buffer.Add(m);
-                            if (!start && m == first) start = true;
-                            if (start) { if (N > 0) N--; else S--; }
-                        }
-                    }
-                }
-
-                if (scroll < 0)
-                    buffer.GetTail(viewList, capacity);
-                else
-                    buffer.GetHead(viewList, capacity);
+                ValidateModel(m);
+                modelStack.PushChildren(m);
             }
 
-            if (select != null && viewList.Contains(select))
-                root.SelectModel = select;
-            else if (viewList.Count > 0)
-                root.SelectModel = (scroll < 0) ? viewList[viewList.Count - 1] : viewList[0];
-            else
-                root.SelectModel = null;
+            if (scroll == -1)
+            {
+                buffer.GetHead(viewList);
+                root.SelectModel = viewList[0];
+            }
+            else if (scroll == 1)
+            {
+                buffer.GetTail(viewList);
+                root.SelectModel = viewList[viewList.Count - 1];
+            }
+            else if (scroll == 0)
+            {
+                buffer.GetHead(viewList);
+                if (!viewList.Contains(select))
+                    root.SelectModel = viewList[0];
+            }
+            else if (scroll < -1)
+            {
+                buffer.GetHead(viewList);
+                if (!viewList.Contains(select))
+                    root.SelectModel = viewList[viewList.Count - 1];
+            }
+            else if (scroll > 1)
+            {
+                buffer.GetTail(viewList);
+                if (!viewList.Contains(select))
+                    root.SelectModel = viewList[0];
+            }
 
             root.UIRequestQueue.Enqueue(UIRequest.RefreshModel());
         }
@@ -316,45 +322,44 @@ namespace ModelGraphSTD
         class CircularBuffer
         {
             ItemModel[] _buffer;
+            int _first;
             int _count;
-            int _index;
+            int _scroll;
+            int _length;
 
-            internal CircularBuffer(int capacity)
+
+            internal CircularBuffer(int length, int scroll)
             {
-                _buffer = new ItemModel[capacity];
+                _scroll = scroll;
+                _length = length;
+                _buffer = new ItemModel[length + scroll];
             }
 
-            internal void Add(ItemModel m)
+            internal void Add(ItemModel m) => _buffer[Index(_count++)] = m;
+
+            internal bool SetFirst() { _first = (_count - 1); return true; }
+
+            internal void GetHead(List<ItemModel> list)
             {
-                _buffer[AddIndex] = m;
-                _count++;
+                var first = (_first - _scroll);
+                if (first < 0)  first = 0;
+                CopyBuffer(first, list);
             }
 
-
-            internal void GetHead(List<ItemModel> list, int count)
+            internal void GetTail(List<ItemModel> list)
             {
-                CopyBuffer(0, Validate(count), list);
-            }
-
-            internal void GetTail(List<ItemModel> list, int count)
-            {
-                var N = Validate(count);
-                var M = Validate(_buffer.Length);
-                CopyBuffer((M - N), N, list);
+                var first = (_count < _buffer.Length) ? 0 : ((_count - _first) < _length) ? (_count - _length + _scroll): _first + _scroll;
+                CopyBuffer(first, list);
             }
 
             #region PrivateMethods  ===========================================
-            int AddIndex { get { var inx = _index; _index = (_index + 1) % _buffer.Length; return inx; } }
-            int Validate(int count)
+            int Index(int inx) => inx % _buffer.Length;
+            int Limit(int num) => (num < 0) ? 0 : (num < _buffer.Length) ? num : _buffer.Length;
+            void CopyBuffer(int first, List<ItemModel> list)
             {
-                var N = (_count < _buffer.Length) ? _count : _buffer.Length;
-                return (count > N) ? N : count;
-            }
-            void CopyBuffer(int start, int count, List<ItemModel> list)
-            {
-                for (int i = 0, j = start; i < count; i++, j = ((j + 1) % _buffer.Length))
+                for (int i = 0, j = first; (i < _length && j < _count); i++, j++)
                 {
-                    list.Add(_buffer[j]);
+                    list.Add(_buffer[Index(j)]);
                 }
             }
             #endregion

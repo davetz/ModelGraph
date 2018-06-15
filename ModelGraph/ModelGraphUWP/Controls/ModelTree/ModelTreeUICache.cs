@@ -39,8 +39,6 @@ namespace ModelGraphUWP
         /// </summary>
         bool ValidateCache()
         {
-            ValidateScroll();
-
             if (_prevCount != Count)
             {
                 //either the scroll or or the model count has changed, so reset the UI cache
