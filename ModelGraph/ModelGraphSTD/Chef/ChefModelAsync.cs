@@ -24,10 +24,11 @@ namespace ModelGraphSTD
             else if (command.Action1 != null)
                 PostModelRequest(model, () => { command.Action1(model, command.Parameter1); });
         }
-        internal void PostRefreshViewList(RootModel root, int scroll, ChangeType change)
+        internal void PostRefreshViewList(RootModel root, ItemModel select, int scroll, ChangeType change)
         {
             if (root.ControlType == ControlType.AppRootChef) return;
 
+            root.SelectModel = select;
             PostModelRequest(root, () => RefreshViewList(root, scroll, change));
         }
         internal void PostSetValue(ItemModel model, bool value)

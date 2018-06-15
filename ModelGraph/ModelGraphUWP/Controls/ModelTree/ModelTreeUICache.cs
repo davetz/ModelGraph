@@ -475,7 +475,7 @@ namespace ModelGraphUWP
 
             obj.DataContext = model;
             var txt = model.TextValue;
-            obj.Text = (txt == null) ? string.Empty : txt;
+            obj.Text = txt ?? string.Empty;
             obj.Tag = obj.Text;
             obj.IsReadOnly = model.IsReadOnly;
 

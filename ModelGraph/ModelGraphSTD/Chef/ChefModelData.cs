@@ -259,60 +259,68 @@ namespace ModelGraphSTD
             var viewList = root.ViewModels;
             var capacity = root.ViewCapacity;
 
-            var first = ItemModel.FirstValidModel(viewList);
-            var start = (first == null);
-
-            viewList.Clear();
-            UpdateSelectModel(select, change);
-
-            ValidateModel(root);
-            var modelStack = new TreeModelStack();
-            modelStack.PushChildren(root);
-
-            var S = (scroll < 0) ? -scroll : scroll;
-            var N = capacity;
-            var buffer = new CircularBuffer(N, S);
-
-            if (scroll < 0) S = 0;
-            while (modelStack.IsNotEmpty && (N + S) > 0)
+            if (capacity > 0)
             {
-                var m = modelStack.PopNext();
-                buffer.Add(m);
+                var first = ItemModel.FirstValidModel(viewList);
+                var start = (first == null);
 
-                if (!start && m == first) start = buffer.SetFirst();
-                if (start) { if (N > 0) N--; else S--; }
+                viewList.Clear();
+                UpdateSelectModel(select, change);
 
-                ValidateModel(m);
-                modelStack.PushChildren(m);
-            }
+                ValidateModel(root);
+                var modelStack = new TreeModelStack();
+                modelStack.PushChildren(root);
 
-            if (scroll == -1)
-            {
-                buffer.GetHead(viewList);
-                root.SelectModel = viewList[0];
-            }
-            else if (scroll == 1)
-            {
-                buffer.GetTail(viewList);
-                root.SelectModel = viewList[viewList.Count - 1];
-            }
-            else if (scroll == 0)
-            {
-                buffer.GetHead(viewList);
-                if (!viewList.Contains(select))
+                var S = (scroll < 0) ? -scroll : scroll;
+                var N = capacity;
+                var buffer = new CircularBuffer(N, S);
+
+                if (scroll < 0) S = 0;
+                while (modelStack.IsNotEmpty && (N + S) > 0)
+                {
+                    var m = modelStack.PopNext();
+                    buffer.Add(m);
+
+                    if (!start && m == first) start = buffer.SetFirst();
+                    if (start) { if (N > 0) N--; else S--; }
+
+                    ValidateModel(m);
+                    modelStack.PushChildren(m);
+                }
+
+                if (scroll == -1)
+                {
+                    buffer.GetHead(viewList);
                     root.SelectModel = viewList[0];
-            }
-            else if (scroll < -1)
-            {
-                buffer.GetHead(viewList);
-                if (!viewList.Contains(select))
+                }
+                else if (scroll == 1)
+                {
+                    buffer.GetTail(viewList);
                     root.SelectModel = viewList[viewList.Count - 1];
+                }
+                else if (scroll == 0)
+                {
+                    buffer.GetHead(viewList);
+                    if (!viewList.Contains(select))
+                        root.SelectModel = viewList[0];
+                }
+                else if (scroll < -1)
+                {
+                    buffer.GetHead(viewList);
+                    if (!viewList.Contains(select))
+                        root.SelectModel = viewList[viewList.Count - 1];
+                }
+                else if (scroll > 1)
+                {
+                    buffer.GetTail(viewList);
+                    if (!viewList.Contains(select))
+                        root.SelectModel = viewList[0];
+                }
             }
-            else if (scroll > 1)
+            else
             {
-                buffer.GetTail(viewList);
-                if (!viewList.Contains(select))
-                    root.SelectModel = viewList[0];
+                root.ViewModels.Clear();
+                root.SelectModel = null;
             }
 
             root.UIRequestQueue.Enqueue(UIRequest.RefreshModel());

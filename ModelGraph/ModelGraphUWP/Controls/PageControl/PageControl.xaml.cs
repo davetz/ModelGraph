@@ -29,6 +29,7 @@ namespace ModelGraphUWP
             ApplicationView.GetForCurrentView().Consolidated += ViewConsolidated;
         }
 
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             if (!(e.Parameter is RootModel model))
@@ -51,6 +52,8 @@ namespace ModelGraphUWP
         {
             _activeModel?.ModelControl?.SetSize(ActualWidth, ActualHeight);
         }
+
+        public void SetActualSize() => _activeModel?.ModelControl?.SetSize(ActualWidth, ActualHeight);
         #endregion
 
         #region InitializeModel/ShowModelControl  =============================

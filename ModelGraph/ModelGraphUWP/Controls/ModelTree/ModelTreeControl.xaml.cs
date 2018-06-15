@@ -30,22 +30,32 @@ namespace ModelGraphUWP
             TreeCanvas.Height = Height = height;
 
             _root.ViewCapacity =(int)(Height / _elementHieght) - 1;
-            _root.PostRefreshViewList();
+            _root.PostRefreshViewList(_select);
+
+            _viewIsReady = true;
         }
+
+        bool ViewIsNotReady()
+        {
+            if (_viewIsReady) return false;
+
+            _root.PageControl.SetActualSize();
+
+            return true;
+        }
+        bool _viewIsReady;
 
         void TreeCanvas_Loaded(object sender, RoutedEventArgs e)
         {
-            IsLoaded = true;
-
             TreeCanvas.Loaded -= TreeCanvas_Loaded;
-            _root.PostRefreshViewList();
+            _root.PostRefreshViewList(_select);
         }
-        bool IsLoaded;
 
         #endregion
 
         #region Fields  =======================================================
         RootModel _root;
+        ItemModel _select;
         ItemModel _previousModel;
         List<ItemModel> _viewList = new List<ItemModel>();
         List<ModelCommand> _menuCommands = new List<ModelCommand>();
@@ -252,7 +262,7 @@ namespace ModelGraphUWP
                 return;
             }
 
-            _root.SelectModel = mdl;
+            _select = mdl;
 
             if (e.Key == Windows.System.VirtualKey.Shift)
             {
@@ -286,19 +296,19 @@ namespace ModelGraphUWP
             {
                 if (_isCtrlDown && mdl.ParentModel != null && mdl.ParentModel != _root)
                 {
-                    mdl = _root.SelectModel = mdl.ParentModel;
+                    mdl = _select = mdl.ParentModel;
                 }
 
                 if (mdl.CanExpandLeft)
                 {
-                    _root.PostRefreshViewList(0, ChangeType.ToggleLeft);
+                    _root.PostRefreshViewList(_select, 0, ChangeType.ToggleLeft);
                 }
             }
             else if (e.Key == Windows.System.VirtualKey.Right)
             {
                 if (mdl.CanExpandRight)
                 {
-                    _root.PostRefreshViewList(0, ChangeType.ToggleRight);
+                    _root.PostRefreshViewList(_select, 0, ChangeType.ToggleRight);
                 }
             }
             else if (e.Key == Windows.System.VirtualKey.Insert)
@@ -404,10 +414,10 @@ namespace ModelGraphUWP
 
         void TryGetPrevModel()
         {
-            var i = _viewList.IndexOf(_root.SelectModel) - 1;
+            var i = _viewList.IndexOf(_select) - 1;
             if (i >= 0 && i < _viewList.Count)
             {
-                _root.SelectModel = _viewList[i];
+                _select = _root.SelectModel = _viewList[i];
                 RefreshSelectionGrid();
             }
             else
@@ -415,10 +425,10 @@ namespace ModelGraphUWP
         }
         void TryGetNextModel()
         {
-            var i = _viewList.IndexOf(_root.SelectModel) + 1;
+            var i = _viewList.IndexOf(_select) + 1;
             if (i > 0 && i < _viewList.Count)
             {
-                _root.SelectModel = _viewList[i];
+                _select = _root.SelectModel = _viewList[i];
                 RefreshSelectionGrid();
             }
             else
@@ -440,7 +450,7 @@ namespace ModelGraphUWP
         }
         void ChangeScroll(int delta)
         {
-            _root.PostRefreshViewList(delta);
+            _root.PostRefreshViewList(_select, delta);
         }
         #endregion
 
@@ -476,7 +486,7 @@ namespace ModelGraphUWP
         #region PointerPressed  ===============================================
         void TreeGrid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            _previousModel = _root.SelectModel = PointerModel(e);
+            _select = _previousModel = _root.SelectModel = PointerModel(e);
             TailButton.Focus(FocusState.Keyboard);
             RefreshSelectionGrid();
         }
@@ -538,34 +548,17 @@ namespace ModelGraphUWP
         #region Refresh  ======================================================
         public void Refresh()
         {
-            if (_ignoreRefresh) return;
+            if (ViewIsNotReady()) return;
 
             _viewList.Clear();
-
-            var select = _root.SelectModel;
             _viewList.AddRange(_root.ViewModels);
+            _select = _previousModel = _root.SelectModel;
 
-            if (!_viewList.Contains(select))
-            {
-                select = (_viewList.Count > 0) ? _viewList[0] : null;
-            }
-            _previousModel = _root.SelectModel = select;
-
-            RefreshVisibleModels();
-        }
-        #endregion
-
-        #region RefreshVisibleModels  =========================================
-        void RefreshVisibleModels()
-        {
-            if (!IsLoaded) return;
-
-            _ignoreRefresh = true;
             _pointWheelEnabled = false;
 
             SaveKeyboardFocus();
 
-            var obj = _root.SelectModel;
+            var obj = _select;
 
             var cacheReset = ValidateCache();
             for (int i = 0; i < _viewList.Count; i++)
@@ -577,7 +570,6 @@ namespace ModelGraphUWP
             RestoreKeyboardFocus();
 
             _pointWheelEnabled = true;
-            _ignoreRefresh = false;
         }
         #endregion
 
@@ -587,8 +579,7 @@ namespace ModelGraphUWP
             _sortControl = _filterControl = null;
             _insertCommand = _removeCommand = null;
 
-            var select = _root.SelectModel;
-            if (Count == 0 || select == null)
+            if (Count == 0 || _select == null)
             {
                 // hide leftover buttons
                 foreach (var btn in _itemButtons)
@@ -618,7 +609,7 @@ namespace ModelGraphUWP
                     return;
                 }
 
-                if (_stackPanelCache[i].DataContext == select)
+                if (_stackPanelCache[i].DataContext == _select)
                 {
                     index = i;
                     break;
@@ -632,7 +623,7 @@ namespace ModelGraphUWP
             SelectionGrid.Width = ActualWidth;
             Canvas.SetTop(SelectionGrid, (index * _elementHieght));
 
-            TailButton.DataContext = select;
+            TailButton.DataContext = _select;
 
             if (_sortModeCache[index] != null && _sortModeCache[index].DataContext != null)
             {
@@ -644,7 +635,7 @@ namespace ModelGraphUWP
                 _filterControl = _filterModeCache[index];
             }
 
-            if (select.IsFilterFocus) { select.IsFilterFocus = false; _focusElement = _filterTextCache[index]; }
+            if (_select.IsFilterFocus) { _select.IsFilterFocus = false; _focusElement = _filterTextCache[index]; }
 
             if (_root.ModelDescription != null)
             {
@@ -769,7 +760,7 @@ namespace ModelGraphUWP
         {
             if (_previousModel == PointerModel(e))
             {
-                _root.SelectModel = _previousModel;
+                _select = _root.SelectModel = _previousModel;
                 RefreshSelectionGrid();
             }
         }
@@ -860,8 +851,8 @@ namespace ModelGraphUWP
             if (_previousModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
-                _root.SelectModel = obj.DataContext as ItemModel;
-                _root.PostRefreshViewList(0, ChangeType.ToggleLeft);
+                _select = obj.DataContext as ItemModel;
+                _root.PostRefreshViewList(_select, 0, ChangeType.ToggleLeft);
             }
         }
         #endregion
@@ -872,8 +863,8 @@ namespace ModelGraphUWP
             if (_previousModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
-                _root.SelectModel = obj.DataContext as ItemModel;
-                _root.PostRefreshViewList(0, ChangeType.ToggleRight);
+                _select = obj.DataContext as ItemModel;
+                _root.PostRefreshViewList(_select, 0, ChangeType.ToggleRight);
             }
         }
         #endregion
@@ -921,7 +912,7 @@ namespace ModelGraphUWP
                 mdl.IsSortAscending = true;
                 obj.Text = _sortAscending;
             }
-            _root.PostRefreshViewList(0, ChangeType.FilterSortChanged);
+            _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
         }
         #endregion
 
@@ -959,7 +950,7 @@ namespace ModelGraphUWP
                 mdl.IsUsedFilter = true;
                 obj.Text = _usageIsUsed;
             }
-            _root.PostRefreshViewList(0, ChangeType.FilterSortChanged);
+            _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
         }
         #endregion
 
@@ -982,7 +973,7 @@ namespace ModelGraphUWP
 
             var mdl = obj.DataContext as ItemModel;
 
-            _root.PostRefreshViewList(0, ChangeType.ToggleFilter);
+            _root.PostRefreshViewList(_select, 0, ChangeType.ToggleFilter);
         }
         #endregion
 
@@ -1005,14 +996,14 @@ namespace ModelGraphUWP
                     mdl.IsExpandedLeft = true;
                 }
 
-                _root.PostRefreshViewList(0, ChangeType.FilterSortChanged);
+                _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
                 _viewFilter.Remove(mdl);
                 mdl.IsExpandedFilter = false;
 
-                _root.PostRefreshViewList(0, ChangeType.FilterSortChanged);
+                _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
             }
         }
         #endregion
