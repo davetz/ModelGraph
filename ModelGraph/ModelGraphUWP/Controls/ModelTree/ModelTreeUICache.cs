@@ -474,7 +474,8 @@ namespace ModelGraphUWP
             }
 
             obj.DataContext = model;
-            obj.Text = model.TextValue;
+            var txt = model.TextValue;
+            obj.Text = (txt == null) ? string.Empty : txt;
             obj.Tag = obj.Text;
             obj.IsReadOnly = model.IsReadOnly;
 
@@ -574,11 +575,12 @@ namespace ModelGraphUWP
 
             obj.DataContext = model;
 
+            var (kind, name, count, type) = model.ModelParms;
+
             AddModelIdentity(index, model);
             AddTreeIndent(index, model);
             AddExpandLeft(index, model);
 
-            var (kind, name, count, type) = model.ModelParms;
             switch (type)
             {
                 case ModelType.TextProperty:

@@ -180,6 +180,7 @@ namespace ModelGraphSTD
         public bool BoolValue => (Get.BoolValue == null) ? false : Get.BoolValue(this);
         public string TextValue => (Get.TextValue == null) ? null : Get.TextValue(this);
         public string[] ListValue => (Get.ListValue == null) ? null : Get.ListValue(this);
+
         //=====================================================================
         public (string Kind, string Name, int Count, ModelType Type) ModelParms
         {
