@@ -337,7 +337,7 @@ namespace ModelGraphSTD
                 return $"{Trait.ToString()}  ({code.ToString("X3")})";
             }
         }
-
+        public int ChildModelCount => (ChildModels == null) ? 0 : ChildModels.Length;
         public bool IsChildModel(ItemModel model)
         {
             if (ChildModels == null) return false;
