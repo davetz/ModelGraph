@@ -15,6 +15,7 @@ namespace ModelGraphSTD
             if (model.IsInvalid) return;
 
             PostModelRequest(model, action);
+            RequestUIRefresh();
         }
         internal void PostCommand(ModelCommand command)
         {
@@ -23,6 +24,7 @@ namespace ModelGraphSTD
                 PostModelRequest(model, () => { command.Action(model); });
             else if (command.Action1 != null)
                 PostModelRequest(model, () => { command.Action1(model, command.Parameter1); });
+            RequestUIRefresh();
         }
         internal void PostRefreshViewList(RootModel root, ItemModel select, int scroll, ChangeType change)
         {
@@ -45,6 +47,7 @@ namespace ModelGraphSTD
             if (IsSameValue(value, oldValue)) return;
 
             PostModelRequest(model, () => {SetValue(model, value); });
+            RequestUIRefresh();
         }
         internal void PostSetValue(ItemModel model, int index)
         {
@@ -62,6 +65,28 @@ namespace ModelGraphSTD
             {
                 var zvals = GetEnumZNames(z);
                 if (index < zvals.Length) PostSetValue(model, zvals[index]);
+            }
+        }
+        void RequestUIRefresh()
+        {
+            foreach (var root in _rootModels)
+            {
+                switch (root.ControlType)
+                {
+                    case ControlType.AppRootChef:
+                        break;
+
+                    case ControlType.PrimaryTree:
+                    case ControlType.PartialTree:
+                        PostModelRequest(root, () => RefreshViewList(root));
+                        break;
+
+                    case ControlType.SymbolEditor:
+                        break;
+
+                    case ControlType.GraphDisplay:
+                        break;
+                }
             }
         }
         #endregion

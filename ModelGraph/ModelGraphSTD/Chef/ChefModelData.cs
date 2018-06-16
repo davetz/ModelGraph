@@ -439,16 +439,12 @@ namespace ModelGraphSTD
                 model.Item.AutoExpandRight = false;
             }
 
-            if (model.IsChanged)
+            if (model.IsExpandedLeft || model.IsExpandedRight || model.ChildModels != null)
             {
-                model.IsChanged = false;
-
-                if (model.IsExpandedLeft || model.IsExpandedRight || model.ChildModels != null)
-                {
-                    model.Validate();
-                    return FilterSort(model);
-                }
+                model.Validate();
+                return FilterSort(model);
             }
+
             return (model.ChildModels != null && model.ChildModels.Length > 0);
         }
         #endregion

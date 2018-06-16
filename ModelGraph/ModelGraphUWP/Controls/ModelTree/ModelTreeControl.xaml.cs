@@ -647,6 +647,8 @@ namespace ModelGraphUWP
                 HelpButton.Visibility = Visibility.Collapsed;
             }
 
+            _select.MenuComands(_menuCommands);
+            _select.ButtonComands(_buttonCommands);
             
             var cmds = _buttonCommands;
             var len1 = cmds.Count;
