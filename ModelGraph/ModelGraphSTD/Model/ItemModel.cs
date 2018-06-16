@@ -164,8 +164,8 @@ namespace ModelGraphSTD
         public ColumnX ColumnX => (Item is ColumnX item) ? item : (Aux1 is ColumnX aux1) ? aux1 : Aux2 as ColumnX;
         public SymbolX SymbolX => (Item is SymbolX item) ? item : (Aux1 is SymbolX aux1) ? aux1 : Aux2 as SymbolX;
         public ComputeX ComputeX => (Item is ComputeX item) ? item : (Aux1 is ComputeX aux1) ? aux1 : Aux2 as ComputeX;
-        public Property Property => (Item is Property item) ? item : (Aux1 is Property aux1) ? aux1 : Aux2 as Property;
-        public Relation Relation => (Item is Relation item) ? item : (Aux1 is Relation aux1) ? aux1 : Aux2 as Relation;
+        public Property Property => (Aux1 is Property aux1) ? aux1 : (Item is Property item) ? item : Aux2 as Property;
+        public Relation Relation => (Aux1 is Relation aux1) ? aux1 : (Item is Relation item) ? item : Aux2 as Relation;
         public ChangeSet ChangeSet => (Item is ChangeSet item) ? item : (Aux1 is ChangeSet aux1) ? aux1 : Aux2 as ChangeSet;
         public RelationX RelationX => (Item is RelationX item) ? item : (Aux1 is RelationX aux1) ? aux1 : Aux2 as RelationX;
         #endregion
@@ -198,17 +198,17 @@ namespace ModelGraphSTD
         }
         public bool MenuComands(List<ModelCommand> list)
         {
+            list.Clear();
             if (Get.MenuCommands == null) return false;
 
-            list.Clear();
             Get.MenuCommands(this, list);
             return list.Count > 0;
         }
         public bool ButtonComands(List<ModelCommand> list)
         {
+            list.Clear();
             if (Get.ButtonCommands == null) return false;
 
-            list.Clear();
             Get.ButtonCommands(this, list);
             return list.Count > 0;
         }

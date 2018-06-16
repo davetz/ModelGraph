@@ -6364,7 +6364,7 @@ namespace ModelGraphSTD
 
                         for (int i = 0; i < N; i++)
                         {
-                            var prop = items[i] as Property;
+                            var prop = items[i] as ColumnX;
 
                             if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, prop))
                                 m.ChildModels[i] = NewPropertyModel(m, depth, item, prop);
