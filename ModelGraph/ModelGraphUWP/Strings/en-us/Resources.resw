@@ -710,7 +710,7 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Summary</value>
   </data>
   <data name="402S" xml:space="preserve">
-    <value>Summary (used in mouser over tool tip)</value>
+    <value>Summary (used in hover over tool tip)</value>
   </data>
   <data name="411N" xml:space="preserve">
     <value>Name</value>
@@ -722,7 +722,7 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Summary</value>
   </data>
   <data name="412S" xml:space="preserve">
-    <value>Summary (used in mouser over tool tip)</value>
+    <value>Summary (used in hover over tool tip)</value>
   </data>
   <data name="413N" xml:space="preserve">
     <value>Text</value>
@@ -746,7 +746,7 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Summary</value>
   </data>
   <data name="422S" xml:space="preserve">
-    <value>Summary (used in mouser over tool tip)</value>
+    <value>Summary (used in hover over tool tip)</value>
   </data>
   <data name="431N" xml:space="preserve">
     <value>Name</value>
@@ -758,7 +758,7 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Summary</value>
   </data>
   <data name="432S" xml:space="preserve">
-    <value>Summary (used in mouser over tool tip)</value>
+    <value>Summary (used in hover over tool tip)</value>
   </data>
   <data name="433N" xml:space="preserve">
     <value>Value Type</value>
@@ -794,7 +794,7 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Summary</value>
   </data>
   <data name="442S" xml:space="preserve">
-    <value>Summary (used in mouser over tool tip)</value>
+    <value>Summary (used in hover over tool tip)</value>
   </data>
   <data name="443N" xml:space="preserve">
     <value>Pairing</value>
@@ -836,7 +836,7 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Summary</value>
   </data>
   <data name="452S" xml:space="preserve">
-    <value>Summary (used in mouser over tool tip)</value>
+    <value>Summary (used in hover over tool tip)</value>
   </data>
   <data name="461N" xml:space="preserve">
     <value>Rows Where</value>
@@ -1058,7 +1058,7 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Summary</value>
   </data>
   <data name="4B2S" xml:space="preserve">
-    <value>Summary (used in mouse over tool tip)</value>
+    <value>Summary (used in hover over tool tip)</value>
   </data>
   <data name="4B3N" xml:space="preserve">
     <value>Computing</value>

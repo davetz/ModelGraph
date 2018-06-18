@@ -24,7 +24,7 @@
             var last = Count - 1;
             for (int i = last; i >= 0; i--)
             {
-                var item = ToArray[i] as ChangeSet;
+                var item = Items[i];
                 if (item == chg)
                     return item.CanUndo;
                 else if (!item.CanRedo)
@@ -38,7 +38,7 @@
             var last = Count - 1;
             for (int i = last; i >= 0; i--)
             {
-                var item = ToArray[i] as ChangeSet;
+                var item = Items[i];
                 if (item == chg)
                     return item.CanRedo;
                 else if (!item.CanUndo)
@@ -56,14 +56,14 @@
             var prev = index - 1;
             if (prev < 0) return false;
 
-            var chg2 = ToArray[prev] as ChangeSet;
+            var chg2 = Items[prev] as ChangeSet;
             if (chg2.IsCongealed) return false;
             if (chg2.IsUndone != chg.IsUndone) return false;
 
             if (onlyTestMerge) return true;
 
             Remove(chg2);
-            var items = chg2.ToArray;
+            var items = chg2.Items;
             foreach (var item in items) { chg.Add(item); }
             chg2.RemoveAll();
 
@@ -75,9 +75,8 @@
             if (Count > 0)
             {
                 ChangeSet save = null;
-                foreach (var item in ToArray)
+                foreach (var chg in Items)
                 {
-                    var chg = item as ChangeSet;
                     if (chg.IsCongealed) continue;
                     if (chg.IsUndone)
                     {
@@ -96,12 +95,15 @@
 
         internal void AutoExpandChanges()
         {
-            foreach (var item in ToArray)
+            foreach (var chg in Items)
             {
-                var chg = item as ChangeSet;
                 if (chg.IsCongealed) break;
                 if (!chg.IsVirgin) break;
                 chg.AutoExpandLeft = true;
+                foreach (var item in chg.Items)
+                {
+                    item.AutoExpandLeft = true;
+                }
             }
         }
         #endregion

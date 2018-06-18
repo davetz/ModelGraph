@@ -366,6 +366,16 @@ namespace ModelGraphUWP
                     mdl.DragDrop();
                 }
             }
+            else if (e.Key == Windows.System.VirtualKey.I || e.Key == Windows.System.VirtualKey.A)
+            {
+                foreach (var cmd in _buttonCommands)
+                {
+                    if (IsFirstLetterOfCommandName(e.Key, cmd.Name))
+                    {
+                        cmd.Execute();
+                    }
+                }
+            }
         }
 
         #region VirtualKeys  ==================================================
@@ -1030,6 +1040,8 @@ namespace ModelGraphUWP
                 {
                     mdl.PostSetValue(obj.Text);
                 }
+                e.Handled = true;
+                if (e.Key == Windows.System.VirtualKey.Tab) FindNextItemModel(mdl);
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
@@ -1040,12 +1052,11 @@ namespace ModelGraphUWP
                     obj.Text = mdl.TextValue ?? string.Empty;
                 }
             }
-
         }
         #endregion
 
         #region CheckProperty  ================================================
-        void Check_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+            void Check_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             var obj = sender as CheckBox;
             var mdl = obj.DataContext as ItemModel;
@@ -1055,6 +1066,8 @@ namespace ModelGraphUWP
                 _ignoreNextCheckBoxEvent = true;
                 mdl.PostSetValue(!val);
             }
+            e.Handled = true;
+            if (e.Key == Windows.System.VirtualKey.Tab) FindNextItemModel(mdl);
         }
         bool _ignoreNextCheckBoxEvent;
         void CheckProperty_Checked(object sender, RoutedEventArgs e)
@@ -1080,6 +1093,16 @@ namespace ModelGraphUWP
             var mdl = obj.DataContext as ItemModel;
             mdl.PostSetValue(obj.SelectedIndex);
         }
+        void ComboProperty_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            var obj = sender as ComboBox;
+            var mdl = obj.DataContext as ItemModel;
+            if (e.Key == Windows.System.VirtualKey.Tab)
+            {
+                e.Handled = true;
+                if (e.Key == Windows.System.VirtualKey.Tab) FindNextItemModel(mdl);
+            }
+        }
         #endregion
 
         #region PropertyBorder  ===============================================
@@ -1087,6 +1110,32 @@ namespace ModelGraphUWP
         {
             var obj = sender as Border;
             _itemIdentityTip.DataContext = obj.DataContext as ItemModel;
+        }
+        #endregion
+
+        #region FindNextItemModel  ============================================
+        void FindNextItemModel(ItemModel m)
+        {
+            var k = _viewList.IndexOf(m) + 1;
+            for (int i = k; i < _viewList.Count; i++)
+            {
+                if (_viewList[i].IsTextProperty)
+                {
+                   _textPropertyCache[i].Focus(FocusState.Keyboard);
+                    return;
+                }
+                else if (_viewList[i].IsCheckProperty)
+                {
+                    _checkPropertyCache[i].Focus(FocusState.Keyboard);
+                    return;
+                }
+                else if (_viewList[i].IsComboProperty)
+                {
+                    _comboPropertyCache[i].Focus(FocusState.Keyboard);
+                    return;
+                }
+            }
+            TailButton.Focus(FocusState.Keyboard);
         }
         #endregion
     }

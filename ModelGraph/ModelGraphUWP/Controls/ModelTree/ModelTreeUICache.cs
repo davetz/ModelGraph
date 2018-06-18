@@ -514,6 +514,7 @@ namespace ModelGraphUWP
 
                 obj.Style = _comboPropertyStyle;
                 obj.SelectionChanged += ComboProperty_SelectionChanged;
+                obj.KeyDown += ComboProperty_KeyDown;
             }
 
             obj.DataContext = model;
