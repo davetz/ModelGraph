@@ -459,7 +459,7 @@ namespace ModelGraphUWP
         {
             var tip = sender as ToolTip;
             var mdl = tip.DataContext as ItemModel;
-            var content = _root.ModelSummary;
+            var content = mdl.ModelSummary;
             tip.Content = string.IsNullOrWhiteSpace(content) ? null : content;
         }
         void ModelIdentityTip_Opened(object sender, RoutedEventArgs e)
@@ -637,10 +637,10 @@ namespace ModelGraphUWP
 
             if (_select.IsFilterFocus) { _select.IsFilterFocus = false; _focusElement = _filterTextCache[index]; }
 
-            if (_root.ModelDescription != null)
+            if (_select.ModelDescription != null)
             {
                 HelpButton.Visibility = Visibility.Visible;
-                PopulateItemHelp(_root.ModelDescription);
+                PopulateItemHelp(_select.ModelDescription);
             }
             else
             {

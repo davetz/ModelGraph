@@ -1,9 +1,7 @@
 ﻿using System;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public class ItemCreated : ItemChange
     {
         internal Item Item;

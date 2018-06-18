@@ -1325,6 +1325,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelSummary = (m) => _localize(m.SummaryKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var N = m.IsExpandedLeft ? _errorStore.Count : 0;
@@ -1427,6 +1431,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelSummary = (m) => _localize(m.SummaryKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ButtonCommands = (m, bc) =>
                 {
                     bc.Add(new ModelCommand(this, m, Trait.ViewCommand, CreateSecondaryMetadataTree));
@@ -1496,6 +1504,10 @@ namespace ModelGraphSTD
 
                     return (null, _localize(m.NameKey), 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1759,7 +1771,7 @@ namespace ModelGraphSTD
         {
             ItemChanged_X = new ModelAction
             {
-                ModelParms = (m) => (_localize(m.Item.KindKey), _localize(m.Item.NameKey), 0, ModelType.Default),
+                ModelParms = (m) => (_localize(m.Item.KindKey), m.ItemChange.Name, 0, ModelType.Default),
             };
         }
         #endregion
@@ -4115,7 +4127,7 @@ namespace ModelGraphSTD
                         if (oldModels == null || oldModels.Length != 1) m.ChildModels = new ItemModel[1];
 
                         if (!TryGetOldModel(m, Trait.NameColumn_M, oldModels, 0, prop))
-                            m.ChildModels[0] = new ItemModel(m, Trait.NameColumn_M, depth, prop, tbl, null, NameColumn_X);
+                            m.ChildModels[0] = new ItemModel(m, Trait.NameColumn_M, depth, prop, TableX_NameProperty, tbl, NameColumn_X);
                     }
                     else
                     {
@@ -4194,7 +4206,7 @@ namespace ModelGraphSTD
                         if (oldModels == null || oldModels.Length != 1) m.ChildModels = new ItemModel[1];
 
                         if (!TryGetOldModel(m, Trait.SummaryColumn_M, oldModels, 0, prop))
-                            m.ChildModels[0] = new ItemModel(m, Trait.SummaryColumn_M, depth, prop, tbl, null, SummaryColumn_X);
+                            m.ChildModels[0] = new ItemModel(m, Trait.SummaryColumn_M, depth, prop, TableX_SummaryProperty, tbl, SummaryColumn_X);
                     }
                     else
                     {
@@ -4226,6 +4238,13 @@ namespace ModelGraphSTD
                     if (m.Item.IsComputeX) return m.ComputeX.Summary;
                     throw new Exception("Corrupt ItemModelTree");
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                MenuCommands = (m, mc) =>
+                {
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, UnlinkRelatedChild));
+                },
             };
         }
         #endregion
@@ -4250,6 +4269,13 @@ namespace ModelGraphSTD
                     if (m.Item.IsColumnX) return m.ColumnX.Summary;
                     if (m.Item.IsComputeX) return m.ComputeX.Summary;
                     throw new Exception("Corrupt ItemModelTree");
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                MenuCommands = (m, mc) =>
+                {
+                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, UnlinkRelatedChild));
                 },
             };
         }
@@ -4286,7 +4312,7 @@ namespace ModelGraphSTD
                 {
                     var gx = m.GraphX;
                     var col = d.ColumnX;
-                    if (!col.IsColumnX) return DropAction.None;
+                    if (col == null) return DropAction.None;
                     if (!gx.IsGraphX) return DropAction.None;
 
                     if (doDrop)
@@ -6070,21 +6096,21 @@ namespace ModelGraphSTD
 
                 Validate = (m) => RowX_VX(m),
             };
-
-            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-            void UnlinkRelatedChild(ItemModel m)
-            {
-                var key = m.Aux2;
-                var rel = m.Aux1 as Relation;
-                var item = m.Item;
-                RemoveLink(rel, key, item);
-            }
         }
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-        private DropAction ReorderRelatedChild (ItemModel model, ItemModel drop, bool doDrop)
+        void UnlinkRelatedChild(ItemModel m)
+        {
+            var key = m.Aux2;
+            var rel = m.Aux1 as Relation;
+            var item = m.Item;
+            RemoveLink(rel, key, item);
+        }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        DropAction ReorderRelatedChild (ItemModel model, ItemModel drop, bool doDrop)
         {
             if (model.Aux2 == null) return DropAction.None;
             if (model.Aux1 == null || !(model.Aux1 is Relation rel)) return DropAction.None;

@@ -1,8 +1,10 @@
 ﻿using System;
 
 namespace ModelGraphSTD
-{/*
- */
+{
+    /// <summary>
+    /// Well Known Dummy Item (used as an item reference place holder)
+    /// </summary>
     public class Dummy : Item
     {
         internal Guid Guid;

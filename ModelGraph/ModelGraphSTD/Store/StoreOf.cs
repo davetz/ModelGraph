@@ -7,6 +7,8 @@ namespace ModelGraphSTD
     {
         private List<T> _items = new List<T>(0);
         internal Guid Guid;       // all stores have a Guid
+        internal byte Delta;      // increments on each change to _items list
+        
 
         #region Constructor  ==================================================
         internal StoreOf() { }
@@ -49,11 +51,19 @@ namespace ModelGraphSTD
         }
 
         // Add  =============================================================
-        internal void Add(T item) => _items.Add(item);
+        internal void Add(T item)
+        {
+            Delta++;
+            _items.Add(item);
+        }
         internal override void Add(Item item) => _items.Add(Cast(item));
 
         // Remove  ==========================================================
-        internal void Remove(T item) => _items.Remove(item);
+        internal void Remove(T item)
+        {
+            Delta++;
+            _items.Remove(item);
+        }
         public override void Remove(Item item) => _items.Remove(Cast(item));
 
         // Insert  ============================================================
@@ -61,6 +71,7 @@ namespace ModelGraphSTD
         {
             var i = (index < 0) ? 0 : index;
 
+            Delta++;
             if (i < _items.Count)
                 _items.Insert(i, item);
             else
@@ -77,6 +88,7 @@ namespace ModelGraphSTD
         {
             if (_items.Remove(item))
             {
+                Delta++;
                 if (index < 0)
                     _items.Insert(0, item);
                 else if (index < _items.Count)

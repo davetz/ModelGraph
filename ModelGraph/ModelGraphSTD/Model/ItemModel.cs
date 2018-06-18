@@ -167,11 +167,12 @@ namespace ModelGraphSTD
         public Property Property => (Aux1 is Property aux1) ? aux1 : (Item is Property item) ? item : Aux2 as Property;
         public Relation Relation => (Aux1 is Relation aux1) ? aux1 : (Item is Relation item) ? item : Aux2 as Relation;
         public ChangeSet ChangeSet => (Item is ChangeSet item) ? item : (Aux1 is ChangeSet aux1) ? aux1 : Aux2 as ChangeSet;
+        public ItemChange ItemChange => (Item is ItemChange item) ? item : (Aux1 is ItemChange aux1) ? aux1 : Aux2 as ItemChange;
         public RelationX RelationX => (Item is RelationX item) ? item : (Aux1 is RelationX aux1) ? aux1 : Aux2 as RelationX;
         #endregion
 
         #region ModelAction  ==================================================
-        public void Validate() => Get?.Validate.Invoke(this);
+        public void Validate() => Get.Validate?.Invoke(this);
         public string ModelInfo => (Get.ModelInfo == null) ? null : Get.ModelInfo(this);
         public string ModelSummary => (Get.ModelSummary == null) ? null : Get.ModelSummary(this);
         public string ModelDescription => (Get.ModelDescription == null) ? null : Get.ModelDescription(this);
@@ -218,7 +219,6 @@ namespace ModelGraphSTD
         public void DragDrop()
         {
             var drop = Chef.DragDropSource;
-            Chef.DragDropSource = null;
             if (drop == null) return;
 
             PostAction(() => { ModelDrop(this, drop, true); });

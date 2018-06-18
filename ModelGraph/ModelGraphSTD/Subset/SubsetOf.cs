@@ -1,9 +1,7 @@
 ﻿using System;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     class SubsetOf<T1, T2>
     {
         Func<T1, T2, bool> _isIncluded;

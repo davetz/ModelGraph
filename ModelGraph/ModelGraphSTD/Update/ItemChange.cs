@@ -1,9 +1,6 @@
-﻿using System;
-
+﻿
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public abstract class ItemChange : Item
     {
         internal string Name;
