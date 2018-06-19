@@ -205,14 +205,11 @@ namespace ModelGraphSTD
             /// <summary>
             /// Push the ChildModels (if any)
             /// </summary>
-            internal int PushChildren(ItemModel model)
+            internal void PushChildren(ItemModel m)
             {
-                var models = model.ChildModels;
-                var length = (models == null) ? 0 : models.Length;
-
-                if (length > 0)
+                if (m.ChildModelCount > 0)
                 {
-                    _stack[_count] = (models, 0);
+                    _stack[_count] = (m.ChildModels, 0);
                     _count += 1;
                     if (_count == _stack.Length)
                     {
@@ -221,7 +218,6 @@ namespace ModelGraphSTD
                         Array.Copy(oldStack, _stack, _count);
                     }
                 }
-                return length;
             }
             #endregion
 
@@ -430,21 +426,23 @@ namespace ModelGraphSTD
         #endregion
 
         #region ValidateModel  ============================================
-        bool ValidateModel(ItemModel model)
+        void ValidateModel(ItemModel m)
         {
-            if (model.Item.AutoExpandRight)
+            if (m.Item.AutoExpandRight)
             {
-                model.IsExpandedRight = true;
-                model.Item.AutoExpandRight = false;
+                m.IsExpandedRight = true;
+                m.Item.AutoExpandRight = false;
             }
 
-            if (model.IsExpandedLeft || model.IsExpandedRight || model.ChildModels != null)
+            if (m.IsExpanded || m.IsExpandedFilter)
             {
-                model.Validate();
-                return FilterSort(model);
+                m.Validate();
+                if (m.ChildModelCount > 2 && m.IsSorted)
+                if (m.IsSorted) m.Sort();
+                if (m.IsSortDescending) m.Reverse();
             }
-
-            return (model.ChildModels != null && model.ChildModels.Length > 0);
+            else
+                m.ChildModels = null;
         }
         #endregion
         #endregion
@@ -644,80 +642,6 @@ namespace ModelGraphSTD
             //#endregion
         }
         #endregion
-
-        #region FilterSort  ===================================================
-        bool FilterSort(ItemModel model)
-        {
-            var children = model.ChildModels;
-            var count = (children == null) ? 0 : children.Length;
-            if (count > 2 && (model.IsSorted || model.IsExpandedFilter))
-            {
-                // get the strings needed for the filter sort operations
-                var items = new List<FilterSortItem>(count);
-
-                if (TryGetFilter(model, out Regex filter))
-                {
-                    foreach (var child in children)
-                    {
-                        var name = GetFilterSortName(child);
-                        if (!filter.IsMatch(name)) continue;
-                        items.Add(new FilterSortItem(child, name));
-                    }
-                }
-                else
-                {
-                    foreach (var child in children)
-                    {
-                        items.Add(new FilterSortItem(child, GetFilterSortName(child)));
-                    }
-                }
-                if (model.IsSorted) items.Sort(alphabeticOrder);
-                if (model.IsSortDescending) items.Reverse();
-
-                count = items.Count;
-                children = new ItemModel[count];
-                for (int i = 0; i < count; i++)
-                {
-                    children[i] = items[i].Model;
-                }
-                model.ChildModels = children;
-            }
-            return (count > 0);
-        }
-
-        string GetFilterSortName(ItemModel m)
-        {
-            var (kind, name, count, type) = m.ModelParms;
-            return $"{kind} {name}";
-        }
-        bool TryGetFilter(ItemModel m, out Regex filter)
-        {
-            filter = (!m.IsExpandedFilter || string.IsNullOrWhiteSpace(m.ViewFilter) ? null : 
-                new Regex(".*" + m.ViewFilter + ".*", RegexOptions.Compiled | RegexOptions.IgnoreCase));
-
-            return (filter != null);
-        }
-        class FilterSortItem
-        {
-            internal string Name;
-            internal ItemModel Model;
-
-            internal FilterSortItem(ItemModel model, string name)
-            {
-                Name = name;
-                Model = model;
-            }
-        }
-        class AlphabeticOrder : IComparer<FilterSortItem>
-        {
-            int IComparer<FilterSortItem>.Compare(FilterSortItem x, FilterSortItem y)
-            {
-                return x.Name.CompareTo(y.Name);
-            }
-        }
-        static AlphabeticOrder alphabeticOrder = new AlphabeticOrder();
-        #endregion
-
 
         #region AddProperyModels  =============================================
         private void AddProperyModels(ItemModel model, ItemModel[] oldModels, ColumnX[] cols)
@@ -2685,26 +2609,44 @@ namespace ModelGraphSTD
                     var N = _tableXStore.Count;
 
                     if (m.IsExpandedLeft && N > 0)
-                    {
-                        var items = _tableXStore.ToArray;
+                    { 
+                        var items = _tableXStore.Items;
                         var item = m.Item;
                         var depth = (byte)(m.Depth + 1);
+                        var filter = m.RegexViewFilter;
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
+                        if (filter != null)
                         {
-                            var itm = items[i] as TableX;
-                            if (!TryGetOldModel(m, Trait.TableX_M, oldModels, i, itm))
-                                m.ChildModels[i] = new ItemModel(m, Trait.TableX_M, depth, itm, null, null, TableX_X);
+                            var filterList = new List<ItemModel>(N);
+                            var surigate = new ItemModel(m, Trait.TableX_M, depth, null, null, null, TableX_X);
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                surigate.Item = items[i];
+                                if (!filter.IsMatch(surigate.FilterSortName)) continue;
+                                filterList.Add(surigate.Clone());
+                            }
+                            m.ChildModels = (filterList.Count == 0) ? null : filterList.ToArray();                                
+                        }
+                        else if (m.Delta != _tableXStore.Delta)
+                        {
+                            m.Delta = _tableXStore.Delta;
+
+                            var oldModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                var itm = items[i];
+                                if (!TryGetOldModel(m, Trait.TableX_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.TableX_M, depth, itm, null, null, TableX_X);
+                            }
                         }
                     }
                     else
                     {
                         m.ChildModels = null;
                     }
-
                 }
             };
 
@@ -2900,21 +2842,40 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var item = m.Item;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
-
                     var N = _tableXStore.Count;
+
                     if (m.IsExpandedLeft && N > 0)
                     {
-                        var items = _tableXStore.ToArray;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+                        var items = _tableXStore.Items;
+                        var filter = m.RegexViewFilter;
 
-                        for (int i = 0; i < N; i++)
+                        if (filter != null)
                         {
-                            var itm = items[i];
-                            if (!TryGetOldModel(m, Trait.Table_M, oldModels, i, itm))
-                                m.ChildModels[i] = new ItemModel(m, Trait.Table_M, depth, itm, null, null, Table_X);
+                            var filterList = new List<ItemModel>(N);
+                            var surigate = new ItemModel(m, Trait.TableX_M, depth, null, null, null, TableX_X);
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                surigate.Item = items[i];
+                                if (!filter.IsMatch(surigate.FilterSortName)) continue;
+                                filterList.Add(surigate.Clone());
+                            }
+                            m.ChildModels = (filterList.Count == 0) ? null : filterList.ToArray();
+                        }
+                        else if (m.Delta != _tableXStore.Delta)
+                        {
+                            m.Delta = _tableXStore.Delta;
+
+                            var oldModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                var itm = items[i];
+                                if (!TryGetOldModel(m, Trait.Table_M, oldModels, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.Table_M, depth, itm, null, null, Table_X);
+                            }
                         }
                     }
                     else
@@ -5807,17 +5768,36 @@ namespace ModelGraphSTD
 
                     if (N > 0)
                     {
-                        var items = tbl.ToArray;
+                        var items = tbl.Items;
                         var depth = (byte)(m.Depth + 1);
+                        var filter = m.RegexViewFilter;
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
+                        if (filter != null)
                         {
-                            var row = items[i];
-                            if (!TryGetOldModel(m, Trait.Row_M, oldModels, i, row, tbl, col))
-                                m.ChildModels[i] = new ItemModel(m, Trait.Row_M, depth, row, tbl, col, RowX_X);
+                            var filterList = new List<ItemModel>(N);
+                            var surigate = new ItemModel(m, Trait.Row_M, depth, null, tbl, col, RowX_X);
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                surigate.Item = items[i];
+                                if (!filter.IsMatch(surigate.FilterSortName)) continue;
+                                filterList.Add(surigate.Clone());
+                            }
+                            m.ChildModels = (filterList.Count == 0) ? null : filterList.ToArray();
+                        }
+                        else if (m.Delta != _tableXStore.Delta)
+                        {
+                            m.Delta = _tableXStore.Delta;
+
+                            var oldModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                var row = items[i];
+                                if (!TryGetOldModel(m, Trait.Row_M, oldModels, i, row, tbl, col))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.Row_M, depth, row, tbl, col, RowX_X);
+                            }
                         }
                     }
                     else

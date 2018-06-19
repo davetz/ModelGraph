@@ -403,10 +403,9 @@ namespace ModelGraphUWP
             }
 
             obj.DataContext = model;
-            if (model.ViewFilter != null)
-            {
-                obj.Text = model.ViewFilter;
-            }
+            var str = string.IsNullOrWhiteSpace(model.ViewFilter) ? string.Empty : model.ViewFilter;
+            obj.Text = str;
+            obj.Tag = str; //save an initial (unmodified) version of the view filter text
 
             _stackPanelCache[index].Children.Add(obj);
         }

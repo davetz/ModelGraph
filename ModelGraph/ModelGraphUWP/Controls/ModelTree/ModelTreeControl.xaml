@@ -567,6 +567,7 @@
 
     <Canvas x:Name="TreeCanvas" Style="{StaticResource TreeCanvasStyle}" Loaded="TreeCanvas_Loaded" PointerPressed="TreeGrid_PointerPressed" PointerWheelChanged="TreeCanvas_PointerWheelChanged">
         <Grid x:Name="SelectionGrid" Width="{Binding ElementName=TreeCanvas, Path=ActualWidth}" Height="{StaticResource ElementHieght}" Background="#CCFFF29D" >
+            <Button x:Name="HeadButton" Background="#CCFFF29D" Width="2" Height="20" KeyDown="HeadButton_KeyDown" KeyUp="HeadButton_KeyUp" LostFocus="HeadButton_LostFocus" HorizontalAlignment="Left"/>
             <StackPanel x:Name="ButtonStack" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="HelpButton" x:Uid="HelpButton" Style="{StaticResource HelpButtonStyle}" >
                     <Button.Flyout>
@@ -591,7 +592,7 @@
                     </Button.Flyout>
                     <FontIcon  FontFamily="Segoe UI" Glyph="&#x22EF;" FontSize="20" />
                 </Button>
-                <Button x:Name="TailButton" Width="2" Margin="10,0,0,0"  Height="{StaticResource ElementHieght}" KeyDown="TailButton_KeyDown" KeyUp="TailButton_KeyUp" LostFocus="TailButton_LostFocus"/>
+                <!--<Button x:Name="TailButton" Width="2" Margin="10,0,0,0"  Height="{StaticResource ElementHieght}" KeyDown="TailButton_KeyDown" KeyUp="TailButton_KeyUp" LostFocus="TailButton_LostFocus"/>-->
             </StackPanel>
         </Grid>
     </Canvas>

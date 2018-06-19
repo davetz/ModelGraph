@@ -222,10 +222,10 @@ namespace ModelGraphUWP
         }
         #endregion
 
-        #region TailButton  ===================================================
+        #region HeadButton  ===================================================
         bool _isCtrlDown;
         bool _isShiftDown;
-        void TailButton_LostFocus(object sender, RoutedEventArgs e)
+        void HeadButton_LostFocus(object sender, RoutedEventArgs e)
         {
             // there is a rouge scrollViewer in the visual tree
             // that takes the keyboard focus on pointerRelease events
@@ -237,7 +237,7 @@ namespace ModelGraphUWP
         }
 
 
-        void TailButton_KeyUp(object sender, KeyRoutedEventArgs e)
+        void HeadButton_KeyUp(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Shift)
             {
@@ -249,9 +249,9 @@ namespace ModelGraphUWP
             }
         }
 
-        void TailButton_KeyDown(object sender, KeyRoutedEventArgs e)
+        void HeadButton_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (!(TailButton.DataContext is ItemModel mdl))
+            if (!(HeadButton.DataContext is ItemModel mdl))
             {
                 return;
             }
@@ -491,7 +491,7 @@ namespace ModelGraphUWP
         void TreeGrid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             _select = _previousModel = _root.SelectModel = PointerModel(e);
-            TailButton.Focus(FocusState.Keyboard);
+            HeadButton.Focus(FocusState.Keyboard);
             RefreshSelectionGrid();
         }
         ItemModel PointerModel(Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -514,7 +514,7 @@ namespace ModelGraphUWP
         {
             if (_focusElement == null)
             {
-                TailButton.Focus(FocusState.Keyboard);
+                HeadButton.Focus(FocusState.Keyboard);
             }
             else
             {
@@ -537,14 +537,14 @@ namespace ModelGraphUWP
                 }
                 else
                 {
-                    TailButton.Focus(FocusState.Keyboard);
+                    HeadButton.Focus(FocusState.Keyboard);
                 }
             }
 
             _focusElement = FocusManager.GetFocusedElement();
             if (_focusElement == null)
             {
-                TailButton.Focus(FocusState.Keyboard);
+                HeadButton.Focus(FocusState.Keyboard);
             }
         }
         #endregion
@@ -627,7 +627,7 @@ namespace ModelGraphUWP
             SelectionGrid.Width = ActualWidth;
             Canvas.SetTop(SelectionGrid, (index * _elementHieght));
 
-            TailButton.DataContext = _select;
+            HeadButton.DataContext = _select;
 
             if (_sortModeCache[index] != null && _sortModeCache[index].DataContext != null)
             {
@@ -909,6 +909,7 @@ namespace ModelGraphUWP
             }
             else if (mdl.IsSortDescending)
             {
+                mdl.Delta -= 3;
                 mdl.IsSortAscending = false;
                 mdl.IsSortDescending = false;
                 obj.Text = _sortNone;
@@ -991,22 +992,19 @@ namespace ModelGraphUWP
 
             if (e.Key == Windows.System.VirtualKey.Enter || e.Key == Windows.System.VirtualKey.Tab)
             {
-                var str = obj.Text;
-                if (string.IsNullOrWhiteSpace(str))
-                {
-                    mdl.ViewFilter = null;
-                }
-                else
-                {
-                    mdl.ViewFilter = str;
-                    mdl.IsExpandedLeft = true;
-                }
+                var str = string.IsNullOrWhiteSpace(obj.Text) ? string.Empty : obj.Text;
+                if (string.Compare(str, (string)obj.Tag, true) == 0) return;
+
+                obj.Tag = mdl.ViewFilter = str;
+                mdl.IsExpandedLeft = true;
+                
                 e.Handled = true;
                 if (e.Key == Windows.System.VirtualKey.Tab) FindNextItemModel(mdl);
                 _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
+                mdl.Delta -= 3;
                 mdl.ViewFilter = null;
                 mdl.IsExpandedFilter = false;
 
@@ -1131,7 +1129,7 @@ namespace ModelGraphUWP
                     return;
                 }
             }
-            TailButton.Focus(FocusState.Keyboard);
+            HeadButton.Focus(FocusState.Keyboard);
         }
         #endregion
     }

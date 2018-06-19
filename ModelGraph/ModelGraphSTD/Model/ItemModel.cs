@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace ModelGraphSTD
 {/*
 
  */
-    public class ItemModel
+    public class ItemModel : IComparer<ItemModel>
     {
         public Item Item;
         public Item Aux1;
@@ -301,6 +302,7 @@ namespace ModelGraphSTD
         {
             return UIRequest.CreateView(GetRootModel(), controlType, trait, Item.GetChef(), Item, Aux1, Aux2, action, true);
         }
+
         public int FilterCount { get { return (ChildModels == null) ? 0 : ChildModels.Length; } }
         public bool HasError { get { return false; } }
         public bool IsModified { get { return false; } }
@@ -308,6 +310,28 @@ namespace ModelGraphSTD
 
         public bool IsExpanded => (IsExpandedLeft || IsExpandedRight);
         public bool IsSorted => (IsSortAscending || IsSortDescending);
+
+        internal void Sort()
+        {
+            if (ChildModelCount > 1)
+            {
+                Array.Sort(ChildModels, this);
+            }
+        }
+
+        internal void Reverse()
+        {
+            var last = ChildModelCount - 1;
+            if (last > 1)
+            {
+                for (int i = 0, j = last; i < j; i++, j--)
+                {
+                    var temp = ChildModels[i];
+                    ChildModels[i] = ChildModels[j];
+                    ChildModels[j] = temp;
+                }
+            }
+        }
 
         public bool IsInvalid => (Item == null || Item.IsInvalid);
 
@@ -359,6 +383,24 @@ namespace ModelGraphSTD
             if (mdl is RootModel root) return root;
             throw new Exception("Corrupt TreeModel Hierachy");
         }
+        #endregion
+
+        #region ViewFilterSuragate  ===========================================
+        internal void Suragate(ItemModel parent, Trait trait, byte depth, Item item, Item aux1, Item aux2, ModelAction get)
+        {
+            ParentModel = parent;
+            Trait = trait;
+            Depth = depth;
+            Item = item;
+            Aux1 = aux1;
+            Aux2 = aux2;
+            Get = get;
+        }
+        internal ItemModel Clone() => new ItemModel(ParentModel, Trait, Depth, Item, Aux1, Aux2, Get);
+        public int Compare(ItemModel x, ItemModel y) => x.FilterSortName.CompareTo(y.FilterSortName);
+        internal string FilterSortName { get { var (kind, name, count, type) = ModelParms; return $"{kind} {name}"; } }
+        internal Regex RegexViewFilter => (!IsExpandedFilter || string.IsNullOrWhiteSpace(ViewFilter) ? null :
+                new Regex(".*" + ViewFilter + ".*", RegexOptions.Compiled | RegexOptions.IgnoreCase));
         #endregion
     }
 }
