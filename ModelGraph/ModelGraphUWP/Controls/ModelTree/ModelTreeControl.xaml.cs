@@ -60,7 +60,6 @@ namespace ModelGraphUWP
         List<ItemModel> _viewList = new List<ItemModel>();
         List<ModelCommand> _menuCommands = new List<ModelCommand>();
         List<ModelCommand> _buttonCommands = new List<ModelCommand>();
-        Dictionary<object, string> _viewFilter = new Dictionary<object, string>();
 
         ToolTip _itemIdentityTip;
         ToolTip _modelIdentityTip;
@@ -205,11 +204,6 @@ namespace ModelGraphUWP
                 _menuItemTips[i] = tip;
                 ToolTipService.SetToolTip(_menuItems[i], tip);
             }
-        }
-
-        void _itemIdentityTip_Opened(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
         #endregion
 
@@ -1000,21 +994,23 @@ namespace ModelGraphUWP
                 var str = obj.Text;
                 if (string.IsNullOrWhiteSpace(str))
                 {
-                    _viewFilter.Remove(mdl);
+                    mdl.ViewFilter = null;
                 }
                 else
                 {
-                    _viewFilter[mdl] = str;
+                    mdl.ViewFilter = str;
                     mdl.IsExpandedLeft = true;
                 }
-
+                e.Handled = true;
+                if (e.Key == Windows.System.VirtualKey.Tab) FindNextItemModel(mdl);
                 _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
-                _viewFilter.Remove(mdl);
+                mdl.ViewFilter = null;
                 mdl.IsExpandedFilter = false;
 
+                FindNextItemModel(mdl);
                 _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
             }
         }

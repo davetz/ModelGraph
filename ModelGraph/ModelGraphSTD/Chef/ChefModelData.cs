@@ -265,7 +265,8 @@ namespace ModelGraphSTD
                 viewList.Clear();
                 UpdateSelectModel(select, change);
 
-                ValidateModel(root);
+                if (root.ChildModelCount == 0) ValidateModel(root);
+
                 var modelStack = new TreeModelStack();
                 modelStack.PushChildren(root);
 
@@ -915,28 +916,6 @@ namespace ModelGraphSTD
                             bc.Add(new ModelCommand(this, root, Trait.NewCommand, NewModel));
                             bc.Add(new ModelCommand(this, root, Trait.OpenCommand, OpenModel));
                             break;
-
-                        case ControlType.PrimaryTree:
-                            if (root.Chef.Repository == null)
-                                bc.Add(new ModelCommand(this, root, Trait.SaveAsCommand, SaveAsModel));
-                            else
-                                bc.Add(new ModelCommand(this, root, Trait.SaveCommand, SaveModel));
-
-                            bc.Add(new ModelCommand(this, root, Trait.CloseCommand, CloseModel));
-                            if (root.Chef.Repository != null)
-                                bc.Add(new ModelCommand(this, root, Trait.ReloadCommand, ReloadModel));
-                            break;
-
-                        case ControlType.PartialTree:
-                            break;
-
-                        case ControlType.GraphDisplay:
-                            break;
-
-                        case ControlType.SymbolEditor:
-                            bc.Add(new ModelCommand(this, root, Trait.SaveCommand, AppSaveSymbol));
-                            bc.Add(new ModelCommand(this, root, Trait.ReloadCommand, AppReloadSymbol));
-                            break;
                     }
                 },
 
@@ -985,6 +964,89 @@ namespace ModelGraphSTD
                 root.UIRequestQueue.Enqueue(UIRequest.CreateView(root, ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_X));
                 root.UIRequestQueue.Enqueue(UIRequest.RefreshModel());
             }
+            #endregion
+        }
+        #endregion
+
+        #region 612 DataChef_X  ===============================================
+        internal ModelAction DataChef_X;
+        void Initialize_DataChef_X()
+        {
+            DataChef_X = new ModelAction
+            {
+                ModelParms = (m) =>
+                {
+                    m.CanExpandLeft = true;
+
+                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ButtonCommands = (m, bc) =>
+                {
+                    var root = m.GetRootModel();
+                    switch (root.ControlType)
+                    {
+                        case ControlType.PrimaryTree:
+                            if (root.Chef.Repository == null)
+                                bc.Add(new ModelCommand(this, root, Trait.SaveAsCommand, SaveAsModel));
+                            else
+                                bc.Add(new ModelCommand(this, root, Trait.SaveCommand, SaveModel));
+
+                            bc.Add(new ModelCommand(this, root, Trait.CloseCommand, CloseModel));
+                            if (root.Chef.Repository != null)
+                                bc.Add(new ModelCommand(this, root, Trait.ReloadCommand, ReloadModel));
+                            break;
+
+                        case ControlType.PartialTree:
+                            break;
+
+                        case ControlType.GraphDisplay:
+                            break;
+
+                        case ControlType.SymbolEditor:
+                            bc.Add(new ModelCommand(this, root, Trait.SaveCommand, AppSaveSymbol));
+                            bc.Add(new ModelCommand(this, root, Trait.ReloadCommand, AppReloadSymbol));
+                            break;
+                    }
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m) =>
+                {
+                    if (m.ChildModelCount != 4) // avoid unnecessary validation, once initialized, it won't change
+                    {
+                        var item = m.Item;
+                        var depth = (byte)(m.Depth + 1);
+                        var oldModels = m.ChildModels;
+
+                        var N = 4;
+
+                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        var i = 0;
+                        if (!TryGetOldModel(m, Trait.ErrorRoot_M, oldModels, i))
+                            m.ChildModels[i] = new ItemModel(m, Trait.ErrorRoot_M, depth, _errorStore, null, null, ErrorRoot_X);
+
+                        i++;
+                        if (!TryGetOldModel(m, Trait.ChangeRoot_M, oldModels, i))
+                            m.ChildModels[i] = new ItemModel(m, Trait.ChangeRoot_M, depth, _changeRoot, null, null, ChangeRoot_X);
+
+                        i++;
+                        if (!TryGetOldModel(m, Trait.MetadataRoot_M, oldModels, i))
+                            m.ChildModels[i] = new ItemModel(m, Trait.MetadataRoot_M, depth, item, null, null, MetadataRoot_X);
+
+                        i++;
+                        if (!TryGetOldModel(m, Trait.ModelingRoot_M, oldModels, i))
+                            m.ChildModels[i] = new ItemModel(m, Trait.ModelingRoot_M, depth, item, null, null, ModelingRoot_X);
+                    }
+                },
+            };
+
+
+            #region ButtonCommands  ===========================================
             void SaveAsModel(ItemModel model, Object parm1)
             {
                 var repo = parm1 as IRepository;
@@ -1023,54 +1085,6 @@ namespace ModelGraphSTD
                 root.UIRequestQueue.Enqueue(UIRequest.ReloadModel());
             }
             #endregion
-        }
-        #endregion
-
-        #region 612 DataChef_X  ===============================================
-        internal ModelAction DataChef_X;
-        void Initialize_DataChef_X()
-        {
-            DataChef_X = new ModelAction
-            {
-                ModelParms = (m) =>
-                {
-                    m.CanExpandLeft = true;
-
-                    return (null, _localize(m.NameKey), 0, ModelType.Default);
-                },
-
-                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-                Validate = (m) =>
-                {
-                    if (m.ChildModelCount != 4) // avoid unnecessary validation, once initialized, it won't change
-                    {
-                        var item = m.Item;
-                        var depth = (byte)(m.Depth + 1);
-                        var oldModels = m.ChildModels;
-
-                        var N = 4;
-
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
-                        var i = 0;
-                        if (!TryGetOldModel(m, Trait.ErrorRoot_M, oldModels, i))
-                            m.ChildModels[i] = new ItemModel(m, Trait.ErrorRoot_M, depth, _errorStore, null, null, ErrorRoot_X);
-
-                        i++;
-                        if (!TryGetOldModel(m, Trait.ChangeRoot_M, oldModels, i))
-                            m.ChildModels[i] = new ItemModel(m, Trait.ChangeRoot_M, depth, _changeRoot, null, null, ChangeRoot_X);
-
-                        i++;
-                        if (!TryGetOldModel(m, Trait.MetadataRoot_M, oldModels, i))
-                            m.ChildModels[i] = new ItemModel(m, Trait.MetadataRoot_M, depth, item, null, null, MetadataRoot_X);
-
-                        i++;
-                        if (!TryGetOldModel(m, Trait.ModelingRoot_M, oldModels, i))
-                            m.ChildModels[i] = new ItemModel(m, Trait.ModelingRoot_M, depth, item, null, null, ModelingRoot_X);
-                    }
-                },
-            };
         }
         #endregion
 

@@ -403,9 +403,9 @@ namespace ModelGraphUWP
             }
 
             obj.DataContext = model;
-            if (_viewFilter.TryGetValue(model, out string filter))
+            if (model.ViewFilter != null)
             {
-                obj.Text = filter;
+                obj.Text = model.ViewFilter;
             }
 
             _stackPanelCache[index].Children.Add(obj);
