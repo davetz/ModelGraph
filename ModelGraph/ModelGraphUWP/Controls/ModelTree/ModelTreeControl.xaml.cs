@@ -909,10 +909,19 @@ namespace ModelGraphUWP
             }
             else if (mdl.IsSortDescending)
             {
-                mdl.ResetDelta();
-                mdl.IsSortAscending = false;
-                mdl.IsSortDescending = false;
-                obj.Text = _sortNone;
+                if (mdl.IsAlreadyFiltered)
+                {
+                    mdl.IsSortAscending = true;
+                    mdl.IsSortDescending = false;
+                    obj.Text = _sortAscending;
+                }
+                else
+                {
+                    mdl.ResetDelta();
+                    mdl.IsSortAscending = false;
+                    mdl.IsSortDescending = false;
+                    obj.Text = _sortNone;
+                }
             }
             else
             {
@@ -1000,6 +1009,8 @@ namespace ModelGraphUWP
                 
                 e.Handled = true;
                 if (e.Key == Windows.System.VirtualKey.Tab) FindNextItemModel(mdl);
+
+                mdl.IsAlreadyFiltered = false;
                 _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
@@ -1007,6 +1018,7 @@ namespace ModelGraphUWP
                 mdl.ResetDelta();
                 mdl.ViewFilter = null;
                 mdl.IsExpandedFilter = false;
+                mdl.IsAlreadyFiltered = false;
 
                 FindNextItemModel(mdl);
                 _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
