@@ -156,93 +156,29 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region TryGetOldModel  ===============================================
+        #region TryGetPrevModel  ==============================================
         /// <summary>
         /// Try to find and reuse an existing model matching the callers parameters
         /// </summary>
-        private static bool TryGetOldModel(ItemModel model, Trait trait, ItemModel[] oldModels, int index, Item itm1 = null, Item itm2 = null, Item itm3 = null)
+        private static bool TryGetPrevModel(ItemModel m, Trait trait, int index, Item item = null, Item aux1 = null, Item aux2 = null)
         {
-            if (oldModels == null || oldModels.Length == 0) return false;
+            if (m.PrevModels == null || m.PrevModels.Length == 0) return false;
 
-            var N = oldModels.Length;
+            var N = m.PrevModels.Length;
             var i = (index < N) ? index : N / 2;
             for (int n = 0; n < N; n++, i = (i + 1) % N)
             {
-                var mod = oldModels[i];
-                if (mod == null) continue;
-                if (trait != Trait.Empty && trait != mod.Trait) continue;
-                if (itm1 != null && itm1 != mod.Item) continue;
-                if (itm2 != null && itm2 != mod.Aux1) continue;
-                if (itm3 != null && itm3 != mod.Aux2) continue;
-                oldModels[i] = null;
-                model.ChildModels[index] = mod;
+                var pm = m.PrevModels[i];
+                if (pm == null) continue;
+                if (trait != Trait.Empty && trait != pm.Trait) continue;
+                if (item != null && item != pm.Item) continue;
+                if (aux1 != null && aux1 != pm.Aux1) continue;
+                if (aux2 != null && aux2 != pm.Aux2) continue;
+                m.PrevModels[i] = null;
+                m.ChildModels[index] = pm;
                 return true;
             }
             return false;
-        }
-        #endregion
-
-        #region TreeModelStack  ===============================================
-        /// <summary>
-        /// Keep track of unvisited nodes in a depth first graph traversal
-        /// </summary>
-        private class TreeModelStack
-        {
-            private int _count;
-            private (ItemModel[] Models, int Index)[] _stack;
-            internal bool IsNotEmpty => (_count > 0);
-
-            #region Constructor  ==============================================
-            private const int minLength = 25;
-            internal TreeModelStack(int capacity = minLength)
-            {
-                var length = (capacity < minLength) ? minLength : capacity;
-                _stack = new(ItemModel[] Models, int Index)[length];
-            }
-            #endregion
-
-            #region PushChildren  =============================================
-            /// <summary>
-            /// Push the ChildModels (if any)
-            /// </summary>
-            internal void PushChildren(ItemModel m)
-            {
-                if (m.ChildModelCount > 0)
-                {
-                    _stack[_count] = (m.ChildModels, 0);
-                    _count += 1;
-                    if (_count == _stack.Length)
-                    {
-                        var oldStack = _stack;
-                        _stack = new(ItemModel[] Models, int Index)[_count * 2];
-                        Array.Copy(oldStack, _stack, _count);
-                    }
-                }
-            }
-            #endregion
-
-            #region PopNext  ==================================================
-            /// <summary>
-            /// Get the next unvisited model in the TreeModelTree
-            /// </summary>
-            /// <returns></returns>
-            internal ItemModel PopNext()
-            {
-                var end = _count - 1;
-                var entry = _stack[end];
-
-                var index = entry.Index;
-                var model = entry.Models[index];
-
-                entry.Index = index + 1;
-                if (entry.Index < entry.Models.Length)
-                    _stack[end] = entry;
-                else
-                    _count = end; //don't worry about the trash at _stack[_count], it will be overwritten
-
-                return model;
-            }
-            #endregion
         }
         #endregion
 
@@ -283,6 +219,7 @@ namespace ModelGraphSTD
                     modelStack.PushChildren(m);
                 }
 
+                #region ScrollViewList  =======================================
                 if (scroll == -1)
                 {
                     buffer.GetHead(viewList);
@@ -311,6 +248,7 @@ namespace ModelGraphSTD
                     if (!viewList.Contains(select))
                         root.SelectModel = viewList[0];
                 }
+                #endregion
             }
             else
             {
@@ -321,15 +259,42 @@ namespace ModelGraphSTD
             root.UIRequestQueue.Enqueue(UIRequest.RefreshModel());
         }
 
+        #region TreeModelStack  ===============================================
+        private class TreeModelStack
+        {/*
+            Keep track of unvisited nodes in a depth first graph traversal
+         */
+            private List<(ItemModel[] Models, int Index)> _stack;
+            internal TreeModelStack() { _stack = new List<(ItemModel[] Models, int Index)>(); }
+            internal bool IsNotEmpty => (_stack.Count > 0);
+            internal void PushChildren(ItemModel m) { if (m.ChildModelCount > 0) _stack.Add((m.ChildModels, 0)); }
+            internal ItemModel PopNext()
+            {
+                var end = _stack.Count - 1;
+                var (Models, Index) = _stack[end];
+                var model = Models[Index++];
+
+                if (Index < Models.Length)
+                    _stack[end] = (Models, Index);
+                else
+                    _stack.RemoveAt(end);
+
+                return model;
+            }
+        }
+        #endregion
+
         #region CircularBuffer  ===============================================
         class CircularBuffer
-        {
+        {/*
+            Trace the traversal of an itemModel tree.
+            The end result is a flat list of itemModels (of a predefined length).
+         */
             ItemModel[] _buffer;
             int _first;
             int _count;
-            int _scroll;
-            int _length;
-
+            readonly int _scroll;
+            readonly int _length;
 
             internal CircularBuffer(int length, int scroll)
             {
@@ -345,19 +310,18 @@ namespace ModelGraphSTD
             internal void GetHead(List<ItemModel> list)
             {
                 var first = (_first - _scroll);
-                if (first < 0)  first = 0;
+                if (first < 0) first = 0;
                 CopyBuffer(first, list);
             }
 
             internal void GetTail(List<ItemModel> list)
             {
-                var first = (_count < _buffer.Length) ? 0 : ((_count - _first) < _length) ? (_count - _length + _scroll): _first + _scroll;
+                var first = (_count < _buffer.Length) ? 0 : ((_count - _first) < _length) ? (_count - _length + _scroll) : _first + _scroll;
                 CopyBuffer(first, list);
             }
 
             #region PrivateMethods  ===========================================
             int Index(int inx) => inx % _buffer.Length;
-            int Limit(int num) => (num < 0) ? 0 : (num < _buffer.Length) ? num : _buffer.Length;
             void CopyBuffer(int first, List<ItemModel> list)
             {
                 for (int i = 0, j = first; (i < _length && j < _count); i++, j++)
@@ -369,7 +333,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region UpdateSelectModel  ========================================
+        #region UpdateSelectModel  ============================================
         void UpdateSelectModel(ItemModel m, ChangeType change)
         {
             if (m != null)
@@ -425,7 +389,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region ValidateModel  ============================================
+        #region ValidateModel  ================================================
         void ValidateModel(ItemModel m)
         {
             if (m.Item.AutoExpandRight)
@@ -437,234 +401,98 @@ namespace ModelGraphSTD
             if (m.IsExpanded || m.IsExpandedFilter)
             {
                 m.Validate();
-                if (m.ChildModelCount > 2 && m.IsSorted)
-                if (m.IsSorted) m.Sort();
-                if (m.IsSortDescending) m.Reverse();
+                var N = m.ChildModelCount;
+
+                var filter = m.RegexViewFilter;
+                if (filter != null)
+                {
+                    if (m.PrevModels == null)
+                    {
+                        m.PrevModels = new ItemModel[N];
+                        m.ChildModels.CopyTo(m.PrevModels, 0);
+                    }
+
+                    if (m.IsAlreadyFiltered == false)
+                    {
+                        m.IsAlreadyFiltered = true;
+
+                        var filterList = new List<ItemModel>(N);
+
+                        foreach (var cm in m.PrevModels)
+                        {
+                            if (!filter.IsMatch(cm.FilterSortName)) continue;
+                            filterList.Add(cm);
+                        }
+
+                        m.ChildModels = (filterList.Count == 0) ? null : filterList.ToArray();
+                        N = m.ChildModelCount;
+                    }
+                }
+
+                if (N > 1 && m.IsSorted)
+                {
+                    if (m.PrevModels == null)
+                    {
+                        m.PrevModels = new ItemModel[N];
+                        m.ChildModels.CopyTo(m.PrevModels, 0);
+                    }
+
+                    if (m.IsAlreadySorted == false)
+                    {
+                        m.IsAlreadySorted = true;
+
+                        var sortList = new List<(string Name, ItemModel Model)>(N);
+                        foreach (var cm in m.ChildModels)
+                        {
+                            sortList.Add((cm.FilterSortName, cm));
+                        }
+
+                        sortList.Sort(_alphaSort);
+                        if (m.IsSortDescending) sortList.Reverse();
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            m.ChildModels[i] = sortList[i].Model;
+                        }
+                    }
+                }
             }
             else
+            {
+                m.PrevModels = null;
                 m.ChildModels = null;
+            }
         }
-        #endregion
-        #endregion
-
-        #region ValidateModelTree =============================================
-        public bool ValidateModelTree(RootModel root, ChangeType change = ChangeType.NoChange)
+        class SortCompare : IComparer<(string, ItemModel)>
         {
-            return false;
-            //var oldModels = root.ViewList;
-            //var oldLen = (oldModels == null) ? 0 : oldModels.Length;
-
-            //var rebuildTree = (root.MajorDelta != MajorDelta) || (oldModels == null) || (change != ChangeType.NoChange);
-            //var anyChange = (root.MinorDelta != MinorDelta) || rebuildTree;
-            //if (!anyChange) return false;
-
-            //root.MajorDelta = MajorDelta;
-            //root.MinorDelta = MinorDelta;
-
-            //UpdateSelectModel();
-
-            //var modelStack = new TreeModelStack();
-            //var validFilter = new HashSet<object>();
-            //if (rebuildTree)
-            //{
-            //    //=============================================================
-            //    // rebuild the itemModel tree
-            //    //=============================================================
-            //    root.Validate();
-            //    var newLen = modelStack.PushChildren(root); // count the number of child models
-            //    while (modelStack.IsNotEmpty)
-            //    {
-            //        var model = modelStack.PopNext();
-            //        if (root.ViewFilter.ContainsKey(model)) validFilter.Add(model);
-
-            //        ValidateModel(model);
-            //        newLen += modelStack.PushChildren(model); // count the numer of child models
-            //    }
-            //    ValidateViewFilters();
-            //    //=============================================================
-            //    // build a flat array representation of the itemModel tree
-            //    //=============================================================
-            //    var n = 0;
-            //    var newModels = root.ViewList = new ItemModel[newLen]; // create array of the correct size
-
-            //    modelStack.PushChildren(root);
-            //    while (modelStack.IsNotEmpty)
-            //    {
-            //        var model = newModels[n++] = modelStack.PopNext();
-            //        modelStack.PushChildren(model);
-            //    }
-            //    //=============================================================
-            //    // try to scroll to the previously visible location
-            //    //=============================================================
-            //    if (newLen > 0)
-            //    {
-            //        if (oldLen > 0)
-            //        {
-            //            var index1 = root.ViewIndex1;
-            //            var index2 = root.ViewIndex2;
-            //            var select = root.SelectModel;
-            //            var index = IndexOf(select, index1, index2);
-            //            var delta = OldDelta(select, index1, index2);
-
-            //            if (IndexOf(oldModels[index1], index1, index2) < 0)
-            //            {
-            //                if (index < 0)
-            //                {
-            //                    index = IndexOf(oldModels[index2 - 1], index1, index2);
-            //                    if (index < 0)
-            //                    {
-            //                        root.SelectModel = FindSelectParent();
-            //                        if (index < 0)
-            //                            SetScroll(0);
-            //                        else
-            //                            SetScroll(index);
-            //                    }
-            //                    else // did not find newModels[index1] or select, but did find newModels[index2 - 1]
-            //                    {
-            //                        if (index < 0 && delta > 0) // old select was deleted ?
-            //                            root.SelectModel = root.SelectModel = oldModels[delta - 1];
-            //                        SetScroll(index2 - root.ViewCapacity);
-            //                    }
-            //                }
-            //                else // did not find newModels[index1], but did find select
-            //                {
-            //                    SetScroll(index - delta);
-            //                }
-            //            }
-            //            else // found newModels[index1]
-            //            {
-            //                if (index < 0 && delta > 0) // old select was deleted ?
-            //                {
-            //                    var model = oldModels[delta - 1];
-            //                    if (IndexOf(model, index1, index2) < 0)
-            //                        model = FindSelectParent();
-            //                    root.SelectModel = model;
-            //                }
-            //                SetScroll(index1);
-            //            }
-
-            //            #region FindSelectParent  =============================
-            //            ItemModel FindSelectParent()
-            //            {
-            //                var mod = select;
-            //                while (mod != null && mod.ParentModel != null)
-            //                {
-            //                    mod = mod.ParentModel;
-            //                    index = IndexOf(mod, 0, newLen);
-            //                    if (index >= 0) break;
-            //                }
-            //                return mod;
-            //            }
-            //            #endregion
-            //        }
-            //        else
-            //        {
-            //            SetScroll(0);
-            //        }
-
-            //        #region IndexOf  ==========================================
-            //        int IndexOf(ItemModel model, int index1, int index2)
-            //        {
-            //            if (index2 > newLen) index2 = newLen;
-
-            //            for (int i = index1; i < index2; i++)
-            //            {
-            //                if (model == newModels[i]) return i;
-            //            }
-            //            return -1;
-            //        }
-            //        #endregion
-
-            //        #region OldDelta  =========================================
-            //        int OldDelta(ItemModel model, int index1, int index2)
-            //        {
-            //            if (index2 > oldLen) index2 = oldLen;
-            //            for (int i = index1; i < index2; i++)
-            //            {
-            //                if (model == oldModels[i]) return (i - index1);
-            //            }
-            //            return -1;
-            //        }
-            //        #endregion
-
-            //        #region SetScroll  ========================================
-            //        void SetScroll(int index1)
-            //        {
-            //            if (index1 < 0) index1 = 0;
-
-            //            if (root.ViewCapacity < newLen)
-            //            {
-            //                if ((index1 + root.ViewCapacity) < newLen)
-            //                {
-            //                    root.ViewIndex1 = index1;
-            //                    root.ViewIndex2 = index1 + root.ViewCapacity;
-            //                }
-            //                else
-            //                {
-            //                    root.ViewIndex1 = newLen - root.ViewCapacity;
-            //                    root.ViewIndex2 = newLen;
-            //                }
-            //            }
-            //            else
-            //            {
-            //                root.ViewIndex1 = 0;
-            //                root.ViewIndex2 = newLen;
-            //            }
-            //            if (IndexOf(root.SelectModel, root.ViewIndex1, root.ViewIndex2) < 0)
-            //                root.SelectModel = root.ViewList[root.ViewIndex1];
-            //        }
-            //        #endregion
-            //    }
-            //    else
-            //    {
-            //        root.ViewIndex1 = root.ViewIndex2 = 0;
-            //        root.SelectModel = null;
-            //    }
-            //}
-
-            //return anyChange;
-
-
-            //#region ValidateViewFilters  ======================================
-            //void ValidateViewFilters()
-            //{
-            //    var invalidFilter = new HashSet<object>();
-            //    foreach (var e in root.ViewFilter)
-            //    {
-            //        if (validFilter.Contains(e.Key)) continue;
-            //        invalidFilter.Add(e.Key);
-            //    }
-            //    foreach (var key in invalidFilter)
-            //    {
-            //        root.ViewFilter.Remove(key);
-            //    }
-            //}
-            //#endregion
+            public int Compare((string, ItemModel) x, (string, ItemModel) y) => x.Item1.CompareTo(y.Item1);
         }
+        static SortCompare _alphaSort = new SortCompare();
+        #endregion
         #endregion
 
         #region AddProperyModels  =============================================
-        private void AddProperyModels(ItemModel model, ItemModel[] oldModels, ColumnX[] cols)
+        private void AddProperyModels(ItemModel model, ColumnX[] cols)
         {
             var item = model.Item;
             var N = cols.Length;
             for (int i = 0; i < N; i++)
             {
                 var col = cols[i];
-                if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, col))
+                if (!TryGetPrevModel(model, Trait.Empty, i, item, col))
                 {
                     model.ChildModels[i] = NewPropertyModel(model, model.Depth, item, col);
                 }
             }
         }
-        private void AddProperyModels(ItemModel model, ItemModel[] oldModels, Property[] props)
+        private void AddProperyModels(ItemModel model, Property[] props)
         {
             var item = model.Item;
             var N = props.Length;
             for (int i = 0; i < N; i++)
             {
                 var prop = props[i];
-                if (!TryGetOldModel(model, Trait.Empty, oldModels, i, item, prop))
+                if (!TryGetPrevModel(model, Trait.Empty, i, item, prop))
                 {
                     if (prop.IsColumnX)
                         model.ChildModels[i] = NewPropertyModel(model, model.Depth, item, (prop as ColumnX));
@@ -815,6 +643,8 @@ namespace ModelGraphSTD
         }
         #endregion
 
+
+
         #region 611 RootChef_M  ===============================================
         internal ModelAction RootChef_X;
         void Initialize_RootChef_X()
@@ -853,13 +683,13 @@ namespace ModelGraphSTD
                     if (N > 0)
                     {
                         var items = chef.Items;
-                        var oldModels = m.ChildModels;
+                        m.PrevModels = m.ChildModels;
                         m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var child = items[i] as Chef;
-                            if (!TryGetOldModel(m, Trait.MockChef_M, oldModels, i, child))
+                            if (!TryGetPrevModel(m, Trait.MockChef_M, i, child))
                                 m.ChildModels[i] = new ItemModel(m, Trait.DataChef_M, 0, child, null, null, child.DataChef_X);
                         }
                     }
@@ -867,7 +697,7 @@ namespace ModelGraphSTD
                 }
             };
 
-            
+
             #region ButtonCommands  ===========================================
             void NewModel(ItemModel model)
             {
@@ -900,10 +730,15 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     m.CanExpandLeft = true;
 
-                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -944,31 +779,34 @@ namespace ModelGraphSTD
                     {
                         var item = m.Item;
                         var depth = (byte)(m.Depth + 1);
-                        var oldModels = m.ChildModels;
+                        m.PrevModels = m.ChildModels;
 
                         var N = 4;
 
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.ChildModels = new ItemModel[N];
 
                         var i = 0;
-                        if (!TryGetOldModel(m, Trait.ErrorRoot_M, oldModels, i))
+                        if (!TryGetPrevModel(m, Trait.ErrorRoot_M, i))
                             m.ChildModels[i] = new ItemModel(m, Trait.ErrorRoot_M, depth, _errorStore, null, null, ErrorRoot_X);
 
                         i++;
-                        if (!TryGetOldModel(m, Trait.ChangeRoot_M, oldModels, i))
+                        if (!TryGetPrevModel(m, Trait.ChangeRoot_M, i))
                             m.ChildModels[i] = new ItemModel(m, Trait.ChangeRoot_M, depth, _changeRoot, null, null, ChangeRoot_X);
 
                         i++;
-                        if (!TryGetOldModel(m, Trait.MetadataRoot_M, oldModels, i))
+                        if (!TryGetPrevModel(m, Trait.MetadataRoot_M, i))
                             m.ChildModels[i] = new ItemModel(m, Trait.MetadataRoot_M, depth, item, null, null, MetadataRoot_X);
 
                         i++;
-                        if (!TryGetOldModel(m, Trait.ModelingRoot_M, oldModels, i))
+                        if (!TryGetPrevModel(m, Trait.ModelingRoot_M, i))
                             m.ChildModels[i] = new ItemModel(m, Trait.ModelingRoot_M, depth, item, null, null, ModelingRoot_X);
                     }
                 },
             };
 
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             #region ButtonCommands  ===========================================
             void SaveAsModel(ItemModel model, Object parm1)
@@ -1018,7 +856,16 @@ namespace ModelGraphSTD
         {
             TextColumn_X = new ModelAction
             {
-                ModelParms = (m) => (null, m.ColumnX.Name, 0, ModelType.TextProperty),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetColumnXKindName(m);
+
+                    return (kind, name, 0, ModelType.TextProperty);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetColumnXKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1033,6 +880,10 @@ namespace ModelGraphSTD
                 TextValue = (m) => m.ColumnX.Value.GetString(m.Item),
             };
         }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        (string, string) GetColumnXKindName(ItemModel m) => (null, m.ColumnX.Name);
         #endregion
 
         #region 615 CheckColumn_X  ============================================
@@ -1041,7 +892,16 @@ namespace ModelGraphSTD
         {
             CheckColumn_X = new ModelAction
             {
-                ModelParms = (m) => (null, m.ColumnX.Name, 0, ModelType.CheckProperty),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetColumnXKindName(m);
+
+                    return (kind, name, 0, ModelType.CheckProperty);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetColumnXKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1064,7 +924,16 @@ namespace ModelGraphSTD
         {
             ComboColumn_X = new ModelAction
             {
-                ModelParms = (m) => (null, m.ColumnX.Name, 0, ModelType.ComboProperty),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetColumnXKindName(m);
+
+                    return (kind, name, 0, ModelType.ComboProperty);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetColumnXKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1089,7 +958,7 @@ namespace ModelGraphSTD
             string[] values = null;
             if (e != null && e.IsValid)
             {
-                var items = e.ToArray;
+                var items = e.Items;
                 var count = e.Count;
                 values = new string[count];
 
@@ -1107,7 +976,7 @@ namespace ModelGraphSTD
             string[] values = null;
             if (e != null && e.IsValid)
             {
-                var items = e.ToArray;
+                var items = e.Items;
                 var count = e.Count;
                 values = new string[count];
 
@@ -1138,11 +1007,14 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var name = _localize(m.Property.NameKey);
-                    var fullname = m.Property.HasItemName ? $"{m.Property.GetItemName(m.Item)} {name}" : name;
+                    var (kind, name) = GetPropertyKindName(m);
 
-                    return (null, fullname, 0, ModelType.TextProperty);
+                    return (kind, name, 0, ModelType.TextProperty);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetPropertyKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1156,6 +1028,15 @@ namespace ModelGraphSTD
 
                 TextValue = (m) => m.Property.Value.GetString(m.Item),
             };
+
+        }
+
+        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+        (string, string) GetPropertyKindName(ItemModel m)
+        {
+            var name = _localize(m.Property.NameKey);
+            return (null, m.Property.HasItemName ? $"{m.Property.GetItemName(m.Item)} {name}" : name);
         }
         #endregion
 
@@ -1167,11 +1048,14 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var name = _localize(m.Property.NameKey);
-                    var fullname = m.Property.HasItemName ? $"{m.Property.GetItemName(m.Item)} {name}" : name;
+                    var (kind, name) = GetPropertyKindName(m);
 
-                    return (null, fullname, 0, ModelType.CheckProperty);
+                    return (kind, name, 0, ModelType.CheckProperty);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetPropertyKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1196,11 +1080,14 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var name = _localize(m.Property.NameKey);
-                    var fullname = m.Property.HasItemName ? $"{m.Property.GetItemName(m.Item)} {name}" : name;
+                    var (kind, name) = GetPropertyKindName(m);
 
-                    return (null, fullname, 0, ModelType.ComboProperty);
+                    return (kind, name, 0, ModelType.ComboProperty);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetPropertyKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1227,7 +1114,16 @@ namespace ModelGraphSTD
         {
             TextCompute_X = new ModelAction
             {
-                ModelParms = (m) => (null, m.ComputeX.Name, 0, ModelType.TextProperty),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.TextProperty);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1241,6 +1137,10 @@ namespace ModelGraphSTD
 
                 TextValue = (m) => m.ComputeX.Value.GetString(m.Item),
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.ComputeX.Name);
         }
         #endregion
 
@@ -1263,6 +1163,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -1274,21 +1178,23 @@ namespace ModelGraphSTD
                     if (N > 0)
                     {
                         var items = _errorStore.Items;
-                        var item = m.Item;
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i] as Error;
-                            if (!TryGetOldModel(m, Trait.ErrorType_M, oldModels, i, itm))
+                            if (!TryGetPrevModel(m, Trait.ErrorType_M, i, itm))
                                 m.ChildModels[i] = new ItemModel(m, Trait.ErrorType_M, depth, itm, null, null, ErrorType_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 },
@@ -1313,6 +1219,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelInfo = (m) => m.IsExpandedLeft ? null : _changeRootInfoText,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -1327,27 +1237,35 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var oldModels = m.ChildModels;
-                    m.ChildModels = null;
+                    var N = m.IsExpandedLeft ? _changeRoot.Count : 0;
 
-                    if (m.IsExpandedLeft)
+                    if (N > 0)
                     {
-                        var N = _changeRoot.Count;
-
-                        if (N > 0)
+                        if (_changeRoot.Delta != m.Delta)
                         {
-                            var items = new List<ChangeSet>(_changeRoot.ToArray);
+                            m.Delta = _changeRoot.Delta;
+
+                            m.ChildModels = null;
+                            var items = _changeRoot.Items;
                             items.Reverse();
                             var depth = (byte)(m.Depth + 1);
+
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
-                                var itm = items[i] as ChangeSet;
-                                if (!TryGetOldModel(m, Trait.ChangeSet_M, oldModels, i, itm))
+                                var itm = items[i];
+                                if (!TryGetPrevModel(m, Trait.ChangeSet_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.ChangeSet_M, depth, itm, null, null, ChangeSet_X);
                             }
                         }
+                        m.PrevModels = null;
+                    }
+                    else
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
                     }
                 },
             };
@@ -1366,6 +1284,10 @@ namespace ModelGraphSTD
 
                     return (null, _localize(m.NameKey), 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1390,33 +1312,34 @@ namespace ModelGraphSTD
                         {
                             var depth = (byte)(m.Depth + 1);
 
-                            var oldModels = m.ChildModels;
-                            if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
                             var i = 0;
-                            if (!TryGetOldModel(m, Trait.ViewXView_ZM, oldModels, i, _viewXStore))
+                            if (!TryGetPrevModel(m, Trait.ViewXView_ZM, i, _viewXStore))
                                 m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_ZM, depth, _viewXStore, null, null, ViewXView_ZX);
 
                             i++;
-                            if (!TryGetOldModel(m, Trait.EnumX_ZM, oldModels, i, _enumZStore))
+                            if (!TryGetPrevModel(m, Trait.EnumX_ZM, i, _enumZStore))
                                 m.ChildModels[i] = new ItemModel(m, Trait.EnumX_ZM, depth, _enumZStore, null, null, EnumXList_X);
 
                             i++;
-                            if (!TryGetOldModel(m, Trait.TableX_ZM, oldModels, i, _tableXStore))
+                            if (!TryGetPrevModel(m, Trait.TableX_ZM, i, _tableXStore))
                                 m.ChildModels[i] = new ItemModel(m, Trait.TableX_ZM, depth, _tableXStore, null, null, TableXList_X);
 
                             i++;
-                            if (!TryGetOldModel(m, Trait.GraphX_ZM, oldModels, i, _graphXStore))
+                            if (!TryGetPrevModel(m, Trait.GraphX_ZM, i, _graphXStore))
                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphX_ZM, depth, _graphXStore, null, null, GraphXList_X);
 
                             i++;
-                            if (!TryGetOldModel(m, Trait.InternalStore_ZM, oldModels, i, this))
+                            if (!TryGetPrevModel(m, Trait.InternalStore_ZM, i, this))
                                 m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_ZM, depth, this, null, null, InternalStoreZ_X);
-
                         }
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -1445,6 +1368,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -1467,28 +1394,30 @@ namespace ModelGraphSTD
                             var item = m.Item;
                             var depth = (byte)(m.Depth + 1);
 
-                            var oldModels = m.ChildModels;
-                            if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
                             var i = 0;
-                            if (!TryGetOldModel(m, Trait.ViewView_ZM, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.ViewView_ZM, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.ViewView_ZM, depth, item, null, null, ViewXView_ZX);
 
                             i++;
-                            if (!TryGetOldModel(m, Trait.Table_ZM, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.Table_ZM, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.Table_ZM, depth, item, null, null, TableList_X);
 
                             i++;
-                            if (!TryGetOldModel(m, Trait.Graph_ZM, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.Graph_ZM, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.Graph_ZM, depth, item, null, null, GraphList_X);
 
                             i++;
-                            if (!TryGetOldModel(m, Trait.PrimeCompute_M, oldModels, i, this))
+                            if (!TryGetPrevModel(m, Trait.PrimeCompute_M, i, this))
                                 m.ChildModels[i] = new ItemModel(m, Trait.PrimeCompute_M, depth, this, null, null, PrimeCompute_X);
                         }
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -1519,28 +1448,38 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var item = m.Item;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
-
                     int N = (m.IsExpandedLeft) ? 2 : 0;
 
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        if (m.ChildModelCount != N)
+                        {
+                            var item = m.Item;
+                            var depth = (byte)(m.Depth + 1);
 
-                        var i = 0;
-                        if (!TryGetOldModel(m, Trait.NameColumnRelation_M, oldModels, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.NameColumnRelation_M, depth, item, TableX_NameProperty, null, NameColumnRelation_X);
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
-                        i++;
-                        if (!TryGetOldModel(m, Trait.SummaryColumnRelation_M, oldModels, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.SummaryColumnRelation_M, depth, item, TableX_SummaryProperty, null, SummaryColumnRelation_X);
+                            var i = 0;
+                            if (!TryGetPrevModel(m, Trait.NameColumnRelation_M, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.NameColumnRelation_M, depth, item, TableX_NameProperty, null, NameColumnRelation_X);
+
+                            i++;
+                            if (!TryGetPrevModel(m, Trait.SummaryColumnRelation_M, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.SummaryColumnRelation_M, depth, item, TableX_SummaryProperty, null, SummaryColumnRelation_X);
+
+                        }
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -1565,31 +1504,38 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.Item.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.Item.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
-                    var error = m.Error;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var er = m.Error;
+                    var N = (m.IsExpandedLeft) ? er.Count : 0;
 
-                    var N = (m.IsExpandedLeft) ? error.Count : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || oldModels.Length != N)
+                        if (N != m.ChildModelCount)
                         {
+                            var depth = (byte)(m.Depth + 1);
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
-                                m.ChildModels[i] = new ItemModel(m, Trait.ErrorText_M, depth, error, null, null, ErrorText_X);
+                                m.ChildModels[i] = new ItemModel(m, Trait.ErrorText_M, depth, er, null, null, ErrorText_X);
                             }
+
+                            m.PrevModels = null;
                         }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -1603,15 +1549,19 @@ namespace ModelGraphSTD
         {
             ErrorText_X = new ModelAction
             {
-                ModelParms = (m) =>
-                {
-                    var e = m.Error;
-                    var i = m.ParentModel.GetChildlIndex(m);
-                    var name = (i < 0 || e.Count <= i) ? InvalidItem : e.Errors[i];
+                ModelParms = (m) => (null, GetName(m), 0, ModelType.Default),
 
-                    return (null, name, 0, ModelType.Default);
-                },
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, GetName(m)),
             };
+
+            string GetName(ItemModel m)
+            {
+                var e = m.Error;
+                var i = m.ParentModel.GetChildlIndex(m);
+                return (i < 0 || e.Count <= i) ? InvalidItem : e.Errors[i];
+            }
         }
         #endregion
 
@@ -1623,14 +1573,16 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var cs = m.ChangeSet;
-                    var count = cs.Count;
-                    var name = cs.IsCongealed ? _localize(cs.NameKey) : cs.Name;
+                    var count = m.ChangeSet.Count;
 
                     m.CanExpandLeft = count > 0;
 
-                    return (null, name, count, ModelType.Default);
+                    return (null, GetName(m), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, GetName(m)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1654,27 +1606,41 @@ namespace ModelGraphSTD
 
                     if (N > 0)
                     {
-                        var items = (cs.IsReversed) ? cs.ToArray : cs.ItemsReversed;
-                        var depth = (byte)(m.Depth + 1);
-
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
+                        if (m.Delta != cs.Delta)
                         {
-                            var itm = items[i] as ItemChange;
-                            if (!TryGetOldModel(m, Trait.ItemChange_M, oldModels, i, itm))
+                            var items = (cs.IsReversed) ? cs.Items : cs.ItemsReversed;
+                            var depth = (byte)(m.Depth + 1);
+
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
                             {
-                                m.ChildModels[i] = new ItemModel(m, Trait.ItemChange_M, depth, itm, null, null, ItemChanged_X);
+                                var itm = items[i] as ItemChange;
+                                if (!TryGetPrevModel(m, Trait.ItemChange_M, i, itm))
+                                {
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ItemChange_M, depth, itm, null, null, ItemChanged_X);
+                                }
                             }
+
+                            m.PrevModels = null;
                         }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
-                }
+                },
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            string GetName(ItemModel m)
+            {
+                var cs = m.ChangeSet;
+                return cs.IsCongealed ? _localize(cs.NameKey) : cs.Name;
+            }
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1710,6 +1676,10 @@ namespace ModelGraphSTD
             ItemChanged_X = new ModelAction
             {
                 ModelParms = (m) => (_localize(m.Item.KindKey), m.ItemChange.Name, 0, ModelType.Default),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.Item.KindKey), m.ItemChange.Name),
             };
         }
         #endregion
@@ -1732,6 +1702,10 @@ namespace ModelGraphSTD
 
                     return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1767,25 +1741,31 @@ namespace ModelGraphSTD
                     int N = 0;
                     if (m.IsExpandedLeft)
                     {
-                        var views = _viewXStore.ToArray;
+                        var views = _viewXStore.Items;
                         var roots = new List<ViewX>();
                         foreach (var view in views) { if (ViewX_ViewX.HasNoParent(view)) { roots.Add(view); N++; } }
 
                         if (N > 0)
                         {
                             var depth = (byte)(m.Depth + 1);
-                            var oldModels = m.ChildModels;
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
                                 var itm = roots[i];
-                                if (!TryGetOldModel(m, Trait.ViewXView_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.ViewXView_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_M, depth, itm, null, null, ViewXViewM_X);
                             }
+
+                            m.PrevModels = null;
                         }
                     }
-                    if (N == 0) m.ChildModels = null;
+                    if (N == 0)
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
+                    }
                 }
             };
 
@@ -1815,8 +1795,12 @@ namespace ModelGraphSTD
                     m.CanExpandLeft = count > 0;
                     m.CanExpandRight = true;
 
-                    return (null, _localize(vx.Name), count, ModelType.Default);
+                    return (null, vx.Name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, m.ViewX.Name),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1943,12 +1927,12 @@ namespace ModelGraphSTD
                         if (N > 0)
                         {
                             var depth = (byte)(m.Depth + 1);
-                            var oldModels = m.ChildModels;
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             if (R > 0)
                             {
-                                AddProperyModels(m, oldModels, props);
+                                AddProperyModels(m, props);
                             }
                             if (L1 > 0)
                             {
@@ -1956,7 +1940,7 @@ namespace ModelGraphSTD
                                 {
                                     var px = propertyList[j];
 
-                                    if (!TryGetOldModel(m, Trait.ViewXProperty_M, oldModels, i, px))
+                                    if (!TryGetPrevModel(m, Trait.ViewXProperty_M, i, px))
                                         m.ChildModels[i] = new ItemModel(m, Trait.ViewXProperty_M, depth, px, ViewX_Property, view, ViewXProperty_X);
                                 }
                             }
@@ -1965,7 +1949,7 @@ namespace ModelGraphSTD
                                 for (int i = (R + L1), j = 0; j < L2; i++, j++)
                                 {
                                     var qx = queryList[j];
-                                    if (!TryGetOldModel(m, Trait.ViewXQuery_M, oldModels, i, qx))
+                                    if (!TryGetPrevModel(m, Trait.ViewXQuery_M, i, qx))
                                         m.ChildModels[i] = new ItemModel(m, Trait.ViewXQuery_M, depth, qx, ViewX_QueryX, view, ViewXQuery_X);
                                 }
                             }
@@ -1974,13 +1958,19 @@ namespace ModelGraphSTD
                                 for (int i = (R + L1 + L2), j = 0; j < L3; i++, j++)
                                 {
                                     var vx = viewList[j];
-                                    if (!TryGetOldModel(m, Trait.ViewXView_M, oldModels, i, vx))
+                                    if (!TryGetPrevModel(m, Trait.ViewXView_M, i, vx))
                                         m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_M, depth, vx, ViewX_ViewX, view, ViewXViewM_X);
                                 }
                             }
+
+                            m.PrevModels = null;
                         }
                     }
-                    if (N == 0) m.ChildModels = null;
+                    if (N == 0)
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
+                    }
                 }
 
             };
@@ -2028,6 +2018,23 @@ namespace ModelGraphSTD
 
                         var sto = Store_QueryX.GetParent(qx);
                         return (GetIdentity(sto, IdentityStyle.Kind), GetIdentity(sto, IdentityStyle.Double), count, ModelType.Default);
+                    }
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) =>
+                {
+                    var qx = m.Item as QueryX;
+                    var rel = Relation_QueryX.GetParent(qx);
+                    if (rel != null)
+                    {
+                        return (_localize(m.KindKey), GetIdentity(qx, IdentityStyle.Single));
+                    }
+                    else
+                    {
+                        var sto = Store_QueryX.GetParent(qx);
+                        return (GetIdentity(sto, IdentityStyle.Kind), GetIdentity(sto, IdentityStyle.Double));
                     }
                 },
 
@@ -2110,12 +2117,12 @@ namespace ModelGraphSTD
                         if (N > 0)
                         {
                             var depth = (byte)(m.Depth + 1);
-                            var oldModels = m.ChildModels;
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             if (R > 0)
                             {
-                                AddProperyModels(m, oldModels, props);
+                                AddProperyModels(m, props);
                             }
                             if (L1 > 0)
                             {
@@ -2123,7 +2130,7 @@ namespace ModelGraphSTD
                                 {
                                     var px = propertyList[j];
 
-                                    if (!TryGetOldModel(m, Trait.ViewXProperty_M, oldModels, i, px))
+                                    if (!TryGetPrevModel(m, Trait.ViewXProperty_M, i, px))
                                         m.ChildModels[i] = new ItemModel(m, Trait.ViewXProperty_M, depth, px, QueryX_Property, qx, ViewXProperty_X);
                                 }
                             }
@@ -2132,7 +2139,7 @@ namespace ModelGraphSTD
                                 for (int i = (R + L1), j = 0; j < L2; i++, j++)
                                 {
                                     var qr = queryList[j];
-                                    if (!TryGetOldModel(m, Trait.ViewXQuery_M, oldModels, i, qr))
+                                    if (!TryGetPrevModel(m, Trait.ViewXQuery_M, i, qr))
                                         m.ChildModels[i] = new ItemModel(m, Trait.ViewXQuery_M, depth, qr, QueryX_QueryX, qx, ViewXQuery_X);
                                 }
                             }
@@ -2141,13 +2148,19 @@ namespace ModelGraphSTD
                                 for (int i = (R + L1 + L2), j = 0; j < L3; i++, j++)
                                 {
                                     var vx = viewList[j];
-                                    if (!TryGetOldModel(m, Trait.ViewXView_M, oldModels, i, vx))
+                                    if (!TryGetPrevModel(m, Trait.ViewXView_M, i, vx))
                                         m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_M, depth, vx, QueryX_ViewX, qx, ViewXViewM_X);
                                 }
                             }
+
+                            m.PrevModels = null;
                         }
                     }
-                    if (N == 0) m.ChildModels = null;
+                    if (N == 0)
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
+                    }
                 }
 
             };
@@ -2188,6 +2201,10 @@ namespace ModelGraphSTD
             ViewXProperty_X = new ModelAction
             {
                 ModelParms = (m) => (GetIdentity(m.Item, IdentityStyle.Kind), GetIdentity(m.Item, IdentityStyle.Double), 0, ModelType.Default),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (GetIdentity(m.Item, IdentityStyle.Kind), GetIdentity(m.Item, IdentityStyle.Double)),
             };
         }
         #endregion
@@ -2214,6 +2231,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -2223,25 +2244,31 @@ namespace ModelGraphSTD
                     int N = 0;
                     if (m.IsExpandedLeft)
                     {
-                        var views = _viewXStore.ToArray;
+                        var views = _viewXStore.Items;
                         var roots = new List<ViewX>();
                         foreach (var vx in views) { if (ViewX_ViewX.HasNoParent(vx)) { roots.Add(vx); N++; } }
 
                         if (N > 0)
                         {
                             var depth = (byte)(m.Depth + 1);
-                            var oldModels = m.ChildModels;
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
                                 var itm = roots[i];
-                                if (!TryGetOldModel(m, Trait.ViewView_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.ViewView_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.ViewView_M, depth, itm, null, null, ViewView_X);
                             }
+
+                            m.PrevModels = null;
                         }
                     }
-                    if (N == 0) m.ChildModels = null;
+                    if (N == 0)
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
+                    }
                 }
             };
         }
@@ -2282,6 +2309,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, m.ViewX.Name),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => m.ViewX.Summary,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -2305,85 +2336,59 @@ namespace ModelGraphSTD
                         {
                             N = items.Length;
                             var depth = (byte)(m.Depth + 1);
-                            var oldModels = m.ChildModels;
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
                                 var itm = items[i];
 
-                                if (!TryGetOldModel(m, Trait.ViewItem_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.ViewItem_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.ViewItem_M, depth, itm, queryList[0], null, ViewItem_X);
                             }
+
+                            m.PrevModels = null;
                         }
                         else if (key != null && L2 > 0)
                         {
                             N = L2;
                             var depth = (byte)(m.Depth + 1);
-                            var oldModels = m.ChildModels;
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
                                 var qx = queryList[i];
 
-                                if (!TryGetOldModel(m, Trait.ViewQuery_M, oldModels, i, qx))
+                                if (!TryGetPrevModel(m, Trait.ViewQuery_M, i, qx))
                                     m.ChildModels[i] = new ItemModel(m, Trait.ViewQuery_M, depth, qx, key, null, ViewQuery_X);
                             }
+
+                            m.PrevModels = null;
                         }
                         else if (L3 > 0)
                         {
                             N = L3;
                             var depth = (byte)(m.Depth + 1);
-                            var oldModels = m.ChildModels;
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
                                 var v = viewList[i];
 
-                                if (!TryGetOldModel(m, Trait.ViewView_M, oldModels, i, v))
+                                if (!TryGetPrevModel(m, Trait.ViewView_M, i, v))
                                     m.ChildModels[i] = new ItemModel(m, Trait.ViewView_M, depth, v, null, null, ViewView_X);
                             }
+
+                            m.PrevModels = null;
                         }
-                        //N = L1 + L2 + L3;
-                        //if (N > 0)
-                        //{
-                        //    var depth = (byte)(model.Level + 1);
-                        //    var oldModels = model.ChildModels;
-                        //    model.ChildModels = new TreeModel[N];
-
-                        //    if (L1 > 0)
-                        //    {
-                        //        for (int i = 0, j = 0; j < L1; i++, j++)
-                        //        {
-                        //            var px = propertyList[j];
-
-                        //            if (!TryGetOldModel(model, Trait.ViewXProperty_M, oldModels, i, px))
-                        //                model.ChildModels[i] = new TreeModel(model, Trait.ViewXProperty_M, depth, px, ViewX_P, view, ViewXProperty_M);
-                        //        }
-                        //    }
-                        //    if (L2 > 0)
-                        //    {
-                        //        for (int i = (L1), j = 0; j < L2; i++, j++)
-                        //        {
-                        //            var qx = queryList[j];
-                        //            if (!TryGetOldModel(model, Trait.ViewXQuery_M, oldModels, i, qx))
-                        //                model.ChildModels[i] = new TreeModel(model, Trait.ViewXQuery_M, depth, qx, ViewX_QueryX, view, ViewQuery_M);
-                        //        }
-                        //    }
-                        //    if (L3 > 0)
-                        //    {
-                        //        for (int i = (L1 + L2), j = 0; j < L3; i++, j++)
-                        //        {
-                        //            var vx = viewList[j];
-                        //            if (!TryGetOldModel(model, Trait.ViewXView_M, oldModels, i, vx))
-                        //                model.ChildModels[i] = new TreeModel(model, Trait.ViewXView_M, depth, vx, ViewX_ViewX, view, ViewView_M);
-                        //        }
-                        //    }
-                        //}
                     }
-                    if (N == 0) m.ChildModels = null;
+                    if (N == 0)
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
+                    }
                 }
             };
         }
@@ -2412,6 +2417,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (GetIdentity(m.Item.Owner, IdentityStyle.Single), GetIdentity(m.Item, IdentityStyle.Single)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var item = m.Item;
@@ -2429,12 +2438,12 @@ namespace ModelGraphSTD
                         if (N > 0)
                         {
                             var depth = (byte)(m.Depth + 1);
-                            var oldModels = m.ChildModels;
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             if (R > 0)
                             {
-                                AddProperyModels(m, oldModels, PropertyList);
+                                AddProperyModels(m, PropertyList);
                             }
 
                             if (L > 0)
@@ -2443,7 +2452,7 @@ namespace ModelGraphSTD
                                 for (int j = 0; j < L2; i++, j++)
                                 {
                                     var q = QueryList[j];
-                                    if (!TryGetOldModel(m, Trait.ViewQuery_M, oldModels, i, item, q))
+                                    if (!TryGetPrevModel(m, Trait.ViewQuery_M, i, item, q))
                                         m.ChildModels[i] = new ItemModel(m, Trait.ViewQuery_M, depth, item, q, null, ViewQuery_X);
                                 }
                                 for (int j = 0; j < L3; i++, j++)
@@ -2451,9 +2460,15 @@ namespace ModelGraphSTD
 
                                 }
                             }
+
+                            m.PrevModels = null;
                         }
                     }
-                    if (N == 0) m.ChildModels = null;
+                    if (N == 0)
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
+                    }
                 }
             };
         }
@@ -2468,7 +2483,7 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var key = m.Item;
-                    var qx = m.Aux1 as QueryX;
+                    var qx = m.QueryX;
                     var count = TryGetQueryItems(qx, out Item[] items, key) ? items.Length : 0;
 
                     m.CanExpandLeft = (count > 0);
@@ -2480,10 +2495,14 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), GetIdentity(m.QueryX, IdentityStyle.Single)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var key = m.Item;
-                    var qx = m.Aux1 as QueryX;
+                    var qx = m.QueryX;
                     int N = 0;
                     if (m.IsExpandedLeft)
                     {
@@ -2492,18 +2511,24 @@ namespace ModelGraphSTD
                         if (N > 0)
                         {
                             var depth = (byte)(m.Depth + 1);
-                            var oldModels = m.ChildModels;
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
                                 var itm = items[i];
-                                if (!TryGetOldModel(m, Trait.ViewItem_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.ViewItem_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.ViewItem_M, depth, itm, qx, null, ViewItem_X);
                             }
+
+                            m.PrevModels = null;
                         }
                     }
-                    if (N == 0) m.ChildModels = null;
+                    if (N == 0)
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
+                    }
                 }
             };
         }
@@ -2531,6 +2556,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ButtonCommands = (m, bc) =>
                 {
                     bc.Add(new ModelCommand(this, m, Trait.InsertCommand, Insert));
@@ -2544,22 +2573,29 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft && N > 0)
                     {
-                        var items = _enumXStore.ToArray;
-                        var item = m.Item;
-                        var depth = (byte)(m.Depth + 1);
-
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
+                        if (m.Delta != _enumXStore.Delta)
                         {
-                            var itm = items[i] as EnumX;
-                            if (!TryGetOldModel(m, Trait.EnumX_M, oldModels, i, itm))
-                                m.ChildModels[i] = new ItemModel(m, Trait.EnumX_M, depth, itm, null, null, EnumX_X);
+                            m.Delta = _enumXStore.Delta;
+
+                            var items = _enumXStore.Items;
+                            var depth = (byte)(m.Depth + 1);
+
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                var ex = items[i];
+                                if (!TryGetPrevModel(m, Trait.EnumX_M, i, ex))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.EnumX_M, depth, ex, null, null, EnumX_X);
+                            }
+
+                            m.PrevModels = null;
                         }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -2610,35 +2646,20 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft && N > 0)
                     { 
-                        var items = _tableXStore.Items;
-                        var item = m.Item;
-                        var depth = (byte)(m.Depth + 1);
-                        var filter = m.RegexViewFilter;
-
-                        if (filter != null)
-                        {
-                            var filterList = new List<ItemModel>(N);
-                            var surigate = new ItemModel(m, Trait.TableX_M, depth, null, null, null, TableX_X);
-
-                            for (int i = 0; i < N; i++)
-                            {
-                                surigate.Item = items[i];
-                                if (!filter.IsMatch(surigate.FilterSortName)) continue;
-                                filterList.Add(surigate.Clone());
-                            }
-                            m.ChildModels = (filterList.Count == 0) ? null : filterList.ToArray();                                
-                        }
-                        else if (m.Delta != _tableXStore.Delta)
+                        if (m.Delta != _tableXStore.Delta)
                         {
                             m.Delta = _tableXStore.Delta;
 
-                            var oldModels = m.ChildModels;
+                            var items = _tableXStore.Items;
+                            var depth = (byte)(m.Depth + 1);
+
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
                                 var itm = items[i];
-                                if (!TryGetOldModel(m, Trait.TableX_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.TableX_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.TableX_M, depth, itm, null, null, TableX_X);
                             }
                         }
@@ -2678,6 +2699,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -2691,25 +2716,33 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var N = _graphXStore.Count;
+                    var N = m.IsExpandedLeft ? _graphXStore.Count : 0;
 
-                    if (m.IsExpandedLeft && N > 0)
+                    if ( N > 0)
                     {
-                        var items = _graphXStore.ToArray;
-                        var depth = (byte)(m.Depth + 1);
-
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
+                        if (m.Delta != _graphXStore.Delta)
                         {
-                            var itm = items[i] as GraphX;
-                            if (!TryGetOldModel(m, Trait.GraphX_M, oldModels, i, itm))
-                                m.ChildModels[i] = new ItemModel(m, Trait.GraphX_M, depth, itm, null, null, GraphX_X);
+                            m.Delta = _graphXStore.Delta;
+
+                            var items = _graphXStore.Items;
+                            var depth = (byte)(m.Depth + 1);
+
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                var itm = items[i] as GraphX;
+                                if (!TryGetPrevModel(m, Trait.GraphX_M, i, itm))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphX_M, depth, itm, null, null, GraphX_X);
+                            }
+
+                            m.PrevModels = null;
                         }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -2742,6 +2775,10 @@ namespace ModelGraphSTD
 
                     return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2778,26 +2815,29 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var gd = m.Item as GraphX;
-                    var N = GraphX_SymbolX.ChildCount(gd);
+                    var gx = m.GraphX;
+                    var N = GraphX_SymbolX.ChildCount(gx);
 
                     if (m.IsExpandedLeft && N > 0)
                     {
-                        var syms = GraphX_SymbolX.GetChildren(gd);
+                        var syms = GraphX_SymbolX.GetChildren(gx);
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var sym = syms[i];
-                            if (!TryGetOldModel(m, Trait.SymbolX_M, oldModels, i, sym))
-                                m.ChildModels[i] = new ItemModel(m, Trait.SymbolX_M, depth, sym, GraphX_SymbolX, gd, SymbolX_X);
+                            if (!TryGetPrevModel(m, Trait.SymbolX_M, i, sym))
+                                m.ChildModels[i] = new ItemModel(m, Trait.SymbolX_M, depth, sym, GraphX_SymbolX, gx, SymbolX_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -2836,6 +2876,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -2846,41 +2890,30 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft && N > 0)
                     {
-                        var depth = (byte)(m.Depth + 1);
-                        var items = _tableXStore.Items;
-                        var filter = m.RegexViewFilter;
-
-                        if (filter != null)
-                        {
-                            var filterList = new List<ItemModel>(N);
-                            var surigate = new ItemModel(m, Trait.TableX_M, depth, null, null, null, TableX_X);
-
-                            for (int i = 0; i < N; i++)
-                            {
-                                surigate.Item = items[i];
-                                if (!filter.IsMatch(surigate.FilterSortName)) continue;
-                                filterList.Add(surigate.Clone());
-                            }
-                            m.ChildModels = (filterList.Count == 0) ? null : filterList.ToArray();
-                        }
-                        else if (m.Delta != _tableXStore.Delta)
+                        if (m.Delta != _tableXStore.Delta)
                         {
                             m.Delta = _tableXStore.Delta;
 
-                            var oldModels = m.ChildModels;
+                            var depth = (byte)(m.Depth + 1);
+                            var items = _tableXStore.Items;
+
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
                                 var itm = items[i];
-                                if (!TryGetOldModel(m, Trait.Table_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.Table_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.Table_M, depth, itm, null, null, Table_X);
                             }
+
+                            m.PrevModels = null;
                         }
                     }
                     else
                     {
                         m.ChildModels = null;
+                        m.PrevModels = null;
                     }
                 }
             };
@@ -2906,6 +2939,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -2914,23 +2951,33 @@ namespace ModelGraphSTD
                 {
                     var item = m.Item;
                     var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    m.PrevModels = m.ChildModels;
 
-                    var N = _graphXStore.Count;
-                    if (m.IsExpandedLeft && N > 0)
+                    var N = m.IsExpandedLeft ? _graphXStore.Count : 0;
+                    if (N > 0)
                     {
-                        var items = _graphXStore.ToArray;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
+                        if (m.Delta != _graphXStore.Delta)
                         {
-                            var gx = items[i];
-                            if (!TryGetOldModel(m, Trait.GraphXRef_M, oldModels, i, gx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXRef_M, depth, gx, null, null, GraphXRef_X);
+                            m.Delta = _graphXStore.Delta;
+
+                            var items = _graphXStore.Items;
+
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                var gx = items[i];
+                                if (!TryGetPrevModel(m, Trait.GraphXRef_M, i, gx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXRef_M, depth, gx, null, null, GraphXRef_X);
+                            }
+
+                            m.PrevModels = null;
                         }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -2949,13 +2996,15 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var name = m.PairX.DisplayValue;
-
                     m.CanDrag = true;
                     m.CanExpandRight = true;
 
-                    return (null, name, 0, ModelType.Default);
+                    return (null, m.PairX.DisplayValue, 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, m.PairX.DisplayValue),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2974,13 +3023,19 @@ namespace ModelGraphSTD
                         var sp = new Property[] { _pairXTextProperty, _pairXValueProperty };
                         var N = sp.Length;
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        if (m.ChildModelCount != N)
+                        {
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
-                        AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
+
+                            m.PrevModels = null;
+                        }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -2996,13 +3051,15 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var ex = m.Item as EnumX;
-
                     m.CanDrag = true;
                     m.CanExpandRight = true;
 
-                    return (null, ex.Name, 0, ModelType.Default);
+                    return (null, m.EnumX.Name, 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, m.EnumX.Name),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3023,7 +3080,7 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var item = m.Item as EnumX;
+                    var ex = m.EnumX;
                     var sp = new Property[] { _enumXNameProperty, _enumXSummaryProperty };
                     var R = m.IsExpandedRight ? sp.Length : 0;
                     var L = m.IsExpandedLeft ? 2 : 0;
@@ -3033,26 +3090,29 @@ namespace ModelGraphSTD
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
                             var i = R;
-                            if (!TryGetOldModel(m, Trait.EnumValue_ZM, oldModels, i, item))
-                                m.ChildModels[i] = new ItemModel(m, Trait.EnumValue_ZM, depth, item, null, null, PairXList_X);
+                            if (!TryGetPrevModel(m, Trait.EnumValue_ZM, i, ex))
+                                m.ChildModels[i] = new ItemModel(m, Trait.EnumValue_ZM, depth, ex, null, null, PairXList_X);
 
                             i++;
-                            if (!TryGetOldModel(m, Trait.EnumColumn_ZM, oldModels, i, item))
-                                m.ChildModels[i] = new ItemModel(m, Trait.EnumColumn_ZM, depth, item, null, null, EnumColumnList_X);
+                            if (!TryGetPrevModel(m, Trait.EnumColumn_ZM, i, ex))
+                                m.ChildModels[i] = new ItemModel(m, Trait.EnumColumn_ZM, depth, ex, null, null, EnumColumnList_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3074,6 +3134,10 @@ namespace ModelGraphSTD
 
                     return (null, m.TableX.Name, 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, m.TableX.Name),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3101,41 +3165,47 @@ namespace ModelGraphSTD
 
                     if (N > 0)
                     {
-                        var item = m.Item as TableX;
-                        var depth = (byte)(m.Depth + 1);
-                        var oldModels = m.ChildModels;
-
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
-                        if (R > 0)
+                        if (m.ChildModelCount != N)
                         {
-                            AddProperyModels(m, oldModels, sp);
-                        }
-                        if (L > 0)
-                        {
-                            var i = R;
-                            if (!TryGetOldModel(m, Trait.ColumnX_ZM, oldModels, i, item))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ColumnX_ZM, depth, item, null, null, ColumnXList_X);
+                            var tx = m.TableX;
+                            var depth = (byte)(m.Depth + 1);
 
-                            i++;
-                            if (!TryGetOldModel(m, Trait.ComputeX_ZM, oldModels, i, item))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ComputeX_ZM, depth, item, null, null, ComputeXList_X);
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
-                            i++;
-                            if (!TryGetOldModel(m, Trait.ChildRelationX_ZM, oldModels, i, item))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ChildRelationX_ZM, depth, item, null, null, ChildRelationXList_X);
+                            if (R > 0)
+                            {
+                                AddProperyModels(m, sp);
+                            }
+                            if (L > 0)
+                            {
+                                var i = R;
+                                if (!TryGetPrevModel(m, Trait.ColumnX_ZM, i, tx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ColumnX_ZM, depth, tx, null, null, ColumnXList_X);
 
-                            i++;
-                            if (!TryGetOldModel(m, Trait.ParentRelatationX_ZM, oldModels, i, item))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ParentRelatationX_ZM, depth, item, null, null, ParentRelationXList_X);
+                                i++;
+                                if (!TryGetPrevModel(m, Trait.ComputeX_ZM, i, tx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ComputeX_ZM, depth, tx, null, null, ComputeXList_X);
 
-                            i++;
-                            if (!TryGetOldModel(m, Trait.MetaRelation_ZM, oldModels, i, item))
-                                m.ChildModels[i] = new ItemModel(m, Trait.MetaRelation_ZM, depth, item, null, null, MetaRelationList_X);
+                                i++;
+                                if (!TryGetPrevModel(m, Trait.ChildRelationX_ZM, i, tx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ChildRelationX_ZM, depth, tx, null, null, ChildRelationXList_X);
+
+                                i++;
+                                if (!TryGetPrevModel(m, Trait.ParentRelatationX_ZM, i, tx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ParentRelatationX_ZM, depth, tx, null, null, ParentRelationXList_X);
+
+                                i++;
+                                if (!TryGetPrevModel(m, Trait.MetaRelation_ZM, i, tx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.MetaRelation_ZM, depth, tx, null, null, MetaRelationList_X);
+                            }
+
+                            m.PrevModels = null;
                         }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3157,6 +3227,10 @@ namespace ModelGraphSTD
 
                     return (null, m.GraphX.Name, 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, m.GraphX.Name),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3184,37 +3258,43 @@ namespace ModelGraphSTD
 
                     if (N > 0)
                     {
-                        var gx = m.GraphX;
-                        var depth = (byte)(m.Depth + 1);
-
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
-                        if (R > 0)
+                        if (m.ChildModelCount != N)
                         {
-                            AddProperyModels(m, oldModels, sp);
-                        }
-                        if (L > 0)
-                        {
-                            var i = R;
-                            if (!TryGetOldModel(m, Trait.GraphXColoring_M, oldModels, i, gx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXColoring_M, depth, gx, null, null, GraphXColoring_X);
+                            var gx = m.GraphX;
+                            var depth = (byte)(m.Depth + 1);
 
-                            i++;
-                            if (!TryGetOldModel(m, Trait.GraphXRoot_ZM, oldModels, i, gx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXRoot_ZM, depth, gx, null, null, GraphXRootList_X);
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
-                            i++;
-                            if (!TryGetOldModel(m, Trait.GraphXNode_ZM, oldModels, i, gx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXNode_ZM, depth, gx, null, null, GraphXNodeList_X);
+                            if (R > 0)
+                            {
+                                AddProperyModels(m, sp);
+                            }
+                            if (L > 0)
+                            {
+                                var i = R;
+                                if (!TryGetPrevModel(m, Trait.GraphXColoring_M, i, gx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXColoring_M, depth, gx, null, null, GraphXColoring_X);
 
-                            i++;
-                            if (!TryGetOldModel(m, Trait.SymbolX_ZM, oldModels, i, gx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.SymbolX_ZM, depth, gx, null, null, SymbolXList_X);
+                                i++;
+                                if (!TryGetPrevModel(m, Trait.GraphXRoot_ZM, i, gx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXRoot_ZM, depth, gx, null, null, GraphXRootList_X);
+
+                                i++;
+                                if (!TryGetPrevModel(m, Trait.GraphXNode_ZM, i, gx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.GraphXNode_ZM, depth, gx, null, null, GraphXNodeList_X);
+
+                                i++;
+                                if (!TryGetPrevModel(m, Trait.SymbolX_ZM, i, gx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.SymbolX_ZM, depth, gx, null, null, SymbolXList_X);
+                            }
+
+                            m.PrevModels = null;
                         }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3236,6 +3316,10 @@ namespace ModelGraphSTD
 
                     return (null, m.SymbolX.Name, 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, m.SymbolX.Name),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3267,13 +3351,19 @@ namespace ModelGraphSTD
                         var sp = new Property[] { _symbolXNameProperty };
                         var N = sp.Length;
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        if (m.ChildModelCount != N)
+                        {
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
-                        AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
+
+                            m.PrevModels = null;
+                        }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3305,6 +3395,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, m.ColumnX.Name),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => m.ColumnX.Summary,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3327,13 +3421,19 @@ namespace ModelGraphSTD
                         var sp = new Property[] { _columnXNameProperty, _columnXSummaryProperty, _columnXTypeOfProperty, _columnXIsChoiceProperty, _columnXInitialProperty };
                         var N = sp.Length;
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        if (m.ChildModelCount != N)
+                        {
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
-                        AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
+
+                            m.PrevModels = null;
+                        }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3359,6 +3459,10 @@ namespace ModelGraphSTD
 
                     return (null, cx.Name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, m.ComputeX.Name),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3438,12 +3542,12 @@ namespace ModelGraphSTD
                         var N = L + R;
                         if (N > 0)
                         {
-                            var oldModels = m.ChildModels;
-                            if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
                             if (R > 0)
                             {
-                                AddProperyModels(m, oldModels, sp);
+                                AddProperyModels(m, sp);
                             }
                             if (L > 0)
                             {
@@ -3452,18 +3556,22 @@ namespace ModelGraphSTD
                                 for (int i = R, j = 0; i < N; i++, j++)
                                 {
                                     var itm = items[j] as QueryX;
-                                    if (!TryGetOldModel(m, Trait.ValueXHead_M, oldModels, i, itm))
+                                    if (!TryGetPrevModel(m, Trait.ValueXHead_M, i, itm))
                                         m.ChildModels[i] = new ItemModel(m, Trait.ValueXHead_M, depth, itm, null, null, ValueHead_X);
                                 }
                             }
+
+                            m.PrevModels = null;
                         }
                         else
                         {
+                            m.PrevModels = null;
                             m.ChildModels = null;
                         }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3492,6 +3600,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3509,26 +3621,29 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var tbl = m.Item as TableX;
+                    var tx = m.TableX;
 
-                    var N = (m.IsExpandedLeft) ? TableX_ColumnX.ChildCount(tbl) : 0;
+                    var N = (m.IsExpandedLeft) ? TableX_ColumnX.ChildCount(tx) : 0;
                     if (N > 0)
                     {
-                        var items = TableX_ColumnX.GetChildren(tbl);
+                        var items = TableX_ColumnX.GetChildren(tx);
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
-                            if (!TryGetOldModel(m, Trait.ColumnX_M, oldModels, i, itm))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ColumnX_M, depth, itm, TableX_ColumnX, tbl, ColumnX_X);
+                            if (!TryGetPrevModel(m, Trait.ColumnX_M, i, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.ColumnX_M, depth, itm, TableX_ColumnX, tx, ColumnX_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3563,6 +3678,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3588,18 +3707,22 @@ namespace ModelGraphSTD
                         var items = TableX_ChildRelationX.GetChildren(tbl);
 
                         var depth = (byte)(m.Depth + 1);
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var rel = items[i];
-                            if (!TryGetOldModel(m, Trait.ChildRelationX_M, oldModels, i, rel))
+                            if (!TryGetPrevModel(m, Trait.ChildRelationX_M, i, rel))
                                 m.ChildModels[i] = new ItemModel(m, Trait.ChildRelationX_M, depth, rel, TableX_ChildRelationX, tbl, ChildRelationX_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3634,6 +3757,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3659,18 +3786,21 @@ namespace ModelGraphSTD
                         var items = TableX_ParentRelationX.GetChildren(tx);
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var rel = items[i];
-                            if (!TryGetOldModel(m, Trait.ParentRelationX_M, oldModels, i, rel))
+                            if (!TryGetPrevModel(m, Trait.ParentRelationX_M, i, rel))
                                 m.ChildModels[i] = new ItemModel(m, Trait.ParentRelationX_M, depth, rel, TableX_ParentRelationX, tx, ParentRelationX_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3706,6 +3836,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3723,26 +3857,34 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var enu = m.Item as EnumX;
-                    var N = enu.Count;
+                    var ex = m.EnumX;
+                    var N = ex.Count;
 
                     if (m.IsExpandedLeft && N > 0)
                     {
-                        var items = enu.ToArray;
-                        var depth = (byte)(m.Depth + 1);
-
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
-                        for (int i = 0; i < N; i++)
+                        if (m.Delta != ex.Delta)
                         {
-                            var itm = items[i] as PairX;
-                            if (!TryGetOldModel(m, Trait.PairX_M, oldModels, i, itm))
-                                m.ChildModels[i] = new ItemModel(m, Trait.PairX_M, depth, itm, enu, null, PairX_X);
+                            m.Delta = ex.Delta;
+
+                            var items = ex.Items;
+                            var depth = (byte)(m.Depth + 1);
+
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                var px = items[i];
+                                if (!TryGetPrevModel(m, Trait.PairX_M, i, px))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.PairX_M, depth, px, ex, null, PairX_X);
+                            }
+
+                            m.PrevModels = null;
                         }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3776,6 +3918,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3799,7 +3945,7 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var ex = m.Item as EnumX;
+                    var ex = m.EnumX;
 
                     var N = (m.IsExpandedLeft) ? EnumX_ColumnX.ChildCount(ex) : 0;
                     if (N > 0)
@@ -3807,22 +3953,25 @@ namespace ModelGraphSTD
                         var items = EnumX_ColumnX.GetChildren(ex);
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            var col = items[i];
-                            var tbl = TableX_ColumnX.GetParent(col);
-                            if (tbl != null)
+                            var cx = items[i];
+                            var tx = TableX_ColumnX.GetParent(cx);
+                            if (tx != null)
                             {
-                                if (!TryGetOldModel(m, Trait.EnumRelatedColumn_M, oldModels, i, col))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.EnumRelatedColumn_M, depth, col, tbl, ex, EnumRelatedColumn_X);
+                                if (!TryGetPrevModel(m, Trait.EnumRelatedColumn_M, i, cx))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.EnumRelatedColumn_M, depth, cx, tx, ex, EnumRelatedColumn_X);
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3846,6 +3995,10 @@ namespace ModelGraphSTD
 
                     return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3874,18 +4027,21 @@ namespace ModelGraphSTD
                         var depth = (byte)(m.Depth + 1);
                         var items = Store_ComputeX.GetChildren(sto);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
-                            if (!TryGetOldModel(m, Trait.ComputeX_M, oldModels, i, itm))
+                            if (!TryGetPrevModel(m, Trait.ComputeX_M, i, itm))
                                 m.ChildModels[i] = new ItemModel(m, Trait.ComputeX_M, depth, itm, Store_ComputeX, sto, ComputeX_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3923,6 +4079,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, GetIdentity(m.RelationX, IdentityStyle.Single)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => m.RelationX.Summary,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3955,20 +4115,22 @@ namespace ModelGraphSTD
                 {
                     if (m.IsExpandedRight)
                     {
-                        var sp1 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty };
-                        var sp2 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty };
-
-                        var item = m.Item as RelationX;
-                        var sp = item.IsLimited ? sp2 : sp1;
+                        var sp = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty };
                         var N = sp.Length;
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        if (m.ChildModelCount != N)
+                        {
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
-                        AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
+
+                            m.PrevModels = null;
+                        }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -3989,6 +4151,10 @@ namespace ModelGraphSTD
 
                     return (null, GetIdentity(m.RelationX, IdentityStyle.Single), 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, GetIdentity(m.RelationX, IdentityStyle.Single)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4024,20 +4190,22 @@ namespace ModelGraphSTD
                 {
                     if (m.IsExpandedRight)
                     {
-                        var sp1 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty, _relationXIsLimitedProperty };
-                        var sp2 = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty, _relationXIsLimitedProperty, _relationXMinOccuranceProperty, _relationXMaxOccuranceProperty };
-
-                        var item = m.Item as RelationX;
-                        var sp = item.IsLimited ? sp2 : sp1;
+                        var sp = new Property[] { _relationXNameProperty, _relationXSummaryProperty, _relationXPairingProperty, _relationXIsRequiredProperty, _relationXIsLimitedProperty };
                         var N = sp.Length;
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        if (m.ChildModelCount != N)
+                        {
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
-                        AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
+
+                            m.PrevModels = null;
+                        }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
 
@@ -4060,6 +4228,10 @@ namespace ModelGraphSTD
 
                     return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4092,20 +4264,23 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var tbl = m.Item as TableX;
+                    var tx = m.TableX;
 
-                    if (m.IsExpandedLeft && TableX_NameProperty.TryGetChild(tbl, out Property prop))
+                    if (m.IsExpandedLeft && TableX_NameProperty.TryGetChild(tx, out Property pr))
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || oldModels.Length != 1) m.ChildModels = new ItemModel[1];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[1];
 
-                        if (!TryGetOldModel(m, Trait.NameColumn_M, oldModels, 0, prop))
-                            m.ChildModels[0] = new ItemModel(m, Trait.NameColumn_M, depth, prop, TableX_NameProperty, tbl, NameColumn_X);
+                        if (!TryGetPrevModel(m, Trait.NameColumn_M, 0, pr))
+                            m.ChildModels[0] = new ItemModel(m, Trait.NameColumn_M, depth, pr, TableX_NameProperty, tx, NameColumn_X);
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -4130,23 +4305,15 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ReorderItems = ReorderStoreItem,
-
-                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-                MenuCommands = (m, mc) =>
-                {
-                },
-
-                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-                ButtonCommands = (m, bc) =>
-                {
-                },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4171,20 +4338,23 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var tbl = m.Item as TableX;
+                    var tx = m.TableX;
 
-                    if (m.IsExpandedLeft && TableX_SummaryProperty.TryGetChild(tbl, out Property prop))
+                    if (m.IsExpandedLeft && TableX_SummaryProperty.TryGetChild(tx, out Property pr))
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || oldModels.Length != 1) m.ChildModels = new ItemModel[1];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[1];
 
-                        if (!TryGetOldModel(m, Trait.SummaryColumn_M, oldModels, 0, prop))
-                            m.ChildModels[0] = new ItemModel(m, Trait.SummaryColumn_M, depth, prop, TableX_SummaryProperty, tbl, SummaryColumn_X);
+                        if (!TryGetPrevModel(m, Trait.SummaryColumn_M, 0, pr))
+                            m.ChildModels[0] = new ItemModel(m, Trait.SummaryColumn_M, depth, pr, TableX_SummaryProperty, tx, SummaryColumn_X);
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -4202,6 +4372,15 @@ namespace ModelGraphSTD
                 {
                     if (m.Item.IsColumnX) return (null, m.ColumnX.Name, 0, ModelType.Default);
                     if (m.Item.IsComputeX) return (null, m.ComputeX.Name, 0, ModelType.Default);
+                    throw new Exception("Corrupt ItemModelTree");
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) =>
+                {
+                    if (m.Item.IsColumnX) return (null, m.ColumnX.Name);
+                    if (m.Item.IsComputeX) return (null, m.ComputeX.Name);
                     throw new Exception("Corrupt ItemModelTree");
                 },
 
@@ -4234,6 +4413,15 @@ namespace ModelGraphSTD
                 {
                     if (m.Item.IsColumnX) return (null, m.ColumnX.Name, 0, ModelType.Default);
                     if (m.Item.IsComputeX) return (null, m.ComputeX.Name, 0, ModelType.Default);
+                    throw new Exception("Corrupt ItemModelTree");
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) =>
+                {
+                    if (m.Item.IsColumnX) return (null, m.ColumnX.Name);
+                    if (m.Item.IsComputeX) return (null, m.ComputeX.Name);
                     throw new Exception("Corrupt ItemModelTree");
                 },
 
@@ -4275,6 +4463,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -4301,20 +4493,21 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var item = m.Item;
-
-                    if (m.IsExpandedLeft && GraphX_ColorColumnX.TryGetChild(item, out ColumnX col) && TableX_ColumnX.TryGetParent(col, out TableX tbl))
+                    if (m.IsExpandedLeft && GraphX_ColorColumnX.TryGetChild(m.Item, out ColumnX cx) && TableX_ColumnX.TryGetParent(cx, out TableX tx))
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || oldModels.Length != 1) m.ChildModels = new ItemModel[1];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[1];
 
-                        if (!TryGetOldModel(m, Trait.GraphXColorColumn_M, oldModels, 0, col, tbl))
-                            m.ChildModels[0] = new ItemModel(m, Trait.GraphXColorColumn_M, depth, col, tbl, null, GraphXColorColumn_X);
+                        if (!TryGetPrevModel(m, Trait.GraphXColorColumn_M, 0, cx, tx))
+                            m.ChildModels[0] = new ItemModel(m, Trait.GraphXColorColumn_M, depth, cx, tx, null, GraphXColorColumn_X);
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -4336,6 +4529,10 @@ namespace ModelGraphSTD
 
                     return (null, _localize(m.NameKey), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4364,26 +4561,29 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var gd = m.Item as GraphX;
+                    var gx = m.GraphX;
 
-                    var N = (m.IsExpandedLeft) ? GraphX_QueryX.ChildCount(gd) : 0;
+                    var N = (m.IsExpandedLeft) ? GraphX_QueryX.ChildCount(gx) : 0;
                     if (N > 0)
                     {
-                        var items = GraphX_QueryX.GetChildren(gd);
+                        var items = GraphX_QueryX.GetChildren(gx);
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
-                            if (!TryGetOldModel(m, Trait.GraphXRoot_M, oldModels, i, itm, gd))
-                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXRoot_M, depth, itm, gd, null, QueryXRoot_X);
+                            if (!TryGetPrevModel(m, Trait.GraphXRoot_M, i, itm, gx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXRoot_M, depth, itm, gx, null, QueryXRoot_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -4423,6 +4623,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var gx = m.GraphX;
@@ -4435,23 +4639,27 @@ namespace ModelGraphSTD
                         {
                             var depth = (byte)(m.Depth + 1);
 
-                            var oldModels = m.ChildModels;
-                            if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
                                 var sto = owners[i];
-                                if (!TryGetOldModel(m, Trait.GraphXNode_M, oldModels, i, sto, gx))
+                                if (!TryGetPrevModel(m, Trait.GraphXNode_M, i, sto, gx))
                                     m.ChildModels[i] = new ItemModel(m, Trait.GraphXNode_M, depth, sto, gx, null, GraphXNode_X);
                             }
+
+                            m.PrevModels = null;
                         }
                         else
                         {
+                            m.PrevModels = null;
                             m.ChildModels = null;
                         }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -4473,6 +4681,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), GetIdentity(m.Item, IdentityStyle.Single), 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), GetIdentity(m.Item, IdentityStyle.Single)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4502,19 +4714,22 @@ namespace ModelGraphSTD
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         (var symbols, var querys) = GetSymbolXQueryX(gx, st);
                         for (int i = 0; i < N; i++)
                         {
-                            var seg = querys[i];
-                            if (!TryGetOldModel(m, Trait.GraphXNodeSymbol_M, oldModels, i, seg))
-                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXNodeSymbol_M, depth, seg, GraphX_SymbolQueryX, gx, GraphXNodeSymbol_X);
+                            var qx = querys[i];
+                            if (!TryGetPrevModel(m, Trait.GraphXNodeSymbol_M, i, qx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXNodeSymbol_M, depth, qx, GraphX_SymbolQueryX, gx, GraphXNodeSymbol_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -4528,13 +4743,11 @@ namespace ModelGraphSTD
         {
             GraphXColorColumn_X = new ModelAction
             {
-                ModelParms = (m) =>
-                {
-                    var col = m.Item as ColumnX;
-                    var tbl = m.Aux1 as TableX;
+                ModelParms = (m) => (_localize(m.KindKey), $"{m.TableX.Name} : {m.ColumnX.Name}", 0, ModelType.Default),
 
-                    return (_localize(m.KindKey), $"{tbl.Name} : {col.Name}", 0, ModelType.Default);
-                },
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), $"{m.TableX.Name} : {m.ColumnX.Name}"),
             };
         }
         #endregion
@@ -4555,10 +4768,12 @@ namespace ModelGraphSTD
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    var tb = Store_QueryX.GetParent(m.Item);
-
-                    return (_localize(m.NameKey), GetIdentity(tb, IdentityStyle.Single), count, ModelType.Default);
+                    return (_localize(m.NameKey), GetIdentity(Store_QueryX.GetParent(m.Item), IdentityStyle.Single), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.NameKey), GetIdentity(Store_QueryX.GetParent(m.Item), IdentityStyle.Single)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4602,12 +4817,13 @@ namespace ModelGraphSTD
                         if (N > 0)
                         {
                             var depth = (byte)(m.Depth + 1);
-                            var oldModels = m.ChildModels;
+
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             if (R > 0)
                             {
-                                AddProperyModels(m, oldModels, sp);
+                                AddProperyModels(m, sp);
                             }
                             if (L > 0)
                             {
@@ -4620,12 +4836,12 @@ namespace ModelGraphSTD
                                     {
                                         if (child.IsHead)
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXPathHead_M, oldModels, i, child))
+                                            if (!TryGetPrevModel(m, Trait.GraphXPathHead_M, i, child))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathHead_M, depth, child, null, null, QueryXPathHead_X);
                                         }
                                         else
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXPathLink_M, oldModels, i, child))
+                                            if (!TryGetPrevModel(m, Trait.GraphXPathLink_M, i, child))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathLink_M, depth, child, null, null, QueryXPathLink_X);
                                         }
                                     }
@@ -4633,12 +4849,12 @@ namespace ModelGraphSTD
                                     {
                                         if (child.IsHead)
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXGroupHead_M, oldModels, i, child))
+                                            if (!TryGetPrevModel(m, Trait.GraphXGroupHead_M, i, child))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupHead_M, depth, child, null, null, QueryXGroupHead_X);
                                         }
                                         else
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXGroupLink_M, oldModels, i, child))
+                                            if (!TryGetPrevModel(m, Trait.GraphXGroupLink_M, i, child))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupLink_M, depth, child, null, null, QueryXGroupLink_X);
                                         }
                                     }
@@ -4646,30 +4862,36 @@ namespace ModelGraphSTD
                                     {
                                         if (child.IsHead)
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXEgressHead_M, oldModels, i, child))
+                                            if (!TryGetPrevModel(m, Trait.GraphXEgressHead_M, i, child))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressHead_M, depth, child, null, null, QueryXEgressHead_X);
                                         }
                                         else
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXEgressLink_M, oldModels, i, child))
+                                            if (!TryGetPrevModel(m, Trait.GraphXEgressLink_M, i, child))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressLink_M, depth, child, null, null, QueryXEgressLink_X);
                                         }
                                     }
                                     else if (child.IsRoot)
                                     {
-                                        if (!TryGetOldModel(m, Trait.GraphXLink_M, oldModels, i, child))
+                                        if (!TryGetPrevModel(m, Trait.GraphXLink_M, i, child))
                                             m.ChildModels[i] = new ItemModel(m, Trait.GraphXLink_M, depth, child, null, null, QueryXLink_X);
                                     }
                                     else
                                     {
-                                        if (!TryGetOldModel(m, Trait.GraphXLink_M, oldModels, i, child))
+                                        if (!TryGetPrevModel(m, Trait.GraphXLink_M, i, child))
                                             m.ChildModels[i] = new ItemModel(m, Trait.GraphXLink_M, depth, child, null, null, QueryXLink_X);
                                     }
                                 }
                             }
+
+                            m.PrevModels = null;
                         }
                     }
-                    if (N == 0) m.ChildModels = null;
+                    if (N == 0)
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
+                    }
                 }
             };
         }
@@ -4691,6 +4913,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4744,12 +4970,12 @@ namespace ModelGraphSTD
                     var N = L + R;
                     if (N > 0)
                     {
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
@@ -4764,12 +4990,12 @@ namespace ModelGraphSTD
                                     case QueryType.Path:
                                         if (qx.IsHead)
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXPathHead_M, oldModels, i, qx))
+                                            if (!TryGetPrevModel(m, Trait.GraphXPathHead_M, i, qx))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathHead_M, depth, qx, null, null, QueryXPathHead_X);
                                         }
                                         else
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXPathLink_M, oldModels, i, qx))
+                                            if (!TryGetPrevModel(m, Trait.GraphXPathLink_M, i, qx))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathLink_M, depth, qx, null, null, QueryXPathLink_X);
                                         }
                                         break;
@@ -4777,12 +5003,12 @@ namespace ModelGraphSTD
                                     case QueryType.Group:
                                         if (qx.IsHead)
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXGroupHead_M, oldModels, i, qx))
+                                            if (!TryGetPrevModel(m, Trait.GraphXGroupHead_M, i, qx))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupHead_M, depth, qx, null, null, QueryXGroupHead_X);
                                         }
                                         else
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXGroupLink_M, oldModels, i, qx))
+                                            if (!TryGetPrevModel(m, Trait.GraphXGroupLink_M, i, qx))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupLink_M, depth, qx, null, null, QueryXGroupLink_X);
                                         }
                                         break;
@@ -4790,18 +5016,18 @@ namespace ModelGraphSTD
                                     case QueryType.Segue:
                                         if (qx.IsHead)
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXEgressHead_M, oldModels, i, qx))
+                                            if (!TryGetPrevModel(m, Trait.GraphXEgressHead_M, i, qx))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressHead_M, depth, qx, null, null, QueryXEgressHead_X);
                                         }
                                         else
                                         {
-                                            if (!TryGetOldModel(m, Trait.GraphXEgressLink_M, oldModels, i, qx))
+                                            if (!TryGetPrevModel(m, Trait.GraphXEgressLink_M, i, qx))
                                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressLink_M, depth, qx, null, null, QueryXEgressLink_X);
                                         }
                                         break;
 
                                     case QueryType.Graph:
-                                        if (!TryGetOldModel(m, Trait.GraphXLink_M, oldModels, i, qx))
+                                        if (!TryGetPrevModel(m, Trait.GraphXLink_M, i, qx))
                                             m.ChildModels[i] = new ItemModel(m, Trait.GraphXLink_M, depth, qx, null, null, QueryXLink_X);
                                         break;
 
@@ -4810,9 +5036,12 @@ namespace ModelGraphSTD
                                 }
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -4836,6 +5065,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXHeadName(m), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXHeadName(m)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4877,34 +5110,37 @@ namespace ModelGraphSTD
                     var sp = new Property[] { _queryXRelationProperty, _queryXIsReversedProperty, _queryXIsBreakPointProperty, _queryXConnect1Property, _queryXConnect2Property, _queryXRootWhereProperty };
                     var R = m.IsExpandedRight ? sp.Length : 0;
 
-                    var sd = m.Item as QueryX;
-                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(sd) : 0;
+                    var qx = m.QueryX;
+                    var L = (m.IsExpandedLeft) ? QueryX_QueryX.ChildCount(qx) : 0;
 
                     var N = L + R;
                     if (N > 0)
                     {
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
-                            var items = QueryX_QueryX.GetChildren(sd);
+                            var items = QueryX_QueryX.GetChildren(qx);
                             var depth = (byte)(m.Depth + 1);
 
                             for (int i = R, j = 0; i < N; i++, j++)
                             {
                                 var itm = items[j];
-                                if (!TryGetOldModel(m, Trait.GraphXPathLink_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.GraphXPathLink_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathLink_M, depth, itm, null, null, QueryXPathLink_X);
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -4928,6 +5164,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4968,12 +5208,12 @@ namespace ModelGraphSTD
                     var N = L + R;
                     if (N > 0)
                     {
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
@@ -4983,13 +5223,16 @@ namespace ModelGraphSTD
                             for (int i = R, j = 0; i < N; i++, j++)
                             {
                                 var itm = items[j];
-                                if (!TryGetOldModel(m, Trait.GraphXPathLink_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.GraphXPathLink_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.GraphXPathLink_M, depth, itm, null, null, QueryXPathLink_X);
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -5013,6 +5256,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXHeadName(m), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXHeadName(m)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5052,12 +5299,12 @@ namespace ModelGraphSTD
                     var N = L + R;
                     if (N > 0)
                     {
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
@@ -5067,13 +5314,16 @@ namespace ModelGraphSTD
                             for (int i = R, j = 0; i < N; i++, j++)
                             {
                                 var itm = items[j];
-                                if (!TryGetOldModel(m, Trait.GraphXGroupLink_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.GraphXGroupLink_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupLink_M, depth, itm, null, null, QueryXGroupLink_X);
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -5097,6 +5347,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5137,12 +5391,12 @@ namespace ModelGraphSTD
                     var N = L + R;
                     if (N > 0)
                     {
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
@@ -5152,13 +5406,16 @@ namespace ModelGraphSTD
                             for (int i = R, j = 0; i < N; i++, j++)
                             {
                                 var itm = items[j];
-                                if (!TryGetOldModel(m, Trait.GraphXGroupLink_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.GraphXGroupLink_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.GraphXGroupLink_M, depth, itm, null, null, QueryXGroupLink_X);
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -5182,6 +5439,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXHeadName(m), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXHeadName(m)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5225,12 +5486,12 @@ namespace ModelGraphSTD
                     var N = L + R;
                     if (N > 0)
                     {
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
@@ -5240,13 +5501,16 @@ namespace ModelGraphSTD
                             for (int i = R, j = 0; i < N; i++, j++)
                             {
                                 var itm = items[j];
-                                if (!TryGetOldModel(m, Trait.GraphXEgressLink_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.GraphXEgressLink_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressLink_M, depth, itm, null, null, QueryXEgressLink_X);
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -5270,6 +5534,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5310,12 +5578,12 @@ namespace ModelGraphSTD
                     var N = L + R;
                     if (N > 0)
                     {
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
@@ -5325,13 +5593,16 @@ namespace ModelGraphSTD
                             for (int i = R, j = 0; i < N; i++, j++)
                             {
                                 var itm = items[j];
-                                if (!TryGetOldModel(m, Trait.GraphXEgressLink_M, oldModels, i, itm))
+                                if (!TryGetPrevModel(m, Trait.GraphXEgressLink_M, i, itm))
                                     m.ChildModels[i] = new ItemModel(m, Trait.GraphXEgressLink_M, depth, itm, null, null, QueryXEgressLink_X);
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -5350,10 +5621,12 @@ namespace ModelGraphSTD
                     m.CanDrag = true;
                     m.CanExpandRight = true;
 
-                    var name = (SymbolX_QueryX.TryGetParent(m.Item, out SymbolX sym)) ? sym.Name : null;
-
-                    return (_localize(m.KindKey), name, 0, ModelType.Default);
+                    return (_localize(m.KindKey), (SymbolX_QueryX.TryGetParent(m.Item, out SymbolX sym)) ? sym.Name : null, 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), (SymbolX_QueryX.TryGetParent(m.Item, out SymbolX sym)) ? sym.Name : null),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5379,13 +5652,16 @@ namespace ModelGraphSTD
 
                     if (N > 0)
                     {
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
-                        AddProperyModels(m, oldModels, sp);
+                        AddProperyModels(m, sp);
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -5410,6 +5686,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5457,25 +5737,28 @@ namespace ModelGraphSTD
                         var items = QueryX_QueryX.GetChildren(qx);
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
                             for (int i = R, j = 0; i < N; i++, j++)
                             {
-                                var itm = items[j];
-                                if (!TryGetOldModel(m, Trait.ValueXLink_M, oldModels, i, itm))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.ValueXLink_M, depth, itm, null, null, ValueLink_X);
+                                var cq = items[j];
+                                if (!TryGetPrevModel(m, Trait.ValueXLink_M, i, cq))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ValueXLink_M, depth, cq, null, null, ValueLink_X);
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -5499,6 +5782,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5544,25 +5831,28 @@ namespace ModelGraphSTD
                         var items = QueryX_QueryX.GetChildren(vd);
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
                             for (int i = R, j = 0; i < N; i++, j++)
                             {
-                                var itm = items[j];
-                                if (!TryGetOldModel(m, Trait.ValueXLink_M, oldModels, i, itm))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.ValueXLink_M, depth, itm, null, null, ValueLink_X);
+                                var cq = items[j];
+                                if (!TryGetPrevModel(m, Trait.ValueXLink_M, i, cq))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.ValueXLink_M, depth, cq, null, null, ValueLink_X);
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -5615,6 +5905,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, GetIdentity(m.Item, IdentityStyle.Single)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => GetIdentity(m.Item, IdentityStyle.Summary),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -5644,13 +5938,12 @@ namespace ModelGraphSTD
             {
                 var depth = (byte)(m.Depth + 1);
 
-                var oldModels = m.ChildModels;
-                if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
-
+                m.PrevModels = m.ChildModels;
+                m.ChildModels = new ItemModel[N];
 
                 if (R > 0)
                 {
-                    AddProperyModels(m, oldModels, cols);
+                    AddProperyModels(m, cols);
                 }
                 if (L > 0)
                 {
@@ -5659,36 +5952,39 @@ namespace ModelGraphSTD
                     GetParentRelationCount(row, out int usedParentRelationCount, out int unusedParentRelationCount);
 
                     int i = R;
-                    if (!TryGetOldModel(m, Trait.RowProperty_ZM, oldModels, i))
+                    if (!TryGetPrevModel(m, Trait.RowProperty_ZM, i))
                         m.ChildModels[i] = new ItemModel(m, Trait.RowProperty_ZM, depth, row, TableX_ColumnX, null, RowPropertyList_X);
 
                     i++;
-                    if (!TryGetOldModel(m, Trait.RowCompute_ZM, oldModels, i))
+                    if (!TryGetPrevModel(m, Trait.RowCompute_ZM, i))
                         m.ChildModels[i] = new ItemModel(m, Trait.RowCompute_ZM, depth, row, Store_ComputeX, null, RowComputeList_X);
 
                     i++;
-                    if (!TryGetOldModel(m, Trait.RowChildRelation_ZM, oldModels, i))
+                    if (!TryGetPrevModel(m, Trait.RowChildRelation_ZM, i))
                         m.ChildModels[i] = new ItemModel(m, Trait.RowChildRelation_ZM, depth, row, TableX_ChildRelationX, null, RowChildRelationList_X);
 
                     i++;
-                    if (!TryGetOldModel(m, Trait.RowParentRelation_ZM, oldModels, i))
+                    if (!TryGetPrevModel(m, Trait.RowParentRelation_ZM, i))
                         m.ChildModels[i] = new ItemModel(m, Trait.RowParentRelation_ZM, depth, row, TableX_ParentRelationX, null, RowParentRelationList_X);
 
                     i++;
-                    if (!TryGetOldModel(m, Trait.RowDefaultProperty_ZM, oldModels, i))
+                    if (!TryGetPrevModel(m, Trait.RowDefaultProperty_ZM, i))
                         m.ChildModels[i] = new ItemModel(m, Trait.RowDefaultProperty_ZM, depth, row, TableX_ColumnX, null, RowDefaultPropertyList_X);
 
                     i++;
-                    if (!TryGetOldModel(m, Trait.RowUnusedChildRelation_ZM, oldModels, i))
+                    if (!TryGetPrevModel(m, Trait.RowUnusedChildRelation_ZM, i))
                         m.ChildModels[i] = new ItemModel(m, Trait.RowUnusedChildRelation_ZM, depth, row, TableX_ChildRelationX, null, RowUnusedChildRelationList_X);
 
                     i++;
-                    if (!TryGetOldModel(m, Trait.RowUnusedParentRelation_ZM, oldModels, i))
+                    if (!TryGetPrevModel(m, Trait.RowUnusedParentRelation_ZM, i))
                         m.ChildModels[i] = new ItemModel(m, Trait.RowUnusedParentRelation_ZM, depth, row, TableX_ParentRelationX, null, RowUnusedParentRelationList_X);
                 }
+
+                m.PrevModels = null;
             }
             else
             {
+                m.PrevModels = null;
                 m.ChildModels = null;
             }
         }
@@ -5721,6 +6017,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, m.ViewX.Name),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => m.ViewX.Summary,
             };
         }
@@ -5745,6 +6045,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, m.TableX.Name),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => m.TableX.Summary,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -5762,47 +6066,36 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var tbl = m.Item as TableX;
-                    var col = TableX_NameProperty.GetChild(tbl);
-                    var N = m.IsExpandedLeft ? tbl.Count : 0;
+                    var N = m.TableX.Count;
 
-                    if (N > 0)
+                    if (m.IsExpandedLeft && N > 0)
                     {
-                        var items = tbl.Items;
-                        var depth = (byte)(m.Depth + 1);
-                        var filter = m.RegexViewFilter;
-
-                        if (filter != null)
-                        {
-                            var filterList = new List<ItemModel>(N);
-                            var surigate = new ItemModel(m, Trait.Row_M, depth, null, tbl, col, RowX_X);
-
-                            for (int i = 0; i < N; i++)
-                            {
-                                surigate.Item = items[i];
-                                if (!filter.IsMatch(surigate.FilterSortName)) continue;
-                                filterList.Add(surigate.Clone());
-                            }
-                            m.ChildModels = (filterList.Count == 0) ? null : filterList.ToArray();
-                        }
-                        else if (m.Delta != _tableXStore.Delta)
+                        if (m.Delta != _tableXStore.Delta)
                         {
                             m.Delta = _tableXStore.Delta;
 
-                            var oldModels = m.ChildModels;
+                            var tbl = m.TableX;
+                            var col = TableX_NameProperty.GetChild(tbl);
+                            var items = tbl.Items;
+                            var depth = (byte)(m.Depth + 1);
+
+                            m.PrevModels = m.ChildModels;
                             m.ChildModels = new ItemModel[N];
 
                             for (int i = 0; i < N; i++)
                             {
                                 var row = items[i];
-                                if (!TryGetOldModel(m, Trait.Row_M, oldModels, i, row, tbl, col))
+                                if (!TryGetPrevModel(m, Trait.Row_M, i, row, tbl, col))
                                     m.ChildModels[i] = new ItemModel(m, Trait.Row_M, depth, row, tbl, col, RowX_X);
                             }
+
+                            m.PrevModels = null;
                         }
                     }
                     else
                     {
                         m.ChildModels = null;
+                        m.PrevModels = null;
                     }
                 }
             };
@@ -5832,6 +6125,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), m.Graph.GraphX.Name),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => m.Graph.GraphX.Summary,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -5848,34 +6145,40 @@ namespace ModelGraphSTD
                     var N = (m.IsExpandedLeft) ? 5 : 0;
                     if (N > 0)
                     {
-                        var item = m.Item as Graph;
-                        var depth = (byte)(m.Depth + 1);
+                        if (m.ChildModelCount != N)
+                        {
+                            var item = m.Item as Graph;
+                            var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
-                        var i = 0;
-                        if (!TryGetOldModel(m, Trait.GraphNode_ZM, oldModels, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.GraphNode_ZM, depth, item, null, null, GraphNodeList_X);
+                            var i = 0;
+                            if (!TryGetPrevModel(m, Trait.GraphNode_ZM, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphNode_ZM, depth, item, null, null, GraphNodeList_X);
 
-                        i++;
-                        if (!TryGetOldModel(m, Trait.GraphEdge_ZM, oldModels, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.GraphEdge_ZM, depth, item, null, null, GraphEdgeList_X);
+                            i++;
+                            if (!TryGetPrevModel(m, Trait.GraphEdge_ZM, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphEdge_ZM, depth, item, null, null, GraphEdgeList_X);
 
-                        i++;
-                        if (!TryGetOldModel(m, Trait.GraphOpen_ZM, oldModels, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.GraphOpen_ZM, depth, item, null, null, GraphOpenList_X);
+                            i++;
+                            if (!TryGetPrevModel(m, Trait.GraphOpen_ZM, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphOpen_ZM, depth, item, null, null, GraphOpenList_X);
 
-                        i++;
-                        if (!TryGetOldModel(m, Trait.GraphRoot_ZM, oldModels, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.GraphRoot_ZM, depth, item, null, null, GraphRootList_X);
+                            i++;
+                            if (!TryGetPrevModel(m, Trait.GraphRoot_ZM, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphRoot_ZM, depth, item, null, null, GraphRootList_X);
 
-                        i++;
-                        if (!TryGetOldModel(m, Trait.GraphLevel_ZM, oldModels, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.GraphLevel_ZM, depth, item, null, null, GraphLevelList_X);
+                            i++;
+                            if (!TryGetPrevModel(m, Trait.GraphLevel_ZM, i, item))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphLevel_ZM, depth, item, null, null, GraphLevelList_X);
+                        }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -5904,6 +6207,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), m.Graph.GraphX.Name),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => m.Graph.GraphX.Summary,
             };
         }
@@ -5925,6 +6232,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), GetRelationName(m.RelationX), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), GetRelationName(m.RelationX)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5955,28 +6266,31 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var row1 = m.Item as RowX;
-                    var rel = m.Aux1 as RelationX;
+                    var rx = m.Item as RowX;
+                    var re = m.Aux1 as RelationX;
 
-                    var N = (m.IsExpandedLeft) ? rel.ChildCount(row1) : 0;
+                    var N = (m.IsExpandedLeft) ? re.ChildCount(rx) : 0;
 
                     if (N > 0)
                     {
-                        var items = rel.GetChildren(row1);
+                        var items = re.GetChildren(rx);
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            var row2 = items[i];
-                            if (!TryGetOldModel(m, Trait.RowRelatedChild_M, oldModels, i, row2))
-                                m.ChildModels[i] = new ItemModel(m, Trait.RowRelatedChild_M, depth, row2, rel, row1, RowRelatedChild_X);
+                            var rr = items[i];
+                            if (!TryGetPrevModel(m, Trait.RowRelatedChild_M, i, rr))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowRelatedChild_M, depth, rr, re, rx, RowRelatedChild_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6000,6 +6314,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), GetRelationName(m.RelationX), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), GetRelationName(m.RelationX)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6030,26 +6348,30 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var item = m.Item as RowX;
-                    var rel = m.Aux1 as RelationX;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var rx = m.RowX;
+                    var re = m.RelationX;
 
                     Item[] items = null;
-                    var N = (m.IsExpandedLeft && rel.TryGetParents(item, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && re.TryGetParents(rx, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            var itm = items[i];
-                            if (!TryGetOldModel(m, Trait.RowRelatedParent_M, oldModels, i, itm))
-                                m.ChildModels[i] = new ItemModel(m, Trait.RowRelatedParent_M, depth, itm, rel, item, RowRelatedParent_X);
+                            var rr = items[i];
+                            if (!TryGetPrevModel(m, Trait.RowRelatedParent_M, i, rr))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowRelatedParent_M, depth, rr, re, rx, RowRelatedParent_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6070,6 +6392,10 @@ namespace ModelGraphSTD
 
                     return (m.RowX.TableX.Name, GetRowName(m.RowX), m.RelationX.ChildCount(m.RowX), ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (m.RowX.TableX.Name, GetRowName(m.RowX)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6140,6 +6466,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (m.RowX.TableX.Name, GetRowName(m.RowX)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => RowSummary(m.RowX),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -6195,6 +6525,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), $"{m.TableX.Name}: {m.ColumnX.Name}"),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 MenuCommands = (m, mc) =>
                 {
                     mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, UnlinkRelatedColumn));
@@ -6234,28 +6568,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var row = m.Item as RowX;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var rx = m.Item as RowX;
 
                     Item[] items = null;
-                    var N = (m.IsExpandedLeft && TryGetUsedColumns(row, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && TryGetUsedColumns(rx, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            var col = items[i] as ColumnX;
+                            var cx = items[i] as ColumnX;
 
-                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, row, col))
-                                m.ChildModels[i] = NewPropertyModel(m, depth, row, col);
+                            if (!TryGetPrevModel(m, Trait.Empty, i, rx, cx))
+                                m.ChildModels[i] = NewPropertyModel(m, depth, rx, cx);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6282,28 +6624,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var item = m.Item as RowX;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var rx = m.RowX;
 
                     Item[] items = null;
-                    var N = (m.IsExpandedLeft && TryGetUsedChildRelations(item, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && TryGetUsedChildRelations(rx, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var rel = items[i] as RelationX;
 
-                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, rel))
-                                m.ChildModels[i] = new ItemModel(m, Trait.RowChildRelation_M, depth, item, rel, null, RowChildRelation_X);
+                            if (!TryGetPrevModel(m, Trait.Empty, i, rx, rel))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowChildRelation_M, depth, rx, rel, null, RowChildRelation_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6330,28 +6680,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var item = m.Item as RowX;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var rx = m.RowX;
 
                     Item[] items = null;
-                    var N = (m.IsExpandedLeft && TryGetUsedParentRelations(item, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && TryGetUsedParentRelations(rx, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            var rel = items[i] as RelationX;
+                            var re = items[i] as RelationX;
 
-                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, rel))
-                                m.ChildModels[i] = new ItemModel(m, Trait.RowParentRelation_M, depth, item, rel, null, RowParentRelation_X);
+                            if (!TryGetPrevModel(m, Trait.Empty, i, rx, re))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowParentRelation_M, depth, rx, re, null, RowParentRelation_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6378,28 +6736,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var item = m.Item as RowX;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var rx = m.RowX;
 
                     Item[] items = null;
-                    var N = (m.IsExpandedLeft && TryGetUnusedColumns(item, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && TryGetUnusedColumns(rx, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var prop = items[i] as ColumnX;
 
-                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, prop))
-                                m.ChildModels[i] = NewPropertyModel(m, depth, item, prop);
+                            if (!TryGetPrevModel(m, Trait.Empty, i, rx, prop))
+                                m.ChildModels[i] = NewPropertyModel(m, depth, rx, prop);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6426,28 +6792,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var item = m.Item as RowX;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var rx = m.RowX;
 
                     Item[] items = null;
-                    var N = (m.IsExpandedLeft && TryGetUnusedChildRelations(item, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && TryGetUnusedChildRelations(rx, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            var rel = items[i] as RelationX;
+                            var re = items[i] as RelationX;
 
-                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, rel))
-                                m.ChildModels[i] = new ItemModel(m, Trait.RowChildRelation_M, depth, item, rel, null, RowChildRelation_X);
+                            if (!TryGetPrevModel(m, Trait.Empty, i, rx, re))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowChildRelation_M, depth, rx, re, null, RowChildRelation_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6474,28 +6848,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var item = m.Item as RowX;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var rx = m.Item as RowX;
 
                     Item[] items = null;
-                    var N = (m.IsExpandedLeft && TryGetUnusedParentRelations(item, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && TryGetUnusedParentRelations(rx, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            var rel = items[i] as RelationX;
+                            var re = items[i] as RelationX;
 
-                            if (!TryGetOldModel(m, Trait.Empty, oldModels, i, item, rel))
-                                m.ChildModels[i] = new ItemModel(m, Trait.RowParentRelation_M, depth, item, rel, null, RowParentRelation_X);
+                            if (!TryGetPrevModel(m, Trait.Empty, i, rx, re))
+                                m.ChildModels[i] = new ItemModel(m, Trait.RowParentRelation_M, depth, rx, re, null, RowParentRelation_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6522,29 +6904,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var item = m.Item;
-                    var sto = item.Owner;
+                    var ro = m.Item;
+                    var st = ro.Owner;
 
-                    var N = (m.IsExpandedLeft) ? Store_ComputeX.ChildCount(sto) : 0;
+                    var N = (m.IsExpandedLeft) ? Store_ComputeX.ChildCount(st) : 0;
                     if (N > 0)
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
-                        var list = Store_ComputeX.GetChildren(sto);
+                        var list = Store_ComputeX.GetChildren(st);
                         for (int i = 0; i < N; i++)
                         {
-                            var itm = list[i];
-                            if (!TryGetOldModel(m, Trait.TextProperty_M, oldModels, i, item, itm))
-                                m.ChildModels[i] = new ItemModel(m, Trait.TextProperty_M, depth, item, itm, null, TextCompute_X);
+                            var cx = list[i];
+                            if (!TryGetPrevModel(m, Trait.TextProperty_M, i, ro, cx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.TextProperty_M, depth, ro, cx, null, TextCompute_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6571,27 +6960,35 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var seg = m.Query;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var q = m.Query;
 
                     Item[] items = null;
-                    var N = (m.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && q.TryGetItems(out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
-                            if (!TryGetOldModel(m, Trait.QueryRootItem_M, oldModels, i, itm, seg))
-                                m.ChildModels[i] = new ItemModel(m, Trait.QueryRootItem_M, depth, itm, seg, null, QueryRootItem_X);
+                            if (!TryGetPrevModel(m, Trait.QueryRootItem_M, i, itm, q))
+                                m.ChildModels[i] = new ItemModel(m, Trait.QueryRootItem_M, depth, itm, q, null, QueryRootItem_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6621,6 +7018,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) => QueryPathLink_VX(m),
             };
         }
@@ -6643,38 +7044,46 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) => QueryPathLink_VX(m),
             };
         }
-        private void QueryPathLink_VX(ItemModel model)
+        private void QueryPathLink_VX(ItemModel m)
         {
-            var seg = model.Query;
+            var q = m.Query;
 
-            if (seg.TryGetItems(out Item[] items))
+            if (q.TryGetItems(out Item[] items))
             {
                 var N = items.Length;
-                var depth = (byte)(model.Depth + 1);
-                var oldModels = model.ChildModels;
-                model.ChildModels = new ItemModel[N];
+                var depth = (byte)(m.Depth + 1);
+
+                m.PrevModels = m.ChildModels;
+                m.ChildModels = new ItemModel[N];
 
                 for (int i = 0; i < N; i++)
                 {
                     var itm = items[i];
-                    if (seg.IsTail)
+                    if (q.IsTail)
                     {
-                        if (!TryGetOldModel(model, Trait.QueryPathTail_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryPathTail_M, depth, itm, seg, null, QueryPathTail_X);
+                        if (!TryGetPrevModel(m, Trait.QueryPathTail_M, i, itm, q))
+                            m.ChildModels[i] = new ItemModel(m, Trait.QueryPathTail_M, depth, itm, q, null, QueryPathTail_X);
                     }
                     else
                     {
-                        if (!TryGetOldModel(model, Trait.QueryPathStep_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryPathStep_M, depth, itm, seg, null, QueryPathStep_X);
+                        if (!TryGetPrevModel(m, Trait.QueryPathStep_M, i, itm, q))
+                            m.ChildModels[i] = new ItemModel(m, Trait.QueryPathStep_M, depth, itm, q, null, QueryPathStep_X);
                     }
                 }
+
+                m.PrevModels = null;
             }
             else
             {
-                model.ChildModels = null;
+                m.PrevModels = null;
+                m.ChildModels = null;
             }
         }
         #endregion
@@ -6693,6 +7102,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6718,39 +7131,47 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) => QueryGroupLink_VX(m),
             };
         }
-        private void QueryGroupLink_VX(ItemModel model)
+        private void QueryGroupLink_VX(ItemModel m)
         {
-            var seg = model.Query;
-            var depth = (byte)(model.Depth + 1);
-            var oldModels = model.ChildModels;
+            var q = m.Query;
 
             Item[] items = null;
-            var N = (model.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
+            var N = (m.IsExpandedLeft && q.TryGetItems(out items)) ? items.Length : 0;
             if (N > 0)
             {
-                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                var depth = (byte)(m.Depth + 1);
+
+                m.PrevModels = m.ChildModels;
+                m.ChildModels = new ItemModel[N];
 
                 for (int i = 0; i < N; i++)
                 {
                     var itm = items[i];
-                    if (seg.IsTail)
+                    if (q.IsTail)
                     {
-                        if (!TryGetOldModel(model, Trait.QueryGroupTail_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryGroupTail_M, depth, itm, seg, null, QueryGroupTail_X);
+                        if (!TryGetPrevModel(m, Trait.QueryGroupTail_M, i, itm, q))
+                            m.ChildModels[i] = new ItemModel(m, Trait.QueryGroupTail_M, depth, itm, q, null, QueryGroupTail_X);
                     }
                     else
                     {
-                        if (!TryGetOldModel(model, Trait.QueryGroupStep_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryGroupStep_M, depth, itm, seg, null, QueryGroupStep_X);
+                        if (!TryGetPrevModel(m, Trait.QueryGroupStep_M, i, itm, q))
+                            m.ChildModels[i] = new ItemModel(m, Trait.QueryGroupStep_M, depth, itm, q, null, QueryGroupStep_X);
                     }
                 }
+
+                m.PrevModels = null;
             }
             else
             {
-                model.ChildModels = null;
+                m.PrevModels = null;
+                m.ChildModels = null;
             }
         }
         #endregion
@@ -6769,6 +7190,10 @@ namespace ModelGraphSTD
 
                     return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6794,39 +7219,47 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) => QueryEgressLink_VX(m),
             };
         }
-        private void QueryEgressLink_VX(ItemModel model)
+        private void QueryEgressLink_VX(ItemModel m)
         {
-            var seg = model.Query;
-            var depth = (byte)(model.Depth + 1);
-            var oldModels = model.ChildModels;
+            var q = m.Query;
 
             Item[] items = null;
-            var N = (model.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
+            var N = (m.IsExpandedLeft && q.TryGetItems(out items)) ? items.Length : 0;
             if (N > 0)
             {
-                if (oldModels == null || model.IsSorted || oldModels.Length != N) model.ChildModels = new ItemModel[N];
+                var depth = (byte)(m.Depth + 1);
+
+                m.PrevModels = m.ChildModels;
+                m.ChildModels = new ItemModel[N];
 
                 for (int i = 0; i < N; i++)
                 {
                     var itm = items[i];
-                    if (seg.IsTail)
+                    if (q.IsTail)
                     {
-                        if (!TryGetOldModel(model, Trait.QueryEgressTail_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryEgressTail_M, depth, itm, seg, null, QueryEgressTail_X);
+                        if (!TryGetPrevModel(m, Trait.QueryEgressTail_M, i, itm, q))
+                            m.ChildModels[i] = new ItemModel(m, Trait.QueryEgressTail_M, depth, itm, q, null, QueryEgressTail_X);
                     }
                     else
                     {
-                        if (!TryGetOldModel(model, Trait.QueryEgressStep_M, oldModels, i, itm, seg))
-                            model.ChildModels[i] = new ItemModel(model, Trait.QueryEgressStep_M, depth, itm, seg, null, QueryEgressStep_X);
+                        if (!TryGetPrevModel(m, Trait.QueryEgressStep_M, i, itm, q))
+                            m.ChildModels[i] = new ItemModel(m, Trait.QueryEgressStep_M, depth, itm, q, null, QueryEgressStep_X);
                     }
                 }
+
+                m.PrevModels = null;
             }
             else
             {
-                model.ChildModels = null;
+                m.PrevModels = null;
+                m.ChildModels = null;
             }
         }
         #endregion
@@ -6850,48 +7283,56 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (m.RowX.TableX.Name, GetRowName(m.RowX)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var itm = m.Item;
-                    var seg = m.Query;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var q = m.Query;
 
                     Query[] items = null;
-                    var N = (m.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && q.TryGetQuerys(itm, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            seg = items[i];
-                            if (seg.IsGraphLink)
+                            q = items[i];
+                            if (q.IsGraphLink)
                             {
-                                if (!TryGetOldModel(m, Trait.QueryRootLink_M, oldModels, i, itm, seg))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryRootLink_M, depth, itm, seg, null, QueryRootLink_X);
+                                if (!TryGetPrevModel(m, Trait.QueryRootLink_M, i, itm, q))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryRootLink_M, depth, itm, q, null, QueryRootLink_X);
                             }
-                            else if (seg.IsPathHead)
+                            else if (q.IsPathHead)
                             {
-                                if (!TryGetOldModel(m, Trait.QueryPathHead_M, oldModels, i, itm, seg))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryPathHead_M, depth, itm, seg, null, QueryPathHead_X);
+                                if (!TryGetPrevModel(m, Trait.QueryPathHead_M, i, itm, q))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryPathHead_M, depth, itm, q, null, QueryPathHead_X);
                             }
-                            else if (seg.IsGroupHead)
+                            else if (q.IsGroupHead)
                             {
-                                if (!TryGetOldModel(m, Trait.QueryGroupHead_M, oldModels, i, itm, seg))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryGroupHead_M, depth, itm, seg, null, QueryGroupHead_X);
+                                if (!TryGetPrevModel(m, Trait.QueryGroupHead_M, i, itm, q))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryGroupHead_M, depth, itm, q, null, QueryGroupHead_X);
                             }
-                            else if (seg.IsSegueHead)
+                            else if (q.IsSegueHead)
                             {
-                                if (!TryGetOldModel(m, Trait.QueryEgressHead_M, oldModels, i, itm, seg))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryEgressHead_M, depth, itm, seg, null, QueryEgressHead_X);
+                                if (!TryGetPrevModel(m, Trait.QueryEgressHead_M, i, itm, q))
+                                    m.ChildModels[i] = new ItemModel(m, Trait.QueryEgressHead_M, depth, itm, q, null, QueryEgressHead_X);
                             }
                             else
                                 throw new Exception("Invalid Query");
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6916,28 +7357,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var itm = m.Item;
-                    var seg = m.Query;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var q = m.Query;
 
                     Query[] items = null;
-                    var N = (m.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && q.TryGetQuerys(itm, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            seg = items[i];
-                            if (!TryGetOldModel(m, Trait.QueryPathLink_M, oldModels, i, itm, seg))
-                                m.ChildModels[i] = new ItemModel(m, Trait.QueryPathLink_M, depth, itm, seg, null, QueryPathLink_X);
+                            q = items[i];
+                            if (!TryGetPrevModel(m, Trait.QueryPathLink_M, i, itm, q))
+                                m.ChildModels[i] = new ItemModel(m, Trait.QueryPathLink_M, depth, itm, q, null, QueryPathLink_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -6959,6 +7408,10 @@ namespace ModelGraphSTD
 
                     return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
             };
         }
         #endregion
@@ -6980,28 +7433,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var itm = m.Item;
-                    var seg = m.Query;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var q = m.Query;
 
                     Query[] items = null;
-                    var N = (m.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && q.TryGetQuerys(itm, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            seg = items[i];
-                            if (!TryGetOldModel(m, Trait.QueryGroupLink_M, oldModels, i, itm, seg))
-                                m.ChildModels[i] = new ItemModel(m, Trait.QueryGroupLink_M, depth, itm, seg, null, QueryGroupLink_X);
+                            q = items[i];
+                            if (!TryGetPrevModel(m, Trait.QueryGroupLink_M, i, itm, q))
+                                m.ChildModels[i] = new ItemModel(m, Trait.QueryGroupLink_M, depth, itm, q, null, QueryGroupLink_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7023,6 +7484,10 @@ namespace ModelGraphSTD
 
                     return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
             };
         }
         #endregion
@@ -7044,28 +7509,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var itm = m.Item;
-                    var seg = m.Query;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var q = m.Query;
 
                     Query[] items = null;
-                    var N = (m.IsExpandedLeft && seg.TryGetQuerys(itm, out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && q.TryGetQuerys(itm, out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
-                            seg = items[i];
-                            if (!TryGetOldModel(m, Trait.QueryEgressLink_M, oldModels, i, itm, seg))
-                                m.ChildModels[i] = new ItemModel(m, Trait.QueryEgressLink_M, depth, itm, seg, null, QueryEgressLink_X);
+                            q = items[i];
+                            if (!TryGetPrevModel(m, Trait.QueryEgressLink_M, i, itm, q))
+                                m.ChildModels[i] = new ItemModel(m, Trait.QueryEgressLink_M, depth, itm, q, null, QueryEgressLink_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7087,6 +7560,10 @@ namespace ModelGraphSTD
 
                     return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
             };
         }
         #endregion
@@ -7107,6 +7584,10 @@ namespace ModelGraphSTD
 
                     return (m.GraphX.Trait.ToString(), m.GraphX.Name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (m.GraphX.Trait.ToString(), m.GraphX.Name),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7135,7 +7616,7 @@ namespace ModelGraphSTD
                     }
                     if (tbl == null) return DropAction.None;
 
-                    foreach (var tg in gx.ToArray)
+                    foreach (var tg in gx.Items)
                     {
                         if (tg.RootItem == d.Item) return DropAction.None;
                     }
@@ -7157,26 +7638,29 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var gx = m.Item as GraphX;
+                    var gx = m.GraphX;
                     var N = m.IsExpandedLeft ? gx.Count : 0;
 
                     if (N > 0)
                     {
-                        var items = gx.ToArray;
+                        var items = gx.Items;
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var g = items[i] as Graph;
-                            if (!TryGetOldModel(m, Trait.Graph_M, oldModels, i, g))
+                            if (!TryGetPrevModel(m, Trait.Graph_M, i, g))
                                 m.ChildModels[i] = new ItemModel(m, Trait.Graph_M, depth, g, null, null, Graph_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7214,31 +7698,39 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
-                    var item = m.Item as Graph;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var g = m.Item as Graph;
+                    var items = g.Nodes;
 
-                    var items = item.Nodes;
                     var N = items.Count;
                     if (m.IsExpandedLeft && N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
-                            if (!TryGetOldModel(m, Trait.GraphNode_M, oldModels, i, itm))
+                            if (!TryGetPrevModel(m, Trait.GraphNode_M, i, itm))
                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphNode_M, depth, itm, null, null, GraphNode_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7265,31 +7757,39 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
-                    var item = m.Item as Graph;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var g = m.Graph;
+                    var items = g.Edges;
 
-                    var items = item.Edges;
                     var N = items.Count;
                     if (m.IsExpandedLeft && N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
-                            if (!TryGetOldModel(m, Trait.GraphEdge_M, oldModels, i, itm))
+                            if (!TryGetPrevModel(m, Trait.GraphEdge_M, i, itm))
                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphEdge_M, depth, itm, null, null, GraphEdge_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7316,32 +7816,40 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
             {
-                var item = m.Item as Graph;
-                var depth = (byte)(m.Depth + 1);
-                var oldModels = m.ChildModels;
+                var g = m.Item as Graph;
+                Query[] items = g.Forest;
 
-                Query[] items = item.Forest;
-                var N = item.QueryCount;
+                var N = g.QueryCount;
                 if (m.IsExpandedLeft && N > 0)
                 {
-                    if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                    var depth = (byte)(m.Depth + 1);
+
+                    m.PrevModels = m.ChildModels;
+                    m.ChildModels = new ItemModel[N];
 
                     for (int i = 0; i < N; i++)
                     {
                         var seg = items[i];
                         var tbl = seg.Item;
-                        if (!TryGetOldModel(m, Trait.GraphRoot_M, oldModels, i, tbl, seg))
+                        if (!TryGetPrevModel(m, Trait.GraphRoot_M, i, tbl, seg))
                             m.ChildModels[i] = new ItemModel(m, Trait.GraphRoot_M, depth, tbl, seg, null, GraphRoot_X);
                     }
+
+                    m.PrevModels = null;
                 }
                 else
                 {
+                    m.PrevModels = null;
                     m.ChildModels = null;
                 }
             }
@@ -7368,32 +7876,38 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
-                    var item = m.Item as Graph;
-                    var items = item.Levels;
+                    var items = m.Graph.Levels;
                     var N = m.IsExpandedLeft ? items.Count : 0;
 
                     if (N > 0)
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i] as Level;
-                            if (!TryGetOldModel(m, Trait.GraphLevel_M, oldModels, i, itm))
+                            if (!TryGetPrevModel(m, Trait.GraphLevel_M, i, itm))
                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphLevel_M, depth, itm, null, null, GraphLevel_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7420,27 +7934,34 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), m.Level.Name),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var item = m.Item as Level;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var items = m.Level.Paths;
 
-                    var items = item.Paths;
                     var N = (m.IsExpandedLeft) ? items.Count : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSortAscending || m.IsSortDescending || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
-                            if (!TryGetOldModel(m, Trait.GraphPath_M, oldModels, i, itm))
+                            if (!TryGetPrevModel(m, Trait.GraphPath_M, i, itm))
                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphPath_M, depth, itm, null, null, GraphPath_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7467,27 +7988,34 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (GetPathKind(m.Path), GetPathName(m.Path)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var path = m.Item as Path;
-                    var items = path.Items;
-                    var N = (m.IsExpandedLeft) ? path.Count : 0;
+                    var p = m.Path;
+                    var N = (m.IsExpandedLeft) ? p.Count : 0;
                     if (N > 0)
                     {
+                        var items = p.Items;
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i] as Path;
-                            if (!TryGetOldModel(m, Trait.GraphPath_M, oldModels, i, itm))
+                            if (!TryGetPrevModel(m, Trait.GraphPath_M, i, itm))
                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphPath_M, depth, itm, null, null, GraphPath_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7539,28 +8067,35 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, m.TableX.Name),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var tbl = m.Item;
-                    var seg = m.Query;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var q = m.Query;
 
                     Item[] items = null;
-                    var N = (m.IsExpandedLeft && seg.TryGetItems(out items)) ? items.Length : 0;
+                    var N = (m.IsExpandedLeft && q.TryGetItems(out items)) ? items.Length : 0;
                     if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var itm = items[i];
-                            if (!TryGetOldModel(m, Trait.QueryRootItem_M, oldModels, i, itm, seg))
-                                m.ChildModels[i] = new ItemModel(m, Trait.QueryRootItem_M, depth, itm, seg, null, QueryRootItem_X);
+                            if (!TryGetPrevModel(m, Trait.QueryRootItem_M, i, itm, q))
+                                m.ChildModels[i] = new ItemModel(m, Trait.QueryRootItem_M, depth, itm, q, null, QueryRootItem_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7588,9 +8123,12 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (_localize(m.KindKey), GetIdentity(m.Node.Item, IdentityStyle.Double)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
-                    var depth = (byte)(m.Depth + 1);
                     List<Edge> edges = null;
                     var nd = m.Item as Node;
                     var g = nd.Graph;
@@ -7601,25 +8139,30 @@ namespace ModelGraphSTD
 
                     if (N > 0)
                     {
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         if (R > 0)
                         {
-                            AddProperyModels(m, oldModels, sp);
+                            AddProperyModels(m, sp);
                         }
                         if (L > 0)
                         {
                             for (int i = R, j = 0; i < N; i++, j++)
                             {
                                 var edge = edges[j];
-                                if (!TryGetOldModel(m, Trait.GraphEdge_M, oldModels, i, edge))
+                                if (!TryGetPrevModel(m, Trait.GraphEdge_M, i, edge))
                                     m.ChildModels[i] = new ItemModel(m, Trait.GraphEdge_M, depth, edge, null, null, GraphEdge_X);
                             }
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7635,13 +8178,15 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var edge = m.Edge;
-
                     m.CanExpandRight = true;
                     
-
-                    return (_localize(m.KindKey), GetHeadTailName(edge.Node1.Item, edge.Node2.Item), 0, ModelType.Default);
+                    return (_localize(m.KindKey), GetHeadTailName(m.Edge.Node1.Item, m.Edge.Node2.Item), 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = (m) => (_localize(m.KindKey), GetHeadTailName(m.Edge.Node1.Item, m.Edge.Node2.Item)),
+
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
@@ -7651,13 +8196,16 @@ namespace ModelGraphSTD
 
                     if (N > 0)
                     {
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
-                        AddProperyModels(m, oldModels, sp);
+                        AddProperyModels(m, sp);
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7685,28 +8233,36 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     var g = m.Item as Graph;
-                    var depth = (byte)(m.Depth + 1);
-                    var oldModels = m.ChildModels;
+                    var N = m.IsExpandedLeft ? g.OpenQuerys.Count : 0;
 
-                    var N = g.OpenQuerys.Count;
-                    if (m.IsExpandedLeft && N > 0)
+                    if (N > 0)
                     {
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var h = g.OpenQuerys[i].Query1;
                             var t = g.OpenQuerys[i].Query2;
-                            if (!TryGetOldModel(m, Trait.GraphOpen_M, oldModels, i, g, h, t))
+                            if (!TryGetPrevModel(m, Trait.GraphOpen_M, i, g, h, t))
                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphOpen_M, depth, g, h, t, GraphOpen_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
                         m.ChildModels = null;
+                        m.PrevModels = null;
                     }
                 }
             };
@@ -7721,12 +8277,25 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    GetHeadTail(m.Query.QueryX, out Store head, out Store tail);
-                    var name = $"{GetIdentity(m.Item, IdentityStyle.Double)}  -->  {GetIdentity(tail, IdentityStyle.Single)}: <?>";
+                    var (kind, name) = GetKindName(m);
 
-                    return (GetIdentity(m.Item, IdentityStyle.Double), name, 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string Kind, string Name) GetKindName(ItemModel m)
+            {
+                GetHeadTail(m.Query.QueryX, out Store head, out Store tail);
+                var name = $"{GetIdentity(m.Item, IdentityStyle.Double)}  -->  {GetIdentity(tail, IdentityStyle.Single)}: <?>";
+
+                return (GetIdentity(m.Item, IdentityStyle.Double), name);
+            }
         }
         #endregion
 
@@ -7751,6 +8320,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(GetNameKey(Trait.PrimeCompute_M))),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(GetSummaryKey(Trait.PrimeCompute_M)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -7769,8 +8342,8 @@ namespace ModelGraphSTD
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         var list = new List<Store>();
                         foreach (var sto in _primeStores) { if (Store_ComputeX.HasChildLink(sto)) list.Add(sto); }
@@ -7778,12 +8351,15 @@ namespace ModelGraphSTD
                         for (int i = 0; i < N; i++)
                         {
                             var sto = childList[i];
-                            if (!TryGetOldModel(m, Trait.ComputeStore_M, oldModels, i, sto))
+                            if (!TryGetPrevModel(m, Trait.ComputeStore_M, i, sto))
                                 m.ChildModels[i] = new ItemModel(m, Trait.ComputeStore_M, depth, sto, null, null, ComputeStore_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7811,6 +8387,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, GetIdentity(m.Store, IdentityStyle.Single)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => GetIdentity(m.Store, IdentityStyle.Summary),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -7824,19 +8404,22 @@ namespace ModelGraphSTD
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         var list = Store_ComputeX.GetChildren(st);
                         for (int i = 0; i < N; i++)
                         {
                             var itm = list[i];
-                            if (!TryGetOldModel(m, Trait.TextProperty_M, oldModels, i, st, itm))
+                            if (!TryGetPrevModel(m, Trait.TextProperty_M, i, st, itm))
                                 m.ChildModels[i] = new ItemModel(m, Trait.TextProperty_M, depth, st, itm, null, TextCompute_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7860,6 +8443,10 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(GetNameKey(Trait.InternalStore_ZM))),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(GetSummaryKey(Trait.InternalStore_ZM)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -7875,57 +8462,63 @@ namespace ModelGraphSTD
 
                     if (N > 0)
                     {
-                        var depth = (byte)(m.Depth + 1);
+                        if (m.ChildModelCount != N)
+                        {
+                            var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                            m.PrevModels = m.ChildModels;
+                            m.ChildModels = new ItemModel[N];
 
-                        int i = 0;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _viewXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _viewXStore, null, null, InternalStore_X);
+                            int i = 0;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _viewXStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _viewXStore, null, null, InternalStore_X);
 
-                        i += 1;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _enumXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _enumXStore, null, null, InternalStore_X);
+                            i += 1;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _enumXStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _enumXStore, null, null, InternalStore_X);
 
-                        i += 1;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _tableXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _tableXStore, null, null, InternalStore_X);
+                            i += 1;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _tableXStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _tableXStore, null, null, InternalStore_X);
 
-                        i += 1;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _graphXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _graphXStore, null, null, InternalStore_X);
+                            i += 1;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _graphXStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _graphXStore, null, null, InternalStore_X);
 
-                        i += 1;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _queryXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _queryXStore, null, null, InternalStore_X);
+                            i += 1;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _queryXStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _queryXStore, null, null, InternalStore_X);
 
-                        i += 1;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _symbolXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _symbolXStore, null, null, InternalStore_X);
+                            i += 1;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _symbolXStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _symbolXStore, null, null, InternalStore_X);
 
-                        i += 1;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _columnXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _columnXStore, null, null, InternalStore_X);
+                            i += 1;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _columnXStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _columnXStore, null, null, InternalStore_X);
 
-                        i += 1;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _relationXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _relationXStore, null, null, InternalStore_X);
+                            i += 1;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _relationXStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _relationXStore, null, null, InternalStore_X);
 
-                        i += 1;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _computeXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _computeXStore, null, null, InternalStore_X);
+                            i += 1;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _computeXStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _computeXStore, null, null, InternalStore_X);
 
-                        i += 1;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _relationStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _relationStore, null, null, InternalStore_X);
+                            i += 1;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _relationStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _relationStore, null, null, InternalStore_X);
 
-                        i += 1;
-                        if (!TryGetOldModel(m, Trait.InternalStore_M, oldModels, i, _propertyStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _propertyStore, null, null, InternalStore_X);
+                            i += 1;
+                            if (!TryGetPrevModel(m, Trait.InternalStore_M, i, _propertyStore))
+                                m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_M, depth, _propertyStore, null, null, InternalStore_X);
+
+                            m.PrevModels = null;
+                        }
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7953,32 +8546,39 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelKindName = (m) => (null, _localize(m.Store.NameKey)),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
                 {
-                    var st = m.Item as Store;
+                    var st = m.Store;
                     var N = (m.IsExpandedLeft) ? st.Count : 0;
 
                     if (N > 0)
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         var list = st.GetItems();
                         for (int i = 0; i < N; i++)
                         {
                             var item = list[i];
-                            if (!TryGetOldModel(m, Trait.StoreItem_M, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.StoreItem_M, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.StoreItem_M, depth, item, null, null, StoreItem_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
@@ -7996,13 +8596,18 @@ namespace ModelGraphSTD
                 {
                     var item = m.Item;
                     var (hasItems, hasLinks, hasChildRels, hasParentRels, count) = GetItemParms(item);
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (GetIdentity(item, IdentityStyle.Kind), GetIdentity(item, IdentityStyle.StoreItem), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8030,41 +8635,46 @@ namespace ModelGraphSTD
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != count) m.ChildModels = new ItemModel[count];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[count];
 
                         int i = -1;
                         if (hasItems)
                         {
                             i++;
-                            if (!TryGetOldModel(m, Trait.StoreItemItem_ZM, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.StoreItemItem_ZM, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.StoreItemItem_ZM, depth, item, null, null, StoreItemItemZ_X);
                         }
                         if (hasLinks)
                         {
                             i++;
-                            if (!TryGetOldModel(m, Trait.StoreRelationLink_ZM, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.StoreRelationLink_ZM, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.StoreRelationLink_ZM, depth, item, null, null, StoreRelationLinkZ_X);
                         }
                         if (hasChildRels)
                         {
                             i++;
-                            if (!TryGetOldModel(m, Trait.StoreChildRelation_ZM, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.StoreChildRelation_ZM, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.StoreChildRelation_ZM, depth, item, null, null, StoreChildRelationZ_X);
                         }
                         if (hasParentRels)
                         {
                             i++;
-                            if (!TryGetOldModel(m, Trait.StoreParentRelation_ZM, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.StoreParentRelation_ZM, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.StoreParentRelation_ZM, depth, item, null, null, StoreParentRelationZ_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
             };
+
+            (string, string) GetKindName(ItemModel m) => (GetIdentity(m.Item, IdentityStyle.Kind), GetIdentity(m.Item, IdentityStyle.StoreItem));
         }
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -8095,13 +8705,18 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var count = m.Store.Count;
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8118,23 +8733,30 @@ namespace ModelGraphSTD
                     {
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         var list = st.GetItems();
                         for (int i = 0; i < N; i++)
                         {
                             var item = list[i];
-                            if (!TryGetOldModel(m, Trait.StoreItemItem_M, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.StoreItemItem_M, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.StoreItemItem_M, depth, item, null, null, StoreItemItem_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) =>  (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -8147,13 +8769,18 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var count = m.Relation.GetLinksCount();
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8163,29 +8790,40 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var rel = m.Relation;
-                    var oldModels = m.ChildModels;
-                    m.ChildModels = null;
+                    var re = m.Relation;
 
                     Item[] parents = null;
                     Item[] children = null;
-                    var N = (m.IsExpandedLeft) ? rel.GetLinks(out parents, out children) : 0;
+                    var N = (m.IsExpandedLeft) ? re.GetLinks(out parents, out children) : 0;
 
                     if (N > 0)
                     {
                         var depth = (byte)(m.Depth + 1);
+
+                        m.PrevModels = m.ChildModels;
                         m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var parent = parents[i];
                             var child = children[i];
-                            if (!TryGetOldModel(m, Trait.StoreRelationLink_M, oldModels, i, rel, parent, child))
-                                m.ChildModels[i] = new ItemModel(m, Trait.StoreRelationLink_M, depth, rel, parent, child, StoreRelationLink_X);
+                            if (!TryGetPrevModel(m, Trait.StoreRelationLink_M, i, re, parent, child))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreRelationLink_M, depth, re, parent, child, StoreRelationLink_X);
                         }
+
+                        m.PrevModels = null;
+                    }
+                    else
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -8198,13 +8836,18 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var count = GetChildRelationCount(m.Item, SubsetType.Used);
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8220,22 +8863,29 @@ namespace ModelGraphSTD
                         var N = relations.Length;
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var rel = relations[i];
-                            if (!TryGetOldModel(m, Trait.StoreChildRelation_M, oldModels, i, rel, item))
+                            if (!TryGetPrevModel(m, Trait.StoreChildRelation_M, i, rel, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.StoreChildRelation_M, depth, rel, item, null, StoreChildRelation_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -8248,13 +8898,18 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var count = GetParentRelationCount(m.Item, SubsetType.Used);
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8270,22 +8925,29 @@ namespace ModelGraphSTD
                         var N = relations.Length;
                         var depth = (byte)(m.Depth + 1);
 
-                        var oldModels = m.ChildModels;
-                        if (oldModels == null || m.IsSorted || oldModels.Length != N) m.ChildModels = new ItemModel[N];
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         for (int i = 0; i < N; i++)
                         {
                             var rel = relations[i];
-                            if (!TryGetOldModel(m, Trait.StoreParentRelation_M, oldModels, i, rel, item))
+                            if (!TryGetPrevModel(m, Trait.StoreParentRelation_M, i, rel, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.StoreParentRelation_M, depth, rel, item, null, StoreParentRelation_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -8295,12 +8957,25 @@ namespace ModelGraphSTD
         {
             StoreItemItem_X = new ModelAction
             {
-                ModelParms = (m) => (_localize(m.Item.KindKey), GetIdentity(m.Item, IdentityStyle.Double), 0, ModelType.Default),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => GetIdentity(m.Item, IdentityStyle.Summary),
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.Item.KindKey), GetIdentity(m.Item, IdentityStyle.Double));
         }
         #endregion
 
@@ -8312,17 +8987,23 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var parent = m.Aux1;
-                    var child = m.Aux2;
-                    var name = $"({GetIdentity(parent, IdentityStyle.Double)}) --> ({GetIdentity(child, IdentityStyle.Double)})";
+                    var (kind, name) = GetKindName(m);
 
-                    return (_localize(m.KindKey), null, 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => GetIdentity(m.Relation, IdentityStyle.Summary),
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), $"({GetIdentity(m.Aux1, IdentityStyle.Double)}) --> ({GetIdentity(m.Aux2, IdentityStyle.Double)})");
         }
         #endregion
 
@@ -8334,15 +9015,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var rel = m.Relation;
-                    var count = rel.ChildCount(m.Aux1);
+                    var count = m.Relation.ChildCount(m.Aux1);
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (GetKind(rel.Trait), GetIdentity(rel, IdentityStyle.Single), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8352,28 +9037,37 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var rel = m.Item as Relation;
-                    var oldModels = m.ChildModels;
-                    m.ChildModels = null;
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && m.Relation.TryGetChildren(m.Aux1, out items)) ? items.Length : 0;
 
-                    if (m.IsExpandedLeft)
+                    if (N > 0)
                     {
-                        if (rel.TryGetChildren(m.Aux1, out Item[] items))
-                        {
-                            var N = items.Length;
-                            var depth = (byte)(m.Depth + 1);
-                            m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
 
-                            for (int i = 0; i < N; i++)
-                            {
-                                var itm = items[i];
-                                if (!TryGetOldModel(m, Trait.StoreRelatedItem_M, oldModels, i, itm))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.StoreRelatedItem_M, depth, itm, null, null, StoreRelatedItem_X);
-                            }
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i];
+                            if (!TryGetPrevModel(m, Trait.StoreRelatedItem_M, i, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreRelatedItem_M, depth, itm, null, null, StoreRelatedItem_X);
                         }
+
+                        m.PrevModels = null;
+                    }
+                    else
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) =>  (GetKind(m.Relation.Trait), GetIdentity(m.Relation, IdentityStyle.Single));
+
         }
         #endregion
 
@@ -8385,15 +9079,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var rel = m.Item as Relation;
-                    var count = rel.ParentCount(m.Aux1);
+                    var count = m.Relation.ParentCount(m.Aux1);
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (GetKind(rel.Trait), GetIdentity(rel, IdentityStyle.Single), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8403,28 +9101,36 @@ namespace ModelGraphSTD
 
                 Validate = (m) =>
                 {
-                    var rel = m.Item as Relation;
-                    var oldModels = m.ChildModels;
-                    m.ChildModels = null;
+                    Item[] items = null;
+                    var N = (m.IsExpandedLeft && m.Relation.TryGetParents(m.Aux1, out items)) ? items.Length : 0;
 
-                    if (m.IsExpandedLeft)
+                    if (N > 0)
                     {
-                        if (rel.TryGetParents(m.Aux1, out Item[] items))
-                        {
-                            var N = items.Length;
-                            var depth = (byte)(m.Depth + 1);
-                            m.ChildModels = new ItemModel[N];
+                        var depth = (byte)(m.Depth + 1);
 
-                            for (int i = 0; i < N; i++)
-                            {
-                                var itm = items[i];
-                                if (!TryGetOldModel(m, Trait.StoreRelatedItem_M, oldModels, i, itm))
-                                    m.ChildModels[i] = new ItemModel(m, Trait.StoreRelatedItem_M, depth, itm, null, null, StoreRelatedItem_X);
-                            }
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var itm = items[i];
+                            if (!TryGetPrevModel(m, Trait.StoreRelatedItem_M, i, itm))
+                                m.ChildModels[i] = new ItemModel(m, Trait.StoreRelatedItem_M, depth, itm, null, null, StoreRelatedItem_X);
                         }
+
+                        m.PrevModels = null;
+                    }
+                    else
+                    {
+                        m.PrevModels = null;
+                        m.ChildModels = null;
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (GetKind(m.Relation.Trait), GetIdentity(m.Relation, IdentityStyle.Single));
         }
         #endregion
 
@@ -8436,15 +9142,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var item = m.Item;
-                    var (hasChildRels, hasParentRels, count) = GetItemParms(item);
+                    var (kind, name) = GetKindName(m);
+                    var (hasChildRels, hasParentRels, count) = GetItemParms(m.Item);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (GetIdentity(item, IdentityStyle.Kind), GetIdentity(item, IdentityStyle.StoreItem), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8466,35 +9176,42 @@ namespace ModelGraphSTD
                 Validate = (m) =>
                 {
                     var item = m.Item;
-                    var (hasChildRels, hasParentRels, count) = GetItemParms(item);
-                    var oldModels = m.ChildModels;
-                    m.ChildModels = null;
+                    var (hasChildRels, hasParentRels, N) = GetItemParms(item);
 
-                    if (m.IsExpandedLeft && count > 0)
+                    if (m.IsExpandedLeft && N > 0)
                     {
                         var depth = (byte)(m.Depth + 1);
-                        m.ChildModels = new ItemModel[count];
+
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
 
                         int i = -1;
                         if (hasChildRels)
                         {
                             i++;
-                            if (!TryGetOldModel(m, Trait.StoreChildRelation_ZM, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.StoreChildRelation_ZM, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.StoreChildRelation_ZM, depth, item, null, null, StoreChildRelationZ_X);
                         }
                         if (hasParentRels)
                         {
                             i++;
-                            if (!TryGetOldModel(m, Trait.StoreParentRelation_ZM, oldModels, i, item))
+                            if (!TryGetPrevModel(m, Trait.StoreParentRelation_ZM, i, item))
                                 m.ChildModels[i] = new ItemModel(m, Trait.StoreParentRelation_ZM, depth, item, null, null, StoreParentRelationZ_X);
                         }
+
+                        m.PrevModels = null;
                     }
                     else
                     {
+                        m.PrevModels = null;
                         m.ChildModels = null;
                     }
-                }
+                },
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (GetIdentity(m.Item, IdentityStyle.Kind), GetIdentity(m.Item, IdentityStyle.StoreItem));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 

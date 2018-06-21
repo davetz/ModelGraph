@@ -41,7 +41,7 @@ namespace ModelGraphSTD
         {
             if (Count < 0)
             {
-                foreach (var item in ToArray)
+                foreach (var item in Items)
                 {
                     var g = item as Graph;
                     if (g.RootItem != root) continue;

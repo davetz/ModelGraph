@@ -43,14 +43,14 @@ namespace ModelGraphSTD
             while (anyChange)
             {
                 anyChange = false;
-                foreach (var qx in _queryXStore.ToArray)
+                foreach (var qx in _queryXStore.Items)
                 {
                     var sto = GetQueryXTarget(qx);
                     if (qx.Select != null && qx.Select.TryValidate(sto)) anyChange |= qx.Select.TryResolve();
                     if (qx.Where != null && qx.Where.TryValidate(sto)) anyChange |= qx.Where.TryResolve();
                     qx.IsTail = (QueryX_QueryX.HasNoChildren(qx));
                 }
-                foreach (var cx in _computeXStore.ToArray)
+                foreach (var cx in _computeXStore.Items)
                 {
                     if (ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
                     {
@@ -71,7 +71,7 @@ namespace ModelGraphSTD
 
             void ResetAllComputeValues()
             {
-                foreach (var cx in _computeXStore.ToArray)
+                foreach (var cx in _computeXStore.Items)
                 {
                     cx.Value.Clear();
                     cx.Value = ValuesUnknown;

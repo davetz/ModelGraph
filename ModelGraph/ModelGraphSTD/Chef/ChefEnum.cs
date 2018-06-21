@@ -12,7 +12,7 @@ namespace ModelGraphSTD
         {
             if (e != null && e.Count > 0)
             {
-                var items = e.ToArray;
+                var items = e.Items;
                 var N = e.Count;
 
                 for (int i = 0; i < N; i++)
@@ -31,7 +31,7 @@ namespace ModelGraphSTD
         {
             if (e != null && e.Count > 0)
             {
-                var items = e.ToArray;
+                var items = e.Items;
                 var N = e.Count;
 
                 for (int i = 0; i < N; i++)
@@ -50,7 +50,7 @@ namespace ModelGraphSTD
         {
             if (e != null && e.Count > 0)
             {
-                var items = e.ToArray;
+                var items = e.Items;
                 var N = e.Count;
 
                 for (int i = 0; i < N; i++)
@@ -69,7 +69,7 @@ namespace ModelGraphSTD
         {
             if (e != null && e.Count > 0 )
             {
-                var items = e.ToArray;
+                var items = e.Items;
                 var N = e.Count;
 
                 var s = new string[N];

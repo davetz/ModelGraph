@@ -379,9 +379,9 @@ namespace ModelGraphSTD
 
         private void RefreshAllGraphs()
         {
-            foreach (var gx in _graphXStore.ToArray)
+            foreach (var gx in _graphXStore.Items)
             {
-                if (gx.Count > 0) { foreach (var g in gx.ToArray) { RefreshGraph(g); } }
+                if (gx.Count > 0) { foreach (var g in gx.Items) { RefreshGraph(g); } }
             }
         }
 
@@ -413,7 +413,7 @@ namespace ModelGraphSTD
                 var N = tbl.Count;
                 if (N > 0)
                 {
-                    var items = tbl.ToArray;
+                    var items = tbl.Items;
                     var colors = new List<GroupColor>(N);
                     g.Group_ColorIndex = new Dictionary<Item, int>(N);
 

@@ -26,7 +26,6 @@ namespace ModelGraphSTD
 
         #region Count/Items/ItemsReversed  ====================================
         internal IList<T> Items => _items.AsReadOnly(); // protected from accidental corruption
-        internal T[] ToArray => _items.ToArray();
         internal T[] ItemsReversed => GetItemsReversed();
         private T[] GetItemsReversed()
         {

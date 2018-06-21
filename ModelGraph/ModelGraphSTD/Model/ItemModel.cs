@@ -6,21 +6,25 @@ namespace ModelGraphSTD
 {/*
 
  */
-    public class ItemModel : IComparer<ItemModel>
+    public class ItemModel
     {
         public Item Item;
         public Item Aux1;
         public Item Aux2;
         public ItemModel ParentModel;   // allows bidirectional tree taversal
         public ItemModel[] ChildModels; // hierarchal subtree of models
+        public ItemModel[] PrevModels;  // the original verson of child models before filter sort
         public string ViewFilter;       // UI imposed child model Kind/Name filter
         internal ModelAction Get;
 
         internal Trait Trait;
         private State _state;
+
         private Flags _flags;
-        public byte Delta;
         public byte Depth;
+        internal byte Delta; //version of child model list
+        internal byte FilterSort; //version of filter sort
+
 
         #region Constructor  ==================================================
         internal ItemModel() { }
@@ -81,6 +85,9 @@ namespace ModelGraphSTD
             IsExpandRight = 0x40,
             IsUsedFilter = 0x20,
             IsNotUsedFilter = 0x10,
+
+            IsAlreadySorted = 0x8,
+            IsAlreadyFiltered = 0x4,
         }
         private bool GetState(State state) => (_state & state) != 0;
         private void SetState(State state, bool value) { if (value) _state |= state; else _state &= ~state; }
@@ -118,6 +125,9 @@ namespace ModelGraphSTD
         public bool IsSortDescending { get { return GetState(State.IsDescendingSort); } set { var prev = GetState(State.IsDescendingSort); SetState(State.IsDescendingSort, value); if (prev != value) IsChanged = true; } }
         public bool IsUsedFilter { get { return GetState(State.IsUsedFilter); } set { var prev = GetState(State.IsUsedFilter); SetState(State.IsUsedFilter, value); if (prev != value) IsChanged = true; } }
         public bool IsNotUsedFilter { get { return GetState(State.IsNotUsedFilter); } set { var prev = GetState(State.IsNotUsedFilter); SetState(State.IsNotUsedFilter, value); if (prev != value) IsChanged = true; } }
+
+        public bool IsAlreadySorted { get { return GetState(State.IsAlreadySorted); } set { SetState(State.IsAlreadySorted, value); } }
+        public bool IsAlreadyFiltered { get { return GetState(State.IsAlreadyFiltered); } set { SetState(State.IsAlreadyFiltered, value); } }
         #endregion
 
         #region Flags  ========================================================
@@ -184,6 +194,20 @@ namespace ModelGraphSTD
         public string[] ListValue => (Get.ListValue == null) ? null : Get.ListValue(this);
 
         //=====================================================================
+        public (string Kind, string Name) ModelKindName
+        {
+            get
+            {
+                if (Get.ModelKindName == null) return (string.Empty, Chef.BlankName);
+
+                var (kind, name) = Get.ModelKindName(this);
+
+                if (kind == null) kind = string.Empty;
+                if (string.IsNullOrWhiteSpace(name)) name = Chef.BlankName;
+
+                return (kind, name);
+            }
+        }
         public (string Kind, string Name, int Count, ModelType Type) ModelParms
         {
             get
@@ -311,27 +335,7 @@ namespace ModelGraphSTD
         public bool IsExpanded => (IsExpandedLeft || IsExpandedRight);
         public bool IsSorted => (IsSortAscending || IsSortDescending);
 
-        internal void Sort()
-        {
-            if (ChildModelCount > 1)
-            {
-                Array.Sort(ChildModels, this);
-            }
-        }
-
-        internal void Reverse()
-        {
-            var last = ChildModelCount - 1;
-            if (last > 1)
-            {
-                for (int i = 0, j = last; i < j; i++, j--)
-                {
-                    var temp = ChildModels[i];
-                    ChildModels[i] = ChildModels[j];
-                    ChildModels[j] = temp;
-                }
-            }
-        }
+        public void ResetDelta() => Delta -= 3;
 
         public bool IsInvalid => (Item == null || Item.IsInvalid);
 
@@ -385,22 +389,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region ViewFilterSuragate  ===========================================
-        internal void Suragate(ItemModel parent, Trait trait, byte depth, Item item, Item aux1, Item aux2, ModelAction get)
-        {
-            ParentModel = parent;
-            Trait = trait;
-            Depth = depth;
-            Item = item;
-            Aux1 = aux1;
-            Aux2 = aux2;
-            Get = get;
-        }
-        internal ItemModel Clone() => new ItemModel(ParentModel, Trait, Depth, Item, Aux1, Aux2, Get);
-        public int Compare(ItemModel x, ItemModel y) => x.FilterSortName.CompareTo(y.FilterSortName);
-        internal string FilterSortName { get { var (kind, name, count, type) = ModelParms; return $"{kind} {name}"; } }
-        internal Regex RegexViewFilter => (!IsExpandedFilter || string.IsNullOrWhiteSpace(ViewFilter) ? null :
-                new Regex(".*" + ViewFilter + ".*", RegexOptions.Compiled | RegexOptions.IgnoreCase));
+        #region ViewFilterSort  ===============================================
+        internal string FilterSortName { get { var (kind, name) = ModelKindName; return $"{kind} {name}"; } }
+        internal Regex RegexViewFilter => (!IsExpandedFilter || string.IsNullOrWhiteSpace(ViewFilter) ? null : ViewFilter.Contains("*") ? 
+            new Regex(ViewFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase) :
+            new Regex($".*{ViewFilter}.*", RegexOptions.Compiled | RegexOptions.IgnoreCase));
         #endregion
     }
 }

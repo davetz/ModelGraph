@@ -26,6 +26,7 @@ namespace ModelGraphSTD
         internal Func<ItemModel, ItemModel, bool, DropAction> ModelDrop;
         internal Func<ItemModel, ItemModel, bool, DropAction> ReorderItems;
 
+        internal Func<ItemModel, (string Kind, string Name)> ModelKindName;
         internal Func<ItemModel, (string Kind, string Name, int Count, ModelType Type)> ModelParms;
     }
 }

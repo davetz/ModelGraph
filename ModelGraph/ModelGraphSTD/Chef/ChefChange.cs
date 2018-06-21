@@ -53,7 +53,7 @@ namespace ModelGraphSTD
         {
             if (_changeSet.Count > 0)
             {
-                var item = _changeSet.ToArray[_changeSet.Count - 1];
+                var item = _changeSet.Items[_changeSet.Count - 1];
                 var changeText = $"{_localize(item.KindKey)}  {item.Name}";
                 if (_changeRootInfoItem != null && item.Trait == _changeRootInfoItem.Trait)
                     _changeRootInfoCount += 1;
@@ -81,7 +81,7 @@ namespace ModelGraphSTD
 
         internal bool CanDelete(ChangeSet chng)
         {
-            var items = chng.ToArray;
+            var items = chng.Items;
             foreach (var item in items)
             {
                 if (!(item as ItemChange).IsUndone)
@@ -95,7 +95,7 @@ namespace ModelGraphSTD
         }
         internal void Undo(ChangeSet chng)
         {
-            var items = chng.ToArray;
+            var items = chng.Items;
             foreach (var item in items)
             {
                 if (item.IsItemUpdated) Undo(item as ItemUpdated);
@@ -111,7 +111,7 @@ namespace ModelGraphSTD
 
         internal void Redo(ChangeSet chng)
         {
-            var items = chng.ToArray;
+            var items = chng.Items;
             foreach (var item in items)
             {
                 if (item.IsItemUpdated) Redo(item as ItemUpdated);

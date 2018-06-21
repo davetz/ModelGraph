@@ -909,7 +909,7 @@ namespace ModelGraphUWP
             }
             else if (mdl.IsSortDescending)
             {
-                mdl.Delta -= 3;
+                mdl.ResetDelta();
                 mdl.IsSortAscending = false;
                 mdl.IsSortDescending = false;
                 obj.Text = _sortNone;
@@ -919,6 +919,8 @@ namespace ModelGraphUWP
                 mdl.IsSortAscending = true;
                 obj.Text = _sortAscending;
             }
+
+            mdl.IsAlreadySorted = false;
             _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
         }
         #endregion
@@ -973,13 +975,11 @@ namespace ModelGraphUWP
         }
         void ExecuteFilterMode(TextBlock obj)
         {
-            if (obj == null)
-            {
-                return;
-            }
+            if (obj == null) return;
 
             var mdl = obj.DataContext as ItemModel;
 
+            mdl.IsAlreadyFiltered = false;
             _root.PostRefreshViewList(_select, 0, ChangeType.ToggleFilter);
         }
         #endregion
@@ -1004,7 +1004,7 @@ namespace ModelGraphUWP
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
-                mdl.Delta -= 3;
+                mdl.ResetDelta();
                 mdl.ViewFilter = null;
                 mdl.IsExpandedFilter = false;
 

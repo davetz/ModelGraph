@@ -53,12 +53,12 @@ namespace ModelGraphSTD
             //=============================================
             int count = 23; // allow for static store guids
 
-            foreach (var item in _enumXStore.ToArray)
+            foreach (var item in _enumXStore.Items)
             {
                 count += (item as EnumX).Count; // PairX count
             }
 
-            foreach (var item in _tableXStore.ToArray)
+            foreach (var item in _tableXStore.Items)
             {
                 count += (item as TableX).Count; // RowX count
             }
@@ -88,7 +88,7 @@ namespace ModelGraphSTD
 
             itemIndex.Add(_viewXStore, j);
             guids[j++] = _viewXStore.Guid;
-            foreach (var itm in _viewXStore.ToArray)
+            foreach (var itm in _viewXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
@@ -96,7 +96,7 @@ namespace ModelGraphSTD
 
             itemIndex.Add(_enumXStore, j);
             guids[j++] = _enumXStore.Guid;
-            foreach (var itm in _enumXStore.ToArray)
+            foreach (var itm in _enumXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
@@ -104,7 +104,7 @@ namespace ModelGraphSTD
 
             itemIndex.Add(_tableXStore, j);
             guids[j++] = _tableXStore.Guid;
-            foreach (var itm in _tableXStore.ToArray)
+            foreach (var itm in _tableXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
@@ -112,7 +112,7 @@ namespace ModelGraphSTD
 
             itemIndex.Add(_graphXStore, j);
             guids[j++] = _graphXStore.Guid;
-            foreach (var itm in _graphXStore.ToArray)
+            foreach (var itm in _graphXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
@@ -120,7 +120,7 @@ namespace ModelGraphSTD
 
             itemIndex.Add(_queryXStore, j);
             guids[j++] = _queryXStore.Guid;
-            foreach (var itm in _queryXStore.ToArray)
+            foreach (var itm in _queryXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
@@ -128,7 +128,7 @@ namespace ModelGraphSTD
 
             itemIndex.Add(_symbolXStore, j);
             guids[j++] = _symbolXStore.Guid;
-            foreach (var itm in _symbolXStore.ToArray)
+            foreach (var itm in _symbolXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
@@ -136,7 +136,7 @@ namespace ModelGraphSTD
 
             itemIndex.Add(_columnXStore, j);
             guids[j++] = _columnXStore.Guid;
-            foreach (var itm in _columnXStore.ToArray)
+            foreach (var itm in _columnXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
@@ -144,7 +144,7 @@ namespace ModelGraphSTD
 
             itemIndex.Add(_computeXStore, j);
             guids[j++] = _computeXStore.Guid;
-            foreach (var itm in _computeXStore.ToArray)
+            foreach (var itm in _computeXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
@@ -152,7 +152,7 @@ namespace ModelGraphSTD
 
             itemIndex.Add(_relationXStore, j);
             guids[j++] = _relationXStore.Guid;
-            foreach (var itm in _relationXStore.ToArray)
+            foreach (var itm in _relationXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
@@ -160,7 +160,7 @@ namespace ModelGraphSTD
 
             itemIndex.Add(_relationStore, j);
             guids[j++] = _relationStore.Guid;
-            foreach (var rel in _relationStore.ToArray)
+            foreach (var rel in _relationStore.Items)
             {
                 itemIndex.Add(rel, j);
                 guids[j++] = rel.Guid;
@@ -171,17 +171,17 @@ namespace ModelGraphSTD
 
             // put grandchild items at the end
             //=============================================
-            foreach (var parent in _enumXStore.ToArray)
+            foreach (var parent in _enumXStore.Items)
             {
-                foreach (var child in parent.ToArray)
+                foreach (var child in parent.Items)
                 {
                     itemIndex.Add(child, j);
                     guids[j++] = child.Guid;
                 }
             }
-            foreach (var parent in _tableXStore.ToArray)
+            foreach (var parent in _tableXStore.Items)
             {
-                foreach (var itm in parent.ToArray)
+                foreach (var itm in parent.Items)
                 {
                     var child = itm;
                     itemIndex.Add(child, j);
@@ -198,7 +198,7 @@ namespace ModelGraphSTD
         {
             var relationList = new List<Relation>(_relationStore.Count + _relationXStore.Count);
 
-            foreach (var rel in _relationStore.ToArray)
+            foreach (var rel in _relationStore.Items)
             {
                 var len = rel.GetLinks(out Item[] parents, out Item[] children);
                 for (int i = 0; i < len; i++)
@@ -211,7 +211,7 @@ namespace ModelGraphSTD
                 }
             }
 
-            foreach (var item in _relationXStore.ToArray)
+            foreach (var item in _relationXStore.Items)
             {
                 var rel = item as RelationX;
                 if (rel.HasLinks) relationList.Add(rel);

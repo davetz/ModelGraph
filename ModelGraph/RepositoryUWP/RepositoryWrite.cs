@@ -80,7 +80,7 @@ namespace RepositoryUWP
             w.WriteByte((byte)Mark.ViewXBegin); // type index
             w.WriteInt32(chef.T_ViewXStore.Count);
 
-            foreach (var view in chef.T_ViewXStore.ToArray)
+            foreach (var view in chef.T_ViewXStore.Items)
             {
                 w.WriteInt32(itemIndex[view]);
 
@@ -105,7 +105,7 @@ namespace RepositoryUWP
             w.WriteByte((byte)Mark.EnumXBegin); // type vector index
             w.WriteInt32(chef.T_EnumXStore.Count);
 
-            foreach (var ex in chef.T_EnumXStore.ToArray)
+            foreach (var ex in chef.T_EnumXStore.Items)
             {
                 w.WriteInt32(itemIndex[ex]);
 
@@ -123,7 +123,7 @@ namespace RepositoryUWP
                 {
                     w.WriteByte((byte)ex.Count);
 
-                    foreach (var px in ex.ToArray)
+                    foreach (var px in ex.Items)
                     {
                         w.WriteInt32(itemIndex[px]);
 
@@ -146,7 +146,7 @@ namespace RepositoryUWP
             w.WriteByte((byte)Mark.TableXBegin); // type index
             w.WriteInt32(chef.T_TableXStore.Count);
 
-            foreach (var tx in chef.T_TableXStore.ToArray)
+            foreach (var tx in chef.T_TableXStore.Items)
             {
                 w.WriteInt32(itemIndex[tx]);
 
@@ -163,7 +163,7 @@ namespace RepositoryUWP
                 if (tx.Count > 0)
                 {
                     w.WriteInt32(tx.Count);
-                    foreach (var rx in tx.ToArray)
+                    foreach (var rx in tx.Items)
                     {
                         w.WriteInt32(itemIndex[rx]);
                     }
@@ -183,7 +183,7 @@ namespace RepositoryUWP
             w.WriteByte((byte)Mark.GraphXBegin); // type index
             w.WriteInt32(chef.T_GraphXStore.Count);
 
-            foreach (var gx in chef.T_GraphXStore.ToArray)
+            foreach (var gx in chef.T_GraphXStore.Items)
             {
                 w.WriteInt32(itemIndex[gx]);
 
@@ -207,7 +207,7 @@ namespace RepositoryUWP
             w.WriteByte((byte)Mark.QueryXBegin); // type vector
             w.WriteInt32(chef.T_QueryXStore.Count);
 
-            foreach (var qx in chef.T_QueryXStore.ToArray)
+            foreach (var qx in chef.T_QueryXStore.Items)
             {
                 w.WriteInt32(itemIndex[qx]);
 
@@ -237,7 +237,7 @@ namespace RepositoryUWP
             w.WriteByte((byte)Mark.SymbolXBegin); // type index
             w.WriteInt32(chef.T_SymbolStore.Count);
 
-            foreach (var sx in chef.T_SymbolStore.ToArray)
+            foreach (var sx in chef.T_SymbolStore.Items)
             {
                 w.WriteInt32(itemIndex[sx]);
 
@@ -271,7 +271,7 @@ namespace RepositoryUWP
             w.WriteByte((byte)Mark.ColumnXBegin); // type index
             w.WriteInt32(chef.T_ColumnXStore.Count);
 
-            foreach (var cx in chef.T_ColumnXStore.ToArray)
+            foreach (var cx in chef.T_ColumnXStore.Items)
             {
                 w.WriteInt32(itemIndex[cx]);
 
@@ -301,7 +301,7 @@ namespace RepositoryUWP
             w.WriteByte((byte)Mark.ComputeXBegin); // type vector
             w.WriteInt32(chef.T_ComputeXStore.Count);
 
-            foreach (var cx in chef.T_ComputeXStore.ToArray)
+            foreach (var cx in chef.T_ComputeXStore.Items)
             {
                 w.WriteInt32(itemIndex[cx]);
 
@@ -341,7 +341,7 @@ namespace RepositoryUWP
             w.WriteByte((byte)Mark.RelationXBegin); // type index
             w.WriteInt32(chef.T_RelationXStore.Count);
 
-            foreach (var rx in chef.T_RelationXStore.ToArray)
+            foreach (var rx in chef.T_RelationXStore.Items)
             {
                 w.WriteInt32(itemIndex[rx]);
 
