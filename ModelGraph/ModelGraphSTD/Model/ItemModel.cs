@@ -336,7 +336,12 @@ namespace ModelGraphSTD
         public bool IsSorted => (IsSortAscending || IsSortDescending);
 
         public void ResetDelta() => Delta -= 3;
-
+        internal void ClearChildren()
+        {
+            ResetDelta();
+            PrevModels = null;
+            ChildModels = null;
+        }
         public bool IsInvalid => (Item == null || Item.IsInvalid);
 
         public int GetChildlIndex(ItemModel child)

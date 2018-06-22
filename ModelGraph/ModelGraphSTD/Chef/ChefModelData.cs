@@ -403,64 +403,70 @@ namespace ModelGraphSTD
                 m.Validate();
                 var N = m.ChildModelCount;
 
-                var filter = m.RegexViewFilter;
-                if (filter != null)
+                if (N > 0)
                 {
-                    if (m.PrevModels == null)
+                    var filter = m.RegexViewFilter;
+                    if (N > 3 && filter != null)
                     {
-                        m.PrevModels = new ItemModel[N];
-                        m.ChildModels.CopyTo(m.PrevModels, 0);
-                    }
-
-                    if (m.IsAlreadyFiltered == false)
-                    {
-                        m.IsAlreadyFiltered = true;
-
-                        var filterList = new List<ItemModel>(N);
-
-                        foreach (var cm in m.PrevModels)
+                        if (m.PrevModels == null)
                         {
-                            if (!filter.IsMatch(cm.FilterSortName)) continue;
-                            filterList.Add(cm);
+                            m.PrevModels = new ItemModel[N];
+                            m.ChildModels.CopyTo(m.PrevModels, 0);
                         }
 
-                        m.ChildModels = (filterList.Count == 0) ? null : filterList.ToArray();
-                        N = m.ChildModelCount;
+                        if (m.IsAlreadyFiltered == false)
+                        {
+                            m.IsAlreadyFiltered = true;
+
+                            var filterList = new List<ItemModel>(N);
+
+                            foreach (var cm in m.PrevModels)
+                            {
+                                if (!filter.IsMatch(cm.FilterSortName)) continue;
+                                filterList.Add(cm);
+                            }
+
+                            m.ChildModels = (filterList.Count == 0) ? null : filterList.ToArray();
+                            N = m.ChildModelCount;
+                        }
+                    }
+
+                    if (N > 2 && m.IsSorted)
+                    {
+                        if (m.PrevModels == null)
+                        {
+                            m.PrevModels = new ItemModel[N];
+                            m.ChildModels.CopyTo(m.PrevModels, 0);
+                        }
+
+                        if (m.IsAlreadySorted == false)
+                        {
+                            m.IsAlreadySorted = true;
+
+                            var sortList = new List<(string Name, ItemModel Model)>(N);
+                            foreach (var cm in m.ChildModels)
+                            {
+                                sortList.Add((cm.FilterSortName, cm));
+                            }
+
+                            sortList.Sort(_alphaSort);
+                            if (m.IsSortDescending) sortList.Reverse();
+
+                            for (int i = 0; i < N; i++)
+                            {
+                                m.ChildModels[i] = sortList[i].Model;
+                            }
+                        }
                     }
                 }
-
-                if (N > 1 && m.IsSorted)
+                else
                 {
-                    if (m.PrevModels == null)
-                    {
-                        m.PrevModels = new ItemModel[N];
-                        m.ChildModels.CopyTo(m.PrevModels, 0);
-                    }
-
-                    if (m.IsAlreadySorted == false)
-                    {
-                        m.IsAlreadySorted = true;
-
-                        var sortList = new List<(string Name, ItemModel Model)>(N);
-                        foreach (var cm in m.ChildModels)
-                        {
-                            sortList.Add((cm.FilterSortName, cm));
-                        }
-
-                        sortList.Sort(_alphaSort);
-                        if (m.IsSortDescending) sortList.Reverse();
-
-                        for (int i = 0; i < N; i++)
-                        {
-                            m.ChildModels[i] = sortList[i].Model;
-                        }
-                    }
+                    m.ClearChildren();
                 }
             }
             else
             {
-                m.PrevModels = null;
-                m.ChildModels = null;
+                m.ClearChildren();
             }
         }
         class SortCompare : IComparer<(string, ItemModel)>
@@ -693,7 +699,7 @@ namespace ModelGraphSTD
                                 m.ChildModels[i] = new ItemModel(m, Trait.DataChef_M, 0, child, null, null, child.DataChef_X);
                         }
                     }
-                    if (N == 0) m.ChildModels = null;
+                    if (N == 0) m.ClearChildren();
                 }
             };
 
@@ -1155,15 +1161,16 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var count = _errorStore.Count;
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1194,11 +1201,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 },
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -1211,15 +1221,16 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var count = _changeRoot.Count;
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1264,11 +1275,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 },
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -1280,14 +1294,16 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanExpandLeft = true;
 
-                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1339,11 +1355,16 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             void CreateSecondaryMetadataTree(ItemModel model)
             {
@@ -1361,14 +1382,16 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanExpandLeft = true;
 
-                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1417,11 +1440,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1441,14 +1467,16 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanExpandLeft = true;
 
-                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1479,11 +1507,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -1496,15 +1527,16 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var count = m.Error.Count;
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
 
-                    return (null, _localize(m.Item.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.Item.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1535,11 +1567,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.Item.NameKey));
         }
         #endregion
 
@@ -1549,12 +1584,21 @@ namespace ModelGraphSTD
         {
             ErrorText_X = new ModelAction
             {
-                ModelParms = (m) => (null, GetName(m), 0, ModelType.Default),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
+                },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, GetName(m)),
+                ModelKindName = GetKindName,
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, GetName(m));
 
             string GetName(ItemModel m)
             {
@@ -1574,15 +1618,16 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var count = m.ChangeSet.Count;
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
 
-                    return (null, GetName(m), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, GetName(m)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1628,11 +1673,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 },
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, GetName(m));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1675,12 +1723,21 @@ namespace ModelGraphSTD
         {
             ItemChanged_X = new ModelAction
             {
-                ModelParms = (m) => (_localize(m.Item.KindKey), m.ItemChange.Name, 0, ModelType.Default),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
+                },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.Item.KindKey), m.ItemChange.Name),
+                ModelKindName = GetKindName,
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.Item.KindKey), m.ItemChange.Name);
         }
         #endregion
 
@@ -1695,17 +1752,18 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var views = _viewXStore.Items;
+                    var (kind, name) = GetKindName(m);
                     var count = 0;
                     foreach (var vx in views) { if (ViewX_ViewX.HasNoParent(vx)) count++; }
 
                     m.CanExpandLeft = count > 0;
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1763,11 +1821,14 @@ namespace ModelGraphSTD
                     }
                     if (N == 0)
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1787,6 +1848,7 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var vx = m.ViewX;
+                    var (kind, name) = GetKindName(m);
                     var count = (ViewX_ViewX.ChildCount(vx) + ViewX_QueryX.ChildCount(vx) + ViewX_Property.ChildCount(vx));
 
                     m.CanDrag = true;
@@ -1795,12 +1857,12 @@ namespace ModelGraphSTD
                     m.CanExpandLeft = count > 0;
                     m.CanExpandRight = true;
 
-                    return (null, vx.Name, count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.ViewX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1968,12 +2030,14 @@ namespace ModelGraphSTD
                     }
                     if (N == 0)
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
-
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.ViewX.Name);
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2000,43 +2064,29 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var qx = m.Item as QueryX;
+                    var (kind, name) = GetKindName(m);
                     var count = (QueryX_ViewX.ChildCount(qx) + QueryX_QueryX.ChildCount(qx) + QueryX_Property.ChildCount(qx));
 
                     m.CanSort = (m.IsExpandedLeft && count > 1);
                     m.CanFilter = count > 2;
                     m.CanExpandLeft = count > 0;
 
-                    var rel = Relation_QueryX.GetParent(qx);
-                    if (rel != null)
+                    if (Relation_QueryX.GetParent(qx) != null)
                     {
-                        return (_localize(m.KindKey), GetIdentity(qx, IdentityStyle.Single), count, ModelType.Default);
+                        return (kind, name, count, ModelType.Default);
                     }
                     else
                     {
                         m.CanDrag = true;
                         m.CanExpandRight = true;
 
-                        var sto = Store_QueryX.GetParent(qx);
-                        return (GetIdentity(sto, IdentityStyle.Kind), GetIdentity(sto, IdentityStyle.Double), count, ModelType.Default);
+                        return (kind, name, count, ModelType.Default);
                     }
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) =>
-                {
-                    var qx = m.Item as QueryX;
-                    var rel = Relation_QueryX.GetParent(qx);
-                    if (rel != null)
-                    {
-                        return (_localize(m.KindKey), GetIdentity(qx, IdentityStyle.Single));
-                    }
-                    else
-                    {
-                        var sto = Store_QueryX.GetParent(qx);
-                        return (GetIdentity(sto, IdentityStyle.Kind), GetIdentity(sto, IdentityStyle.Double));
-                    }
-                },
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2158,12 +2208,28 @@ namespace ModelGraphSTD
                     }
                     if (N == 0)
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
 
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m)
+            {
+                var qx = m.Item as QueryX;
+                var rel = Relation_QueryX.GetParent(qx);
+                if (rel != null)
+                {
+                    return (_localize(m.KindKey), GetIdentity(qx, IdentityStyle.Single));
+                }
+                else
+                {
+                    var sto = Store_QueryX.GetParent(qx);
+                    return (GetIdentity(sto, IdentityStyle.Kind), GetIdentity(sto, IdentityStyle.Double));
+                }
+            }
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2182,6 +2248,19 @@ namespace ModelGraphSTD
         {
             ViewXCommand_X = new ModelAction
             {
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m) =>
                 {
                     int N = 0;
@@ -2191,6 +2270,10 @@ namespace ModelGraphSTD
                     if (N == 0) m.ChildModels = null;
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -2200,12 +2283,21 @@ namespace ModelGraphSTD
         {
             ViewXProperty_X = new ModelAction
             {
-                ModelParms = (m) => (GetIdentity(m.Item, IdentityStyle.Kind), GetIdentity(m.Item, IdentityStyle.Double), 0, ModelType.Default),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
+                },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (GetIdentity(m.Item, IdentityStyle.Kind), GetIdentity(m.Item, IdentityStyle.Double)),
+                ModelKindName = GetKindName,
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (GetIdentity(m.Item, IdentityStyle.Kind), GetIdentity(m.Item, IdentityStyle.Double));
         }
         #endregion
 
@@ -2219,6 +2311,7 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var views = _viewXStore.Items;
+                    var (kind, name) = GetKindName(m);
                     var count = 0;
                     foreach (var vx in views) { if (ViewX_ViewX.HasNoParent(vx)) count++; }
 
@@ -2226,12 +2319,12 @@ namespace ModelGraphSTD
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2266,11 +2359,14 @@ namespace ModelGraphSTD
                     }
                     if (N == 0)
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -2284,6 +2380,7 @@ namespace ModelGraphSTD
                 {
                     var vx = m.ViewX;
                     var key = m.Aux1; // may be null
+                    var (kind, name) = GetKindName(m);
                     var count = 0;
                     var querys = ViewX_QueryX.GetChildren(vx);
                     if (querys != null)
@@ -2304,12 +2401,12 @@ namespace ModelGraphSTD
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, vx.Name, count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.ViewX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2386,11 +2483,14 @@ namespace ModelGraphSTD
                     }
                     if (N == 0)
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.ViewX.Name);
         }
         #endregion
 
@@ -2406,6 +2506,7 @@ namespace ModelGraphSTD
                     var qx = m.Aux1 as QueryX;
 
                     var (L1, PropertyList, L2, QueryList, L3, ViewList) = GetQueryXChildren(qx);
+                    var (kind, name) = GetKindName(m);
                     var count = (L2 + L3);
 
                     m.CanExpandLeft = (count > 0);
@@ -2417,7 +2518,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (GetIdentity(m.Item.Owner, IdentityStyle.Single), GetIdentity(m.Item, IdentityStyle.Single)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2466,11 +2567,14 @@ namespace ModelGraphSTD
                     }
                     if (N == 0)
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (GetIdentity(m.Item.Owner, IdentityStyle.Single), GetIdentity(m.Item, IdentityStyle.Single));
         }
         #endregion
 
@@ -2484,18 +2588,19 @@ namespace ModelGraphSTD
                 {
                     var key = m.Item;
                     var qx = m.QueryX;
+                    var (kind, name) = GetKindName(m);
                     var count = TryGetQueryItems(qx, out Item[] items, key) ? items.Length : 0;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (_localize(m.KindKey), GetIdentity(qx, IdentityStyle.Single), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), GetIdentity(m.QueryX, IdentityStyle.Single)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2526,11 +2631,14 @@ namespace ModelGraphSTD
                     }
                     if (N == 0)
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), GetIdentity(m.QueryX, IdentityStyle.Single));
         }
         #endregion
 
@@ -2545,18 +2653,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = _enumXStore.Count;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2595,11 +2704,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2619,13 +2731,18 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var count = _tableXStore.Count;
+                    var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2673,6 +2790,10 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
             void Insert(ItemModel model)
             {
                 ItemCreated(new TableX(_tableXStore));
@@ -2688,18 +2809,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = _graphXStore.Count;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2742,11 +2864,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2767,18 +2892,19 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var gx = m.Item as GraphX;
+                    var (kind, name) = GetKindName(m);
                     var count = GraphX_SymbolX.ChildCount(gx);
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2837,11 +2963,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2865,18 +2994,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = _tableXStore.Count;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2912,11 +3042,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.ChildModels = null;
-                        m.PrevModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -2928,18 +3061,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = _graphXStore.Count;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2977,15 +3111,16 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
-
-
 
 
         #region 652 PairX  ====================================================
@@ -2996,15 +3131,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandRight = true;
 
-                    return (null, m.PairX.DisplayValue, 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.PairX.DisplayValue),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3035,11 +3172,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.PairX.DisplayValue);
         }
         #endregion
 
@@ -3051,15 +3191,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandRight = true;
 
-                    return (null, m.EnumX.Name, 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.EnumX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3112,11 +3254,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.EnumX.Name);
         }
         #endregion
 
@@ -3128,16 +3273,18 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandLeft = true;
                     m.CanExpandRight = true;
 
-                    return (null, m.TableX.Name, 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.TableX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3205,11 +3352,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.TableX.Name);
         }
         #endregion
 
@@ -3221,16 +3371,18 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandLeft = true;
                     m.CanExpandRight = true;
 
-                    return (null, m.GraphX.Name, 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.GraphX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3294,11 +3446,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.GraphX.Name);
         }
         #endregion
 
@@ -3310,16 +3465,18 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandLeft = true;
                     m.CanExpandRight = true;
 
-                    return (null, m.SymbolX.Name, 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.SymbolX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3363,11 +3520,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.SymbolX.Name);
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3387,15 +3547,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandRight = true;
 
-                    return (null, m.ColumnX.Name, 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.ColumnX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3433,11 +3595,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.ColumnX.Name);
         }
         #endregion
 
@@ -3451,18 +3616,19 @@ namespace ModelGraphSTD
                 {
                     var cx = m.ComputeX;
                     var qx = ComputeX_QueryX.GetChild(cx);
+                    var (kind, name) = GetKindName(m);
                     var count = (qx == null) ? 0 : QueryX_QueryX.ChildCount(qx);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (null, cx.Name, count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.ComputeX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3565,17 +3731,19 @@ namespace ModelGraphSTD
                         }
                         else
                         {
-                            m.PrevModels = null;
-                            m.ChildModels = null;
+                            m.ClearChildren();
                         }
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.ComputeX.Name);
         }
         #endregion
 
@@ -3589,18 +3757,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = TableX_ColumnX.ChildCount(m.Item);
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3643,11 +3812,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3667,18 +3839,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = TableX_ChildRelationX.ChildCount(m.Item);
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3722,11 +3895,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3746,18 +3922,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = TableX_ParentRelationX.ChildCount(m.Item);
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3800,11 +3977,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3825,18 +4005,19 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var ex = m.EnumX;
+                    var (kind, name) = GetKindName(m);
                     var count = ex.Count;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3884,11 +4065,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3907,18 +4091,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = EnumX_ColumnX.ChildCount(m.Item);
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3971,11 +4156,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -3987,18 +4175,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = Store_ComputeX.ChildCount(m.Item);
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4041,11 +4230,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4071,15 +4263,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandRight = true;
 
-                    return (null, GetIdentity(m.RelationX, IdentityStyle.Single), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, GetIdentity(m.RelationX, IdentityStyle.Single)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4130,11 +4324,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, GetIdentity(m.RelationX, IdentityStyle.Single));
         }
         #endregion
 
@@ -4146,15 +4343,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandRight = true;
 
-                    return (null, GetIdentity(m.RelationX, IdentityStyle.Single), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, GetIdentity(m.RelationX, IdentityStyle.Single)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4205,12 +4404,15 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
 
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, GetIdentity(m.RelationX, IdentityStyle.Single));
         }
         #endregion
 
@@ -4222,16 +4424,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = TableX_NameProperty.ChildCount(m.Item);
 
                     m.CanExpandLeft = (count > 0);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4280,11 +4483,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -4296,16 +4502,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = TableX_SummaryProperty.ChildCount(m.Item);
 
                     m.CanExpandLeft = (count > 0);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4354,11 +4561,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -4370,19 +4580,14 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    if (m.Item.IsColumnX) return (null, m.ColumnX.Name, 0, ModelType.Default);
-                    if (m.Item.IsComputeX) return (null, m.ComputeX.Name, 0, ModelType.Default);
-                    throw new Exception("Corrupt ItemModelTree");
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) =>
-                {
-                    if (m.Item.IsColumnX) return (null, m.ColumnX.Name);
-                    if (m.Item.IsComputeX) return (null, m.ComputeX.Name);
-                    throw new Exception("Corrupt ItemModelTree");
-                },
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4400,6 +4605,15 @@ namespace ModelGraphSTD
                     mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, UnlinkRelatedChild));
                 },
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m)
+            {
+                if (m.Item.IsColumnX) return (null, m.ColumnX.Name);
+                if (m.Item.IsComputeX) return (null, m.ComputeX.Name);
+                throw new Exception("Corrupt ItemModelTree");
+            }
         }
         #endregion
 
@@ -4411,19 +4625,14 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    if (m.Item.IsColumnX) return (null, m.ColumnX.Name, 0, ModelType.Default);
-                    if (m.Item.IsComputeX) return (null, m.ComputeX.Name, 0, ModelType.Default);
-                    throw new Exception("Corrupt ItemModelTree");
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) =>
-                {
-                    if (m.Item.IsColumnX) return (null, m.ColumnX.Name);
-                    if (m.Item.IsComputeX) return (null, m.ComputeX.Name);
-                    throw new Exception("Corrupt ItemModelTree");
-                },
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4441,6 +4650,15 @@ namespace ModelGraphSTD
                     mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, UnlinkRelatedChild));
                 },
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m)
+            {
+                if (m.Item.IsColumnX) return (null, m.ColumnX.Name);
+                if (m.Item.IsComputeX) return (null, m.ComputeX.Name);
+                throw new Exception("Corrupt ItemModelTree");
+            }
         }
         #endregion
 
@@ -4454,16 +4672,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = GraphX_ColorColumnX.ChildCount(m.GraphX);
 
                     m.CanExpandLeft = (count > 0);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4507,11 +4726,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
-            };        
+            };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -4523,16 +4745,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = GraphX_QueryX.ChildCount(m.Item);
 
                     m.CanExpandLeft = (count > 0);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4583,11 +4806,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4614,16 +4840,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = GetNodeOwners(m.GraphX).Count;
 
                     m.CanExpandLeft = (count > 0);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4653,17 +4880,19 @@ namespace ModelGraphSTD
                         }
                         else
                         {
-                            m.PrevModels = null;
-                            m.ChildModels = null;
+                            m.ClearChildren();
                         }
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -4675,16 +4904,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = GetSymbolQueryXCount(m.GraphX, m.Store);
 
                     m.CanExpandLeft = (count > 0);
 
-                    return (_localize(m.KindKey), GetIdentity(m.Item, IdentityStyle.Single), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), GetIdentity(m.Item, IdentityStyle.Single)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4729,11 +4959,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), GetIdentity(m.Item, IdentityStyle.Single));
         }
         #endregion
 
@@ -4743,12 +4976,21 @@ namespace ModelGraphSTD
         {
             GraphXColorColumn_X = new ModelAction
             {
-                ModelParms = (m) => (_localize(m.KindKey), $"{m.TableX.Name} : {m.ColumnX.Name}", 0, ModelType.Default),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
+                },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), $"{m.TableX.Name} : {m.ColumnX.Name}"),
+                ModelKindName = GetKindName,
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), $"{m.TableX.Name} : {m.ColumnX.Name}");
         }
         #endregion
 
@@ -4762,18 +5004,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = QueryX_QueryX.ChildCount(m.Item);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (_localize(m.NameKey), GetIdentity(Store_QueryX.GetParent(m.Item), IdentityStyle.Single), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.NameKey), GetIdentity(Store_QueryX.GetParent(m.Item), IdentityStyle.Single)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4889,11 +5132,14 @@ namespace ModelGraphSTD
                     }
                     if (N == 0)
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.NameKey), GetIdentity(Store_QueryX.GetParent(m.Item), IdentityStyle.Single));
         }
         #endregion
 
@@ -4905,18 +5151,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = QueryX_QueryX.ChildCount(m.Item);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5041,11 +5288,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXLinkName(m));
         }
         #endregion
 
@@ -5057,18 +5307,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = QueryX_QueryX.ChildCount(m.Item);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (_localize(m.KindKey), QueryXHeadName(m), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXHeadName(m)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5140,11 +5391,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXHeadName(m));
         }
         #endregion
 
@@ -5156,18 +5410,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = QueryX_QueryX.ChildCount(m.Item);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5232,11 +5487,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXLinkName(m));
         }
         #endregion
 
@@ -5248,18 +5506,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = QueryX_QueryX.ChildCount(m.Item);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (_localize(m.KindKey), QueryXHeadName(m), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXHeadName(m)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5323,11 +5582,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXHeadName(m));
         }
         #endregion
 
@@ -5339,18 +5601,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = QueryX_QueryX.ChildCount(m.Item);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5415,11 +5678,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXLinkName(m));
         }
         #endregion
 
@@ -5431,18 +5697,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = QueryX_QueryX.ChildCount(m.Item);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (_localize(m.KindKey), QueryXHeadName(m), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXHeadName(m)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5510,11 +5777,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXHeadName(m));
         }
         #endregion
 
@@ -5526,18 +5796,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = QueryX_QueryX.ChildCount(m.Item);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5602,11 +5873,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXLinkName(m));
         }
         #endregion
 
@@ -5618,15 +5892,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandRight = true;
 
-                    return (_localize(m.KindKey), (SymbolX_QueryX.TryGetParent(m.Item, out SymbolX sym)) ? sym.Name : null, 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), (SymbolX_QueryX.TryGetParent(m.Item, out SymbolX sym)) ? sym.Name : null),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5661,11 +5937,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), (SymbolX_QueryX.TryGetParent(m.Item, out SymbolX sym)) ? sym.Name : null);
         }
         #endregion
 
@@ -5678,18 +5957,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = QueryX_QueryX.ChildCount(m.Item);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5758,11 +6038,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXLinkName(m));
         }
         #endregion
 
@@ -5774,18 +6057,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = QueryX_QueryX.ChildCount(m.Item);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
                     m.CanExpandRight = true;
 
-                    return (_localize(m.KindKey), QueryXLinkName(m), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXLinkName(m)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5852,11 +6136,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXLinkName(m));
         }
         string QueryXComputeName(ItemModel m)
         {
@@ -5896,16 +6183,18 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandLeft = true;
                     m.CanExpandRight = m.RowX.TableX.HasChoiceColumns;
 
-                    return (null, GetIdentity(m.Item, IdentityStyle.Single), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, GetIdentity(m.Item, IdentityStyle.Single)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5925,6 +6214,10 @@ namespace ModelGraphSTD
                     RowX_VX(m);
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, GetIdentity(m.Item, IdentityStyle.Single));
         }
         private void RowX_VX(ItemModel m)
         {
@@ -5984,8 +6277,7 @@ namespace ModelGraphSTD
             }
             else
             {
-                m.PrevModels = null;
-                m.ChildModels = null;
+                m.ClearChildren();
             }
         }
         private DropAction ReorderStoreItem(ItemModel m, ItemModel d, bool doDrop)
@@ -6013,16 +6305,25 @@ namespace ModelGraphSTD
         {
             View_X = new ModelAction
             {
-                ModelParms = (m) => (null, m.ViewX.Name, 0, ModelType.Default),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
+                },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.ViewX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => m.ViewX.Summary,
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.ViewX.Name);
         }
         #endregion
 
@@ -6034,18 +6335,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.TableX.Count;
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, m.TableX.Name, count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.TableX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6094,11 +6396,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.ChildModels = null;
-                        m.PrevModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.TableX.Name);
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6118,14 +6423,16 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanExpandLeft = true;
 
-                    return (_localize(m.KindKey), m.Graph.GraphX.Name, 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), m.Graph.GraphX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6178,11 +6485,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), m.Graph.GraphX.Name);
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6202,17 +6512,23 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    return (_localize(m.KindKey), m.Graph.GraphX.Name, 0, ModelType.Default);
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), m.Graph.GraphX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => m.Graph.GraphX.Summary,
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), m.Graph.GraphX.Name);
         }
         #endregion
 
@@ -6224,18 +6540,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Relation.ChildCount(m.Item);
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (_localize(m.KindKey), GetRelationName(m.RelationX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), GetRelationName(m.RelationX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6290,11 +6607,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), GetRelationName(m.RelationX));
         }
         #endregion
 
@@ -6306,18 +6626,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Relation.ParentCount(m.Item);
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (_localize(m.KindKey), GetRelationName(m.RelationX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), GetRelationName(m.RelationX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6371,11 +6692,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), GetRelationName(m.RelationX));
         }
         #endregion
 
@@ -6387,15 +6711,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanDrag = true;
                     m.CanExpandLeft = true;
 
-                    return (m.RowX.TableX.Name, GetRowName(m.RowX), m.RelationX.ChildCount(m.RowX), ModelType.Default);
+                    return (kind, name, m.RelationX.ChildCount(m.RowX), ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (m.RowX.TableX.Name, GetRowName(m.RowX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6416,6 +6742,10 @@ namespace ModelGraphSTD
 
                 Validate = (m) => RowX_VX(m),
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (m.RowX.TableX.Name, GetRowName(m.RowX));
         }
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -6456,17 +6786,18 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Relation.ParentCount(m.RowX);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = count > 0;
 
-                    return (m.RowX.TableX.Name, GetRowName(m.RowX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (m.RowX.TableX.Name, GetRowName(m.RowX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6505,6 +6836,10 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+            (string, string) GetKindName(ItemModel m) => (m.RowX.TableX.Name, GetRowName(m.RowX));
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
             void UnlinkRelatedParent(ItemModel m)
             {
                 var key = m.Item;
@@ -6521,11 +6856,16 @@ namespace ModelGraphSTD
         {
             EnumRelatedColumn_X = new ModelAction
             {
-                ModelParms = (m) => (_localize(m.KindKey), $"{m.TableX.Name}: {m.ColumnX.Name}", 0, ModelType.Default),
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
+                },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), $"{m.TableX.Name}: {m.ColumnX.Name}"),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6534,6 +6874,10 @@ namespace ModelGraphSTD
                     mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, UnlinkRelatedColumn));
                 },
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), $"{m.TableX.Name}: {m.ColumnX.Name}");
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6557,18 +6901,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     GetColumnCount(m.Item, out int count, out int _);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6597,11 +6942,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -6613,18 +6961,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     GetChildRelationCount(m.Item, out int count, out int _);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6653,11 +7002,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -6669,18 +7021,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     GetParentRelationCount(m.Item, out int count, out int _);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6709,11 +7062,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -6725,18 +7081,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     GetColumnCount(m.Item, out int _, out int count);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6765,11 +7122,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -6781,18 +7141,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     GetChildRelationCount(m.Item, out int _, out int count);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6821,11 +7182,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -6837,18 +7201,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     GetParentRelationCount(m.Item, out int _, out int count);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6877,11 +7242,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -6893,18 +7261,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = Store_ComputeX.ChildCount(m.Item.Owner);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6933,11 +7302,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -6951,16 +7323,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.ItemCount;
 
                     m.CanExpandLeft = count > 0;
 
-                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6988,11 +7361,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX));
         }
         private string QueryLinkName(ItemModel modle)
         {
@@ -7009,21 +7385,26 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.ItemCount;
 
                     m.CanExpandLeft = count > 0;
 
-                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) => QueryPathLink_VX(m),
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX));
         }
         #endregion
 
@@ -7035,21 +7416,26 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.ItemCount;
 
                     m.CanExpandLeft = count > 0;
 
-                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) => QueryPathLink_VX(m),
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX));
         }
         private void QueryPathLink_VX(ItemModel m)
         {
@@ -7082,8 +7468,7 @@ namespace ModelGraphSTD
             }
             else
             {
-                m.PrevModels = null;
-                m.ChildModels = null;
+                m.ClearChildren();
             }
         }
         #endregion
@@ -7096,21 +7481,26 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.ItemCount;
 
                     m.CanExpandLeft = count > 0;
 
-                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) => QueryGroupLink_VX(m),
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX));
         }
         #endregion
 
@@ -7122,21 +7512,26 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.ItemCount;
 
                     m.CanExpandLeft = count > 0;
 
-                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) => QueryGroupLink_VX(m),
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX));
         }
         private void QueryGroupLink_VX(ItemModel m)
         {
@@ -7170,8 +7565,7 @@ namespace ModelGraphSTD
             }
             else
             {
-                m.PrevModels = null;
-                m.ChildModels = null;
+                m.ClearChildren();
             }
         }
         #endregion
@@ -7184,21 +7578,26 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.ItemCount;
 
                     m.CanExpandLeft = count > 0;
 
-                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) => QueryEgressLink_VX(m),
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX));
         }
         #endregion
 
@@ -7210,21 +7609,26 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.ItemCount;
 
                     m.CanExpandLeft = count > 0;
 
-                    return (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) => QueryEgressLink_VX(m),
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), QueryXFilterName(m.Query.QueryX));
         }
         private void QueryEgressLink_VX(ItemModel m)
         {
@@ -7258,8 +7662,7 @@ namespace ModelGraphSTD
             }
             else
             {
-                m.PrevModels = null;
-                m.ChildModels = null;
+                m.ClearChildren();
             }
         }
         #endregion
@@ -7274,16 +7677,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.QueryCount(m.Item);
 
                     m.CanExpandLeft = count > 0;
 
-                    return (m.RowX.TableX.Name, GetRowName(m.RowX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (m.RowX.TableX.Name, GetRowName(m.RowX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7332,11 +7736,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (m.RowX.TableX.Name, GetRowName(m.RowX));
         }
         #endregion
 
@@ -7348,16 +7755,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.QueryCount(m.Item);
 
                     m.CanExpandLeft = count > 0;
 
-                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7386,11 +7794,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX));
         }
         #endregion
 
@@ -7402,17 +7813,22 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.QueryCount(m.Item);
 
                     m.CanExpandLeft = count > 0;
 
-                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
+                ModelKindName = GetKindName,
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX));
         }
         #endregion
 
@@ -7424,16 +7840,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.QueryCount(m.Item);
 
                     m.CanExpandLeft = count > 0;
 
-                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7462,11 +7879,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX));
         }
         #endregion
 
@@ -7478,17 +7898,22 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.QueryCount(m.Item);
 
                     m.CanExpandLeft = count > 0;
 
-                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
+                ModelKindName = GetKindName,
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX));
         }
         #endregion
 
@@ -7500,16 +7925,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.QueryCount(m.Item);
 
                     m.CanExpandLeft = count > 0;
 
-                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7538,11 +7964,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX));
         }
         #endregion
 
@@ -7554,17 +7983,22 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.QueryCount(m.Item);
 
                     m.CanExpandLeft = count > 0;
 
-                    return ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX)),
+                ModelKindName = GetKindName,
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => ($"{_localize(m.KindKey)} {m.RowX.TableX.Name}", GetRowName(m.RowX));
         }
         #endregion
 
@@ -7578,16 +8012,17 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.GraphX.Count;
 
                     m.CanExpandLeft = count > 0;
 
-                    return (m.GraphX.Trait.ToString(), m.GraphX.Name, count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (m.GraphX.Trait.ToString(), m.GraphX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7660,11 +8095,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (m.GraphX.Trait.ToString(), m.GraphX.Name);
         }
 
         void CreateGraph(ItemModel m)
@@ -7687,18 +8125,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Graph.NodeCount;
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7730,11 +8169,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -7746,18 +8188,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Graph.EdgeCount;
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7789,11 +8232,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -7805,18 +8251,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Graph.QueryCount;
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7825,35 +8272,38 @@ namespace ModelGraphSTD
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 Validate = (m) =>
-            {
-                var g = m.Item as Graph;
-                Query[] items = g.Forest;
-
-                var N = g.QueryCount;
-                if (m.IsExpandedLeft && N > 0)
                 {
-                    var depth = (byte)(m.Depth + 1);
+                    var g = m.Item as Graph;
+                    Query[] items = g.Forest;
 
-                    m.PrevModels = m.ChildModels;
-                    m.ChildModels = new ItemModel[N];
-
-                    for (int i = 0; i < N; i++)
+                    var N = g.QueryCount;
+                    if (m.IsExpandedLeft && N > 0)
                     {
-                        var seg = items[i];
-                        var tbl = seg.Item;
-                        if (!TryGetPrevModel(m, Trait.GraphRoot_M, i, tbl, seg))
-                            m.ChildModels[i] = new ItemModel(m, Trait.GraphRoot_M, depth, tbl, seg, null, GraphRoot_X);
-                    }
+                        var depth = (byte)(m.Depth + 1);
 
-                    m.PrevModels = null;
+                        m.PrevModels = m.ChildModels;
+                        m.ChildModels = new ItemModel[N];
+
+                        for (int i = 0; i < N; i++)
+                        {
+                            var seg = items[i];
+                            var tbl = seg.Item;
+                            if (!TryGetPrevModel(m, Trait.GraphRoot_M, i, tbl, seg))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphRoot_M, depth, tbl, seg, null, GraphRoot_X);
+                        }
+
+                        m.PrevModels = null;
+                    }
+                    else
+                    {
+                        m.ClearChildren();
+                    }
                 }
-                else
-                {
-                    m.PrevModels = null;
-                    m.ChildModels = null;
-                }
-            }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -7865,18 +8315,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Graph.Levels.Count;
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7907,11 +8358,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -7923,18 +8377,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Level.Count;
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (_localize(m.KindKey), m.Level.Name, count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), m.Level.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -7961,11 +8416,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), m.Level.Name);
         }
         #endregion
 
@@ -7977,18 +8435,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Path.Count;
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (GetPathKind(m.Path), GetPathName(m.Path), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (GetPathKind(m.Path), GetPathName(m.Path)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8015,11 +8474,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (GetPathKind(m.Path), GetPathName(m.Path));
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8056,18 +8518,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Query.ItemCount;
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, m.TableX.Name, count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, m.TableX.Name),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8095,11 +8558,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.TableX.Name);
         }
         #endregion
 
@@ -8111,6 +8577,7 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Node.Graph.Node_Edges.TryGetValue(m.Node, out List<Edge> edges) ? edges.Count : 0;
 
                     m.CanExpandRight = true;
@@ -8118,12 +8585,12 @@ namespace ModelGraphSTD
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (_localize(m.KindKey), GetIdentity(m.Node.Item, IdentityStyle.Double), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), GetIdentity(m.Node.Item, IdentityStyle.Double)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8162,11 +8629,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), GetIdentity(m.Node.Item, IdentityStyle.Double));
         }
         #endregion
 
@@ -8178,14 +8648,16 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanExpandRight = true;
                     
-                    return (_localize(m.KindKey), GetHeadTailName(m.Edge.Node1.Item, m.Edge.Node2.Item), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (_localize(m.KindKey), GetHeadTailName(m.Edge.Node1.Item, m.Edge.Node2.Item)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8205,11 +8677,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), GetHeadTailName(m.Edge.Node1.Item, m.Edge.Node2.Item));
         }
         #endregion
 
@@ -8222,18 +8697,19 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = m.Graph.OpenQuerys.Count;
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(m.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8261,11 +8737,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.ChildModels = null;
-                        m.PrevModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -8286,7 +8765,6 @@ namespace ModelGraphSTD
 
                 ModelKindName = GetKindName,
             };
-
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             (string Kind, string Name) GetKindName(ItemModel m)
@@ -8308,6 +8786,7 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
                     var count = 0;
                     foreach (var sto in _primeStores) { if (Store_ComputeX.HasChildLink(sto)) count += 1; }
 
@@ -8315,12 +8794,12 @@ namespace ModelGraphSTD
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(GetNameKey(Trait.PrimeCompute_M)), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(GetNameKey(Trait.PrimeCompute_M))),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8359,11 +8838,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(GetNameKey(Trait.PrimeCompute_M)));
         }
         #endregion
 
@@ -8376,18 +8858,19 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var st = m.Store;
+                    var (kind, name) = GetKindName(m);
                     var count = Store_ComputeX.ChildCount(st);
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, GetIdentity(st, IdentityStyle.Single), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, GetIdentity(m.Store, IdentityStyle.Single)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8419,11 +8902,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, GetIdentity(m.Store, IdentityStyle.Single));
         }
         #endregion
 
@@ -8436,14 +8922,16 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var (kind, name) = GetKindName(m);
+
                     m.CanExpandLeft = true;
 
-                    return (null, _localize(GetNameKey(Trait.InternalStore_ZM)), 0, ModelType.Default);
+                    return (kind, name, 0, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(GetNameKey(Trait.InternalStore_ZM))),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8518,11 +9006,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(GetNameKey(Trait.InternalStore_ZM)));
         }
         #endregion
 
@@ -8535,18 +9026,19 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var st = m.Store;
+                    var (kind, name) = GetKindName(m);
                     var count = st.Count;
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 
-                    return (null, _localize(st.NameKey), count, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelKindName = (m) => (null, _localize(m.Store.NameKey)),
+                ModelKindName = GetKindName,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8578,11 +9070,14 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.Store.NameKey));
         }
         #endregion
 
@@ -8668,8 +9163,7 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
@@ -8748,8 +9242,7 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
@@ -8815,8 +9308,7 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
@@ -8877,8 +9369,7 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
@@ -8939,8 +9430,7 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
@@ -9058,8 +9548,7 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
@@ -9122,8 +9611,7 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 }
             };
@@ -9203,8 +9691,7 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.PrevModels = null;
-                        m.ChildModels = null;
+                        m.ClearChildren();
                     }
                 },
             };
