@@ -54,15 +54,17 @@ namespace ModelGraphUWP.Services
         #endregion
 
         #region RemoveModelPage  ==============================================
-        internal async void RemoveModelPage(RootModel model, PageControl page)
+        internal async void RemoveModelPage(RootModel root, PageControl page)
         {
+            if (root == null) return;
+
             if (page == _rootPage)
             {
                 var hitList = new List<(RootModel model, PageControl page)>();
 
                 foreach (var e in _modelPages)
                 {
-                    if (model.Chef == e.Key.Chef)
+                    if (root.Chef == e.Key.Chef)
                     {
                         hitList.Add((e.Key, e.Value));
                     }
@@ -84,7 +86,7 @@ namespace ModelGraphUWP.Services
             }
             else
             {
-                _modelPages.TryRemove(model, out PageControl p);
+                _modelPages.TryRemove(root, out PageControl p);
             }
 
             if (page == _rootPage)

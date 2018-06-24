@@ -5,6 +5,9 @@
     {
         NoChange,
 
+        GoToEnd,
+        GoToHome,
+
         ToggleLeft,
         ExpandLeft,
         CollapseLeft,

@@ -188,13 +188,13 @@ namespace ModelGraphSTD
             var select = root.SelectModel;
             var viewList = root.ViewModels;
             var capacity = root.ViewCapacity;
+            var offset = viewList.IndexOf(select);
 
             if (capacity > 0)
             {
                 var first = ItemModel.FirstValidModel(viewList);
                 var start = (first == null);
 
-                viewList.Clear();
                 UpdateSelectModel(select, change);
 
                 if (root.ChildModelCount == 0) ValidateModel(root);
@@ -206,7 +206,53 @@ namespace ModelGraphSTD
                 var N = capacity;
                 var buffer = new CircularBuffer(N, S);
 
+                #region GoTo<End,Home>  =======================================
+                if ((change == ChangeType.GoToEnd || change == ChangeType.GoToHome) && offset >= 0 && first != null)
+                {
+                    var pm = select.ParentModel;
+                    var ix = pm.GetChildlIndex(select);
+                    var last = pm.ChildModelCount - 1;
+
+                    if (change == ChangeType.GoToEnd)
+                    {
+                        if (ix < last)
+                        {
+                            select = pm.ChildModels[last];
+                            if (!viewList.Contains(select)) FindFirst();
+                        }
+                    }
+                    else
+                    {
+                        if (ix > 0)
+                        {
+                            select = pm.ChildModels[0];
+                            if (!viewList.Contains(select)) FindFirst();
+                        }
+                    }
+                    root.SelectModel = select;
+
+                    void FindFirst()
+                    {
+                        first = select;
+                        var absoluteFirst = root.ChildModels[0];
+
+                        for (; offset > 0; offset--)
+                        {
+                            if (first == absoluteFirst) break;
+
+                            var p = first.ParentModel;
+                            var i = p.GetChildlIndex(first);
+
+                            first = (i > 0) ? p.ChildModels[i - 1] : p;
+                        }
+                    }
+                }
+                #endregion
+
+                #region TraverseModelTree   ===================================
+
                 if (scroll < 0) S = 0;
+
                 while (modelStack.IsNotEmpty && (N + S) > 0)
                 {
                     var m = modelStack.PopNext();
@@ -218,8 +264,11 @@ namespace ModelGraphSTD
                     ValidateModel(m);
                     modelStack.PushChildren(m);
                 }
+                #endregion
 
                 #region ScrollViewList  =======================================
+                viewList.Clear();
+
                 if (scroll == -1)
                 {
                     buffer.GetHead(viewList);

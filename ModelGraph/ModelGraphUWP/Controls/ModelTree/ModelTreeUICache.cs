@@ -6,135 +6,126 @@ namespace ModelGraphUWP
 {
     public sealed partial class ModelTreeControl
     {
-        static int initSize = 60; // visible lines on the screen
-        int _cacheSize = initSize;
+        static int initialSize = 40; // visible lines on the screen
+        int _cacheSize = initialSize;
 
-        TextBlock[] _itemKindCache = new TextBlock[initSize];
-        TextBlock[] _itemNameCache = new TextBlock[initSize];
-        TextBlock[] _itemInfoCache = new TextBlock[initSize];
-        TextBlock[] _totalCountCache = new TextBlock[initSize];
-        TextBlock[] _indentTreeCache = new TextBlock[initSize];
-        TextBlock[] _expandLeftCache = new TextBlock[initSize];
-        TextBlock[] _expandRightCache = new TextBlock[initSize];
-        TextBlock[] _sortModeCache = new TextBlock[initSize];
-        TextBlock[] _usageModeCache = new TextBlock[initSize];
-        TextBlock[] _filterModeCache = new TextBlock[initSize];
-        TextBlock[] _filterCountCache = new TextBlock[initSize];
-        TextBlock[] _propertyNameCache = new TextBlock[initSize];
-        TextBlock[] _modelIdentityCache = new TextBlock[initSize];
+        TextBlock[] _itemKindCache = new TextBlock[initialSize];
+        TextBlock[] _itemNameCache = new TextBlock[initialSize];
+        TextBlock[] _itemInfoCache = new TextBlock[initialSize];
+        TextBlock[] _totalCountCache = new TextBlock[initialSize];
+        TextBlock[] _indentTreeCache = new TextBlock[initialSize];
+        TextBlock[] _expandLeftCache = new TextBlock[initialSize];
+        TextBlock[] _expandRightCache = new TextBlock[initialSize];
+        TextBlock[] _sortModeCache = new TextBlock[initialSize];
+        TextBlock[] _usageModeCache = new TextBlock[initialSize];
+        TextBlock[] _filterModeCache = new TextBlock[initialSize];
+        TextBlock[] _filterCountCache = new TextBlock[initialSize];
+        TextBlock[] _propertyNameCache = new TextBlock[initialSize];
+        TextBlock[] _modelIdentityCache = new TextBlock[initialSize];
 
-        TextBox[] _filterTextCache = new TextBox[initSize];
-        TextBox[] _textPropertyCache = new TextBox[initSize];
-        CheckBox[] _checkPropertyCache = new CheckBox[initSize];
-        ComboBox[] _comboPropertyCache = new ComboBox[initSize];
-        Border[] _propertyBorderCache = new Border[initSize];
-        StackPanel[] _stackPanelCache = new StackPanel[initSize];
+        TextBox[] _filterTextCache = new TextBox[initialSize];
+        TextBox[] _textPropertyCache = new TextBox[initialSize];
+        CheckBox[] _checkPropertyCache = new CheckBox[initialSize];
+        ComboBox[] _comboPropertyCache = new ComboBox[initialSize];
+        Border[] _propertyBorderCache = new Border[initialSize];
+        StackPanel[] _stackPanelCache = new StackPanel[initialSize];
 
         #region ValidateCache  ================================================
-        int _prevCount;
-        int _prevModelIndex1;
-        int _prevModelIndex2;
-        /// <summary>
-        /// Validate the UI cache and return true if the cache has been reset
-        /// </summary>
-        bool ValidateCache()
+        void ValidateCache(int length)
         {
-            if (_prevCount != Count)
-            {
-                //either the scroll or or the model count has changed, so reset the UI cache
-                _prevCount = Count;
+            ValidateCacheSize();
 
-                var hidden = -8 * _elementHieght;
-                foreach (var sp in _stackPanelCache)
+            var hidden = -8 * _elementHieght;
+            var N = _stackPanelCache.Length;
+
+            for (int i = 0; i < N; i++)
+            {
+                var sp = _stackPanelCache[i];
+                if (sp == null) return;         // end of cache
+                if (i < length) continue;       // visible element
+
+                sp.Children.Clear();
+            }
+
+            #region ValidateCacheSize  ============================================
+            void ValidateCacheSize()
+            {
+                if (length < _cacheSize) return;
+
+                var size = length + 30; // new size of the cache
+
+                _itemKindCache = ExpandTextBlockCache(_itemKindCache);
+                _itemNameCache = ExpandTextBlockCache(_itemNameCache);
+                _itemInfoCache = ExpandTextBlockCache(_itemInfoCache);
+                _totalCountCache = ExpandTextBlockCache(_totalCountCache);
+                _indentTreeCache = ExpandTextBlockCache(_indentTreeCache);
+                _expandLeftCache = ExpandTextBlockCache(_expandLeftCache);
+                _expandRightCache = ExpandTextBlockCache(_expandRightCache);
+                _sortModeCache = ExpandTextBlockCache(_sortModeCache);
+                _usageModeCache = ExpandTextBlockCache(_sortModeCache);
+                _filterModeCache = ExpandTextBlockCache(_filterModeCache);
+                _filterCountCache = ExpandTextBlockCache(_filterCountCache);
+                _propertyNameCache = ExpandTextBlockCache(_propertyNameCache);
+                _modelIdentityCache = ExpandTextBlockCache(_modelIdentityCache);
+
+                _filterTextCache = ExpandTextBoxCache(_filterTextCache);
+                _textPropertyCache = ExpandTextBoxCache(_textPropertyCache);
+                _checkPropertyCache = ExpandCheckBoxCache(_checkPropertyCache);
+                _comboPropertyCache = ExpandComboBoxCache(_comboPropertyCache);
+                _propertyBorderCache = ExpandBorderCache(_propertyBorderCache);
+                _stackPanelCache = ExpandStackPanelCache(_stackPanelCache);
+
+                _cacheSize = size;  //update the size
+                return;
+
+                #region ExpandElementArray   ==================================
+                TextBlock[] ExpandTextBlockCache(TextBlock[] cache)
                 {
-                    if (sp == null)
-                    {
-                        break;  //we reached the end of the cache 
-                    }
-
-                    Canvas.SetTop(sp, hidden); //hide the stackPanel
+                    var oldCache = cache;
+                    var newCache = new TextBlock[size];
+                    Array.Copy(oldCache, newCache, oldCache.Length);
+                    return newCache;
                 }
-                return true; //the cache has been reset
+                TextBox[] ExpandTextBoxCache(TextBox[] cache)
+                {
+                    var oldCache = cache;
+                    var newCache = new TextBox[size];
+                    Array.Copy(oldCache, newCache, oldCache.Length);
+                    return newCache;
+                }
+                CheckBox[] ExpandCheckBoxCache(CheckBox[] cache)
+                {
+                    var oldCache = cache;
+                    var newCache = new CheckBox[size];
+                    Array.Copy(oldCache, newCache, oldCache.Length);
+                    return newCache;
+                }
+                ComboBox[] ExpandComboBoxCache(ComboBox[] cache)
+                {
+                    var oldCache = cache;
+                    var newCache = new ComboBox[size];
+                    Array.Copy(oldCache, newCache, oldCache.Length);
+                    return newCache;
+                }
+                Border[] ExpandBorderCache(Border[] cache)
+                {
+                    var oldCache = cache;
+                    var newCache = new Border[size];
+                    Array.Copy(oldCache, newCache, oldCache.Length);
+                    return newCache;
+                }
+                StackPanel[] ExpandStackPanelCache(StackPanel[] cache)
+                {
+                    var oldCache = cache;
+                    var newCache = new StackPanel[size];
+                    Array.Copy(oldCache, newCache, oldCache.Length);
+                    return newCache;
+                }
+                #endregion
             }
-            return false;
+            #endregion
         }
-        
-        #endregion
 
-        #region ExpandCache  ==================================================
-        void ExpandCache()
-        {
-            var size = _cacheSize + 30; // new size of the cache
-
-            _itemKindCache = ExpandTextBlockCache(_itemKindCache);
-            _itemNameCache = ExpandTextBlockCache(_itemNameCache);
-            _itemInfoCache = ExpandTextBlockCache(_itemInfoCache);
-            _totalCountCache = ExpandTextBlockCache(_totalCountCache);
-            _indentTreeCache = ExpandTextBlockCache(_indentTreeCache);
-            _expandLeftCache = ExpandTextBlockCache(_expandLeftCache);
-            _expandRightCache = ExpandTextBlockCache(_expandRightCache);
-            _sortModeCache = ExpandTextBlockCache(_sortModeCache);
-            _usageModeCache = ExpandTextBlockCache(_sortModeCache);
-            _filterModeCache = ExpandTextBlockCache(_filterModeCache);
-            _filterCountCache = ExpandTextBlockCache(_filterCountCache);
-            _propertyNameCache = ExpandTextBlockCache(_propertyNameCache);
-            _modelIdentityCache = ExpandTextBlockCache(_modelIdentityCache);
-
-            _filterTextCache = ExpandTextBoxCache(_filterTextCache);
-            _textPropertyCache = ExpandTextBoxCache(_textPropertyCache);
-            _checkPropertyCache = ExpandCheckBoxCache(_checkPropertyCache);
-            _comboPropertyCache = ExpandComboBoxCache(_comboPropertyCache);
-            _propertyBorderCache = ExpandBorderCache(_propertyBorderCache);
-            _stackPanelCache = ExpandStackPanelCache(_stackPanelCache);
-
-            _cacheSize = size;  //update the size
-
-            //=================================================================
-            //  private methods
-            //=================================================================
-            TextBlock[] ExpandTextBlockCache(TextBlock[] cache)
-            {
-                var oldCache = cache;
-                var newCache = new TextBlock[size];
-                Array.Copy(oldCache, newCache, oldCache.Length);
-                return newCache;
-            }
-            TextBox[] ExpandTextBoxCache(TextBox[] cache)
-            {
-                var oldCache = cache;
-                var newCache = new TextBox[size];
-                Array.Copy(oldCache, newCache, oldCache.Length);
-                return newCache;
-            }
-            CheckBox[] ExpandCheckBoxCache(CheckBox[] cache)
-            {
-                var oldCache = cache;
-                var newCache = new CheckBox[size];
-                Array.Copy(oldCache, newCache, oldCache.Length);
-                return newCache;
-            }
-            ComboBox[] ExpandComboBoxCache(ComboBox[] cache)
-            {
-                var oldCache = cache;
-                var newCache = new ComboBox[size];
-                Array.Copy(oldCache, newCache, oldCache.Length);
-                return newCache;
-            }
-            Border[] ExpandBorderCache(Border[] cache)
-            {
-                var oldCache = cache;
-                var newCache = new Border[size];
-                Array.Copy(oldCache, newCache, oldCache.Length);
-                return newCache;
-            }
-            StackPanel[] ExpandStackPanelCache(StackPanel[] cache)
-            {
-                var oldCache = cache;
-                var newCache = new StackPanel[size];
-                Array.Copy(oldCache, newCache, oldCache.Length);
-                return newCache;
-            }
-        }
         #endregion
 
 
@@ -546,90 +537,81 @@ namespace ModelGraphUWP
 
 
         #region AddStackPanel  ================================================
-        private void AddStackPanel(int index, ItemModel model)
+        private void AddStackPanel(int index, ItemModel m)
         {
-            if (index >= _cacheSize)
+            var sp = _stackPanelCache[index];
+            if (sp == null)
             {
-                ExpandCache();
+                sp = _stackPanelCache[index] = new StackPanel();
+
+                sp.MaxHeight = _elementHieght;
+                sp.Orientation = Windows.UI.Xaml.Controls.Orientation.Horizontal;
+
+                TreeCanvas.Children.Add(sp);
+                Canvas.SetTop(sp, index * _elementHieght);
             }
 
-            var obj = _stackPanelCache[index];
-            if (obj == null)
-            {
-                obj = _stackPanelCache[index] = new StackPanel();
+            sp.Children.Clear();
+            sp.DataContext = m;
 
-                obj.MaxHeight = _elementHieght;
-                obj.Orientation = Windows.UI.Xaml.Controls.Orientation.Horizontal;
+            var (kind, name, count, type) = m.ModelParms;
 
-                TreeCanvas.Children.Add(obj);
-                Canvas.SetTop(obj, (-8 * _elementHieght));
-            }
-            else
-            {
-                for (int i = (obj.Children.Count - 1); i >= 0; i--)
-                {
-                    var ue = obj.Children[i];
-                    obj.Children.Remove(ue);
-                }
-            }
-
-            obj.DataContext = model;
-
-            var (kind, name, count, type) = model.ModelParms;
-
-            AddModelIdentity(index, model);
-            AddTreeIndent(index, model);
-            AddExpandLeft(index, model);
+            AddModelIdentity(index, m);
+            AddTreeIndent(index, m);
+            AddExpandLeft(index, m);
 
             switch (type)
             {
                 case ModelType.TextProperty:
-                    AddPropertyName(index, name, model);
-                    AddTextProperty(index, model);
+                    //=========================================================
+                    AddPropertyName(index, name, m);
+                    AddTextProperty(index, m);
                     break;
 
                 case ModelType.CheckProperty:
-                    AddPropertyName(index, name, model);
-                    AddCheckProperty(index, model);
+                    //=========================================================
+                    AddPropertyName(index, name, m);
+                    AddCheckProperty(index, m);
                     break;
 
                 case ModelType.ComboProperty:
-                    AddPropertyName(index, name, model);
-                    AddComboProperty(index, model);
+                    //=========================================================
+                    AddPropertyName(index, name, m);
+                    AddComboProperty(index, m);
                     break;
 
                 default:
-                    AddItemKind(index, kind, model);
-                    AddItemName(index, name, model);
-                    if (model.CanExpandRight)
+                    //=========================================================
+                    AddItemKind(index, kind, m);
+                    AddItemName(index, name, m);
+                    if (m.CanExpandRight)
                     {
-                        AddExpandRight(index, model);
+                        AddExpandRight(index, m);
                     }
 
                     if (count > 0)
                     {
-                        AddSortMode(index, model, (model.CanSort));
+                        AddSortMode(index, m, (m.CanSort));
 
-                        AddTotalCount(index, count, model);
-                        AddUsageMode(index, model, (model.CanFilterUsage));
-                        AddFilterMode(index, model, model.CanFilter);
+                        AddTotalCount(index, count, m);
+                        AddUsageMode(index, m, (m.CanFilterUsage));
+                        AddFilterMode(index, m, m.CanFilter);
 
-                        if (model.CanFilter)
+                        if (m.CanFilter)
                         {
-                            if (model.IsExpandedFilter)
+                            if (m.IsExpandedFilter)
                             {
-                                AddFilterText(index, model);
-                                AddFilterCount(index, model);
+                                AddFilterText(index, m);
+                                AddFilterCount(index, m);
                             }
                         }
                         if (_root.ModelInfo != null)
                         {
-                            AddItemInfo(index, model);
+                            AddItemInfo(index, m);
                         }
                     }
                     break;
             }
-            Canvas.SetTop(obj, index * _elementHieght);
         }
         #endregion
     }

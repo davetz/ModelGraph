@@ -56,7 +56,7 @@ namespace ModelGraphUWP
         #region Fields  =======================================================
         RootModel _root;
         ItemModel _select;
-        ItemModel _previousModel;
+        ItemModel _pointerPressModel;
         List<ItemModel> _viewList = new List<ItemModel>();
         List<ModelCommand> _menuCommands = new List<ModelCommand>();
         List<ModelCommand> _buttonCommands = new List<ModelCommand>();
@@ -266,6 +266,16 @@ namespace ModelGraphUWP
             {
                 _isCtrlDown = true;
             }
+            else if (e.Key == Windows.System.VirtualKey.End)
+            {
+                e.Handled = true;
+                _root.PostRefreshViewList(_select, 0, ChangeType.GoToEnd);
+            }
+            else if (e.Key == Windows.System.VirtualKey.Home)
+            {
+                e.Handled = true;
+                _root.PostRefreshViewList(_select, 0, ChangeType.GoToHome);
+            }
             else if (e.Key == Windows.System.VirtualKey.PageDown)
             {
                 ChangeScroll(Count - 2);
@@ -421,7 +431,7 @@ namespace ModelGraphUWP
             var i = _viewList.IndexOf(_select) - 1;
             if (i >= 0 && i < _viewList.Count)
             {
-                _select = _root.SelectModel = _viewList[i];
+                _select = _viewList[i];
                 RefreshSelectionGrid();
             }
             else
@@ -432,7 +442,7 @@ namespace ModelGraphUWP
             var i = _viewList.IndexOf(_select) + 1;
             if (i > 0 && i < _viewList.Count)
             {
-                _select = _root.SelectModel = _viewList[i];
+                _select = _viewList[i];
                 RefreshSelectionGrid();
             }
             else
@@ -490,7 +500,7 @@ namespace ModelGraphUWP
         #region PointerPressed  ===============================================
         void TreeGrid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            _select = _previousModel = _root.SelectModel = PointerModel(e);
+            _pointerPressModel = PointerModel(e);
             HeadButton.Focus(FocusState.Keyboard);
             RefreshSelectionGrid();
         }
@@ -556,7 +566,7 @@ namespace ModelGraphUWP
 
             _viewList.Clear();
             _viewList.AddRange(_root.ViewModels);
-            _select = _previousModel = _root.SelectModel;
+            _select = _root.SelectModel;
 
             _pointWheelEnabled = false;
 
@@ -564,12 +574,14 @@ namespace ModelGraphUWP
 
             var obj = _select;
 
-            var cacheReset = ValidateCache();
-            for (int i = 0; i < _viewList.Count; i++)
+            var N = _viewList.Count;
+            ValidateCache(N);
+
+            for (int i = 0; i < N; i++)
             {
-                var model = _viewList[i];
-                AddStackPanel(i, model);
+                AddStackPanel(i, _viewList[i]);
             }
+
             RefreshSelectionGrid();
             RestoreKeyboardFocus();
 
@@ -764,15 +776,15 @@ namespace ModelGraphUWP
         #region ItemName  =====================================================
         void ItemName_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            if (_previousModel == PointerModel(e))
+            if (_pointerPressModel == PointerModel(e))
             {
-                _select = _root.SelectModel = _previousModel;
+                _select = _pointerPressModel;
                 RefreshSelectionGrid();
             }
         }
         void ItemName_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            _previousModel = PointerModel(e);
+            _pointerPressModel = PointerModel(e);
             //e.Handled = true;
         }
         void ItemName_PointerEntered(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -854,7 +866,7 @@ namespace ModelGraphUWP
         }
         void ExpandTree_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            if (_previousModel == PointerModel(e))
+            if (_pointerPressModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
                 _select = obj.DataContext as ItemModel;
@@ -866,7 +878,7 @@ namespace ModelGraphUWP
         #region ExpandRight  ==================================================
         void ExpandChoice_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            if (_previousModel == PointerModel(e))
+            if (_pointerPressModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
                 _select = obj.DataContext as ItemModel;
@@ -887,7 +899,7 @@ namespace ModelGraphUWP
         TextBlock _sortControl;
         void SortMode_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            if (_previousModel == PointerModel(e))
+            if (_pointerPressModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
                 ExecuteSort(obj);
@@ -937,7 +949,7 @@ namespace ModelGraphUWP
         #region UsageMode  ====================================================
         void UsageMode_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            if (_previousModel == PointerModel(e))
+            if (_pointerPressModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
                 ExecuteUsage(obj);
@@ -976,7 +988,7 @@ namespace ModelGraphUWP
         TextBlock _filterControl;
         void FilterMode_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            if (_previousModel == PointerModel(e))
+            if (_pointerPressModel == PointerModel(e))
             {
                 var obj = sender as TextBlock;
                 ExecuteFilterMode(obj);
@@ -1008,8 +1020,8 @@ namespace ModelGraphUWP
                 mdl.IsExpandedLeft = true;
                 
                 e.Handled = true;
-                if (e.Key == Windows.System.VirtualKey.Tab) FindNextItemModel(mdl);
 
+                FindNextItemModel(mdl);
                 mdl.IsAlreadyFiltered = false;
                 _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
             }
