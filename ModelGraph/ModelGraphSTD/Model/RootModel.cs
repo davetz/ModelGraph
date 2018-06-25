@@ -12,7 +12,7 @@ namespace ModelGraphSTD
  */
     public class RootModel : ItemModel
     {
-        public readonly Chef Chef;
+        public Chef Chef { get; private set; }
         public IPageControl PageControl { get; set; } // reference the UI PageControl
         public IModelControl ModelControl { get; set; }
 
@@ -64,6 +64,9 @@ namespace ModelGraphSTD
         public void Close()
         {
             Chef.RemoveRootModel(this);
+        }
+        public void Reload()
+        {
         }
         #endregion
 

@@ -893,9 +893,25 @@ namespace ModelGraphSTD
                 dataChef.SaveToRepository();
             }
             void CloseModel(ItemModel m) => m.GetRootModel().RequestCloseModel();
-            void ReloadModel(ItemModel m) => m.GetRootModel().RequestReloadModel();
             void AppSaveSymbol(ItemModel m) => m.GetRootModel().RequestSaveModel();
             void AppReloadSymbol(ItemModel m) => m.GetRootModel().RequestReloadModel();
+
+            void ReloadModel(ItemModel m)
+            {
+                var repo = Repository;
+                var rootModel = m.GetRootModel();
+                var appRootChef = Owner as Chef;
+                if (appRootChef != null && appRootChef.IsRootChef)
+                {
+                    rootModel.GetRootModel().RequestCloseModel();
+
+                    var dataChef = new Chef(appRootChef, repo);
+
+                    var appRootModel = appRootChef.PrimaryRootModel;
+                    appRootModel.RequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
+                    appRootModel.RequestRefreshModel();
+                }
+            }
             #endregion
         }
         #endregion
