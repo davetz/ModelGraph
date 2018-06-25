@@ -12,15 +12,15 @@ namespace ModelGraphSTD
  */
     public class RootModel : ItemModel
     {
-        public Chef Chef;
+        public readonly Chef Chef;
         public IPageControl PageControl { get; set; } // reference the UI PageControl
         public IModelControl ModelControl { get; set; }
-
-        public readonly ConcurrentQueue<UIRequest> UIRequestQueue = new ConcurrentQueue<UIRequest>();
 
         public int ViewCapacity = 10; // initial minimum capacity
         public ItemModel SelectModel;
         public List<ItemModel> ViewModels = new List<ItemModel>();
+
+        private readonly ConcurrentQueue<UIRequest> _requestQueue = new ConcurrentQueue<UIRequest>();
 
         public int MinorDelta;
         public int MajorDelta;
@@ -43,9 +43,10 @@ namespace ModelGraphSTD
         public RootModel(UIRequest rq)
             : base(null, rq.Trait, 0, rq.Item, rq.Aux1, rq.Aux2, rq.Get)
         {
-            Chef = rq.Chef;
             Get = rq.Get;
+            Chef = rq.Root.Chef;
             ControlType = rq.Type;
+            if (rq.Item is Chef newChef) Chef = newChef;
 
             Chef.AddRootModel(this);
             IsExpandedLeft = true;
@@ -58,10 +59,30 @@ namespace ModelGraphSTD
         public string TitleName => Chef.GetAppTitleName(this);
         public string TabSummary => Chef.GetAppTabSummary(this);
         public string TitleSummary => Chef.GetAppTitleSummary(this);
+
+
         public void Close()
         {
             Chef.RemoveRootModel(this);
         }
+        #endregion
+
+        #region UIRequest  ====================================================
+        internal void RequestSaveModel() => _requestQueue.Enqueue(UIRequest.SaveModel(this));
+        internal void RequestCloseModel() => _requestQueue.Enqueue(UIRequest.CloseModel(this));
+        internal void RequestReloadModel() => _requestQueue.Enqueue(UIRequest.ReloadModel(this));
+        internal void RequestRefreshModel() => _requestQueue.Enqueue(UIRequest.RefreshModel(this));
+
+        internal void RequestCreateView(ControlType type, Trait trait, Item item, ModelAction get) =>
+            _requestQueue.Enqueue(UIRequest.CreateView(this, type, trait, item, get));
+
+        internal void RequestCreatePage(ControlType type, ItemModel m) =>
+            _requestQueue.Enqueue(UIRequest.CreatePage(this, type, m.Trait, m.Item, m.Aux1, m.Aux2, m.Get));
+
+        internal void RequestCreatePage(ControlType type, Trait trait, ModelAction get, ItemModel m) =>
+            _requestQueue.Enqueue(UIRequest.CreatePage(this, type, trait, m.Item, m.Aux1, m.Aux2, get));
+        internal void RequestCreatePage(ControlType type, Trait trait, Item item, ModelAction get) =>
+            _requestQueue.Enqueue(UIRequest.CreatePage(this, type, trait, item, null, null, get));
         #endregion
 
         #region PageDispatch  =================================================
@@ -69,7 +90,7 @@ namespace ModelGraphSTD
         {
             if (PageControl != null)
             {
-                while (UIRequestQueue.TryDequeue(out UIRequest request))
+                while (_requestQueue.TryDequeue(out UIRequest request))
                 {
                     PageControl.Dispatch(request);
                 }

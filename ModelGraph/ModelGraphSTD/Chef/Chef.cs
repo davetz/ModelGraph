@@ -30,6 +30,7 @@ namespace ModelGraphSTD
             Repository = repository;
 
             rootChef.Add(this);
+            rootChef.SetLocalizer(this);
             rootChef.MajorDelta += 1;
 
             if (repository == null)

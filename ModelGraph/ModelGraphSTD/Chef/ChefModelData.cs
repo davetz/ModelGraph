@@ -305,7 +305,7 @@ namespace ModelGraphSTD
                 root.SelectModel = null;
             }
 
-            root.UIRequestQueue.Enqueue(UIRequest.RefreshModel());
+            root.RequestRefreshModel();
         }
 
         #region TreeModelStack  ===============================================
@@ -387,6 +387,17 @@ namespace ModelGraphSTD
         {
             if (m != null)
             {
+               if (m.Item.AutoExpandLeft)
+                {
+                    m.Item.AutoExpandLeft = false;
+                    m.IsExpandedLeft = true;
+                }
+                if (m.Item.AutoExpandRight)
+                {
+                    m.Item.AutoExpandRight = false;
+                    m.IsExpandedRight = true;
+                }
+
                 switch (change)
                 {
                     case ChangeType.ToggleLeft:
@@ -760,8 +771,8 @@ namespace ModelGraphSTD
                 var rootChef = root.Chef;
                 var dataChef = new Chef(rootChef, null);
 
-                root.UIRequestQueue.Enqueue(UIRequest.CreateView(root, ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_X));
-                root.UIRequestQueue.Enqueue(UIRequest.RefreshModel());
+                root.RequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
+                root.RequestRefreshModel();
             }
             void OpenModel(ItemModel model, Object parm1)
             {
@@ -770,8 +781,8 @@ namespace ModelGraphSTD
                 var rootChef = root.Chef;
                 var dataChef = new Chef(rootChef, repo);
 
-                root.UIRequestQueue.Enqueue(UIRequest.CreateView(root, ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef, null, null, dataChef.DataChef_X));
-                root.UIRequestQueue.Enqueue(UIRequest.RefreshModel());
+                root.RequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
+                root.RequestRefreshModel();
             }
             #endregion
         }
@@ -881,26 +892,10 @@ namespace ModelGraphSTD
                 MajorDelta += 1;
                 dataChef.SaveToRepository();
             }
-            void CloseModel(ItemModel model)
-            {
-                var root = model as RootModel;
-                root.UIRequestQueue.Enqueue(UIRequest.CloseModel());
-            }
-            void ReloadModel(ItemModel model)
-            {
-                var root = model as RootModel;
-                root.UIRequestQueue.Enqueue(UIRequest.ReloadModel());
-            }
-            void AppSaveSymbol(ItemModel model)
-            {
-                var root = model as RootModel;
-                root.UIRequestQueue.Enqueue(UIRequest.SaveModel());
-            }
-            void AppReloadSymbol(ItemModel model)
-            {
-                var root = model as RootModel;
-                root.UIRequestQueue.Enqueue(UIRequest.ReloadModel());
-            }
+            void CloseModel(ItemModel m) => m.GetRootModel().RequestCloseModel();
+            void ReloadModel(ItemModel m) => m.GetRootModel().RequestReloadModel();
+            void AppSaveSymbol(ItemModel m) => m.GetRootModel().RequestSaveModel();
+            void AppReloadSymbol(ItemModel m) => m.GetRootModel().RequestReloadModel();
             #endregion
         }
         #endregion
@@ -1415,11 +1410,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondaryMetadataTree(ItemModel model)
-            {
-                var root = model.GetRootModel();
-                root.UIRequestQueue.Enqueue(model.BuildViewRequest(ControlType.PartialTree));
-            }
+            void CreateSecondaryMetadataTree(ItemModel m) => m.GetRootModel().RequestCreatePage(ControlType.PartialTree, m);
         }
         #endregion
 
@@ -1500,11 +1491,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondaryModelingTree(ItemModel model)
-            {
-                var root = model.GetRootModel();
-                root.UIRequestQueue.Enqueue(model.BuildViewRequest(ControlType.PartialTree));
-            }
+            void CreateSecondaryModelingTree(ItemModel m) => m.GetRootModel().RequestCreatePage(ControlType.PartialTree, m);
         }
         #endregion
 
@@ -3264,6 +3251,13 @@ namespace ModelGraphSTD
 
                 ButtonCommands = (m, bc) =>
                 {
+                    bc.Add(new ModelCommand(this, m, Trait.InsertCommand, Insert));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                MenuCommands = (m, bc) =>
+                {
                     bc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
                 },
 
@@ -3311,6 +3305,13 @@ namespace ModelGraphSTD
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             (string, string) GetKindName(ItemModel m) => (null, m.EnumX.Name);
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            void Insert(ItemModel m)
+            {
+                ItemCreated(new PairX(m.EnumX));
+            }
         }
         #endregion
 
@@ -3580,11 +3581,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondarySymbolEdit(ItemModel model)
-            {
-                var root = model.GetRootModel();
-                root.UIRequestQueue.Enqueue(model.BuildViewRequest(ControlType.SymbolEditor));
-            }
+            void CreateSecondarySymbolEdit(ItemModel m) => m.GetRootModel().RequestCreatePage(ControlType.SymbolEditor, m);
         }
         #endregion
 
@@ -6421,11 +6418,12 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft && N > 0)
                     {
-                        if (m.Delta != _tableXStore.Delta)
-                        {
-                            m.Delta = _tableXStore.Delta;
+                        var tbl = m.TableX;
 
-                            var tbl = m.TableX;
+                        if (m.Delta != tbl.Delta)
+                        {
+                            m.Delta = tbl.Delta;
+
                             var col = TableX_NameProperty.GetChild(tbl);
                             var items = tbl.Items;
                             var depth = (byte)(m.Depth + 1);
@@ -6545,11 +6543,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondaryModelGraph(ItemModel m)
-            {
-                var root = m.GetRootModel();
-                root.UIRequestQueue.Enqueue(m.BuildViewRequest(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X));
-            }
+            void CreateSecondaryModelGraph(ItemModel m) => m.GetRootModel().RequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, m.Graph, GraphRef_X);
         }
         #endregion
 
@@ -8113,7 +8107,7 @@ namespace ModelGraphSTD
                         MajorDelta += 1;
 
                         var root = m.GetRootModel();
-                        root.UIRequestQueue.Enqueue(UIRequest.CreateView(root, ControlType.GraphDisplay, Trait.GraphRef_M, this, g, null, null, GraphRef_X, true));
+                        root.RequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X, m);
                     }
                     return DropAction.Copy;
                 },
@@ -8162,7 +8156,7 @@ namespace ModelGraphSTD
             MajorDelta += 1;
 
             var root = m.GetRootModel();
-            root.UIRequestQueue.Enqueue(UIRequest.CreateView(root, ControlType.GraphDisplay, Trait.GraphRef_M, this, g, null, null, GraphRef_X, true));
+            root.RequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, g, GraphRef_X);
         }
         #endregion
 

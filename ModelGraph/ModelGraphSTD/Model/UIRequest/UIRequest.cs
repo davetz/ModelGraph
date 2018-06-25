@@ -7,59 +7,72 @@ namespace ModelGraphSTD
     {
         // parameters for new view
         public RootModel Root { get; private set; }
-        public Chef Chef { get; private set; }
-        public Item Item { get; private set; }
-        public Item Aux1 { get; private set; }
-        public Item Aux2 { get; private set; }
+        internal Item Item { get; private set; }
+        internal Item Aux1 { get; private set; }
+        internal Item Aux2 { get; private set; }
         public ControlType Type { get; private set; }
         internal ModelAction Get { get; private set; }
-        public Trait Trait { get; private set; }
-
-        public RequestType RequestType;
+        internal Trait Trait { get; private set; }
+        public RequestType RequestType { get; private set; }
 
         private UIRequest() { }
 
-        public static UIRequest SaveModel()
-        {
-            return new UIRequest()
-            {
-                RequestType = RequestType.Save
-            };
-        }
-        public static UIRequest CloseModel()
-        {
-            return new UIRequest()
-            {
-                RequestType = RequestType.Close
-            };
-        }
-        public static UIRequest ReloadModel()
-        {
-            return new UIRequest()
-            {
-                RequestType = RequestType.Reload
-            };
-        }
-        public static UIRequest RefreshModel()
-        {
-            return new UIRequest()
-            {
-                RequestType = RequestType.Refresh
-            };
-        }
-        internal static UIRequest CreateView(RootModel root, ControlType type, Trait trait, Chef chef, Item item, Item aux1, Item aux2, ModelAction modelAction, bool openInNewPage = false)
+        internal static UIRequest SaveModel(RootModel root)
         {
             return new UIRequest()
             {
                 Root = root,
-                Chef = chef,
+                RequestType = RequestType.Save
+            };
+        }
+        internal static UIRequest CloseModel(RootModel root)
+        {
+            return new UIRequest()
+            {
+                Root = root,
+                RequestType = RequestType.Close
+            };
+        }
+        internal static UIRequest ReloadModel(RootModel root)
+        {
+            return new UIRequest()
+            {
+                Root = root,
+                RequestType = RequestType.Reload
+            };
+        }
+        internal static UIRequest RefreshModel(RootModel root)
+        {
+            return new UIRequest()
+            {
+                Root = root,
+                RequestType = RequestType.Refresh
+            };
+        }
+        internal static UIRequest CreateView(RootModel root, ControlType type, Trait trait, Item item, ModelAction modelAction)
+        {
+            return new UIRequest()
+            {
+                Root = root,
+                Type = type,
+                Trait = trait,
+                Item = item,
+                Get = modelAction,
+                RequestType = RequestType.CreateView,
+            };
+        }
+        internal static UIRequest CreatePage(RootModel root, ControlType type, Trait trait, Item item, Item aux1, Item aux2, ModelAction modelAction)
+        {
+            return new UIRequest()
+            {
+                Root = root,
                 Type = type,
                 Trait = trait,
                 Item = item,
                 Aux1 = aux1,
                 Aux2 = aux2,
                 Get = modelAction,
-                RequestType = (openInNewPage) ? RequestType.CreatePage : RequestType.CreateView,
+                RequestType = RequestType.CreatePage,
             };
         }
     }

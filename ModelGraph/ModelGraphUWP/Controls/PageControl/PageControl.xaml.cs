@@ -210,8 +210,8 @@ namespace ModelGraphUWP
 
         private void CloseModel(RootModel model)
         {
-            //var chef = model.Chef;
-            //chef.Close();
+            var chef = model.Chef;
+            chef.Close();
             _pageService.RemoveModelPage(model, this);
         }
         #endregion

@@ -34,10 +34,8 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            Guid[] guids;
-            Dictionary<Item, int> itemIndex;
             var fileFormat = _fileFormat_4;
-            var itemCount = chef.GetGuidItemIndex(out guids, out itemIndex);
+            var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
             w.WriteInt32(0);
@@ -114,7 +112,7 @@ namespace RepositoryUWP
                 if (!string.IsNullOrWhiteSpace(ex.Summary)) b |= B2;
                 if (!string.IsNullOrWhiteSpace(ex.Description)) b |= B3;
 
-                w.WriteUInt16(b);
+                w.WriteByte(b);
                 if ((b & B1) != 0) WriteString(w, ex.Name);
                 if ((b & B2) != 0) WriteString(w, ex.Summary);
                 if ((b & B3) != 0) WriteString(w, ex.Description);
@@ -322,7 +320,7 @@ namespace RepositoryUWP
                 if ((S & S1) != 0) WriteString(w, cx.Name);
                 if ((S & S2) != 0) WriteString(w, cx.Summary);
                 if ((S & S3) != 0) WriteString(w, cx.Description);
-                if ((S & S4) != 0) WriteString(w, ((cx.Separator != null) ? cx.Separator : string.Empty));
+                if ((S & S4) != 0) WriteString(w, (cx.Separator ?? string.Empty));
                 if ((S & S5) != 0) w.WriteByte((byte)cx.CompuType);
                 if ((S & S6) != 0) w.WriteByte((byte)cx.NumericSet);
 
@@ -610,9 +608,7 @@ namespace RepositoryUWP
 
                 ushort len = 0;
                 Item itm = chef;
-                Item[] parents;
-                Item[] children;
-                rx.GetLinks(out parents, out children);
+                rx.GetLinks(out Item[] parents, out Item[] children);
 
                 int N = count;
                 for (int j = 0; j < count; j++)

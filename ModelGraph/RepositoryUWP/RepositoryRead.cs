@@ -734,7 +734,6 @@ namespace RepositoryUWP
         #region ReadGraphParm_1  ==============================================
         private void ReadGraphParm_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            Dictionary<Item, Dictionary<Item, List<Item>>> RtMsParms = null;
             Dictionary<Item, List<Item>> MsParms = null;
             List<Item> Parms = null;
 
@@ -744,15 +743,14 @@ namespace RepositoryUWP
             var gdLen = r.ReadInt32();
             if (gdLen < 0) throw new Exception($"Invalid count {gdLen}");
 
-            var gd = items[gdIndex] as GraphX;
-            if (gd == null) throw new Exception($"Expected graphDef object, got null {gdIndex}");
+            if (!(items[gdIndex] is GraphX gd)) throw new Exception($"Expected graphDef object, got null {gdIndex}");
 
             var graphParms = new Dictionary<GraphX, Dictionary<Item, Dictionary<Item, List<Item>>>>(gdLen);
             chef.T_GraphParms = graphParms;
 
 
             #region FindCreate RtMsParms ======================================
-            if (!graphParms.TryGetValue(gd, out RtMsParms))
+            if (!graphParms.TryGetValue(gd, out Dictionary<Item, Dictionary<Item, List<Item>>> RtMsParms))
             {
                 RtMsParms = new Dictionary<Item, Dictionary<Item, List<Item>>>(gdLen);
                 graphParms.Add(gd, RtMsParms);
@@ -808,7 +806,6 @@ namespace RepositoryUWP
 
                     if (msLen > 0)
                     {
-                        Node node, node1, node2;
                         Edge edge;
 
                         if (ms == chef.T_Dummy)
@@ -822,10 +819,12 @@ namespace RepositoryUWP
                                 var nd = items[ndIndex];
                                 if (nd == null) throw new Exception($"Expected node object, got null {ndIndex}");
 
-                                if (!itemNodeParms.TryGetValue(nd, out node))
+                                if (!itemNodeParms.TryGetValue(nd, out Node node))
                                 {
-                                    node = new Node(cp);
-                                    node.Item = nd;
+                                    node = new Node(cp)
+                                    {
+                                        Item = nd
+                                    };
 
                                     itemNodeParms.Add(nd, node);
                                     Parms.Add(node);
@@ -861,8 +860,8 @@ namespace RepositoryUWP
                                 var nd2 = items[nd2Index];
                                 if (nd2 == null) throw new Exception($"Expected node object, got null {nd2Index}");
 
-                                if (!itemNodeParms.TryGetValue(nd1, out node1)) throw new Exception("Could not Finde NodeParm1");
-                                if (!itemNodeParms.TryGetValue(nd2, out node2)) throw new Exception("Could not Finde NodeParm2");
+                                if (!itemNodeParms.TryGetValue(nd1, out Node node1)) throw new Exception("Could not Finde NodeParm1");
+                                if (!itemNodeParms.TryGetValue(nd2, out Node node2)) throw new Exception("Could not Finde NodeParm2");
 
                                 edge = new Edge(ms);
                                 Parms.Add(edge);

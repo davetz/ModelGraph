@@ -24,7 +24,7 @@ namespace ModelGraphSTD
         public byte Depth;
         internal byte Delta; //version of child model list
         internal byte FilterSort; //version of filter sort
-
+        
 
         #region Constructor  ==================================================
         internal ItemModel() { }
@@ -318,15 +318,6 @@ namespace ModelGraphSTD
         #endregion
 
         #region Properties/Methods  ===========================================
-        public UIRequest BuildViewRequest(ControlType controlType)
-        {
-            return UIRequest.CreateView(GetRootModel(), controlType, Trait, Item.GetChef(), Item, Aux1, Aux2, Get, true);
-        }
-        internal UIRequest BuildViewRequest(ControlType controlType, Trait trait, ModelAction action)
-        {
-            return UIRequest.CreateView(GetRootModel(), controlType, trait, Item.GetChef(), Item, Aux1, Aux2, action, true);
-        }
-
         public int FilterCount { get { return (ChildModels == null) ? 0 : ChildModels.Length; } }
         public bool HasError { get { return false; } }
         public bool IsModified { get { return false; } }
@@ -336,6 +327,8 @@ namespace ModelGraphSTD
         public bool IsSorted => (IsSortAscending || IsSortDescending);
 
         public void ResetDelta() => Delta -= 3;
+        internal void SetIsSelected() => GetRootModel().SelectModel = this;
+
         internal void ClearChildren()
         {
             ResetDelta();

@@ -37,8 +37,9 @@ namespace ModelGraphSTD
 
         public void Execute()
         {
-           if (IsInsertCommand) Model.IsExpandedLeft = true;
-           Chef.PostCommand(this);
+            Model.SetIsSelected();
+            if (IsInsertCommand) Model.IsExpandedLeft = true;
+            Chef.PostCommand(this);
         }
 
         #region Trait  ========================================================

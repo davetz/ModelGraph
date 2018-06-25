@@ -9,6 +9,7 @@ namespace ModelGraphSTD
     {
         private Func<string, string> _localize = (s) => s; //dummy default localizer
         public void SetLocalizer(Func<string, string> localizer) => _localize = localizer;
+        internal void SetLocalizer(Chef dataChef) => dataChef.SetLocalizer(_localize);
 
         private Dictionary<Trait, Func<Item, IdentityStyle, string>> _itemIdentity;
 

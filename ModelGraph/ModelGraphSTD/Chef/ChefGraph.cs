@@ -163,9 +163,12 @@ namespace ModelGraphSTD
                     sdParams.Add(_dummy, parmList);
                     foreach (var item in g.NodeItems)
                     {
-                        var node = new Node();
-                        node.Item = item;
-                        node.Owner = g;
+                        Node node1 = new Node
+                        {
+                            Item = item,
+                            Owner = g
+                        };
+                        var node = node1;
                         parmList.Add(node);
                         g.Nodes.Add(node);
                         g.Item_Node.Add(item, node);
@@ -187,9 +190,11 @@ namespace ModelGraphSTD
                         if (!g.Item_Node.ContainsKey(item))
                         {
                             anyChange = true;
-                            var node = new Node();
-                            node.Item = item;
-                            node.Owner = g;
+                            var node = new Node
+                            {
+                                Item = item,
+                                Owner = g
+                            };
                             parmList.Add(node);
                             g.Nodes.Add(node);
                             g.Item_Node.Add(item, node);
@@ -212,8 +217,10 @@ namespace ModelGraphSTD
 
                         foreach (var pair in e1.Value)
                         {
-                            var eg = new Edge(e1.Key);
-                            eg.Owner = g;
+                            var eg = new Edge(e1.Key)
+                            {
+                                Owner = g
+                            };
                             g.Edges.Add(eg);
                             paramList.Add(eg);
                             eg.Node1 = g.Item_Node[pair.Item1];
@@ -244,8 +251,10 @@ namespace ModelGraphSTD
                             if (item_items.TryGetValue(pair.Item1, out items) && items.Contains(pair.Item2)) continue;
 
                             anyChange = true;
-                            var eg = new Edge(e1.Key);
-                            eg.Owner = g;
+                            var eg = new Edge(e1.Key)
+                            {
+                                Owner = g
+                            };
                             g.Edges.Add(eg);
                             paramList.Add(eg);
                             eg.Node1 = g.Item_Node[pair.Item1];

@@ -102,7 +102,7 @@ namespace ModelGraphSTD
             //(some time later the worker task completes and signals the ui thread)
 
             //===> the ui thread returns here and continues executing the following code            
-            foreach (var root in _rootModels) { if (root.UIRequestQueue.Count > 0) root.PageDispatch(); }            
+            foreach (var root in _rootModels) { root.PageDispatch(); }            
         }
 
         private void ExecuteRequest(ModelRequest request)
