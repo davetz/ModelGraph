@@ -364,31 +364,31 @@ namespace ModelGraphSTD
         ChangeRoot_M = 0x622,
         MetadataRoot_M = 0x623,
         ModelingRoot_M = 0x624,
-        MetaRelation_ZM = 0x625,
+        MetaRelationList_M = 0x625,
         ErrorType_M = 0x626,
         ErrorText_M = 0x627,
         ChangeSet_M = 0x628,
         ItemChange_M = 0x629,
 
         //=====================================================================
-        ViewXView_ZM = 0x631,
+        ViewXViewList_M = 0x631,
         ViewXView_M = 0x632,
         ViewXQuery_M = 0x633,
         ViewXCommand_M = 0x634,
         ViewXProperty_M = 0x635,
 
-        ViewView_ZM = 0x63A,
+        ViewViewList_M = 0x63A,
         ViewView_M = 0x63B,
         ViewItem_M = 0x63C,
         ViewQuery_M = 0x63D,
 
         //=====================================================================
-        EnumX_ZM = 0x642,
-        TableX_ZM = 0x643,
-        GraphX_ZM = 0x644,
-        SymbolX_ZM = 0x645,
-        Table_ZM = 0x647,
-        Graph_ZM = 0x648,
+        EnumXList_M = 0x642,
+        TableXList_M = 0x643,
+        GraphXList_M = 0x644,
+        SymbolXList_M = 0x645,
+        TableList_M = 0x647,
+        GraphList_M = 0x648,
 
         //=====================================================================
         PairX_M = 0x652,
@@ -400,12 +400,12 @@ namespace ModelGraphSTD
         ComputeX_M = 0x658,
 
         //=====================================================================
-        ColumnX_ZM = 0x661,
-        ChildRelationX_ZM = 0x662,
-        ParentRelatationX_ZM = 0x663,
-        EnumValue_ZM = 0x664,
-        EnumColumn_ZM = 0x665,
-        ComputeX_ZM = 0x666,
+        ColumnXList_M = 0x661,
+        ChildRelationXList_M = 0x662,
+        ParentRelatationXList_M = 0x663,
+        EnumValueList_M = 0x664,
+        EnumColumnList_M = 0x665,
+        ComputeXList_M = 0x666,
 
         //=====================================================================
         ChildRelationX_M = 0x671,
@@ -417,8 +417,8 @@ namespace ModelGraphSTD
 
         //=====================================================================
         GraphXColoring_M = 0x681,
-        GraphXRoot_ZM = 0x682,
-        GraphXNode_ZM = 0x683,
+        GraphXRootList_M = 0x682,
+        GraphXNodeList_M = 0x683,
         GraphXNode_M = 0x684,
         GraphXColorColumn_M = 0x685,
 
@@ -448,13 +448,13 @@ namespace ModelGraphSTD
         EnumRelatedColumn_M = 0x6AB,
 
         //=====================================================================
-        RowProperty_ZM = 0x6B1,
-        RowChildRelation_ZM = 0x6B2,
-        RowParentRelation_ZM = 0x6B3,
-        RowDefaultProperty_ZM = 0x6B4,
-        RowUnusedChildRelation_ZM = 0x6B5,
-        RowUnusedParentRelation_ZM = 0x6B6,
-        RowCompute_ZM = 0x6B7,
+        RowPropertyList_M = 0x6B1,
+        RowChildRelationList_M = 0x6B2,
+        RowParentRelationList_M = 0x6B3,
+        RowDefaultPropertyList_M = 0x6B4,
+        RowUnusedChildRelationList_M = 0x6B5,
+        RowUnusedParentRelationList_M = 0x6B6,
+        RowComputeList_M = 0x6B7,
 
         //=====================================================================
         QueryRootLink_M = 0x6C1,
@@ -495,16 +495,16 @@ namespace ModelGraphSTD
         ComputeStore_M = 0x7D1,
 
         //=====================================================================
-        InternalStore_ZM = 0x7F0,
+        InternalStoreList_M = 0x7F0,
         InternalStore_M = 0x7F1,
 
         StoreItem_M = 0x7F2,
 
-        StoreItemItem_ZM = 0x7F4,
-        StoreRelationLink_ZM = 0x7F5,
+        StoreItemItemList_M = 0x7F4,
+        StoreRelationLinkList_M = 0x7F5,
 
-        StoreChildRelation_ZM = 0x7F6,
-        StoreParentRelation_ZM = 0x7F7,
+        StoreChildRelationList_M = 0x7F6,
+        StoreParentRelationList_M = 0x7F7,
 
         StoreItemItem_M = 0x7F8,
         StoreRelationLink_M = 0x7F9,

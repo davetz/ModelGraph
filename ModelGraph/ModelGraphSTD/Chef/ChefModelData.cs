@@ -141,13 +141,13 @@ namespace ModelGraphSTD
 
             Initialize_PrimeCompute_X();
             Initialize_ComputeStore_X();
-            Initialize_InternalStoreZ_X();
+            Initialize_InternalStoreList_X();
             Initialize_InternalStore_X();
             Initialize_StoreItem_X();
-            Initialize_StoreItemItemZ_X();
-            Initialize_StoreRelationLinkZ_X();
-            Initialize_StoreChildRelationZ_X();
-            Initialize_StoreParentRelationZ_X();
+            Initialize_StoreItemItemList_X();
+            Initialize_StoreRelationLinkList_X();
+            Initialize_StoreChildRelationList_X();
+            Initialize_StoreParentRelationList_X();
             Initialize_StoreItemItem_X();
             Initialize_StoreRelationLink_X();
             Initialize_StoreChildRelation_X();
@@ -1379,24 +1379,24 @@ namespace ModelGraphSTD
                         m.ChildModels = new ItemModel[N];
 
                         var i = 0;
-                        if (!TryGetPrevModel(m, Trait.ViewXView_ZM, i, _viewXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.ViewXView_ZM, depth, _viewXStore, null, null, ViewXView_ZX);
+                        if (!TryGetPrevModel(m, Trait.ViewXViewList_M, i, _viewXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.ViewXViewList_M, depth, _viewXStore, null, null, ViewXViewList_X);
 
                         i++;
-                        if (!TryGetPrevModel(m, Trait.EnumX_ZM, i, _enumZStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.EnumX_ZM, depth, _enumZStore, null, null, EnumXList_X);
+                        if (!TryGetPrevModel(m, Trait.EnumXList_M, i, _enumZStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.EnumXList_M, depth, _enumZStore, null, null, EnumXList_X);
 
                         i++;
-                        if (!TryGetPrevModel(m, Trait.TableX_ZM, i, _tableXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.TableX_ZM, depth, _tableXStore, null, null, TableXList_X);
+                        if (!TryGetPrevModel(m, Trait.TableXList_M, i, _tableXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.TableXList_M, depth, _tableXStore, null, null, TableXList_X);
 
                         i++;
-                        if (!TryGetPrevModel(m, Trait.GraphX_ZM, i, _graphXStore))
-                            m.ChildModels[i] = new ItemModel(m, Trait.GraphX_ZM, depth, _graphXStore, null, null, GraphXList_X);
+                        if (!TryGetPrevModel(m, Trait.GraphXList_M, i, _graphXStore))
+                            m.ChildModels[i] = new ItemModel(m, Trait.GraphXList_M, depth, _graphXStore, null, null, GraphXList_X);
 
                         i++;
-                        if (!TryGetPrevModel(m, Trait.InternalStore_ZM, i, this))
-                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStore_ZM, depth, this, null, null, InternalStoreZ_X);
+                        if (!TryGetPrevModel(m, Trait.InternalStoreList_M, i, this))
+                            m.ChildModels[i] = new ItemModel(m, Trait.InternalStoreList_M, depth, this, null, null, InternalStoreList_X);
 
                         m.PrevModels = null;
                     }
@@ -1458,16 +1458,16 @@ namespace ModelGraphSTD
                         m.ChildModels = new ItemModel[N];
 
                         var i = 0;
-                        if (!TryGetPrevModel(m, Trait.ViewView_ZM, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.ViewView_ZM, depth, item, null, null, ViewXView_ZX);
+                        if (!TryGetPrevModel(m, Trait.ViewViewList_M, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.ViewViewList_M, depth, item, null, null, ViewXViewList_X);
 
                         i++;
-                        if (!TryGetPrevModel(m, Trait.Table_ZM, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.Table_ZM, depth, item, null, null, TableList_X);
+                        if (!TryGetPrevModel(m, Trait.TableList_M, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.TableList_M, depth, item, null, null, TableList_X);
 
                         i++;
-                        if (!TryGetPrevModel(m, Trait.Graph_ZM, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.Graph_ZM, depth, item, null, null, GraphList_X);
+                        if (!TryGetPrevModel(m, Trait.GraphList_M, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.GraphList_M, depth, item, null, null, GraphList_X);
 
                         i++;
                         if (!TryGetPrevModel(m, Trait.PrimeCompute_M, i, this))
@@ -1760,11 +1760,11 @@ namespace ModelGraphSTD
 
 
 
-        #region 631 ViewXView_ZX  =============================================
-        ModelAction ViewXView_ZX;
+        #region 631 ViewXViewList_X  ==========================================
+        ModelAction ViewXViewList_X;
         void Initialize_ViewXView_X()
         {
-            ViewXView_ZX = new ModelAction
+            ViewXViewList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3184,12 +3184,12 @@ namespace ModelGraphSTD
                     if (L > 0)
                     {
                         var i = R;
-                        if (!TryGetPrevModel(m, Trait.EnumValue_ZM, i, ex))
-                            m.ChildModels[i] = new ItemModel(m, Trait.EnumValue_ZM, depth, ex, null, null, PairXList_X);
+                        if (!TryGetPrevModel(m, Trait.EnumValueList_M, i, ex))
+                            m.ChildModels[i] = new ItemModel(m, Trait.EnumValueList_M, depth, ex, null, null, PairXList_X);
 
                         i++;
-                        if (!TryGetPrevModel(m, Trait.EnumColumn_ZM, i, ex))
-                            m.ChildModels[i] = new ItemModel(m, Trait.EnumColumn_ZM, depth, ex, null, null, EnumColumnList_X);
+                        if (!TryGetPrevModel(m, Trait.EnumColumnList_M, i, ex))
+                            m.ChildModels[i] = new ItemModel(m, Trait.EnumColumnList_M, depth, ex, null, null, EnumColumnList_X);
                     }
 
                     m.PrevModels = null;
@@ -3272,24 +3272,24 @@ namespace ModelGraphSTD
                         if (L > 0)
                         {
                             var i = R;
-                            if (!TryGetPrevModel(m, Trait.ColumnX_ZM, i, tx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ColumnX_ZM, depth, tx, null, null, ColumnXList_X);
+                            if (!TryGetPrevModel(m, Trait.ColumnXList_M, i, tx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.ColumnXList_M, depth, tx, null, null, ColumnXList_X);
 
                             i++;
-                            if (!TryGetPrevModel(m, Trait.ComputeX_ZM, i, tx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ComputeX_ZM, depth, tx, null, null, ComputeXList_X);
+                            if (!TryGetPrevModel(m, Trait.ComputeXList_M, i, tx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.ComputeXList_M, depth, tx, null, null, ComputeXList_X);
 
                             i++;
-                            if (!TryGetPrevModel(m, Trait.ChildRelationX_ZM, i, tx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ChildRelationX_ZM, depth, tx, null, null, ChildRelationXList_X);
+                            if (!TryGetPrevModel(m, Trait.ChildRelationXList_M, i, tx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.ChildRelationXList_M, depth, tx, null, null, ChildRelationXList_X);
 
                             i++;
-                            if (!TryGetPrevModel(m, Trait.ParentRelatationX_ZM, i, tx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.ParentRelatationX_ZM, depth, tx, null, null, ParentRelationXList_X);
+                            if (!TryGetPrevModel(m, Trait.ParentRelatationXList_M, i, tx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.ParentRelatationXList_M, depth, tx, null, null, ParentRelationXList_X);
 
                             i++;
-                            if (!TryGetPrevModel(m, Trait.MetaRelation_ZM, i, tx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.MetaRelation_ZM, depth, tx, null, null, MetaRelationList_X);
+                            if (!TryGetPrevModel(m, Trait.MetaRelationList_M, i, tx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.MetaRelationList_M, depth, tx, null, null, MetaRelationList_X);
                         }
 
                         m.PrevModels = null;
@@ -3370,16 +3370,16 @@ namespace ModelGraphSTD
                                 m.ChildModels[i] = new ItemModel(m, Trait.GraphXColoring_M, depth, gx, null, null, GraphXColoring_X);
 
                             i++;
-                            if (!TryGetPrevModel(m, Trait.GraphXRoot_ZM, i, gx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXRoot_ZM, depth, gx, null, null, GraphXRootList_X);
+                            if (!TryGetPrevModel(m, Trait.GraphXRootList_M, i, gx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXRootList_M, depth, gx, null, null, GraphXRootList_X);
 
                             i++;
-                            if (!TryGetPrevModel(m, Trait.GraphXNode_ZM, i, gx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXNode_ZM, depth, gx, null, null, GraphXNodeList_X);
+                            if (!TryGetPrevModel(m, Trait.GraphXNodeList_M, i, gx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.GraphXNodeList_M, depth, gx, null, null, GraphXNodeList_X);
 
                             i++;
-                            if (!TryGetPrevModel(m, Trait.SymbolX_ZM, i, gx))
-                                m.ChildModels[i] = new ItemModel(m, Trait.SymbolX_ZM, depth, gx, null, null, SymbolXList_X);
+                            if (!TryGetPrevModel(m, Trait.SymbolXList_M, i, gx))
+                                m.ChildModels[i] = new ItemModel(m, Trait.SymbolXList_M, depth, gx, null, null, SymbolXList_X);
                         }
 
                         m.PrevModels = null;
@@ -6036,32 +6036,32 @@ namespace ModelGraphSTD
                 GetParentRelationCount(rx, out int usedParentRelationCount, out int unusedParentRelationCount);
 
                 int i = R;
-                if (!TryGetPrevModel(m, Trait.RowProperty_ZM, i))
-                    m.ChildModels[i] = new ItemModel(m, Trait.RowProperty_ZM, depth, rx, TableX_ColumnX, null, RowPropertyList_X);
+                if (!TryGetPrevModel(m, Trait.RowPropertyList_M, i))
+                    m.ChildModels[i] = new ItemModel(m, Trait.RowPropertyList_M, depth, rx, TableX_ColumnX, null, RowPropertyList_X);
 
                 i++;
-                if (!TryGetPrevModel(m, Trait.RowCompute_ZM, i))
-                    m.ChildModels[i] = new ItemModel(m, Trait.RowCompute_ZM, depth, rx, Store_ComputeX, null, RowComputeList_X);
+                if (!TryGetPrevModel(m, Trait.RowComputeList_M, i))
+                    m.ChildModels[i] = new ItemModel(m, Trait.RowComputeList_M, depth, rx, Store_ComputeX, null, RowComputeList_X);
 
                 i++;
-                if (!TryGetPrevModel(m, Trait.RowChildRelation_ZM, i))
-                    m.ChildModels[i] = new ItemModel(m, Trait.RowChildRelation_ZM, depth, rx, TableX_ChildRelationX, null, RowChildRelationList_X);
+                if (!TryGetPrevModel(m, Trait.RowChildRelationList_M, i))
+                    m.ChildModels[i] = new ItemModel(m, Trait.RowChildRelationList_M, depth, rx, TableX_ChildRelationX, null, RowChildRelationList_X);
 
                 i++;
-                if (!TryGetPrevModel(m, Trait.RowParentRelation_ZM, i))
-                    m.ChildModels[i] = new ItemModel(m, Trait.RowParentRelation_ZM, depth, rx, TableX_ParentRelationX, null, RowParentRelationList_X);
+                if (!TryGetPrevModel(m, Trait.RowParentRelationList_M, i))
+                    m.ChildModels[i] = new ItemModel(m, Trait.RowParentRelationList_M, depth, rx, TableX_ParentRelationX, null, RowParentRelationList_X);
 
                 i++;
-                if (!TryGetPrevModel(m, Trait.RowDefaultProperty_ZM, i))
-                    m.ChildModels[i] = new ItemModel(m, Trait.RowDefaultProperty_ZM, depth, rx, TableX_ColumnX, null, RowDefaultPropertyList_X);
+                if (!TryGetPrevModel(m, Trait.RowDefaultPropertyList_M, i))
+                    m.ChildModels[i] = new ItemModel(m, Trait.RowDefaultPropertyList_M, depth, rx, TableX_ColumnX, null, RowDefaultPropertyList_X);
 
                 i++;
-                if (!TryGetPrevModel(m, Trait.RowUnusedChildRelation_ZM, i))
-                    m.ChildModels[i] = new ItemModel(m, Trait.RowUnusedChildRelation_ZM, depth, rx, TableX_ChildRelationX, null, RowUnusedChildRelationList_X);
+                if (!TryGetPrevModel(m, Trait.RowUnusedChildRelationList_M, i))
+                    m.ChildModels[i] = new ItemModel(m, Trait.RowUnusedChildRelationList_M, depth, rx, TableX_ChildRelationX, null, RowUnusedChildRelationList_X);
 
                 i++;
-                if (!TryGetPrevModel(m, Trait.RowUnusedParentRelation_ZM, i))
-                    m.ChildModels[i] = new ItemModel(m, Trait.RowUnusedParentRelation_ZM, depth, rx, TableX_ParentRelationX, null, RowUnusedParentRelationList_X);
+                if (!TryGetPrevModel(m, Trait.RowUnusedParentRelationList_M, i))
+                    m.ChildModels[i] = new ItemModel(m, Trait.RowUnusedParentRelationList_M, depth, rx, TableX_ParentRelationX, null, RowUnusedParentRelationList_X);
             }
 
             m.PrevModels = null;
@@ -8540,11 +8540,11 @@ namespace ModelGraphSTD
         #endregion
 
 
-        #region 7F0 InternlStoreZ  ============================================
-        ModelAction InternalStoreZ_X;
-        void Initialize_InternalStoreZ_X()
+        #region 7F0 InternlStoreList  =========================================
+        ModelAction InternalStoreList_X;
+        void Initialize_InternalStoreList_X()
         {
-            InternalStoreZ_X = new ModelAction
+            InternalStoreList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -8561,12 +8561,12 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelSummary = (m) => _localize(GetSummaryKey(Trait.InternalStore_ZM)),
+                ModelSummary = (m) => _localize(GetSummaryKey(Trait.InternalStoreList_M)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
-                ModelDescription = (m) => _localize(GetDescriptionKey(Trait.InternalStore_ZM)),
+                ModelDescription = (m) => _localize(GetDescriptionKey(Trait.InternalStoreList_M)),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -8632,7 +8632,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            (string, string) GetKindName(ItemModel m) => (null, _localize(GetNameKey(Trait.InternalStore_ZM)));
+            (string, string) GetKindName(ItemModel m) => (null, _localize(GetNameKey(Trait.InternalStoreList_M)));
         }
         #endregion
 
@@ -8750,26 +8750,26 @@ namespace ModelGraphSTD
                     if (hasItems)
                     {
                         i++;
-                        if (!TryGetPrevModel(m, Trait.StoreItemItem_ZM, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.StoreItemItem_ZM, depth, item, null, null, StoreItemItemZ_X);
+                        if (!TryGetPrevModel(m, Trait.StoreItemItemList_M, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.StoreItemItemList_M, depth, item, null, null, StoreItemItemList_X);
                     }
                     if (hasLinks)
                     {
                         i++;
-                        if (!TryGetPrevModel(m, Trait.StoreRelationLink_ZM, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.StoreRelationLink_ZM, depth, item, null, null, StoreRelationLinkZ_X);
+                        if (!TryGetPrevModel(m, Trait.StoreRelationLinkList_M, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.StoreRelationLinkList_M, depth, item, null, null, StoreRelationLinkList_X);
                     }
                     if (hasChildRels)
                     {
                         i++;
-                        if (!TryGetPrevModel(m, Trait.StoreChildRelation_ZM, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.StoreChildRelation_ZM, depth, item, null, null, StoreChildRelationZ_X);
+                        if (!TryGetPrevModel(m, Trait.StoreChildRelationList_M, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.StoreChildRelationList_M, depth, item, null, null, StoreChildRelationList_X);
                     }
                     if (hasParentRels)
                     {
                         i++;
-                        if (!TryGetPrevModel(m, Trait.StoreParentRelation_ZM, i, item))
-                            m.ChildModels[i] = new ItemModel(m, Trait.StoreParentRelation_ZM, depth, item, null, null, StoreParentRelationZ_X);
+                        if (!TryGetPrevModel(m, Trait.StoreParentRelationList_M, i, item))
+                            m.ChildModels[i] = new ItemModel(m, Trait.StoreParentRelationList_M, depth, item, null, null, StoreParentRelationList_X);
                     }
 
                     m.PrevModels = null;
@@ -8799,11 +8799,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 7F4 StoreItemItemZ  ===========================================
-        ModelAction StoreItemItemZ_X;
-        void Initialize_StoreItemItemZ_X()
+        #region 7F4 StoreItemItemList  ========================================
+        ModelAction StoreItemItemList_X;
+        void Initialize_StoreItemItemList_X()
         {
-            StoreItemItemZ_X = new ModelAction
+            StoreItemItemList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -8857,11 +8857,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 7F5 StoreRelationLinkZ  =======================================
-        ModelAction StoreRelationLinkZ_X;
-        void Initialize_StoreRelationLinkZ_X()
+        #region 7F5 StoreRelationLinkList  ====================================
+        ModelAction StoreRelationLinkList_X;
+        void Initialize_StoreRelationLinkList_X()
         {
-            StoreRelationLinkZ_X = new ModelAction
+            StoreRelationLinkList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -8915,11 +8915,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 7F6 StoreChildRelationZ  ======================================
-        ModelAction StoreChildRelationZ_X;
-        void Initialize_StoreChildRelationZ_X()
+        #region 7F6 StoreChildRelationList  ===================================
+        ModelAction StoreChildRelationList_X;
+        void Initialize_StoreChildRelationList_X()
         {
-            StoreChildRelationZ_X = new ModelAction
+            StoreChildRelationList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -8972,11 +8972,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 7F7 StoreParentRelationZ  =====================================
-        ModelAction StoreParentRelationZ_X;
-        void Initialize_StoreParentRelationZ_X()
+        #region 7F7 StoreParentRelationList  ==================================
+        ModelAction StoreParentRelationList_X;
+        void Initialize_StoreParentRelationList_X()
         {
-            StoreParentRelationZ_X = new ModelAction
+            StoreParentRelationList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -9252,14 +9252,14 @@ namespace ModelGraphSTD
                     if (hasChildRels)
                     {
                         i++;
-                        if (!TryGetPrevModel(m, Trait.StoreChildRelation_ZM, i, itm))
-                            m.ChildModels[i] = new ItemModel(m, Trait.StoreChildRelation_ZM, depth, itm, null, null, StoreChildRelationZ_X);
+                        if (!TryGetPrevModel(m, Trait.StoreChildRelationList_M, i, itm))
+                            m.ChildModels[i] = new ItemModel(m, Trait.StoreChildRelationList_M, depth, itm, null, null, StoreChildRelationList_X);
                     }
                     if (hasParentRels)
                     {
                         i++;
-                        if (!TryGetPrevModel(m, Trait.StoreParentRelation_ZM, i, itm))
-                            m.ChildModels[i] = new ItemModel(m, Trait.StoreParentRelation_ZM, depth, itm, null, null, StoreParentRelationZ_X);
+                        if (!TryGetPrevModel(m, Trait.StoreParentRelationList_M, i, itm))
+                            m.ChildModels[i] = new ItemModel(m, Trait.StoreParentRelationList_M, depth, itm, null, null, StoreParentRelationList_X);
                     }
 
                     m.PrevModels = null;
