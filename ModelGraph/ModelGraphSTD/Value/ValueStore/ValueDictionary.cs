@@ -17,7 +17,7 @@ namespace ModelGraphSTD
         }
 
         public int Count => (_values == null) ? 0 : _values.Count;
-        public bool IsSpecific(Item key) => _values.ContainsKey(key);
+        public bool IsSpecific(Item key) => (_values == null) ? true :_values.ContainsKey(key);
 
         public void Clear()
         {

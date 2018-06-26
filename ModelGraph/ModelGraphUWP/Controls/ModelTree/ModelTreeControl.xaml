@@ -484,13 +484,12 @@
 
         <Style x:Key="UsageModeStyle" TargetType="TextBlock">
             <Setter Property="MinWidth" Value="20" />
-            <Setter Property="Margin" Value="8,0,0,0" />
+            <Setter Property="Margin" Value="8,-2,0,0" />
             <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
             <Setter Property="FontSize" Value="16" />
             <Setter Property="FontStyle" Value="Italic" />
-            <Setter Property="FontWeight" Value="ExtraBlack" />
-            <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="TextAlignment" Value="Right" />
             <Setter Property="MinHeight" Value="{StaticResource ElementHieght}"/>
         </Style>
 

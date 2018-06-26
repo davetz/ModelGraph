@@ -62,7 +62,7 @@ namespace ModelGraphUWP
                 _expandLeftCache = ExpandTextBlockCache(_expandLeftCache);
                 _expandRightCache = ExpandTextBlockCache(_expandRightCache);
                 _sortModeCache = ExpandTextBlockCache(_sortModeCache);
-                _usageModeCache = ExpandTextBlockCache(_sortModeCache);
+                _usageModeCache = ExpandTextBlockCache(_usageModeCache);
                 _filterModeCache = ExpandTextBlockCache(_filterModeCache);
                 _filterCountCache = ExpandTextBlockCache(_filterCountCache);
                 _propertyNameCache = ExpandTextBlockCache(_propertyNameCache);

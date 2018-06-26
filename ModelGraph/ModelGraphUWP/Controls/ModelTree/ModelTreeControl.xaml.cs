@@ -109,9 +109,9 @@ namespace ModelGraphUWP
         const string _sortAscending = "\u2228";
         const string _sortDescending = "\u2227";
 
-        const string _usageAll = "a";
-        const string _usageIsUsed = "u";
-        const string _usageIsNotUsed = "n";
+        const string _usageAll = "A";
+        const string _usageIsUsed = "U";
+        const string _usageIsNotUsed = "N";
 
         const string _filterCanShow = "\uE71C";
         const string _filterIsShowing = "\uE71C\uEBE7";
