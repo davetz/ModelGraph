@@ -9,6 +9,7 @@ namespace ModelGraphSTD
         internal override ValType ValType => ValType.UInt64;
 
         internal ValueDictionary<ulong> ValueDictionary => _valueStore as ValueDictionary<ulong>;
+        internal override bool IsSpecific(Item key) => _valueStore.IsSpecific(key);
 
         #region LoadCache  ====================================================
         internal override bool LoadCache(ComputeX cx, Item key, List<Query> qList)
@@ -118,8 +119,8 @@ namespace ModelGraphSTD
 
         internal override bool SetValue(Item key, string value)
         {
-            var v = UInt64Parse(value);
-            return (v.ok) ? SetVal(key, v.val) : false;
+            var (ok, val) = UInt64Parse(value);
+            return (ok) ? SetVal(key, val) : false;
         }
         #endregion
     }

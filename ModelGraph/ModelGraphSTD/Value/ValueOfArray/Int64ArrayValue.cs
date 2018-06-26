@@ -9,6 +9,7 @@ namespace ModelGraphSTD
         internal override ValType ValType => ValType.Int64Array;
 
         internal ValueDictionary<Int64[]> ValueDictionary => _valueStore as ValueDictionary<Int64[]>;
+        internal override bool IsSpecific(Item key) => _valueStore.IsSpecific(key);
 
         #region LoadCache  ====================================================
         internal override bool LoadCache(ComputeX cx, Item key, List<Query> qList)

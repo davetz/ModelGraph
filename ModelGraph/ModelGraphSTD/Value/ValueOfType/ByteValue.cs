@@ -10,6 +10,7 @@ namespace ModelGraphSTD
         internal override ValType ValType => ValType.Byte;
 
         internal ValueDictionary<byte> ValueDictionary => _valueStore as ValueDictionary<byte>;
+        internal override bool IsSpecific(Item key) => _valueStore.IsSpecific(key);
 
         #region LoadCache  ====================================================
         internal override bool LoadCache(ComputeX cx, Item key, List<Query> qList)
@@ -120,8 +121,8 @@ namespace ModelGraphSTD
 
         internal override bool SetValue(Item key, string value)
         {
-            var v = ByteParse(value);
-            return (v.ok) ? SetVal(key, v.val) : false;
+            var (ok, val) = ByteParse(value);
+            return (ok) ? SetVal(key, val) : false;
         }
         #endregion
     }

@@ -9,6 +9,7 @@ namespace ModelGraphSTD
         internal override ValType ValType => ValType.UInt16;
 
         internal ValueDictionary<ushort> ValueDictionary => _valueStore as ValueDictionary<ushort>;
+        internal override bool IsSpecific(Item key) => _valueStore.IsSpecific(key);
 
         #region LoadCache  ====================================================
         internal override bool LoadCache(ComputeX cx, Item key, List<Query> qList)
@@ -119,8 +120,8 @@ namespace ModelGraphSTD
 
         internal override bool SetValue(Item key, string value)
         {
-            var v = UInt16Parse(value);
-            return (v.ok) ? SetVal(key, v.val) : false;
+            var (ok, val) = UInt16Parse(value);
+            return (ok) ? SetVal(key, val) : false;
         }
         #endregion
     }

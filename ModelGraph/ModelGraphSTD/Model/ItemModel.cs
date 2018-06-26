@@ -88,6 +88,7 @@ namespace ModelGraphSTD
 
             IsAlreadySorted = 0x8,
             IsAlreadyFiltered = 0x4,
+            IsAlreadyUsedFiltered = 0x2,
         }
         private bool GetState(State state) => (_state & state) != 0;
         private void SetState(State state, bool value) { if (value) _state |= state; else _state &= ~state; }
@@ -128,6 +129,7 @@ namespace ModelGraphSTD
 
         public bool IsAlreadySorted { get { return GetState(State.IsAlreadySorted); } set { SetState(State.IsAlreadySorted, value); } }
         public bool IsAlreadyFiltered { get { return GetState(State.IsAlreadyFiltered); } set { SetState(State.IsAlreadyFiltered, value); } }
+        public bool IsAlreadyUsedFilter { get { return GetState(State.IsAlreadyUsedFiltered); } set { var prev = GetState(State.IsAlreadyUsedFiltered); SetState(State.IsAlreadyUsedFiltered, value); if (prev != value) IsChanged = true; } }
         #endregion
 
         #region Flags  ========================================================
@@ -183,16 +185,16 @@ namespace ModelGraphSTD
         #endregion
 
         #region ModelAction  ==================================================
-        public bool Validate() => (Get.ValidateChildModels == null) ? false : Get.ValidateChildModels(this);
+        public bool ModelUsed => (Get.ModelUsed == null) ? true : Get.ModelUsed(this);
         public string ModelInfo => (Get.ModelInfo == null) ? null : Get.ModelInfo(this);
         public string ModelSummary => (Get.ModelSummary == null) ? null : Get.ModelSummary(this);
         public string ModelDescription => (Get.ModelDescription == null) ? null : Get.ModelDescription(this);
+        public bool ValidateChildModels() => (Get.ValidateChildModels == null) ? false : Get.ValidateChildModels(this);
 
         public int IndexValue => (Get.IndexValue == null) ? 0 : Get.IndexValue(this);
         public bool BoolValue => (Get.BoolValue == null) ? false : Get.BoolValue(this);
         public string TextValue => (Get.TextValue == null) ? null : Get.TextValue(this);
         public string[] ListValue => (Get.ListValue == null) ? null : Get.ListValue(this);
-
         //=====================================================================
         public (string Kind, string Name) ModelKindName
         {

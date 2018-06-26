@@ -9,6 +9,7 @@ namespace ModelGraphSTD
         internal override ValType ValType => ValType.DateTimeArray;
 
         internal ValueDictionary<DateTime[]> ValueDictionary => _valueStore as ValueDictionary<DateTime[]>;
+        internal override bool IsSpecific(Item key) => _valueStore.IsSpecific(key);
 
         #region LoadCache  ====================================================
         internal override bool LoadCache(ComputeX cx, Item key, List<Query> qList)

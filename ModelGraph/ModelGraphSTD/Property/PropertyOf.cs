@@ -36,6 +36,7 @@ namespace ModelGraphSTD
         #region IValueStore  ==================================================
         public int Count => 0;
         public void Clear() { }
+        public bool IsSpecific(Item key) => true;
         public void Remove(Item key) { }
         public void SetOwner(ComputeX cx) { }
 

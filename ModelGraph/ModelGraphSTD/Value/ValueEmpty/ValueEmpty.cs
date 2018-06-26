@@ -14,6 +14,7 @@ namespace ModelGraphSTD
         internal override bool SetValue(Item key, string value) => false;
         internal override void Clear() { }
         internal override void Remove(Item key) { }
+        internal override bool IsSpecific(Item key) => true;
         #endregion
     }
 }

@@ -458,7 +458,7 @@ namespace ModelGraphSTD
                 m.Item.AutoExpandRight = false;
             }
 
-            if ((m.IsExpanded || m.IsExpandedFilter) && m.Validate())
+            if ((m.IsExpanded || m.IsExpandedFilter) && m.ValidateChildModels())
             {
                 var N = m.ChildModelCount;
 
@@ -6013,8 +6013,7 @@ namespace ModelGraphSTD
         private bool RowX_VX(ItemModel m)
         {
             var rx = m.RowX;
-            ColumnX[] cx = null;
-            var R = (m.IsExpandedRight && TryGetChoiceColumns(rx.Owner, out cx)) ? ((ColumnX[])null).Length : 0;
+            var R = (m.IsExpandedRight && TryGetChoiceColumns(rx.Owner, out ColumnX[] cx)) ? ((ColumnX[])null).Length : 0;
             var L = (m.IsExpandedLeft) ? 7 : 0;
 
             var N = R + L;
@@ -6664,6 +6663,7 @@ namespace ModelGraphSTD
                     GetColumnCount(m.Item, out int count, out int _);
 
                     m.CanExpandLeft = count > 0;
+                    m.CanFilterUsage = count > 0;
                     m.CanFilter = count > 2;
                     m.CanSort = (m.IsExpandedLeft && count > 1);
 

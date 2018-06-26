@@ -9,6 +9,7 @@ namespace ModelGraphSTD
         internal override ValType ValType => ValType.Double;
 
         internal ValueDictionary<double> ValueDictionary => _valueStore as ValueDictionary<double>;
+        internal override bool IsSpecific(Item key) => _valueStore.IsSpecific(key);
 
         #region LoadCache  ====================================================
         internal override bool LoadCache(ComputeX cx, Item key, List<Query> qList)
@@ -114,8 +115,8 @@ namespace ModelGraphSTD
 
         internal override bool SetValue(Item key, string value)
         {
-            var v = DoubleParse(value);
-            return (v.ok) ? SetVal(key, v.val) : false;
+            var (ok, val) = DoubleParse(value);
+            return (ok) ? SetVal(key, val) : false;
         }
         #endregion
     }

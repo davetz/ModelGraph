@@ -10,6 +10,7 @@ namespace ModelGraphSTD
         internal bool IsEmpty => ValType > ValType.MaximumType;
 
         internal abstract int Count { get; }
+        internal abstract bool IsSpecific(Item key);
         internal abstract void Clear();
         internal abstract void Remove(Item key);
 

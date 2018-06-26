@@ -4,6 +4,7 @@ namespace ModelGraphSTD
     internal interface IValueStore<T>
     {
         int Count { get; }
+        bool IsSpecific(Item key);
         void Clear();
         void Remove(Item key);
         void SetOwner(ComputeX cx);

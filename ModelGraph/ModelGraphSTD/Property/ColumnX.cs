@@ -10,8 +10,6 @@ namespace ModelGraphSTD
         internal string Initial;
         internal string Description;
 
-        internal bool IsSpecific(Item key) => false;
-
         #region Constructors  =================================================
         internal ColumnX(StoreOf<ColumnX> owner)
         {

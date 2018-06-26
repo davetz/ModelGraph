@@ -13,7 +13,7 @@ namespace ModelGraphSTD
             Used,
             Unused,
         }
-        SubsetOf<ColumnX, Item> _inUseColumns = new SubsetOf<ColumnX, Item>((ColumnX col, Item key) => { return col.IsSpecific(key); });
+        SubsetOf<ColumnX, Item> _inUseColumns = new SubsetOf<ColumnX, Item>((ColumnX col, Item key) => { return col.Value.IsSpecific(key); });
         SubsetOf<Relation, Item> _inUseChildRelations = new SubsetOf<Relation, Item>( (Relation rel, Item key) => { return rel.HasKey1(key); });
         SubsetOf<Relation, Item> _inUseParentRelations = new SubsetOf<Relation, Item>((Relation rel, Item key) => { return rel.HasKey2(key); });
 
@@ -177,15 +177,15 @@ namespace ModelGraphSTD
 
         internal void GetColumnCount(Item owner, out int used, out int unused)
         {
-            GetUsedUnsedCount(owner.Owner, out used, out unused, TableX_ColumnX, (Item item) => { var col = item as ColumnX; return col.IsSpecific(owner); });
+            GetUsedUnsedCount(owner.Owner, out used, out unused, TableX_ColumnX, (Item item) => { var col = item as ColumnX; return col.Value.IsSpecific(owner); });
         }
         internal bool TryGetUsedColumns(Item owner, out Item[] items)
         {
-            return TryGetUsed(owner.Owner, out items, TableX_ColumnX, (Item item) => { var col = item as ColumnX; return col.IsSpecific(owner); });
+            return TryGetUsed(owner.Owner, out items, TableX_ColumnX, (Item item) => { var col = item as ColumnX; return col.Value.IsSpecific(owner); });
         }
         internal bool TryGetUnusedColumns(Item owner, out Item[] items)
         {
-            return TryGetUnused(owner.Owner, out items, TableX_ColumnX, (Item item) => { var col = item as ColumnX; return col.IsSpecific(owner); });
+            return TryGetUnused(owner.Owner, out items, TableX_ColumnX, (Item item) => { var col = item as ColumnX; return col.Value.IsSpecific(owner); });
         }
 
         internal void GetChildRelationCount(Item owner, out int used, out int unused)

@@ -199,9 +199,9 @@ namespace ModelGraphSTD
             // test prev node
             if (PrevNode != null && PrevNode.Core.HitTest(p))
             {
-                var r = PrevNode.Core.RefinedHit(p);
-                HitLocation |= r.hit;
-                HitPoint = r.pnt;
+                var (hit, pnt) = PrevNode.Core.RefinedHit(p);
+                HitLocation |= hit;
+                HitPoint = pnt;
 
                 HitNode = PrevNode;
                 if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> nodeEdges))
@@ -228,9 +228,9 @@ namespace ModelGraphSTD
 
                 // now refine the hit test results
                 //node.RefineHitTest(p, ref HitLocation, ref HitPoint);
-                var r = node.Core.RefinedHit(p);
-                HitLocation |= r.hit;
-                HitPoint = r.pnt;
+                var (hit, pnt) = node.Core.RefinedHit(p);
+                HitLocation |= hit;
+                HitPoint = pnt;
 
                 HitNode = node;
                 if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> nodeEdges))
