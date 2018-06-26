@@ -500,9 +500,9 @@
             <Setter Property="Padding" Value="0,4,0,0" />
             <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="ExtraBlack" />
+            <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
             <Setter Property="MinHeight" Value="{StaticResource ElementHieght}"/>
         </Style>
 

@@ -66,7 +66,6 @@ namespace ModelGraphUWP
 
         int _levelIndent;
         int _elementHieght;
-        bool _ignoreRefresh;
 
         Style _expanderStyle;
         Style _itemKindStyle;
@@ -99,7 +98,7 @@ namespace ModelGraphUWP
         int Count => (_viewList == null) ? 0 : _viewList.Count;
 
         // segoe ui symbol font glyphs  =====================
-        const string _fontFamily = "Segoe UI Symbol";
+        const string _fontFamily = "Segoe MDL2 Assets";
         const string _leftCanExtend = "\u25b7";
         const string _leftIsExtended = "\u25e2";
 
@@ -114,8 +113,8 @@ namespace ModelGraphUWP
         const string _usageIsUsed = "u";
         const string _usageIsNotUsed = "n";
 
-        const string _filterCanShow = "\u25BD";
-        const string _filterIsShowing = "\uE16E";
+        const string _filterCanShow = "\uE71C";
+        const string _filterIsShowing = "\uE71C\uEBE7";
 
         string _sortModeTip;
         string _usageModeTip;

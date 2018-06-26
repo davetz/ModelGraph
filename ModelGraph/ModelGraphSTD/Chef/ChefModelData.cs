@@ -305,7 +305,7 @@ namespace ModelGraphSTD
                 root.SelectModel = null;
             }
 
-            root.RequestRefreshModel();
+            root.UIRequestRefreshModel();
         }
 
         #region TreeModelStack  ===============================================
@@ -771,8 +771,8 @@ namespace ModelGraphSTD
                 var rootChef = root.Chef;
                 var dataChef = new Chef(rootChef, null);
 
-                root.RequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
-                root.RequestRefreshModel();
+                root.UIRequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
+                root.UIRequestRefreshModel();
             }
             void OpenModel(ItemModel model, Object parm1)
             {
@@ -781,8 +781,8 @@ namespace ModelGraphSTD
                 var rootChef = root.Chef;
                 var dataChef = new Chef(rootChef, repo);
 
-                root.RequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
-                root.RequestRefreshModel();
+                root.UIRequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
+                root.UIRequestRefreshModel();
             }
             #endregion
         }
@@ -892,24 +892,24 @@ namespace ModelGraphSTD
                 MajorDelta += 1;
                 dataChef.SaveToRepository();
             }
-            void CloseModel(ItemModel m) => m.GetRootModel().RequestCloseModel();
-            void AppSaveSymbol(ItemModel m) => m.GetRootModel().RequestSaveModel();
-            void AppReloadSymbol(ItemModel m) => m.GetRootModel().RequestReloadModel();
+            void CloseModel(ItemModel m) => m.GetRootModel().UIRequestCloseModel();
+            void AppSaveSymbol(ItemModel m) => m.GetRootModel().UIRequestSaveModel();
+            void AppReloadSymbol(ItemModel m) => m.GetRootModel().UIRequestReloadModel();
 
             void ReloadModel(ItemModel m)
             {
                 var repo = Repository;
-                var rootModel = m.GetRootModel();
-                var appRootChef = Owner as Chef;
-                if (appRootChef != null && appRootChef.IsRootChef)
+                var thisRootModel = m.GetRootModel();
+                if (Owner is Chef appRootChef && appRootChef.IsRootChef)
                 {
-                    rootModel.GetRootModel().RequestCloseModel();
+                    var appRootModel = appRootChef.PrimaryRootModel;
+
+                    thisRootModel.UIRequestCloseModel();
 
                     var dataChef = new Chef(appRootChef, repo);
 
-                    var appRootModel = appRootChef.PrimaryRootModel;
-                    appRootModel.RequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
-                    appRootModel.RequestRefreshModel();
+                    appRootModel.UIRequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
+                    appRootModel.UIRequestRefreshModel();
                 }
             }
             #endregion
@@ -1316,7 +1316,6 @@ namespace ModelGraphSTD
                         {
                             m.Delta = _changeRoot.Delta;
 
-                            m.ChildModels = null;
                             var items = _changeRoot.Items;
                             items.Reverse();
                             var depth = (byte)(m.Depth + 1);
@@ -1426,7 +1425,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondaryMetadataTree(ItemModel m) => m.GetRootModel().RequestCreatePage(ControlType.PartialTree, m);
+            void CreateSecondaryMetadataTree(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.PartialTree, m);
         }
         #endregion
 
@@ -1507,7 +1506,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondaryModelingTree(ItemModel m) => m.GetRootModel().RequestCreatePage(ControlType.PartialTree, m);
+            void CreateSecondaryModelingTree(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.PartialTree, m);
         }
         #endregion
 
@@ -2319,7 +2318,7 @@ namespace ModelGraphSTD
                     if (m.IsExpandedLeft)
                     {
                     }
-                    if (N == 0) m.ChildModels = null;
+                    if (N == 0) m.ClearChildren();
                 }
             };
 
@@ -2835,7 +2834,8 @@ namespace ModelGraphSTD
                     }
                     else
                     {
-                        m.ChildModels = null;
+                        m.ClearChildren();
+                        m.ClearChildren();
                     }
                 }
             };
@@ -3597,7 +3597,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondarySymbolEdit(ItemModel m) => m.GetRootModel().RequestCreatePage(ControlType.SymbolEditor, m);
+            void CreateSecondarySymbolEdit(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.SymbolEditor, m);
         }
         #endregion
 
@@ -6559,7 +6559,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondaryModelGraph(ItemModel m) => m.GetRootModel().RequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, m.Graph, GraphRef_X);
+            void CreateSecondaryModelGraph(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, m.Graph, GraphRef_X);
         }
         #endregion
 
@@ -8123,7 +8123,7 @@ namespace ModelGraphSTD
                         MajorDelta += 1;
 
                         var root = m.GetRootModel();
-                        root.RequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X, m);
+                        root.UIRequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X, m);
                     }
                     return DropAction.Copy;
                 },
@@ -8172,7 +8172,7 @@ namespace ModelGraphSTD
             MajorDelta += 1;
 
             var root = m.GetRootModel();
-            root.RequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, g, GraphRef_X);
+            root.UIRequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, g, GraphRef_X);
         }
         #endregion
 
