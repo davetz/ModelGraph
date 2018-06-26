@@ -476,16 +476,18 @@ namespace ModelGraphSTD
 
         //=====================================================================
         GraphXRef_M = 0x6E1,
-        GraphNode_ZM = 0x6E2,
-        GraphEdge_ZM = 0x6E3,
-        GraphRoot_ZM = 0x6E4,
-        GraphLevel_ZM = 0x6E5,
+        GraphNodeList_M = 0x6E2,
+        GraphEdgeList_M = 0x6E3,
+        GraphRootList_M = 0x6E4,
+        GraphLevelList_M = 0x6E5,
+
         GraphLevel_M = 0x6E6,
         GraphPath_M = 0x6E7,
         GraphRoot_M = 0x6E8,
         GraphNode_M = 0x6E9,
         GraphEdge_M = 0x6EA,
-        GraphOpen_ZM = 0x6EB,
+
+        GraphOpenList_M = 0x6EB,
         GraphOpen_M = 0x6EC,
 
         //=====================================================================

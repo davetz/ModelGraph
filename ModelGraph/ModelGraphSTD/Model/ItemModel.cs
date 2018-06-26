@@ -183,7 +183,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region ModelAction  ==================================================
-        public void Validate() => Get.Validate?.Invoke(this);
+        public bool Validate() => (Get.ValidateChildModels == null) ? false : Get.ValidateChildModels(this);
         public string ModelInfo => (Get.ModelInfo == null) ? null : Get.ModelInfo(this);
         public string ModelSummary => (Get.ModelSummary == null) ? null : Get.ModelSummary(this);
         public string ModelDescription => (Get.ModelDescription == null) ? null : Get.ModelDescription(this);

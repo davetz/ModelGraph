@@ -6,11 +6,9 @@ namespace ModelGraphSTD
     internal class ModelAction
     {/*
         Each ItemModel contains an instance of ModelAction.
-        Once initialized it constrains and channels the actions 
+        Once initialized it constrains and directs the actions 
         initiated from the UI controls. 
      */
-        internal Action<ItemModel> Validate;
-
         internal Func<ItemModel, string> ModelInfo;
         internal Func<ItemModel, string> ModelSummary;
         internal Func<ItemModel, string> ModelDescription;
@@ -19,6 +17,8 @@ namespace ModelGraphSTD
         internal Func<ItemModel, bool> BoolValue;
         internal Func<ItemModel, string> TextValue;
         internal Func<ItemModel, string[]> ListValue;
+
+        internal Func<ItemModel, bool> ValidateChildModels;
 
         internal Action<ItemModel, List<ModelCommand>> MenuCommands;
         internal Action<ItemModel, List<ModelCommand>> ButtonCommands;
