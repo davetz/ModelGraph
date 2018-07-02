@@ -369,7 +369,7 @@ namespace ModelGraphUWP
                 }
 
                 obj.DataContext = model;
-                obj.Text = model.IsExpandedFilter ? _filterIsShowing : _filterCanShow;
+                obj.Text = model.IsFilterVisible ? _filterIsShowing : _filterCanShow;
 
                 _stackPanelCache[index].Children.Add(obj);
             }
@@ -599,7 +599,7 @@ namespace ModelGraphUWP
 
                         if (m.CanFilter)
                         {
-                            if (m.IsExpandedFilter)
+                            if (m.IsFilterVisible)
                             {
                                 AddFilterText(index, m);
                                 AddFilterCount(index, m);

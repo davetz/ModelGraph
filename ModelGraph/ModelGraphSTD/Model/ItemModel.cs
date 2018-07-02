@@ -11,32 +11,33 @@ namespace ModelGraphSTD
         public Item Item;
         public Item Aux1;
         public Item Aux2;
-        public ItemModel ParentModel;   // allows bidirectional tree taversal
-        public ItemModel[] ChildModels; // hierarchal subtree of models
-        public ItemModel[] PrevModels;  // the original verson of child models before filter sort
-        public string ViewFilter;       // UI imposed child model Kind/Name filter
-        internal ModelAction Get;
+        public ItemModel ParentModel;        // allows bidirectional tree taversal
+        public List<ItemModel> ChildModels;  // all child models before filter sort
+        public List<ItemModel> FilterModels; // collection of child models after filter sort
+        public string ViewFilter;            // UI imposed Kind/Name filter
+        internal ModelAction Get;            // custom actions for this itemModel
 
         internal Trait Trait;
         private State _state;
 
+        internal ushort Delta;               // version of child model list
         private Flags _flags;
         public byte Depth;
-        internal byte Delta; //version of child model list
-        internal byte FilterSort; //version of filter sort
         
 
         #region Constructor  ==================================================
         internal ItemModel() { }
-        internal ItemModel(ItemModel parent, Trait trait, byte level, Item item, Item aux1, Item aux2, ModelAction action)
+        internal ItemModel(ItemModel parent, Trait trait, Item item, Item aux1, Item aux2, ModelAction action)
         {
             Trait = trait;
-            Depth = level;
             Item = item;
             Aux1 = aux1;
             Aux2 = aux2;
             Get = action;
             ParentModel = parent;
+
+            if (parent == null) return;
+            Depth = (byte)(parent.Depth + 1);
         }
         #endregion
 
@@ -72,64 +73,57 @@ namespace ModelGraphSTD
         [Flags]
         enum State : ushort
         {
-            IsChanged = 0x8000,
-            IsReadOnly = 0x4000,
-            IsMultiline = 0x2000,
+            IsReadOnly = 0x8000,
+            IsMultiline = 0x4000,
 
-            IsAscendingSort = 0x800,
-            IsDescendingSort = 0x400,
-            IsExpandFilter = 0x200,
-            SetFilterFocus = 0x100,
+            IsUsedFilter = 0x800,
+            IsNotUsedFilter = 0x400,
+            IsAscendingSort = 0x200,
+            IsDescendingSort = 0x100,
 
             IsExpandLeft = 0x80,
             IsExpandRight = 0x40,
-            IsUsedFilter = 0x20,
-            IsNotUsedFilter = 0x10,
+            IsFilterFocus = 0x20,
+            IsFilterVisible = 0x10,
 
-            IsAlreadySorted = 0x8,
-            IsAlreadyFiltered = 0x4,
-            IsAlreadyUsedFiltered = 0x2,
+            ChangedSort = 0x4,
+            ChangedFilter = 0x2,
+
+            IsExpanded = IsExpandLeft | IsExpandRight,
+            IsSorted = IsAscendingSort | IsDescendingSort,
+            IsUsageFiltered = IsUsedFilter | IsNotUsedFilter,
+
+            AnyFilterSortChanged = ChangedSort | ChangedFilter, 
         }
         private bool GetState(State state) => (_state & state) != 0;
         private void SetState(State state, bool value) { if (value) _state |= state; else _state &= ~state; }
+        private void SetState(State state, State changedState, bool value) { var prev = GetState(state);  if (value) _state |= state; else _state &= ~state; if (prev != value) _state |= changedState; }
 
-        public bool IsChanged { get { return !GetState(State.IsChanged); } set { SetState(State.IsChanged, !value); } }
         public bool IsReadOnly { get { return GetState(State.IsReadOnly); } set { SetState(State.IsReadOnly, !value); } }
         public bool IsMultiline { get { return GetState(State.IsMultiline); } set { SetState(State.IsMultiline, !value); } }
-        public bool IsExpandedLeft { get { return GetState(State.IsExpandLeft); } set { var prev = GetState(State.IsExpandLeft); SetState(State.IsExpandLeft, value); if (prev != value) IsChanged = true; if (!value) IsExpandedRight = false; } }
-        public bool IsExpandedRight { get { return GetState(State.IsExpandRight); } set { var prev = GetState(State.IsExpandRight); SetState(State.IsExpandRight, value); if (prev != value) IsChanged = true; } }
-        public bool IsFilterFocus { get { return GetState(State.SetFilterFocus); } set { SetState(State.SetFilterFocus, value); } }
+        public bool IsFilterFocus { get { return GetState(State.IsFilterFocus); } set { SetState(State.IsFilterFocus, value); } }
 
-        public bool IsExpandedFilter
-        {
-            get { return GetState(State.IsExpandFilter); }
-            set
-            {
-                var prev = GetState(State.IsExpandFilter); SetExpandedFilter(value);
-                if (prev != value)
-                {
-                    IsChanged = true;
-                    if (value) IsFilterFocus = true;
-                }
-            }
-        }
-        public void SetExpandedFilter(bool value)
-        {
-            SetState(State.IsExpandFilter, value);
+        public bool IsUsedFilter { get { return GetState(State.IsUsedFilter); } set { SetState(State.IsUsedFilter, State.ChangedFilter, value); } }
+        public bool IsNotUsedFilter { get { return GetState(State.IsNotUsedFilter); } set { SetState(State.IsNotUsedFilter, State.ChangedFilter, value); } }
 
-            if (value == false)
-            {
-                var root = GetRootModel();
-            }
-        }
-        public bool IsSortAscending { get { return GetState(State.IsAscendingSort); } set { var prev = GetState(State.IsAscendingSort); SetState(State.IsAscendingSort, value); if (prev != value) IsChanged = true; } }
-        public bool IsSortDescending { get { return GetState(State.IsDescendingSort); } set { var prev = GetState(State.IsDescendingSort); SetState(State.IsDescendingSort, value); if (prev != value) IsChanged = true; } }
-        public bool IsUsedFilter { get { return GetState(State.IsUsedFilter); } set { var prev = GetState(State.IsUsedFilter); SetState(State.IsUsedFilter, value); if (prev != value) IsChanged = true; } }
-        public bool IsNotUsedFilter { get { return GetState(State.IsNotUsedFilter); } set { var prev = GetState(State.IsNotUsedFilter); SetState(State.IsNotUsedFilter, value); if (prev != value) IsChanged = true; } }
 
-        public bool IsAlreadySorted { get { return GetState(State.IsAlreadySorted); } set { SetState(State.IsAlreadySorted, value); } }
-        public bool IsAlreadyFiltered { get { return GetState(State.IsAlreadyFiltered); } set { SetState(State.IsAlreadyFiltered, value); } }
-        public bool IsAlreadyUsedFilter { get { return GetState(State.IsAlreadyUsedFiltered); } set { var prev = GetState(State.IsAlreadyUsedFiltered); SetState(State.IsAlreadyUsedFiltered, value); if (prev != value) IsChanged = true; } }
+        public bool IsSortAscending { get { return GetState(State.IsAscendingSort); } set { SetState(State.IsAscendingSort, State.ChangedSort, value); } }
+        public bool IsSortDescending { get { return GetState(State.IsDescendingSort); } set { SetState(State.IsDescendingSort, State.ChangedSort, value); } }
+
+        public bool IsExpandedLeft { get { return GetState(State.IsExpandLeft); } set { SetState(State.IsExpandLeft, value); if (!value) SetState(State.IsExpandRight, false); } }
+        public bool IsExpandedRight { get { return GetState(State.IsExpandRight); } set { SetState(State.IsExpandRight, value); } }
+
+        public bool IsFilterVisible{get { return GetState(State.IsFilterVisible); } set { SetState(State.IsFilterVisible, value); if (value) IsFilterFocus = true; else { ViewFilter = null; _state |= State.ChangedFilter; } } }
+
+        internal bool IsSorted => GetState(State.IsSorted);
+        internal bool IsFiltered => IsUsageFiltered || (IsFilterVisible && HasFilterText);
+        internal bool IsExpanded => GetState(State.IsExpanded);
+        internal bool HasFilterText => !string.IsNullOrWhiteSpace(ViewFilter);
+        internal bool IsUsageFiltered => GetState(State.IsUsageFiltered);
+        internal bool ChangedSort => GetState(State.ChangedSort);
+        internal bool ChangedFilter => GetState(State.ChangedFilter);
+        internal bool AnyFilterSortChanged => GetState(State.AnyFilterSortChanged);
+        internal void ClearChangedFlags() => _state &= ~State.AnyFilterSortChanged;
         #endregion
 
         #region Flags  ========================================================
@@ -189,7 +183,7 @@ namespace ModelGraphSTD
         public string ModelInfo => (Get.ModelInfo == null) ? null : Get.ModelInfo(this);
         public string ModelSummary => (Get.ModelSummary == null) ? null : Get.ModelSummary(this);
         public string ModelDescription => (Get.ModelDescription == null) ? null : Get.ModelDescription(this);
-        public bool ValidateChildModels() => (Get.ValidateChildModels == null) ? false : Get.ValidateChildModels(this);
+        public (bool HasChildren, bool HasChanged) Validate(List<ItemModel> buffer) => (Get.Validate == null) ? (false, false) : Get.Validate(this, buffer);
 
         public int IndexValue => (Get.IndexValue == null) ? 0 : Get.IndexValue(this);
         public bool BoolValue => (Get.BoolValue == null) ? false : Get.BoolValue(this);
@@ -320,13 +314,22 @@ namespace ModelGraphSTD
         #endregion
 
         #region Properties/Methods  ===========================================
-        public int FilterCount { get { return (ChildModels == null) ? 0 : ChildModels.Length; } }
+        internal void InitChildModels(List<ItemModel> prev, int capacity = 0)
+        {
+            var cap = (capacity < 20) ? 20 : capacity;
+            if (ChildModels == null) ChildModels = new List<ItemModel>(cap);
+            if (ChildModels.Capacity < cap) ChildModels.Capacity = cap;
+
+            if (prev.Capacity < ChildModels.Capacity) prev.Capacity = ChildModels.Capacity;
+
+            prev.Clear();
+            prev.AddRange(ChildModels);
+            ChildModels.Clear();
+        }
+        public int FilterCount { get { return (FilterModels == null) ? 0 : FilterModels.Count; } }
         public bool HasError { get { return false; } }
         public bool IsModified { get { return false; } }
         public string ModelIdentity => GetModelIdentity();
-
-        public bool IsExpanded => (IsExpandedLeft || IsExpandedRight);
-        public bool IsSorted => (IsSortAscending || IsSortDescending);
 
         public void ResetDelta() => Delta -= 3;
         internal void SetIsSelected() => GetRootModel().SelectModel = this;
@@ -334,19 +337,19 @@ namespace ModelGraphSTD
         internal void ClearChildren()
         {
             ResetDelta();
-            PrevModels = null;
             ChildModels = null;
+            FilterModels = null;
         }
         public bool IsInvalid => (Item == null || Item.IsInvalid);
 
         public int GetChildlIndex(ItemModel child)
         {
-            if (ChildModels != null)
+            if (FilterModels != null)
             {
-                var N = ChildModels.Length;
+                var N = FilterModels.Count;
                 for (int i = 0; i < N; i++)
                 {
-                    if (ChildModels[i] == child) return i;
+                    if (FilterModels[i] == child) return i;
                 }
             }
             return -1;
@@ -365,11 +368,12 @@ namespace ModelGraphSTD
                 return $"{Trait.ToString()}  ({code.ToString("X3")})";
             }
         }
-        public int ChildModelCount => (ChildModels == null) ? 0 : ChildModels.Length;
+        public int FilterModelCount => (FilterModels == null) ? 0 : FilterModels.Count;
+        internal int ChildModelCount => (ChildModels == null) ? 0 : ChildModels.Count;
         public bool IsChildModel(ItemModel model)
         {
-            if (ChildModels == null) return false;
-            foreach (var child in ChildModels)
+            if (FilterModels == null) return false;
+            foreach (var child in FilterModels)
             {
                 if (child == model) return true;
             }
@@ -391,7 +395,7 @@ namespace ModelGraphSTD
 
         #region ViewFilterSort  ===============================================
         internal string FilterSortName { get { var (kind, name) = ModelKindName; return $"{kind} {name}"; } }
-        internal Regex RegexViewFilter => (!IsExpandedFilter || string.IsNullOrWhiteSpace(ViewFilter) ? null : ViewFilter.Contains("*") ? 
+        internal Regex RegexViewFilter => (!IsFilterVisible || string.IsNullOrWhiteSpace(ViewFilter) ? null : ViewFilter.Contains("*") ? 
             new Regex(ViewFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase) :
             new Regex($".*{ViewFilter}.*", RegexOptions.Compiled | RegexOptions.IgnoreCase));
         #endregion

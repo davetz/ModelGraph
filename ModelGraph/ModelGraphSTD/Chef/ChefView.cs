@@ -1,10 +1,12 @@
-﻿namespace ModelGraphSTD
+﻿using System.Collections.Generic;
+
+namespace ModelGraphSTD
 {/*
 
  */
     public partial class Chef
     {
-        private bool TryGetQueryItems(QueryX query, out Item[] items, Item key = null)
+        private bool TryGetQueryItems(QueryX query, out List<Item> items, Item key = null)
         {
             items = null;
             if (query != null)
@@ -30,19 +32,19 @@
                 }
                 if (query.HasWhere) items = ApplyFilter(query, items);
             }
-            return (items != null && items.Length > 0);
+            return (items != null && items.Count > 0);
         }
 
-        private (int L1, Property[] PropertyList, int L2, QueryX[] QueryList, int L3, ViewX[] ViewList) GetQueryXChildren(QueryX query)
+        private (int L1, IList<Property> PropertyList, int L2, IList<QueryX> QueryList, int L3, IList<ViewX> ViewList) GetQueryXChildren(QueryX query)
         {
-            Property[] PropertyList = QueryX_Property.GetChildren(query);
-            int L1 = (PropertyList == null) ? 0 : PropertyList.Length;
+            var PropertyList = QueryX_Property.GetChildren(query);
+            int L1 = (PropertyList == null) ? 0 : PropertyList.Count;
 
-            QueryX[] QueryList = QueryX_QueryX.GetChildren(query);
-            int L2 = (QueryList == null) ? 0 : QueryList.Length;
+            var QueryList = QueryX_QueryX.GetChildren(query);
+            int L2 = (QueryList == null) ? 0 : QueryList.Count;
 
-            ViewX[] ViewList = QueryX_ViewX.GetChildren(query);
-            int L3 = (ViewList == null) ? 0 : ViewList.Length;
+            var ViewList = QueryX_ViewX.GetChildren(query);
+            int L3 = (ViewList == null) ? 0 : ViewList.Count;
 
             return (L1, PropertyList, L2, QueryList, L3, ViewList);
         }

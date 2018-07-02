@@ -920,19 +920,10 @@ namespace ModelGraphUWP
             }
             else if (mdl.IsSortDescending)
             {
-                if (mdl.IsAlreadyFiltered)
-                {
-                    mdl.IsSortAscending = true;
-                    mdl.IsSortDescending = false;
-                    obj.Text = _sortAscending;
-                }
-                else
-                {
-                    mdl.ResetDelta();
-                    mdl.IsSortAscending = false;
-                    mdl.IsSortDescending = false;
-                    obj.Text = _sortNone;
-                }
+                mdl.ResetDelta();
+                mdl.IsSortAscending = false;
+                mdl.IsSortDescending = false;
+                obj.Text = _sortNone;
             }
             else
             {
@@ -940,7 +931,6 @@ namespace ModelGraphUWP
                 obj.Text = _sortAscending;
             }
 
-            mdl.IsAlreadySorted = false;
             _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
         }
         #endregion
@@ -999,7 +989,6 @@ namespace ModelGraphUWP
 
             var mdl = obj.DataContext as ItemModel;
 
-            mdl.IsAlreadyFiltered = false;
             _root.PostRefreshViewList(_select, 0, ChangeType.ToggleFilter);
         }
         #endregion
@@ -1021,15 +1010,13 @@ namespace ModelGraphUWP
                 e.Handled = true;
 
                 FindNextItemModel(mdl);
-                mdl.IsAlreadyFiltered = false;
                 _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
                 mdl.ResetDelta();
                 mdl.ViewFilter = null;
-                mdl.IsExpandedFilter = false;
-                mdl.IsAlreadyFiltered = false;
+                mdl.IsFilterVisible = false;
 
                 FindNextItemModel(mdl);
                 _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);

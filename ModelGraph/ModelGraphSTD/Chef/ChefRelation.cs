@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace ModelGraphSTD
@@ -81,7 +82,7 @@ namespace ModelGraphSTD
         private void AddLinkCheck(Relation rel, Item parent, Item child)
         {
             //Item prevParent;
-            //Item[] prevParents;
+            //List<Item> prevParents;
             //RemoveMutuallyExclusiveLinks(rel, parent, child);
             //switch (rel.Pairing)
             //{

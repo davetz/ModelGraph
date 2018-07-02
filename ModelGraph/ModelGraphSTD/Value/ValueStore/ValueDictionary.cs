@@ -34,8 +34,8 @@ namespace ModelGraphSTD
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
         internal T DefaultValue => _default;
-        internal Item[] GetKeys() => (Count == 0) ? null : _values.Keys.ToArray();
-        internal T[] GetValues() => (Count == 0) ? null : _values.Values.ToArray();
+        internal IList<Item> GetKeys() => (Count == 0) ? null : _values.Keys.ToArray();
+        internal IList<T> GetValues() => (Count == 0) ? null : _values.Values.ToArray();
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 

@@ -5,10 +5,12 @@ namespace ModelGraphSTD
 {
     public class StoreOf<T> : Store where T: Item
     {
-        private List<T> _items = new List<T>(0);
-        internal Guid Guid;       // all stores have a Guid
-        internal byte Delta;      // increments on each change to _items list
-        
+        private List<T> _items = new List<T>(0);    // list of child items
+        internal Guid Guid; // all stores have a Guid
+
+        internal ushort Delta;      // increments whenever the _items list changes
+        internal ushort RefDelta;   // increments when ever any reference to a child item changes
+        internal ushort JointDelta => (ushort)(Delta + RefDelta);
 
         #region Constructor  ==================================================
         internal StoreOf() { }
@@ -26,22 +28,16 @@ namespace ModelGraphSTD
 
         #region Count/Items/ItemsReversed  ====================================
         internal IList<T> Items => _items.AsReadOnly(); // protected from accidental corruption
-        internal T[] ItemsReversed => GetItemsReversed();
-        private T[] GetItemsReversed()
-        {
-            var N = Count;
-            var M = N - 1;
-            var items = new T[N];
-            for (int i = M, j = 0; j < N; j++, i--) { items[j] = _items[i]; }
-            return items;
-        }
         internal override int Count => (_items == null) ? 0 : _items.Count;
-        internal override Item[] GetItems() => _items.ToArray();
+        internal override List<Item> GetItems() => new List<Item>(_items);
         internal override void RemoveAll() { _items.Clear(); }
         #endregion
 
         #region Methods  ======================================================
         private T Cast(Item item) => (item is T child) ? child : throw new InvalidCastException("StoreOf");
+
+        internal override ushort GetDelta => Delta;
+
         internal void SetCapacity(int exactCount)
         {
             var cap = (int)((exactCount + 1) * 1.1); // allow for modest expansion

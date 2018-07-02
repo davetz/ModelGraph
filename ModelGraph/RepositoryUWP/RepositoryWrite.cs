@@ -608,7 +608,7 @@ namespace RepositoryUWP
 
                 ushort len = 0;
                 Item itm = chef;
-                rx.GetLinks(out Item[] parents, out Item[] children);
+                rx.GetLinks(out List<Item> parents, out List<Item> children);
 
                 int N = count;
                 for (int j = 0; j < count; j++)

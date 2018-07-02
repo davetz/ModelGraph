@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ModelGraphSTD
 {/*
@@ -88,8 +89,8 @@ namespace ModelGraphSTD
             }
 
             int count = 0;
-            Item[] parents = null;
-            Item[] children = null;
+            List<Item> parents = null;
+            List<Item> children = null;
             if (_children1 != null) count = _children1.GetLinks(out parents, out children);
             if (_children2 != null) count = _children2.GetLinks(out parents, out children);
 
@@ -130,31 +131,70 @@ namespace ModelGraphSTD
 
 
         #region <Get,TryGet><Child,Parent,Children,Parents>  ==================
+        internal T2 GetChild(Item key) => TryGetChild(key, out T2 child) ? child : null;
         internal bool TryGetChild(Item key, out T2 child)
         {
-            child = GetChild(key);
-            return (child != null);
-        }
-        internal T2 GetChild(Item key)
-        {
-            T2 child = null;
-
             if (_children1 != null)
             {
-                _children1.TryGetVal(key, out child);
+                return _children1.TryGetVal(key, out child);
             }
-            else if (_children2 != null && _children2.TryGetVals(key, out List<T2> children))
+            else if (_children2 != null && _children2.TryGetVals(key, out IList<T2> children))
             {
                 child = children[0];
+                return true;
             }
-
-            return child;
+            child = null;
+            return false;
         }
-        internal bool TryGetChildren(Item key, out T2[] children)
+        internal IList<T2> GetChildren(Item key) => TryGetChildren(key, out IList<T2> children) ? children : null;
+        internal bool TryGetChildren(Item key, out IList<T2> children)
         {
-            children = GetChildren(key);
-            return (children != null);
+            if (_children1 != null && _children1.TryGetVal(key, out T2 child))
+            {
+                children = new List<T2>(1) { child };
+                return true;
+            }
+            else if (_children2 != null)
+            {
+                return _children2.TryGetVals(key, out children);
+            }
+            children = null;
+            return false;
         }
+
+        //=====================================================================
+
+        internal T1 GetParent(Item key) => TryGetParent(key, out T1 parent) ? parent : null;
+        internal bool TryGetParent(Item key, out T1 parent)
+        {
+            if (_parents1 != null)
+                return _parents1.TryGetVal(key, out parent);
+            else if (_parents2 != null && _parents2.TryGetVals(key, out IList<T1> parents))
+            {
+                parent = parents[0];
+                return true;
+            }
+            parent = null;
+            return false;
+        }
+        internal IList<T1> GetParents(Item key) => TryGetParents(key, out IList<T1> parents) ? parents : null;
+        internal bool TryGetParents(Item key, out IList<T1> parents)
+        {
+            if (_parents1 != null && _parents1.TryGetVal(key, out T1 parent))
+            {
+                parents = new List<T1>(1) { parent };
+                return true;
+            }
+            else if (_parents2 != null)
+            {
+                return _parents2.TryGetVals(key, out parents);
+            }
+            parents = null;
+            return false;
+        }
+
+        //=====================================================================
+
         override internal bool HasChildLink(Item key)
         {
             return ((_children1 != null && _children1.ContainsKey(key)) || (_children2 != null && _children2.ContainsKey(key)));
@@ -163,72 +203,28 @@ namespace ModelGraphSTD
         {
             return ((_parents1 != null && _parents1.ContainsKey(key)) || (_parents2 != null && _parents2.ContainsKey(key)));
         }
-        internal T2[] GetChildren(Item key)
-        {
-            List<T2> children = null;
 
-            if (_children1 != null && _children1.TryGetVal(key, out T2 child))
-            {
-                children = new List<T2>(1);
-                children.Add(child);
-            }
-            else if (_children2 != null)
-            {
-                _children2.TryGetVals(key, out children);
-            }
+        //=====================================================================
 
-            return (children == null) ? null : children.ToArray(); // protected against accidental corruption 
-        }
-        internal bool TryGetParent(Item key, out T1 parent)
+        internal override bool TryGetParents(Item key, out List<Item> parents)
         {
-            parent = GetParent(key);
-            return (parent != null);
-        }
-        internal T1 GetParent(Item key)
-        {
-            T1 parent = null;
-
-            if (_parents1 != null)
+            if (TryGetParents(key, out IList<T1> items))
             {
-                _parents1.TryGetVal(key, out parent);
+                parents = new List<Item>(items);
+                return true;
             }
-            else if (_parents2 != null && _parents2.TryGetVals(key, out List<T1> parents))
+            parents = null;
+            return false;
+        }
+        internal override bool TryGetChildren(Item key, out List<Item> children)
+        {
+            if (TryGetChildren(key, out IList<T2> items))
             {
-                parent = parents[0];
+                children = new List<Item>(items);
+                return true;
             }
-
-            return parent;
-        }
-        internal bool TryGetParents(Item key, out T1[] parents)
-        {
-            parents = GetParents(key);
-            return (parents != null);
-        }
-        internal T1[] GetParents(Item key)
-        {
-            List<T1> parents = null;
-
-            if (_parents1 != null && _parents1.TryGetVal(key, out T1 parent))
-            {
-                parents = new List<T1>(1);
-                parents.Add(parent);
-            }
-            else if (_parents2 != null)
-            {
-                _parents2.TryGetVals(key, out parents);
-            }
-
-            return (parents == null) ? null : parents.ToArray(); // protected against accidental corruption
-        }
-        internal override bool TryGetParents(Item key, out Item[] parents)
-        {
-            parents = GetParents(key);
-            return (parents != null);
-        }
-        internal override bool TryGetChildren(Item key, out Item[] children)
-        {
-            children = GetChildren(key);
-            return (children != null);
+            children = null;
+            return false;
         }
         #endregion
 
@@ -249,9 +245,8 @@ namespace ModelGraphSTD
         }
         override internal bool RelationExists(Item parentItem, Item childItem)
         {
-            var key = parentItem as T1;
             var child = childItem as T2;
-            return (key == null || child == null) ? false : RelationExists(key, child);
+            return (!(parentItem is T1 key) || child == null) ? false : RelationExists(key, child);
         }
         internal bool RelationExists(T1 key, T2 child)
         {
@@ -263,33 +258,38 @@ namespace ModelGraphSTD
 
         internal override void MoveChild(Item keyRef, Item itemRef, int index)
         {
-            var key = keyRef as T1;
             var item = itemRef as T2;
-            if (key == null || item == null) return;
+            if (!(keyRef is T1 key) || item == null) return;
 
             MoveChildLink(key, item, index);
         }
         internal void MoveChildLink(T1 key, T2 item, int index)
         {
-            if (_children2 != null) _children2.Move(key, item, index);
+            if (_children2 == null) return;
+            _children2.Move(key, item, index);
+
+            key.RefChanged();
+            item.RefChanged();
         }
         internal override void MoveParent(Item keyRef, Item itemRef, int index)
         {
-            var key = keyRef as T2;
             var item = itemRef as T1;
-            if (key == null || item == null) return;
+            if (!(keyRef is T2 key) || item == null) return;
 
             MoveParentLink(key, item, index);
         }
         internal void MoveParentLink(T2 key, T1 item, int index)
         {
-            if (_parents2 != null) _parents2.Move(key, item, index);
+            if (_parents2 == null) return;
+            _parents2.Move(key, item, index);
+
+            key.RefChanged();
+            item.RefChanged();
         }
         override internal void InsertLink(Item parentItem, Item childItem, int parentIndex, int childIndex)
         {
-            var parent = parentItem as T1;
             var child = childItem as T2;
-            if (parent == null || child == null) return;
+            if (!(parentItem is T1 parent) || child == null) return;
 
             InsertLink(parent, child, parentIndex, childIndex);
         }
@@ -328,12 +328,14 @@ namespace ModelGraphSTD
                     _children2.InsertLink(parent, child, childIndex);
                     break;
             }
+
+            parent.RefChanged();
+            child.RefChanged();
         }
         override internal (int ParentIndex, int ChildIndex) AppendLink(Item parentItem, Item childItem)
         {
-            var parent = parentItem as T1;
             var child = childItem as T2;
-            if (parent == null || child == null) return (-1, -1);
+            if (!(parentItem is T1 parent) || child == null) return (-1, -1);
 
             return AppendLink(parent, child);
         }
@@ -371,13 +373,15 @@ namespace ModelGraphSTD
                     _children2.SetLink(parent, child);
                     break;
             }
+
+            parent.RefChanged();
+            child.RefChanged();
             return GetIndex(parent, child);
         }
         override internal (int ParentIndex, int ChildIndex) GetIndex(Item parentItem, Item childItem)
         {
-            var parent = parentItem as T1;
             var child = childItem as T2;
-            return (parent == null || child == null) ? (-1, -1) : GetIndex(parent, child);
+            return (!(parentItem is T1 parent) || child == null) ? (-1, -1) : GetIndex(parent, child);
         }
         internal (int ParentIndex, int ChildIndex) GetIndex(T1 parent, T2 child)
         {
@@ -394,18 +398,16 @@ namespace ModelGraphSTD
         }
         internal override void RemoveLink(Item parentItem, Item childItem)
         {
-            var parent = parentItem as T1;
             var child = childItem as T2;
 
-            if (parent != null && child != null) RemoveLink(parent, child);
+            if (parentItem is T1 parent && child != null) RemoveLink(parent, child);
         }
         internal override (int Index1, int Index2) GetParentsIndex(Item keyRef, Item item1Ref, Item item2Ref)
         {
-            var key = keyRef as T2;
             var item1 = item1Ref as T1;
             var item2 = item2Ref as T1;
 
-            if (key != null && item1 != null && item2 != null) return GetParentsIndex(key, item1, item2);
+            if (keyRef is T2 key && item1 != null && item2 != null) return GetParentsIndex(key, item1, item2);
 
             return (-1, -1);
         }
@@ -419,11 +421,10 @@ namespace ModelGraphSTD
         }
         internal override (int Index1, int Index2) GetChildrenIndex(Item keyRef, Item item1Ref, Item item2Ref)
         {
-            var key = keyRef as T1;
             var item1 = item1Ref as T2;
             var item2 = item2Ref as T2;
 
-            if (key != null && item1 != null && item2 != null) return GetChildrenIndex(key, item1, item2);
+            if (keyRef is T1 key && item1 != null && item2 != null) return GetChildrenIndex(key, item1, item2);
 
             return (-1, -1);
         }
@@ -442,6 +443,9 @@ namespace ModelGraphSTD
 
             if (_children2 != null) _children2.RemoveLink(parent, child);
             else if (_children1 != null) _children1.RemoveLink(parent, child);
+
+            parent.RefChanged();
+            child.RefChanged();
         }
         #endregion
 
@@ -501,24 +505,6 @@ namespace ModelGraphSTD
 
             return 0;
         }
-        internal int GetKeys(out Item[] keys)
-        {
-            if (Pairing == Pairing.OneToOne &&
-                _children1 != null) return _children1.GetKeys(out keys);
-            if (_children2 != null) return _children2.GetKeys(out keys);
-
-            keys = new Item[0];
-            return 0;
-        }
-        internal int GetValues(out Item[] values)
-        {
-            if (Pairing == Pairing.OneToOne &&
-                _children1 != null) return _children1.GetValues(out values);
-            if (_children2 != null) return _children2.GetValues(out values);
-
-            values = new Item[0];
-            return 0;
-        }
         internal override int GetLinksCount()
         {
             if (Pairing == Pairing.OneToOne &&
@@ -537,22 +523,21 @@ namespace ModelGraphSTD
 
             return false;
         }
-        internal override int GetLinks(out Item[] parents, out Item[] children)
+        internal override int GetLinks(out List<Item> parents, out List<Item> children)
         {
             if (Pairing == Pairing.OneToOne &&
                 _children1 != null) return _children1.GetLinks(out parents, out children);
             if (_children2 != null) return _children2.GetLinks(out parents, out children);
 
-            parents = new Item[0];
-            children = new Item[0];
+            parents = null;
+            children = null;
             return 0;
         }
 
         internal override void SetLink(Item parent, Item child, int capacity = 0)
         {
-            var key = parent as T1;
             var val = child as T2;
-            if (key != null && val != null) SetLink(key, val, capacity);
+            if (parent is T1 key && val != null) SetLink(key, val, capacity);
         }
         internal void SetLink(T1 key, T2 val, int capacity) // only used only by Load - NO NULL CHECKING
         {
@@ -574,9 +559,9 @@ namespace ModelGraphSTD
                     break;
             }
         }
-        internal void SetLink(T1 key, T2[] vals)
+        internal void SetLink(T1 key, List<T2> vals)
         {
-            var cap = vals.Length;
+            var cap = vals.Count;
             foreach (var val in vals)
             {
                 SetLink(key, val, cap);

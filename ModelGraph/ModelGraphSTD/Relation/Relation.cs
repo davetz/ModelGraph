@@ -34,11 +34,11 @@ namespace ModelGraphSTD
         internal abstract void MoveParent(Item key, Item item, int index);
         internal abstract (int Index1, int Index2) GetChildrenIndex(Item key, Item item1, Item item2);
         internal abstract (int Index1, int Index2) GetParentsIndex(Item key, Item item1, Item item2);
-        internal abstract int GetLinks(out Item[] parents, out Item[] children);
+        internal abstract int GetLinks(out List<Item> parents, out List<Item> children);
         internal abstract int GetLinksCount();
         internal abstract void SetLink(Item key, Item val, int capacity = 0); // used by storage file load
-        internal abstract bool TryGetParents(Item key, out Item[] parents);
-        internal abstract bool TryGetChildren(Item key, out Item[] children);
+        internal abstract bool TryGetParents(Item key, out List<Item> parents);
+        internal abstract bool TryGetChildren(Item key, out List<Item> children);
         internal abstract bool HasKey1(Item key);
         internal abstract bool HasKey2(Item key);
         internal abstract int KeyCount { get; }

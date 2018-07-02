@@ -30,8 +30,10 @@ namespace ModelGraphSTD
             Normal = new Extent(p);
             Closing = new Extent(p);
 
-            Points = new List<XYPoint>();
-            Points.Add(p);
+            Points = new List<XYPoint>
+            {
+                p
+            };
         }
         #endregion
 
@@ -76,9 +78,11 @@ namespace ModelGraphSTD
             Add(p);
             if (IsPolygon) return;
 
-            Points = new List<XYPoint>(2);
-            Points.Add(Normal.TopLeft);
-            Points.Add(Normal.BottomRight);
+            Points = new List<XYPoint>(2)
+            {
+                Normal.TopLeft,
+                Normal.BottomRight
+            };
             Extent = Normal;
         }
         #endregion

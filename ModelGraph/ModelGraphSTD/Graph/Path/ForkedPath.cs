@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {/*
@@ -6,32 +7,17 @@ namespace ModelGraphSTD
     public class ForkedPath : Path
     {
         internal Path Path1;
-        internal Path[] Paths;
 
         #region Constructor  ==================================================
-        internal ForkedPath(Graph owner, Path path1, Path[] paths)
+        internal ForkedPath(Graph owner, Path path1, List<Path> paths)
+            : base (owner, Trait.ForkedPath, paths)
         {
-            Owner = owner;
-            Trait = Trait.ForkedPath;
             IsRadial = true;
-
             Path1 = path1;
-            Paths = paths;
-
-            owner.Add(this);
         }
         #endregion
 
         #region Properties/Methods  ===========================================
-        internal override int Count => 2;
-        internal override Item[] Items => GetItems();
-        private Item[] GetItems()
-        {
-            var len = Paths.Length;
-            var items = new Item[len];
-            for (int i = 0; i < len; i++) { items[i] = Paths[i]; }
-            return items;
-        }
         internal override Query Query { get { return Path1.Query; } }
         internal override Item Head { get { return IsReversed ? Path1.Tail : Path1.Head; } }
         internal override Item Tail { get { return IsReversed ? Path1.Head : Path1.Tail; } }

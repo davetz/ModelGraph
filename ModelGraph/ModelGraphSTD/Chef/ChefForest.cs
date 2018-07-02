@@ -2,7 +2,6 @@
 
 namespace ModelGraphSTD
 {/*
-
  */
     public partial class Chef
     {
@@ -10,10 +9,10 @@ namespace ModelGraphSTD
         /// <summary>
         /// Return a GraphX forest of query trees
         /// </summary>
-        private Query[] GetForest(Graph g, Item seed, HashSet<Store> nodeOwners)
+        private List<Query> GetForest(Graph g, Item seed, HashSet<Store> nodeOwners)
         {
             var gd = g.GraphX;
-            QueryX[] roots = GraphX_QueryX.GetChildren(gd); 
+            var roots = GraphX_QueryX.GetChildren(gd); 
             if (roots == null) return null;
 
             List<Query> segList = new List<Query>();
@@ -30,13 +29,13 @@ namespace ModelGraphSTD
                 if (seg.Items == null) continue;
                 foreach (var itm in seg.Items) { if (nodeOwners.Contains(itm.Store)) g.NodeItems.Add(itm); }
 
-                QueryX[] sdChildren = QueryX_QueryX.GetChildren(seg.Owner);
+                var sdChildren = QueryX_QueryX.GetChildren(seg.Owner);
                 if (sdChildren == null) continue;
 
-                var N = seg.Items.Length;
-                var M = sdChildren.Length;
+                var N = seg.Items.Count;
+                var M = sdChildren.Count;
 
-                seg.Children = new Query[N][];
+                seg.Children = new List<List<Query>>(N);
                 for (int i = 0; i < N; i++)
                 {
                     var item = seg.Items[i];
@@ -50,7 +49,7 @@ namespace ModelGraphSTD
                         segList.Add(child);
                         workQueue.Enqueue(child);
                     }
-                    if (segList.Count > 0) seg.Children[i] = segList.ToArray();
+                    if (segList.Count > 0) seg.Children[i] = segList;
                 }
             }
             return forest;
@@ -62,12 +61,12 @@ namespace ModelGraphSTD
         /// Return a query forest for the callers computeX.
         /// Also return a list of query's who's parent queryX has a valid select clause. 
         /// </summary>
-        private Query[] GetForest(ComputeX cx, Item seed, List<Query> selectors)
+        private List<Query> GetForest(ComputeX cx, Item seed, List<Query> selectors)
         {
-            QueryX[] qxRoots = ComputeX_QueryX.GetChildren(cx);
+            var qxRoots = ComputeX_QueryX.GetChildren(cx);
             if (qxRoots == null) return null;
 
-            List<Query> qList = new List<Query>();
+            var qList = new List<Query>();
             var forest = GetQueryRoots(qxRoots, seed, qList);
             if (forest == null) return null;
 
@@ -80,10 +79,10 @@ namespace ModelGraphSTD
                 var qxChildren = QueryX_QueryX.GetChildren(q.Owner);
                 if (qxChildren != null)
                 {
-                    var N = q.Items.Length;
-                    var M = qxChildren.Length;
+                    var N = q.Items.Count;
+                    var M = qxChildren.Count;
 
-                    q.Children = new Query[N][];
+                    q.Children = new List<List<Query>>(N);
                     for (int i = 0; i < N; i++)
                     {
                         var item = q.Items[i];
@@ -104,7 +103,7 @@ namespace ModelGraphSTD
                             qList.Add(child);
                             workQueue.Enqueue(child);
                         }
-                        if (qList.Count > 0) q.Children[i] = qList.ToArray();
+                        if (qList.Count > 0) q.Children[i] = qList;
                     }
                 }
             }
@@ -113,11 +112,11 @@ namespace ModelGraphSTD
         #endregion
 
         #region GetRoots  =====================================================
-        Query[] GetQueryRoots(QueryX[] qxRoots, Item seed, List<Query> qList)
+        List<Query> GetQueryRoots(IList<QueryX> qxRoots, Item seed, List<Query> qList)
         {/*
             Create the roots of a query forest.
          */
-            if (qxRoots != null && qxRoots.Length > 0)
+            if (qxRoots != null && qxRoots.Count > 0)
             {
                 foreach (var qx in qxRoots)
                 {
@@ -133,12 +132,12 @@ namespace ModelGraphSTD
                     {/*
 
                      */
-                        qList.Add(new Query(qx, null, sto, new Item[] { seed }));
+                        qList.Add(new Query(qx, null, sto, new List<Item> { seed }));
                     }
                 }
             }
 
-            return (qList.Count > 0) ? qList.ToArray() : null;
+            return (qList.Count > 0) ? qList : null;
         }
         #endregion
 
@@ -148,7 +147,7 @@ namespace ModelGraphSTD
             var r = Relation_QueryX.GetParent(qx);
             if (r == null) return null;
 
-            Item[] items = null;
+            List<Item> items = null;
             if (qx.IsReversed)
                 r.TryGetParents(item, out items);
             else
@@ -214,7 +213,7 @@ namespace ModelGraphSTD
             var r = Relation_QueryX.GetParent(qx);
             if (r == null) return null;
 
-            Item[] items = null;
+            List<Item> items = null;
             if (qx.IsReversed)
                 r.TryGetParents(item, out items);
             else
@@ -228,12 +227,12 @@ namespace ModelGraphSTD
         #endregion
 
         #region ApplyFilter  ==================================================
-        Item[] ApplyFilter(QueryX sd, Item[] input)
+        List<Item> ApplyFilter(QueryX sd, List<Item> input)
         {
             if (input == null) return null;
 
             var output = input;
-            var M = input.Length;
+            var M = input.Count;
             var N = M;
             var filter = sd.Where;
             for (int i = 0; i < M; i++)
@@ -247,10 +246,10 @@ namespace ModelGraphSTD
 
         #region RemoveDuplicates  =============================================
         // do not cross the same edge (item to input[n]) twice
-        Item[] RemoveDuplicates(QueryX sd, Item item, Item[] input, Dictionary<byte, List<ItemPair>> keyPairs)
+        List<Item> RemoveDuplicates(QueryX sd, Item item, List<Item> input, Dictionary<byte, List<ItemPair>> keyPairs)
         {
             var output = input;
-            var M = input.Length;
+            var M = input.Count;
             var N = M;
 
             if (!keyPairs.TryGetValue(sd.ExclusiveKey, out List<ItemPair> itemPairs))
@@ -278,29 +277,29 @@ namespace ModelGraphSTD
         #endregion
 
         #region RemoveNulls  ==================================================
-        private Item[] RemoveNulls(Item[] input, int M, int N)
+        private List<Item> RemoveNulls(List<Item> input, int M, int N)
         {
             if (N == 0) return null;
             if (N == M) return input;
 
-            var output = new Item[N];
-            for (int i = 0, j = 0; i < M; i++)
+            var output = new List<Item>(N);
+            foreach (var item in input)
             {
-                var item = input[i];
-                if (item != null) output[j++] = item;
+                if (item == null) continue;
+                output.Add(item);
             }
             return output;
         }
-        private QueryX[] RemoveNulls(QueryX[] input, int M, int N)
+        private List<QueryX> RemoveNulls(List<QueryX> input, int M, int N)
         {
             if (N == 0) return null;
             if (N == M) return input;
 
-            var output = new QueryX[N];
-            for (int i = 0, j = 0; i < M; i++)
+            var output = new List<QueryX>(N);
+            foreach (var item in input)
             {
-                var item = input[i];
-                if (item != null) output[j++] = item;
+                if (item == null) continue;
+                output.Add(item);
             }
             return output;
         }

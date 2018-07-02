@@ -104,7 +104,7 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
-            Store_Property.SetLink(_tableXStore, props.ToArray());
+            Store_Property.SetLink(_tableXStore, props);
             #endregion
 
             #region EnumX  ====================================================
@@ -123,7 +123,7 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
-            Store_Property.SetLink(_enumXStore, props.ToArray());
+            Store_Property.SetLink(_enumXStore, props);
             #endregion
 
             #region PairX  ====================================================
@@ -157,7 +157,7 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
-            Store_Property.SetLink(_tableXStore, props.ToArray());
+            Store_Property.SetLink(_tableXStore, props);
             #endregion
 
             #region ColumnX  ==================================================
@@ -196,7 +196,7 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
-            Store_Property.SetLink(_columnXStore, props.ToArray());
+            Store_Property.SetLink(_columnXStore, props);
             #endregion
 
             #region ComputeX  =================================================
@@ -286,7 +286,7 @@ namespace ModelGraphSTD
                 p.Value = new ByteValue(p);
                 props.Add(p);
             }
-            Store_Property.SetLink(_computeXStore, props.ToArray());
+            Store_Property.SetLink(_computeXStore, props);
             #endregion
 
             #region RelationX  ================================================
@@ -319,7 +319,7 @@ namespace ModelGraphSTD
                 p.Value = new BoolValue(p);
                 props.Add(p);
             }
-            Store_Property.SetLink(_relationXStore, props.ToArray());
+            Store_Property.SetLink(_relationXStore, props);
             #endregion
 
 
@@ -339,7 +339,7 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
-            Store_Property.SetLink(_graphXStore, props.ToArray());
+            Store_Property.SetLink(_graphXStore, props);
             #endregion
 
             #region SymbolX  ==================================================
@@ -379,7 +379,7 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
-            Store_Property.SetLink(_symbolXStore, props.ToArray());
+            Store_Property.SetLink(_symbolXStore, props);
             #endregion
 
             #region QueryX  ===================================================
@@ -462,7 +462,7 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
-            Store_Property.SetLink(_queryXStore, props.ToArray());
+            Store_Property.SetLink(_queryXStore, props);
             #endregion
 
 

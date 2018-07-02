@@ -309,12 +309,12 @@ namespace ModelGraphSTD
             var symbols = g.Symbols = GraphX_SymbolX.GetChildren(gx);
             if (symbols == null)
             {
-                g.Symbols = new SymbolX[0];
+                g.Symbols = new List<SymbolX>(0);
             }
             else
             {
                 var storeNonSymbols = new HashSet<Store>();
-                var storeSymbolXQueryX = new Dictionary<Store, (SymbolX[], QueryX[])>();
+                var storeSymbolXQueryX = new Dictionary<Store, (List<SymbolX>, List<QueryX>)>();
                 foreach (var node in g.Nodes)
                 {
                     var sto = node.Item.Store;
@@ -338,19 +338,19 @@ namespace ModelGraphSTD
                     (var syms, var segs) = storeSymbolXQueryX[sto];
 
                     int i, j;
-                    for (j = 0; j < syms.Length; j++)
+                    for (j = 0; j < syms.Count; j++)
                     {
                         var filter = segs[j].Where;
                         if (filter == null || filter.Matches(row)) break;
                     }
-                    if (j == syms.Length) continue;
+                    if (j == syms.Count) continue;
 
                     var sym = syms[j];
-                    for (i = 0; i < symbols.Length; i++)
+                    for (i = 0; i < symbols.Count; i++)
                     {
                         if (symbols[i] == sym) break;
                     }
-                    if (i == symbols.Length) continue;
+                    if (i == symbols.Count) continue;
 
                     node.Core.Symbol = (byte)(i + 2);
                     node.Core.Orientation = Orientation.Central;
@@ -442,7 +442,7 @@ namespace ModelGraphSTD
                         if (j == colors.Count) colors.Add(argb);
                         g.Group_ColorIndex.Add(key, j);
                     }
-                    g.GroupColors = colors.ToArray();
+                    g.GroupColors = colors;
                     g.Item_ColorIndex = new Dictionary<Item, int>(g.NodeItems.Count);
                     foreach (var pair in g.GroupQuerys)
                     {
@@ -460,13 +460,6 @@ namespace ModelGraphSTD
             g.Item_ColorIndex = null;
             g.GroupColors = null;
             return false;
-        }
-        private void SetDefaultGroupColor(Graph g, int i)
-        {
-            g.GroupColors[i].A = 0xFF;
-            g.GroupColors[i].R = 0x80;
-            g.GroupColors[i].G = 0x80;
-            g.GroupColors[i].B = 0x70;
         }
         private static string _hexValues = "0123456789abcdef";
         private GroupColor GetGroupColor(string color)

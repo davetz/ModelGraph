@@ -29,6 +29,7 @@ namespace ModelGraphSTD
 
         #region Properies/Methods  ============================================
         internal TableX TableX => (Owner as TableX);
+        internal override void RefChanged() => TableX.RefDelta++;
         #endregion
     }
 }

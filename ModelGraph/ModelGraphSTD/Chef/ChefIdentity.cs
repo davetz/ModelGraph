@@ -30,20 +30,21 @@ namespace ModelGraphSTD
         #region InitializeItemIdentity  =======================================
         private void InitializeItemIdentity()
         {
-            _itemIdentity = new Dictionary<Trait, Func<Item, IdentityStyle, string>>(73);
-
-            _itemIdentity.Add(Trait.RowX, RowX_Identity);
-            _itemIdentity.Add(Trait.ViewX, ViewX_Identity);
-            _itemIdentity.Add(Trait.PairX, PairX_Identity);
-            _itemIdentity.Add(Trait.EnumX, EnumX_Identity);
-            _itemIdentity.Add(Trait.TableX, TableX_Identity);
-            _itemIdentity.Add(Trait.GraphX, GraphX_Identity);
-            _itemIdentity.Add(Trait.QueryX, QueryX_Identity);
-            _itemIdentity.Add(Trait.SymbolX, SymbolX_Identity);
-            _itemIdentity.Add(Trait.ColumnX, ColumnX_Identity);
-            _itemIdentity.Add(Trait.ComputeX, ComputeX_Identity);
-            //_itemIdentity.Add(Trait.CommandX, CommandX_Identity);
-            _itemIdentity.Add(Trait.RelationX, RelationX_Identity);
+            _itemIdentity = new Dictionary<Trait, Func<Item, IdentityStyle, string>>(73)
+            {
+                { Trait.RowX, RowX_Identity },
+                { Trait.ViewX, ViewX_Identity },
+                { Trait.PairX, PairX_Identity },
+                { Trait.EnumX, EnumX_Identity },
+                { Trait.TableX, TableX_Identity },
+                { Trait.GraphX, GraphX_Identity },
+                { Trait.QueryX, QueryX_Identity },
+                { Trait.SymbolX, SymbolX_Identity },
+                { Trait.ColumnX, ColumnX_Identity },
+                { Trait.ComputeX, ComputeX_Identity },
+                //_itemIdentity.Add(Trait.CommandX, CommandX_Identity);
+                { Trait.RelationX, RelationX_Identity }
+            };
         }
         #endregion
 
@@ -55,8 +56,7 @@ namespace ModelGraphSTD
         }
         private string Index_Identity(Item item)
         {
-            var own = item.Owner as Store;
-            if (own == null) return InvalidItem;
+            if (!(item.Owner is Store own)) return InvalidItem;
 
             var inx = own.IndexOf(item);
             if (inx < 0) return InvalidItem;

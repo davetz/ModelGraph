@@ -11,10 +11,8 @@ namespace ModelGraphSTD
 
         #region Constructor  ==================================================
         internal QueryPath(Graph owner, Query head, Query tail, int taiIndex = 0, bool isRadial = false, bool isReversed = false)
+            : base(owner, Trait.QueryPath)
         {
-            Owner = owner;
-            Trait = Trait.QueryPath;
-
             HeadQuery = head;
             TailQuery = tail;
             TailIndex = taiIndex;
@@ -37,9 +35,6 @@ namespace ModelGraphSTD
 
         internal override double Width => 40;
         internal override double Height => 10;
-
-        internal override int Count => 0;
-        internal override Item[] Items => new Item[0];
         #endregion
     }
 }

@@ -60,7 +60,7 @@ namespace ModelGraphSTD
             }
             return count;
         }
-        internal bool TryGetErrors(out Item[] items)
+        internal bool TryGetErrors(out List<Error> items)
         {
             var errors = new List<Error>(GetErrorCount());
 
@@ -68,8 +68,8 @@ namespace ModelGraphSTD
             {
                 errors.AddRange(e1.Value);
             }
-            items = errors.ToArray();
-            return (items.Length > 0);
+            items = errors;
+            return (items.Count > 0);
         }
         #endregion
 

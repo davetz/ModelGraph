@@ -24,7 +24,7 @@ namespace ModelGraphSTD
         public Edge BendEdge;     // when bending an edge, remember which edge it is
         public int BendIndex;     // when moving an bend point, remember which point it is
 
-        public EdgeCut[] HitNodeEdgeCuts;  // edges cut by region(s)
+        public List<EdgeCut> HitNodeEdgeCuts;  // edges cut by region(s)
 
         private bool _enableSnapShot;
 
@@ -128,42 +128,35 @@ namespace ModelGraphSTD
         #endregion
 
         #region GetChangedItems  ==============================================
-        public Item[] GetChangedItems()
+        public List<Item> GetChangedItems()
         {
-            Item[] items = null;
+            List<Item> items = null;
             if ((HitLocation & HitLocation.Region) != 0)
             {
-                var n = Nodes.Count + Edges.Count + Chops.Count;
-                items = new Item[n];
-                int i = 0;
-                foreach (var item in Nodes) { items[i++] = item; }
-                foreach (var item in Edges) { items[i++] = item; }
-                foreach (var item in Chops) { items[i++] = item; }
+                items = new List<Item>(Nodes.Count + Edges.Count + Chops.Count);
+                foreach (var item in Nodes) { items.Add(item); }
+                foreach (var item in Edges) { items.Add(item); }
+                foreach (var item in Chops) { items.Add(item); }
             }
             else if (HitNode != null)
             {
                 if (HitNodeEdgeCuts == null)
                 {
-                    items = new Item[] { HitNode };
+                    items = new List<Item>(1) { HitNode };
                 }
                 else
                 {
-                    var n = 1 + HitNodeEdgeCuts.Length;
-                    items = new Item[n];
-                    items[0] = HitNode;
-                    for (int i = 0, j = 1; j < n; i++, j++)
-                    {
-                        items[j] = HitNodeEdgeCuts[i].Edge;
-                    }
+                    items = new List<Item>(1 + HitNodeEdgeCuts.Count) { HitNode };
+                    foreach (var cut in HitNodeEdgeCuts) { items.Add(cut.Edge); }
                 }
             }
             else if (HitEdge != null)
             {
-                items = new Item[] { HitEdge };
+                items = new List<Item> { HitEdge };
             }
             else
             {
-                items = new Item[0];
+                items = new List<Item>(0);
             }
             return items;
         }
@@ -207,7 +200,7 @@ namespace ModelGraphSTD
                 if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> nodeEdges))
                 {
                     var len = nodeEdges.Count;
-                    HitNodeEdgeCuts = new EdgeCut[len];
+                    HitNodeEdgeCuts = new List<EdgeCut>(len);
                     for (int i = 0; i < len; i++)
                     {
                         var edge = nodeEdges[i];
@@ -236,7 +229,7 @@ namespace ModelGraphSTD
                 if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> nodeEdges))
                 {
                     var len = nodeEdges.Count;
-                    HitNodeEdgeCuts = new EdgeCut[len];
+                    HitNodeEdgeCuts = new List<EdgeCut>(len);
                     for (int i = 0; i < len; i++)
                     {
                         var edge = nodeEdges[i];

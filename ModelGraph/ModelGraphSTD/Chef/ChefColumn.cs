@@ -31,21 +31,29 @@ namespace ModelGraphSTD
         #endregion
 
         #region ChoiceColumns  ================================================
-        private bool TryGetChoiceColumns(Item tbl, out ColumnX[] columns)
+        private bool HasChoiceColumns(TableX tx)
         {
-            var colList = TableX_ColumnX.GetChildren(tbl);
-            if (colList != null)
+            var columns = TableX_ColumnX.GetChildren(tx);
+            if (columns != null)
             {
-                var choiceColumns = new List<ColumnX>();
-                foreach (var col in colList)
+                foreach (var col in columns)
                 {
-                    if (col.IsChoice) choiceColumns.Add(col);
+                    if (col.IsChoice) return true;
                 }
-                columns = choiceColumns.ToArray();
-                return choiceColumns.Count > 0;
             }
-            columns = null;
             return false;
+        }
+        private List<ColumnX> GetChoiceColumns(TableX tx)
+        {
+            var columns = TableX_ColumnX.GetChildren(tx);
+            if (columns == null) return null;
+
+            var choiceColumns = new List<ColumnX>();
+            foreach (var col in columns)
+            {
+                if (col.IsChoice) choiceColumns.Add(col);
+            }
+            return choiceColumns;
         }
         #endregion
 

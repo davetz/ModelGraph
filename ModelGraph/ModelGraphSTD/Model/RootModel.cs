@@ -41,7 +41,7 @@ namespace ModelGraphSTD
 
         // (Primary & Secondary) RootModels: Created by PrimaryRoot
         public RootModel(UIRequest rq)
-            : base(null, rq.Trait, 0, rq.Item, rq.Aux1, rq.Aux2, rq.Get)
+            : base(null, rq.Trait, rq.Item, rq.Aux1, rq.Aux2, rq.Get)
         {
             Get = rq.Get;
             Chef = rq.Root.Chef;

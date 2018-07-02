@@ -200,7 +200,7 @@ namespace ModelGraphSTD
 
             foreach (var rel in _relationStore.Items)
             {
-                var len = rel.GetLinks(out Item[] parents, out Item[] children);
+                var len = rel.GetLinks(out List<Item> parents, out List<Item> children);
                 for (int i = 0; i < len; i++)
                 {
                     if (parents[i].IsExternal || children[i].IsExternal)

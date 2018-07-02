@@ -168,7 +168,7 @@ namespace ModelGraphSTD
             {
                 var selectors = new List<Query>();
                 var forest = GetForest(cx, key, selectors);
-                if (forest == null || forest.Length == 0 || selectors.Count == 0)
+                if (forest == null || forest.Count == 0 || selectors.Count == 0)
                     return false;
 
                 var sb = new StringBuilder(128);
@@ -267,11 +267,11 @@ namespace ModelGraphSTD
                 return ValType.IsInvalid; //computeX must have a root queryX reference
 
             var children = QueryX_QueryX.GetChildren(qx);
-            if (children == null || children.Length == 0)
+            if (children == null || children.Count == 0)
                 return ValType.IsInvalid; //computeX must have atleast one queryX reference
 
             var workQueue = new Queue<QueryX>(children);
-            var isMultiple = children.Length > 1;
+            var isMultiple = children.Count > 1;
 
             var vTypes = new HashSet<ValType>();
 
@@ -293,7 +293,7 @@ namespace ModelGraphSTD
                 children = QueryX_QueryX.GetChildren(qt);
                 if (children != null)
                 {
-                    isMultiple |= children.Length > 1;
+                    isMultiple |= children.Count > 1;
                     foreach (var child in children) { workQueue.Enqueue(child); }
                 }                
             }

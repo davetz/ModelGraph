@@ -169,16 +169,13 @@ namespace ModelGraphSTD
                 var row = item as RowX;
                 var tbl = item.Owner as TableX;
 
-                var N = TableX_ColumnX.ChildCount(tbl);
-                if (N > 0)
+                if (TableX_ColumnX.TryGetChildren(tbl, out IList<ColumnX> cols))
                 {
-                    var cols = TableX_ColumnX.GetChildren(tbl);
-                    string[] vals = new string[N];
-                    for (int i = 0; i < N; i++)
+                    var vals = new List<string>(cols.Count);
+                    foreach (var col in cols)
                     {
-                        vals[i] = cols[i].Value.GetString(row);
+                        vals.Add(col.Value.GetString(row));
                     }
-                    _changeSet.IsReversed = true; //we want the order of create and remove to look consistant
                     new ItemCreated(_changeSet, item, store.IndexOf(item), name, cols, vals);
                     return;
                 }
@@ -223,7 +220,7 @@ namespace ModelGraphSTD
                 tbl.Insert(row, index);
                 if (chng.Columns != null)
                 {
-                    var N = chng.Columns.Length;
+                    var N = chng.Columns.Count;
                     for (int i = 0; i < N; i++)
                     {
                         chng.Columns[i].Value.SetString(row, chng.Values[i]);
@@ -287,24 +284,19 @@ namespace ModelGraphSTD
         {
             MajorDelta += 1;
 
-            var sto = item.Owner as Store;
-            if (sto == null) return;
+            if (!(item.Owner is Store sto)) return;
 
             var inx = (sto == null) ? -1 : sto.IndexOf(item);
             var name = GetIdentity(item, IdentityStyle.ChangeLog);
 
-            if (item.IsRowX && TableX_ColumnX.HasChildLink(sto))
+            if (item.IsRowX && TableX_ColumnX.TryGetChildren(sto, out IList<ColumnX> cols))
             {
-                var columns = TableX_ColumnX.GetChildren(sto);
-                string[] values;
-                var N = columns.Length;
-                values = new string[N];
-                for (int i = 0; i < N; i++)
+                var vals = new List<string>(cols.Count);
+                foreach (var col in cols)
                 {
-                    var col = columns[i];
-                    values[i] = col.Value.GetString(item);
+                    vals.Add(col.Value.GetString(item));
                 }
-                new ItemRemoved(_changeSet, item, inx, name, columns, values);
+                new ItemRemoved(_changeSet, item, inx, name, cols, vals);
             }
             else
                 new ItemRemoved(_changeSet, item, inx, name);
@@ -317,7 +309,7 @@ namespace ModelGraphSTD
             var sto = itm.Store;
             (sto).Remove(itm);
 
-            var N = (cg.Columns != null) ? cg.Columns.Length : 0;
+            var N = (cg.Columns != null) ? cg.Columns.Count : 0;
             for (int i = 0; i < N; i++) { cg.Columns[i].Value.Remove(itm); }
 
             itm.IsDeleted = true;
@@ -331,7 +323,7 @@ namespace ModelGraphSTD
             var sto = cg.Store;
             sto.Insert(itm, cg.Index);
 
-            var N = (cg.Columns != null) ? cg.Columns.Length : 0;
+            var N = (cg.Columns != null) ? cg.Columns.Count : 0;
             for (int i = 0; i < N; i++) { cg.Columns[i].Value.SetString(itm, cg.Values[i]); }
 
             cg.Item.IsDeleted = false;
@@ -467,51 +459,51 @@ namespace ModelGraphSTD
             FindDependents(target, hitList);
             hitList.Reverse();
 
-            Item[] items;
+            List<Item> items;
 
             var relItems = new Dictionary<Relation, Dictionary<Item, List<Item>>>();
 
             foreach (var item in hitList)
             {
-                if (item is Relation r)
-                {
-                    var N = r.GetLinks(out Item[] parents, out Item[] children);
-                    for (int i = 0; i < N; i++)
-                    {
-                        var item1 = parents[i];
-                        var item2 = children[i];
-                        if (IsAreadyRemoved(r, item1, item2, relItems)) continue;
-                        MarkItemUnlinked(r, item1, item2);
-                    }
-                }
-                if (TryGetParentRelations(item, out Relation[] relations))
-                {
-                    foreach (var rel in relations)
-                    {
-                        if (rel.TryGetParents(item, out items))
-                        {
-                            foreach (var parent in items)
-                            {
-                                if (IsAreadyRemoved(rel, parent, item, relItems)) continue;
-                                MarkItemUnlinked(rel, parent, item);
-                            }
-                        }
-                    }
-                }
-                if (TryGetChildRelations(item, out relations))
-                {
-                    foreach (var rel in relations)
-                    {
-                        if (rel.TryGetChildren(item, out items))
-                        {
-                            foreach (var child in items)
-                            {
-                                if (IsAreadyRemoved(rel, item, child, relItems)) continue;
-                                MarkItemUnlinked(rel, item, child);
-                            }
-                        }
-                    }
-                }
+                //if (item is Relation r)
+                //{
+                //    var N = r.GetLinks(out List<Item> parents, out List<Item> children);
+                //    for (int i = 0; i < N; i++)
+                //    {
+                //        var item1 = parents[i];
+                //        var item2 = children[i];
+                //        if (IsAreadyRemoved(r, item1, item2, relItems)) continue;
+                //        MarkItemUnlinked(r, item1, item2);
+                //    }
+                //}
+                //if (TryGetParentRelations(item, out List<Relation> relations))
+                //{
+                //    foreach (var rel in relations)
+                //    {
+                //        if (rel.TryGetParents(item, out items))
+                //        {
+                //            foreach (var parent in items)
+                //            {
+                //                if (IsAreadyRemoved(rel, parent, item, relItems)) continue;
+                //                MarkItemUnlinked(rel, parent, item);
+                //            }
+                //        }
+                //    }
+                //}
+                //if (TryGetChildRelations(item, out relations))
+                //{
+                //    foreach (var rel in relations)
+                //    {
+                //        if (rel.TryGetChildren(item, out items))
+                //        {
+                //            foreach (var child in items)
+                //            {
+                //                if (IsAreadyRemoved(rel, item, child, relItems)) continue;
+                //                MarkItemUnlinked(rel, item, child);
+                //            }
+                //        }
+                //    }
+                //}
             }
 
             foreach (var item in hitList) { MarkItemRemoved(item); }
@@ -530,16 +522,20 @@ namespace ModelGraphSTD
                 }
                 else
                 {
-                    items = new List<Item>(2);
-                    items.Add(item2);
+                    items = new List<Item>(2)
+                    {
+                        item2
+                    };
                     itemItems.Add(item1, items);
                 }
             }
             else
             {
                 itemItems = new Dictionary<Item, List<Item>>(4);
-                items = new List<Item>(2);
-                items.Add(item2);
+                items = new List<Item>(2)
+                {
+                    item2
+                };
                 itemItems.Add(item1, items);
                 relItems.Add(rel, itemItems);
             }
@@ -557,19 +553,19 @@ namespace ModelGraphSTD
                 var items = store.GetItems();
                 foreach (var item in items) FindDependents(item, hitList);
             }
-            if (TryGetChildRelations(target, out Relation[] relations))
-            {
-                foreach (var rel in relations)
-                {
-                    if (rel.IsRequired && rel.TryGetChildren(target, out Item[] children))
-                    {
-                        foreach (var child in children)
-                        {
-                            FindDependents(child, hitList);
-                        }
-                    }
-                }
-            }
+            //if (TryGetChildRelations(target, out List<Relation> relations))
+            //{
+            //    foreach (var rel in relations)
+            //    {
+            //        if (rel.IsRequired && rel.TryGetChildren(target, out List<Item> children))
+            //        {
+            //            foreach (var child in children)
+            //            {
+            //                FindDependents(child, hitList);
+            //            }
+            //        }
+            //    }
+            //}
         }
         #endregion
 

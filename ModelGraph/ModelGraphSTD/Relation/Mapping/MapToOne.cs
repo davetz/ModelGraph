@@ -13,35 +13,6 @@ namespace ModelGraphSTD
         internal int KeyCount { get { return Count; } }
         internal int ValueCount { get { return Count; } }
 
-        internal Type ValueType => typeof(T);
-
-
-        internal int GetKeys(out Item[] keys)
-        {
-            keys = new Item[KeyCount];
-
-            var i = 0;
-            foreach (var val in this)
-            {
-                keys[i] = val.Key;
-                i += 1;
-            }
-            return i;
-        }
-
-        internal int GetValues(out Item[] values)
-        {
-            values = new Item[ValueCount];
-
-            var i = 0;
-            foreach (var val in this)
-            {
-                values[i] = val.Value;
-                i += 1;
-            }
-            return i;
-        }
-
         internal int GetLinksCount()
         {
             var count = 0;
@@ -52,20 +23,18 @@ namespace ModelGraphSTD
             return count;
         }
 
-        internal int GetLinks(out Item[] parents, out Item[] children)
+        internal int GetLinks(out List<Item> parents, out List<Item> children)
         {
             var count = GetLinksCount();
-            children = new Item[count];
-            parents = new Item[count];
+            children = new List<Item>(count);
+            parents = new List<Item>(count);
 
-            var i = 0;
             foreach (var val in this)
             {
                 if (val.Value.IsExternal || val.Key.IsExternal)
                 {
-                    children[i] = val.Value;
-                    parents[i] = val.Key;
-                    i += 1;
+                    children.Add(val.Value);
+                    parents.Add(val.Key);
                 }
             }
             return count;
@@ -90,34 +59,23 @@ namespace ModelGraphSTD
         {
             SetLink(key, val);
         }
-
-        internal int GetCount(Item key)
-        {
-            return ContainsKey(key) ? 1 : 0;
-        }
         internal int GetIndex(Item key, T val)
         {
-            int index = -1;
-            if (TryGetValue(key, out T value) && value == val) index = 0;
-            return index;
+            return (TryGetValue(key, out T value) && value == val) ? 0 : -1;
         }
 
         internal void RemoveLink(Item key, T val)
         {
-            if (TryGetValue(key, out T value) && val == value)
-                Remove(key);
+            if (TryGetValue(key, out T value) && val == value) Remove(key);
         }
 
-        internal bool TryGetVal(Item key, out T val)
-        {
-            return TryGetValue(key, out val);
-        }
+        internal bool TryGetVal(Item key, out T val) => TryGetValue(key, out val);
 
-        internal bool TryGetVals(Item key, out Item[] vals)
+        internal bool TryGetVals(Item key, out List<Item> vals)
         {
             if (TryGetValue(key, out T value))
             {
-                vals = new Item[] { value };
+                vals = new List<Item>(1) { value };
                 return true;
             }
             vals = null;
@@ -128,18 +86,11 @@ namespace ModelGraphSTD
         {
             if (TryGetValue(key, out T value))
             {
-                vals = new List<T>(1);
-                vals.Add(value);
+                vals = new List<T>(1) { value };
                 return true;
             }
             vals = null;
             return false;
-        }
-
-        internal bool TryGetAllKeys(out Item[] keys)
-        {
-            keys = Keys.ToArray();
-            return (Count > 0);
         }
 
         internal bool ContainsLink(Item key, T val)

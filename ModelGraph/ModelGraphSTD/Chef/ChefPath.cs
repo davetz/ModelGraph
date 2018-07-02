@@ -26,8 +26,8 @@ namespace ModelGraphSTD
         {
             if (!G.TryGetTopLevel(out Level L)) return false;
 
-            var inputPaths = L.Paths.ToArray();
-            var N = inputPaths.Length;
+            var inputPaths = L.Paths;
+            var N = inputPaths.Count;
             if (N < 2) return false;
 
             var nodeIndex = new Dictionary<Item, List<int>>(N * 2); // index into inputPaths 
@@ -90,8 +90,10 @@ namespace ModelGraphSTD
 
                     if (pathList == null)
                     {
-                        pathList = new List<Path>(4);
-                        pathList.Add(path);
+                        pathList = new List<Path>(4)
+                        {
+                            path
+                        };
                         flaredPaths.Add(pathList);
                         inputPaths[i] = null;
                         found3 = true;
@@ -379,8 +381,7 @@ namespace ModelGraphSTD
                                 if (t1 != t2) continue;
                                 if (pathList == null)
                                 {
-                                    pathList = new List<Path>(4);
-                                    pathList.Add(path1);
+                                    pathList = new List<Path>(4) { path1 };
                                     inputPaths[i] = null;
                                     parallelPaths.Add(pathList);
                                     found3 = true;
@@ -393,8 +394,10 @@ namespace ModelGraphSTD
                                 if (t1 != h2) continue;
                                 if (pathList == null)
                                 {
-                                    pathList = new List<Path>(4);
-                                    pathList.Add(path1);
+                                    pathList = new List<Path>(4)
+                                    {
+                                        path1
+                                    };
                                     inputPaths[i] = null;
                                     parallelPaths.Add(pathList);
                                     found3 = true;
@@ -408,8 +411,10 @@ namespace ModelGraphSTD
                                 if (h1 != t2) continue;
                                 if (pathList == null)
                                 {
-                                    pathList = new List<Path>(4);
-                                    pathList.Add(path1);
+                                    pathList = new List<Path>(4)
+                                    {
+                                        path1
+                                    };
                                     inputPaths[i] = null;
                                     parallelPaths.Add(pathList);
                                     found3 = true;
@@ -423,8 +428,10 @@ namespace ModelGraphSTD
                                 if (h1 != h2) continue;
                                 if (pathList == null)
                                 {
-                                    pathList = new List<Path>(4);
-                                    pathList.Add(path1);
+                                    pathList = new List<Path>(4)
+                                    {
+                                        path1
+                                    };
                                     inputPaths[i] = null;
                                     parallelPaths.Add(pathList);
                                     found3 = true;
@@ -447,8 +454,10 @@ namespace ModelGraphSTD
                                 if (t1 != t2) continue;
                                 if (pathList == null)
                                 {
-                                    pathList = new List<Path>(4);
-                                    pathList.Add(path1);
+                                    pathList = new List<Path>(4)
+                                    {
+                                        path1
+                                    };
                                     inputPaths[i] = null;
                                     parallelPaths.Add(pathList);
                                     found3 = true;
@@ -461,8 +470,10 @@ namespace ModelGraphSTD
                                 if (t1 != h2) continue;
                                 if (pathList == null)
                                 {
-                                    pathList = new List<Path>(4);
-                                    pathList.Add(path1);
+                                    pathList = new List<Path>(4)
+                                    {
+                                        path1
+                                    };
                                     inputPaths[i] = null;
                                     parallelPaths.Add(pathList);
                                     found3 = true;
@@ -476,8 +487,10 @@ namespace ModelGraphSTD
                                 if (h1 != t2) continue;
                                 if (pathList == null)
                                 {
-                                    pathList = new List<Path>(4);
-                                    pathList.Add(path1);
+                                    pathList = new List<Path>(4)
+                                    {
+                                        path1
+                                    };
                                     inputPaths[i] = null;
                                     parallelPaths.Add(pathList);
                                     found3 = true;
@@ -491,8 +504,10 @@ namespace ModelGraphSTD
                                 if (h1 != h2) continue;
                                 if (pathList == null)
                                 {
-                                    pathList = new List<Path>(4);
-                                    pathList.Add(path1);
+                                    pathList = new List<Path>(4)
+                                    {
+                                        path1
+                                    };
                                     inputPaths[i] = null;
                                     parallelPaths.Add(pathList);
                                     found3 = true;
@@ -521,7 +536,7 @@ namespace ModelGraphSTD
             {
                 list.Reverse();
                 if (list.Count > 1)
-                    L.Add(new SeriesPath(G, list.ToArray(), true));
+                    L.Add(new SeriesPath(G, list, true));
                 else if (list.Count == 1 && list[0] != null)
                     L.Add(list[0]);
 
@@ -530,7 +545,7 @@ namespace ModelGraphSTD
             foreach (var list in innerPaths)
             {
                 if (list.Count > 1)
-                    L.Add(new SeriesPath(G, list.ToArray()));
+                    L.Add(new SeriesPath(G, list));
                 else if (list.Count == 1 && list[0] != null)
                     L.Add(list[0]);
             }
@@ -538,13 +553,13 @@ namespace ModelGraphSTD
             foreach (var list in parallelPaths)
             {
                 if (list.Count < 2) continue;
-                L.Add(new ParallelPath(G, list.ToArray(), list[0].IsRadial));
+                L.Add(new ParallelPath(G, list, list[0].IsRadial));
             }
 
             foreach (var list in flaredPaths)
             {
                 if (list.Count < 2) continue;
-                L.Add(new FlaredPath(G, list.ToArray()));
+                L.Add(new FlaredPath(G, list));
             }
             #endregion
 

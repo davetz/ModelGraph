@@ -179,10 +179,9 @@ namespace ModelGraphSTD
             if (prev == null) return false;
             if (!prev.IsQueryGraphLink && !prev.IsQueryGraphRoot) return false;
 
-            QueryX[] items = null;
-            while (QueryX_QueryX.TryGetChildren(qx, out items))
+            while (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> items))
             {
-                if (items.Length > 1) return false;
+                if (items.Count > 1) return false;
                 qx = items[0];
             }
             return true;
@@ -191,10 +190,9 @@ namespace ModelGraphSTD
         private bool TryGetQueryXList(QueryX qx, out List<QueryX> list)
         {
             list = new List<QueryX>() { qx };
-            QueryX[] children;
-            while ((children = QueryX_QueryX.GetChildren(qx)) != null)
+            while (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> children))
             {
-                if (children.Length != 1) return false;
+                if (children.Count != 1) return false;
                 qx = children[0];
                 list.Add(qx);
             }
@@ -266,24 +264,25 @@ namespace ModelGraphSTD
             foreach (var qx in qxList) { if (nodeOwner == Store_QueryX.GetParent(qx)) N += 1; }
             return N;
         }
-        (SymbolX[] symbols, QueryX[] querys) GetSymbolXQueryX(GraphX gx, Store nodeOwner)
+        (List<SymbolX> symbols, List<QueryX> querys) GetSymbolXQueryX(GraphX gx, Store nodeOwner)
         {
             var sqxList = GraphX_SymbolQueryX.GetChildren(gx);
-            if (sqxList != null)
+            if (sqxList == null) return (null, null);
+
+            var sxList = new List<SymbolX>(sqxList.Count);
+            var qxList = new List<QueryX>(sqxList.Count);
+
+            foreach (var qx in sqxList)
             {
-                var sxList = new List<SymbolX>(sqxList.Length);
-                var qxList = new List<QueryX>(sqxList.Length);
-                foreach (var qx in sqxList)
+                if (nodeOwner == Store_QueryX.GetParent(qx))
                 {
-                    if (nodeOwner == Store_QueryX.GetParent(qx))
-                    {
-                        var sx = SymbolX_QueryX.GetParent(qx);
-                        sxList.Add(sx);
-                        qxList.Add(qx);
-                    }
+                    var sx = SymbolX_QueryX.GetParent(qx);
+                    sxList.Add(sx);
+                    qxList.Add(qx);
                 }
-                if (sxList.Count > 0) return (sxList.ToArray(), qxList.ToArray());
             }
+            if (sxList.Count > 0) return (sxList, qxList);
+
             return (null, null);
         }
         #endregion

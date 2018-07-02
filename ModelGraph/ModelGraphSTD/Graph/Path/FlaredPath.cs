@@ -1,30 +1,18 @@
-﻿using System;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace ModelGraphSTD
-{/*
- */
+{
     public class FlaredPath : Path
     {
-        internal Path[] Paths;
-
         #region Constructor  ==================================================
-        internal FlaredPath(Graph owner, Path[] paths)
+        internal FlaredPath(Graph owner, List<Path> paths) 
+            : base(owner, Trait.FlaredPath, paths)
         {
-            Owner = owner;
-            Trait = Trait.FlaredPath;
             IsRadial = true;
-
-            Paths = paths;
-
-            owner.Add(this);
         }
         #endregion
 
         #region Properties/Methods  ===========================================
-        internal override int Count => Paths.Length;
-        internal override Item[] Items => Paths.ToArray();
-
         internal override Query Query { get { return Paths[0].Query; } }
         internal override Item Head { get { return IsReversed ? Paths[0].Tail : Paths[0].Head; } }
         internal override Item Tail { get { return IsReversed ? Paths[0].Head : Paths[0].Tail; } }

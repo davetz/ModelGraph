@@ -6,8 +6,8 @@ namespace ModelGraphSTD
     public partial class Graph : Item
     {
         public Item RootItem;    // specified root of graph (if any)
-        public Query[] Forest;   // roots of the query forest
-        public SymbolX[] Symbols; // referenced by (byte)Node.NodeCore.Symbol
+        public List<Query> Forest;   // roots of the query forest
+        public IList<SymbolX> Symbols; // referenced by (byte)Node.NodeCore.Symbol
 
         public List<Node> Nodes = new List<Node>();
         public List<Edge> Edges = new List<Edge>();
@@ -22,7 +22,7 @@ namespace ModelGraphSTD
         public Dictionary<Node, List<Edge>> Node_Edges = new Dictionary<Node, List<Edge>>(); // list of edges for each node
         public Dictionary<Item, Node> Item_Node = new Dictionary<Item, Node>();              // look up item -> node
 
-        public GroupColor[] GroupColors;
+        public List<GroupColor> GroupColors;
         public Dictionary<Item, int> Item_ColorIndex;
         public Dictionary<Item, int> Group_ColorIndex;
 
@@ -32,7 +32,7 @@ namespace ModelGraphSTD
         public Extent Extent;  // current x,y extent of this graph
 
         #region Constructor  ==================================================
-        internal Graph(GraphX owner, Query[] querys, Item rootItem = null)
+        internal Graph(GraphX owner, List<Query> querys, Item rootItem = null)
         {
             Owner = owner;
             Trait = Trait.Graph;
@@ -48,7 +48,7 @@ namespace ModelGraphSTD
         public void Add(Level level) { Levels.Add(level); }
 
         public GraphX GraphX { get { return Owner as GraphX; } }
-        public int QueryCount { get { return (Forest == null) ? 0 : Forest.Length; } }
+        public int QueryCount { get { return (Forest == null) ? 0 : Forest.Count; } }
         public int OpenPathCount(int index)
         {
             if (index < 0 || index > OpenQuerys.Count) return 0;
@@ -69,7 +69,7 @@ namespace ModelGraphSTD
 
         public int NodeCount { get { return (Nodes == null) ? 0 : Nodes.Count; } }
         public int EdgeCount { get { return (Edges == null) ? 0 : Edges.Count; } }
-        public int SymbolCount { get { return (Symbols == null) ? 0 : Symbols.Length; } }
+        public int SymbolCount { get { return (Symbols == null) ? 0 : Symbols.Count; } }
 
         public void Reset()
         {

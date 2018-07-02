@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {/*
@@ -28,6 +29,11 @@ namespace ModelGraphSTD
         private StoreOf<Relation> _relationStore;
         private StoreOf<Property> _propertyZStore;
         private StoreOf<Relation> _relationZStore;
+
+        #region EmptyLists  ===================================================
+        internal static IList<Item> EmptyItemList = new List<Item>(0).AsReadOnly();
+
+        #endregion
 
         #region UnitTest/Repository InternalAccess  ===========================
         /*

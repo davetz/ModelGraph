@@ -41,7 +41,7 @@ namespace ModelGraphUWP
                 _majorDelta = _graph.MajorDelta;
                 if (_graph.GroupColors != null)
                 {
-                    var len = _graph.GroupColors.Length;
+                    var len = _graph.GroupColors.Count;
                     _groupColor = new Color[len];
                     for (int i = 0; i < len; i++)
                     {
@@ -109,8 +109,7 @@ namespace ModelGraphUWP
                 var k = node.Core.Symbol - 2;
                 if (k < 0 || k >= _graph.SymbolCount || _graph.Symbols[k].Data == null)
                 {
-                    int inx;
-                    if (_graph.Item_ColorIndex != null && _graph.Item_ColorIndex.TryGetValue(node.Item, out inx))
+                    if (_graph.Item_ColorIndex != null && _graph.Item_ColorIndex.TryGetValue(node.Item, out int inx))
                     {
                         pen.Color = _groupColor[inx];
                     }
@@ -197,11 +196,13 @@ namespace ModelGraphUWP
                 _zoom = zoom;
                 _offset = offset;
                 _session = session;
-                Style = new CanvasStrokeStyle();
-                Style.EndCap = CanvasCapStyle.Round;
-                Style.DashCap = CanvasCapStyle.Round;
-                Style.StartCap = CanvasCapStyle.Round;
-                Style.DashStyle = CanvasDashStyle.Solid;
+                Style = new CanvasStrokeStyle
+                {
+                    EndCap = CanvasCapStyle.Round,
+                    DashCap = CanvasCapStyle.Round,
+                    StartCap = CanvasCapStyle.Round,
+                    DashStyle = CanvasDashStyle.Solid
+                };
             }
 
             internal void Initialize()

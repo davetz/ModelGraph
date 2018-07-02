@@ -20,7 +20,7 @@ namespace ModelGraphSTD
         internal Func<ItemModel, string> TextValue;
         internal Func<ItemModel, string[]> ListValue;
 
-        internal Func<ItemModel, bool> ValidateChildModels;
+        internal Func<ItemModel, List<ItemModel>, (bool, bool)> Validate;
 
         internal Action<ItemModel, List<ModelCommand>> MenuCommands;
         internal Action<ItemModel, List<ModelCommand>> ButtonCommands;

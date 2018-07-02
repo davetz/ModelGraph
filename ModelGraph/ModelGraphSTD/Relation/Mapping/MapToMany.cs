@@ -10,71 +10,39 @@ namespace ModelGraphSTD
     {
         internal MapToMany(int capacity = 0) : base(capacity) { }
 
-        internal int KeyCount { get { return Count; } }
-        internal int ValueCount { get { var n = 0; foreach (var ent in this) { n += ent.Value.Count; } return n; } }
+        internal int KeyCount => Count;
+        internal int ValueCount { get { var n = 0; foreach (var e in this) { n += e.Value.Count; } return n; } }
 
-        internal int GetKeys(out Item[] keys)
-        {
-            keys = new Item[KeyCount];
-
-            var i = 0;
-            foreach (var val in this)
-            {
-                keys[i] = val.Key;
-                i += 1;
-            }
-            return i;
-        }
-
-        internal int GetValues(out Item[] values)
-        {
-            values = new Item[ValueCount];
-
-            var i = 0;
-            foreach (var val in this)
-            {
-                foreach (var value in val.Value)
-                {
-                    values[i] = value;
-                    i += 1;
-                }
-            }
-            return i;
-        }
 
         internal int GetLinksCount()
         {
-            var count = 0;
-            foreach (var val in this)
+            var n = 0;
+            foreach (var e in this)
             {
-                if (val.Key.IsExternal)
-                    count += val.Value.Count;
-                else
-                    foreach (var value in val.Value) { if (value.IsExternal) count += 1; }
+                if (e.Key.IsExternal) n += e.Value.Count;
+                else foreach (var v in e.Value) { if (v.IsExternal) n++; }
             }
-            return count;
+            return n;
         }
 
-        internal int GetLinks(out Item[] parents, out Item[] children)
+        internal int GetLinks(out List<Item> parents, out List<Item> children)
         {
-            var count = GetLinksCount();
-            children = new Item[count];
-            parents = new Item[count];
+            var n = GetLinksCount();
+            children = new List<Item>(n);
+            parents = new List<Item>(n);
 
-            var i = 0;
-            foreach (var val in this)
+            foreach (var e in this)
             {
-                foreach (var value in val.Value)
+                foreach (var v in e.Value)
                 {
-                    if (val.Key.IsExternal || value.IsExternal)
+                    if (e.Key.IsExternal || v.IsExternal)
                     {
-                        children[i] = value;
-                        parents[i] = val.Key;
-                        i += 1;
+                        children.Add(v);
+                        parents.Add(e.Key);
                     }
                 }
             }
-            return count;
+            return n;
         }
 
         internal void SetLink(Item key, T val, int capacity = 0)
@@ -90,19 +58,7 @@ namespace ModelGraphSTD
             Add(key, values);
         }
 
-        internal int GetValCount(Item key)
-        {
-            return TryGetValue(key, out List<T> values) ? values.Count : 0;
-        }
-
-        internal void AppendLink(Item key, T val)
-        {
-            if (TryGetValue(key, out List<T> values)) { values.Remove(val); values.Add(val); return; }
-
-            values = new List<T>(1);
-            values.Add(val);
-            Add(key, values);
-        }
+        internal int GetValCount(Item key) => TryGetValue(key, out List<T> vals) ? vals.Count : 0;
 
         internal void InsertLink(Item key, T val, int index)
         {
@@ -112,27 +68,15 @@ namespace ModelGraphSTD
                 if (index < 0) values.Insert(0, val);
                 else if (values.Count > index) values.Insert(index, val);
                 else values.Add(val);
-                return;
             }
-
-            values = new List<T>(1);
-            values.Add(val);
-            Add(key, values);
+            else
+            {
+                values = new List<T>(1) { val };
+                Add(key, values);
+            }
         }
 
-        internal int GetCount(Item key)
-        {
-            return TryGetValue(key, out List<T> values) ? values.Count : 0;
-        }
-
-        internal int GetIndex(Item key, T val)
-        {
-            int index = -1;
-
-            if (TryGetValue(key, out List<T> values)) index = values.IndexOf(val);
-
-            return index;
-        }
+        internal int GetIndex(Item key, T val) => TryGetValue(key, out List<T> vals) ? vals.IndexOf(val) : -1;
 
         internal void Move(Item key, T val, int index)
         {
@@ -170,46 +114,29 @@ namespace ModelGraphSTD
             return false;
         }
 
-        internal bool TryGetVals(Item key, out Item[] vals)
+        internal bool TryGetVals(Item key, out IList<T> vals)
         {
             if (TryGetValue(key, out List<T> values))
             {
-                vals = values.ToArray();
+                vals = values.AsReadOnly(); // protected from acidental corruption
                 return true;
             }
             vals = null;
             return false;
         }
 
-        internal bool TryGetVals(Item key, out List<T> vals)
-        {
-            return TryGetValue(key, out vals);
-        }
-        internal bool TryGetAllKeys(out Item[] keys)
-        {
-            keys = Keys.ToArray();
-            return (Count > 0);
-        }
-
-        internal bool ContainsLink(Item key, T val)
-        {
-            return (TryGetValue(key, out List<T> values) && values.Contains(val));
-        }
+        internal bool ContainsLink(Item key, T val) => (TryGetValue(key, out List<T> values) && values.Contains(val));
 
         /// <summary>
         /// Can this mapToMany dictionary be replaced by a mapToOne dictionary
         /// </summary>
-        internal bool CanMapToOne => (MaxListCount() < 2);
-        private int MaxListCount()
+        internal bool CanMapToOne
         {
-            if (this == null) return 0;
-            var max = 0;
-            foreach (var ent in this)
+            get
             {
-                var count = ent.Value.Count;
-                if (count > max) max = count;
+                foreach (var e in this) { if (e.Value.Count > 1) return false; }
+                return true;
             }
-            return max;
         }
     }
 }
