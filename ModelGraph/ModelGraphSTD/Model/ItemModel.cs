@@ -13,7 +13,7 @@ namespace ModelGraphSTD
         public Item Aux2;
         public ItemModel ParentModel;        // allows bidirectional tree taversal
         public List<ItemModel> ChildModels;  // all child models before filter sort
-        public List<ItemModel> FilterModels; // collection of child models after filter sort
+        public List<ItemModel> ViewModels;   // collection of child models after filter sort
         public string ViewFilter;            // UI imposed Kind/Name filter
         internal ModelAction Get;            // custom actions for this itemModel
 
@@ -124,6 +124,7 @@ namespace ModelGraphSTD
         internal bool ChangedFilter => GetState(State.ChangedFilter);
         internal bool AnyFilterSortChanged => GetState(State.AnyFilterSortChanged);
         internal void ClearChangedFlags() => _state &= ~State.AnyFilterSortChanged;
+        public void UpdateViewFilter(string text) { ViewFilter = text; _state |= State.ChangedFilter; }
         #endregion
 
         #region Flags  ========================================================
@@ -179,7 +180,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region ModelAction  ==================================================
-        public bool ModelUsed => (Get.ModelUsed == null) ? true : Get.ModelUsed(this);
+        public bool ModelUsed(ItemModel cm) => (Get.ModelUsed == null) ? true : Get.ModelUsed(this, cm);
         public string ModelInfo => (Get.ModelInfo == null) ? null : Get.ModelInfo(this);
         public string ModelSummary => (Get.ModelSummary == null) ? null : Get.ModelSummary(this);
         public string ModelDescription => (Get.ModelDescription == null) ? null : Get.ModelDescription(this);
@@ -326,7 +327,7 @@ namespace ModelGraphSTD
             prev.AddRange(ChildModels);
             ChildModels.Clear();
         }
-        public int FilterCount { get { return (FilterModels == null) ? 0 : FilterModels.Count; } }
+        public int FilterCount { get { return (ViewModels == null) ? 0 : ViewModels.Count; } }
         public bool HasError { get { return false; } }
         public bool IsModified { get { return false; } }
         public string ModelIdentity => GetModelIdentity();
@@ -338,18 +339,18 @@ namespace ModelGraphSTD
         {
             ResetDelta();
             ChildModels = null;
-            FilterModels = null;
+            ViewModels = null;
         }
         public bool IsInvalid => (Item == null || Item.IsInvalid);
 
         public int GetChildlIndex(ItemModel child)
         {
-            if (FilterModels != null)
+            if (ViewModels != null)
             {
-                var N = FilterModels.Count;
+                var N = ViewModels.Count;
                 for (int i = 0; i < N; i++)
                 {
-                    if (FilterModels[i] == child) return i;
+                    if (ViewModels[i] == child) return i;
                 }
             }
             return -1;
@@ -368,12 +369,12 @@ namespace ModelGraphSTD
                 return $"{Trait.ToString()}  ({code.ToString("X3")})";
             }
         }
-        public int FilterModelCount => (FilterModels == null) ? 0 : FilterModels.Count;
-        internal int ChildModelCount => (ChildModels == null) ? 0 : ChildModels.Count;
+        public int ViewModelCount => (ViewModels is null) ? 0 : ViewModels.Count;
+        internal int ChildModelCount => (ChildModels is null) ? 0 : ChildModels.Count;
         public bool IsChildModel(ItemModel model)
         {
-            if (FilterModels == null) return false;
-            foreach (var child in FilterModels)
+            if (ViewModels == null) return false;
+            foreach (var child in ViewModels)
             {
                 if (child == model) return true;
             }

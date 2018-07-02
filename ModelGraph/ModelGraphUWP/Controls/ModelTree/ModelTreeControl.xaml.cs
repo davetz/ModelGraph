@@ -564,7 +564,7 @@ namespace ModelGraphUWP
             if (ViewIsNotReady()) return;
 
             _viewList.Clear();
-            _viewList.AddRange(_root.ViewModels);
+            _viewList.AddRange(_root.FlatListModels);
             _select = _root.SelectModel;
 
             _pointWheelEnabled = false;
@@ -1004,7 +1004,8 @@ namespace ModelGraphUWP
                 var str = string.IsNullOrWhiteSpace(obj.Text) ? string.Empty : obj.Text;
                 if (string.Compare(str, (string)obj.Tag, true) == 0) return;
 
-                obj.Tag = mdl.ViewFilter = str;
+                obj.Tag = str;
+                mdl.UpdateViewFilter(str);
                 mdl.IsExpandedLeft = true;
                 
                 e.Handled = true;

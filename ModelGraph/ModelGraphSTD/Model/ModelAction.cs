@@ -9,7 +9,7 @@ namespace ModelGraphSTD
         Once initialized it constrains and directs the actions 
         initiated from the UI controls. 
      */
-        internal Func<ItemModel, bool> ModelUsed;
+        internal Func<ItemModel,ItemModel, bool> ModelUsed;
 
         internal Func<ItemModel, string> ModelInfo;
         internal Func<ItemModel, string> ModelSummary;

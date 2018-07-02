@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {/*
-    The ModelGraphSTD has no direct knowledge of the UI controls, however, it does 
+    ModelGraphSTD has no direct knowledge of the UI controls, however, it does 
     initiates UI action through the interfaces IPageControl and IModelControl.
 
     The UI controls, on the other hand, do have direct access to the public methods and
@@ -16,9 +16,10 @@ namespace ModelGraphSTD
         public IPageControl PageControl { get; set; } // reference the UI PageControl
         public IModelControl ModelControl { get; set; }
 
-        public int ViewCapacity = 10; // initial minimum capacity
-        public ItemModel SelectModel;
-        public List<ItemModel> ViewModels = new List<ItemModel>();
+        // used by the ModelTreeControl
+        public int ViewCapacity = 10; // updated when the view screen size changes
+        public ItemModel SelectModel;   // the user selected model
+        public List<ItemModel> FlatListModels = new List<ItemModel>(); // flat list of models visible to the user 
 
         private readonly ConcurrentQueue<UIRequest> _requestQueue = new ConcurrentQueue<UIRequest>();
 
@@ -55,19 +56,9 @@ namespace ModelGraphSTD
 
         #region Properties/Methods  ===========================================
         public bool IsAppRootChef => (ControlType == ControlType.AppRootChef);
-        public string TabName => Chef.GetAppTabName(this);
         public string TitleName => Chef.GetAppTitleName(this);
         public string TabSummary => Chef.GetAppTabSummary(this);
         public string TitleSummary => Chef.GetAppTitleSummary(this);
-
-
-        public void Close()
-        {
-            Chef.RemoveRootModel(this);
-        }
-        public void Reload()
-        {
-        }
         #endregion
 
         #region UIRequest  ====================================================

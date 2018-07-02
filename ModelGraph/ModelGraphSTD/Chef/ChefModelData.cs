@@ -270,7 +270,7 @@ namespace ModelGraphSTD
         internal void RefreshViewList(RootModel root, int scroll = 0, ChangeType change = ChangeType.NoChange)
         {
             var select = root.SelectModel;
-            var viewList = root.ViewModels;
+            var viewList = root.FlatListModels;
             var capacity = root.ViewCapacity;
             var offset = viewList.IndexOf(select);
 
@@ -285,7 +285,7 @@ namespace ModelGraphSTD
                 if (root.ChildModelCount == 0)
                 {
                     root.Validate(previous);
-                    root.FilterModels = root.ChildModels;
+                    root.ViewModels = root.ChildModels;
                 }
 
                 var modelStack = new TreeModelStack();
@@ -306,7 +306,7 @@ namespace ModelGraphSTD
                     {
                         if (ix < last)
                         {
-                            select = pm.FilterModels[last];
+                            select = pm.ViewModels[last];
                             if (!viewList.Contains(select)) FindFirst();
                         }
                     }
@@ -314,7 +314,7 @@ namespace ModelGraphSTD
                     {
                         if (ix > 0)
                         {
-                            select = pm.FilterModels[0];
+                            select = pm.ViewModels[0];
                             if (!viewList.Contains(select)) FindFirst();
                         }
                     }
@@ -323,7 +323,7 @@ namespace ModelGraphSTD
                     void FindFirst()
                     {
                         first = select;
-                        var absoluteFirst = root.FilterModels[0];
+                        var absoluteFirst = root.ViewModels[0];
 
                         for (; offset > 0; offset--)
                         {
@@ -332,7 +332,7 @@ namespace ModelGraphSTD
                             var p = first.ParentModel;
                             var i = p.GetChildlIndex(first);
 
-                            first = (i > 0) ? p.FilterModels[i - 1] : p;
+                            first = (i > 0) ? p.ViewModels[i - 1] : p;
                         }
                     }
                 }
@@ -390,7 +390,7 @@ namespace ModelGraphSTD
             }
             else
             {
-                root.ViewModels.Clear();
+                root.FlatListModels.Clear();
                 root.SelectModel = null;
             }
 
@@ -405,7 +405,7 @@ namespace ModelGraphSTD
             private List<(List<ItemModel> Models, int Index)> _stack;
             internal TreeModelStack() { _stack = new List<(List<ItemModel> Models, int Index)>(); }
             internal bool IsNotEmpty => (_stack.Count > 0);
-            internal void PushChildren(ItemModel m) { if (m.FilterModelCount > 0) _stack.Add((m.FilterModels, 0)); }
+            internal void PushChildren(ItemModel m) { if (m.ViewModelCount > 0) _stack.Add((m.ViewModels, 0)); }
             internal ItemModel PopNext()
             {
                 var end = _stack.Count - 1;
@@ -477,25 +477,16 @@ namespace ModelGraphSTD
         {
             if (m != null)
             {
-                if (m.Item.AutoExpandLeft)
-                {
-                    m.Item.AutoExpandLeft = false;
-                    m.IsExpandedLeft = true;
-                }
-                if (m.Item.AutoExpandRight)
-                {
-                    m.Item.AutoExpandRight = false;
-                    m.IsExpandedRight = true;
-                }
-
                 switch (change)
                 {
                     case ChangeType.ToggleLeft:
                         m.IsExpandedLeft = !m.IsExpandedLeft;
+                        m.ResetDelta();
                         break;
 
                     case ChangeType.ExpandLeft:
                         m.IsExpandedLeft = true;
+                        m.ResetDelta();
                         break;
 
                     case ChangeType.CollapseLeft:
@@ -503,18 +494,22 @@ namespace ModelGraphSTD
                         m.IsExpandedRight = false;
                         m.IsFilterVisible = false;
                         m.ViewFilter = null;
+                        m.ResetDelta();
                         break;
 
                     case ChangeType.ToggleRight:
                         m.IsExpandedRight = !m.IsExpandedRight;
+                        m.ResetDelta();
                         break;
 
                     case ChangeType.ExpandRight:
                         m.IsExpandedRight = true;
+                        m.ResetDelta();
                         break;
 
                     case ChangeType.CollapseRight:
                         m.IsExpandedRight = false;
+                        m.ResetDelta();
                         break;
 
                     case ChangeType.ToggleFilter:
@@ -574,8 +569,8 @@ namespace ModelGraphSTD
                     foreach (var cm in m.ChildModels)
                     {
                         if (filter != null && !filter.IsMatch(cm.FilterSortName)) continue;
-                        if (m.IsUsedFilter && !cm.ModelUsed) continue;
-                        if (m.IsNotUsedFilter && cm.ModelUsed) continue;
+                        if (m.IsUsedFilter && !m.ModelUsed(cm)) continue;
+                        if (m.IsNotUsedFilter && m.ModelUsed(cm)) continue;
 
                         filterList.Add((cm.FilterSortName, cm));
                     }
@@ -584,27 +579,25 @@ namespace ModelGraphSTD
 
             if (m.IsSorted)
             {
-                if (filterList.Count == 0 && m.FilterModelCount > 0)
+                if (filterList.Count == 0 && m.ViewModelCount > 0)
                 {
-                    foreach (var cm in m.FilterModels)
+                    foreach (var cm in m.ViewModels)
                     {
                         filterList.Add((cm.FilterSortName, cm));
                     }
                 }
                 filterList.Sort(_alphaSort);
+                if (m.IsSortDescending) filterList.Reverse();
             }
 
             if (filterList.Count > 0)
             {
-                m.FilterModels = new List<ItemModel>(filterList.Count);
-                foreach (var e in filterList)
-                {
-                    m.FilterModels.Add(e.Item2);
-                }
+                m.ViewModels = new List<ItemModel>(filterList.Count);
+                foreach (var e in filterList) { m.ViewModels.Add(e.Item2); }
             }
             else
             {
-                m.FilterModels = null;
+                m.ViewModels = null;
             }
             return true;
 
@@ -615,13 +608,13 @@ namespace ModelGraphSTD
             bool WithNoChildren()
             {
                 m.ChildModels = null;
-                m.FilterModels = null;
+                m.ViewModels = null;
                 m.ClearChangedFlags();
                 return false;
             }
             bool WithAllChildren()
             {
-                m.FilterModels = new List<ItemModel>(m.ChildModelCount);
+                m.ViewModels = new List<ItemModel>(m.ChildModels);
                 return true;
             }
         }
@@ -6094,7 +6087,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelUsed = (m) => m.ColumnX.Value.IsSpecific(m.RowX),
+                ModelUsed = (m,cm) => cm.ColumnX.Value.IsSpecific(cm.RowX),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6143,7 +6136,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
                 
-                ModelUsed = (m) => m.RelationX.ChildCount(m.RowX) > 0,
+                ModelUsed = (m,cm) => cm.RelationX.ChildCount(cm.RowX) > 0,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6195,7 +6188,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelUsed = (m) => m.RelationX.ParentCount(m.RowX) > 0,
+                ModelUsed = (m, cm) => m.RelationX.ParentCount(cm.RowX) > 0,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
