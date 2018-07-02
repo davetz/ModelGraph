@@ -263,7 +263,7 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Edit Symbol</value>
   </data>
   <data name="00ES" xml:space="preserve">
-    <value>Usage Mode (Show All, Show If Used, Show If Not Used)</value>
+    <value>A: Show All,  U: Show Used,  N: Show Not Used</value>
   </data>
   <data name="021N" xml:space="preserve">
     <value>New</value>

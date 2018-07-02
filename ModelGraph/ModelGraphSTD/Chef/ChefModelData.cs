@@ -609,7 +609,7 @@ namespace ModelGraphSTD
             {
                 m.ChildModels = null;
                 m.ViewModels = null;
-                m.ClearChangedFlags();
+                m.ClearSortUsageMode();
                 return false;
             }
             bool WithAllChildren()
@@ -6188,7 +6188,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ModelUsed = (m, cm) => m.RelationX.ParentCount(cm.RowX) > 0,
+                ModelUsed = (m, cm) => cm.RelationX.ParentCount(cm.RowX) > 0,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 

@@ -93,7 +93,8 @@ namespace ModelGraphSTD
             IsSorted = IsAscendingSort | IsDescendingSort,
             IsUsageFiltered = IsUsedFilter | IsNotUsedFilter,
 
-            AnyFilterSortChanged = ChangedSort | ChangedFilter, 
+            AnyFilterSortChanged = ChangedSort | ChangedFilter,
+            SortUsageMode = IsUsageFiltered | IsSorted | ChangedSort | ChangedFilter,
         }
         private bool GetState(State state) => (_state & state) != 0;
         private void SetState(State state, bool value) { if (value) _state |= state; else _state &= ~state; }
@@ -124,6 +125,7 @@ namespace ModelGraphSTD
         internal bool ChangedFilter => GetState(State.ChangedFilter);
         internal bool AnyFilterSortChanged => GetState(State.AnyFilterSortChanged);
         internal void ClearChangedFlags() => _state &= ~State.AnyFilterSortChanged;
+        internal void ClearSortUsageMode() => _state &= ~State.SortUsageMode;
         public void UpdateViewFilter(string text) { ViewFilter = text; _state |= State.ChangedFilter; }
         #endregion
 

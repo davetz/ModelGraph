@@ -604,6 +604,10 @@ namespace ModelGraphUWP
                                 AddFilterText(index, m);
                                 AddFilterCount(index, m);
                             }
+                            else if (m.IsUsedFilter || m.IsNotUsedFilter)
+                            {
+                                AddFilterCount(index, m);
+                            }
                         }
                         if (_root.ModelInfo != null)
                         {

@@ -348,6 +348,13 @@ namespace ModelGraphUWP
                     ExecuteSort(_sortControl);
                 }
             }
+            else if (e.Key == Windows.System.VirtualKey.U)
+            {
+                if (_usageControl != null)
+                {
+                    ExecuteUsage(_usageControl);
+                }
+            }
             else if (e.Key == Windows.System.VirtualKey.F)
             {
                 if (_filterControl != null)
@@ -645,6 +652,11 @@ namespace ModelGraphUWP
                 _sortControl = _sortModeCache[index];
             }
 
+            if (_usageModeCache[index] != null && _usageModeCache[index].DataContext != null)
+            {
+                _usageControl = _usageModeCache[index];
+            }
+
             if (_filterModeCache[index] != null && _filterModeCache[index].DataContext != null)
             {
                 _filterControl = _filterModeCache[index];
@@ -936,6 +948,7 @@ namespace ModelGraphUWP
         #endregion
 
         #region UsageMode  ====================================================
+        TextBlock _usageControl;
         void UsageMode_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             if (_pointerPressModel == PointerModel(e))
