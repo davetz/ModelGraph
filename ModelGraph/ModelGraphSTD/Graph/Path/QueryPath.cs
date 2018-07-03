@@ -8,11 +8,13 @@ namespace ModelGraphSTD
         internal Query HeadQuery;
         internal Query TailQuery;
         internal int TailIndex;
+        internal override Path[] Paths => null;
 
         #region Constructor  ==================================================
         internal QueryPath(Graph owner, Query head, Query tail, int taiIndex = 0, bool isRadial = false, bool isReversed = false)
-            : base(owner, Trait.QueryPath)
         {
+            Owner = owner;
+            Trait = Trait.QueryPath;
             HeadQuery = head;
             TailQuery = tail;
             TailIndex = taiIndex;

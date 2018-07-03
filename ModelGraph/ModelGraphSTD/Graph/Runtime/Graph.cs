@@ -13,10 +13,10 @@ namespace ModelGraphSTD
         public List<Edge> Edges = new List<Edge>();
         public List<Path> Paths = new List<Path>();
         public List<Level> Levels = new List<Level>();
-        internal List<QueryPair> PathQuerys = new List<QueryPair>();  // completed path query sequences
-        internal List<QueryPair> OpenQuerys = new List<QueryPair>();  // incomplete path query sequences
-        internal List<QueryPair> GroupQuerys = new List<QueryPair>(); // completed group query sequences
-        internal List<QueryPair> SegueQuerys = new List<QueryPair>(); // completed segue query sequences
+        internal List<(Query, Query)> PathQuerys = new List<(Query, Query)>();  // completed path query sequences
+        internal List<(Query, Query)> OpenQuerys = new List<(Query, Query)>();  // incomplete path query sequences
+        internal List<(Query, Query)> GroupQuerys = new List<(Query, Query)>(); // completed group query sequences
+        internal List<(Query, Query)> SegueQuerys = new List<(Query, Query)>(); // completed segue query sequences
 
         public HashSet<Item> NodeItems = new HashSet<Item>(); // hash of Node.Item for all nodes
         public Dictionary<Node, List<Edge>> Node_Edges = new Dictionary<Node, List<Edge>>(); // list of edges for each node
@@ -52,11 +52,11 @@ namespace ModelGraphSTD
         public int OpenPathCount(int index)
         {
             if (index < 0 || index > OpenQuerys.Count) return 0;
-            var head = OpenQuerys[index].Query1.Item;
+            var head = OpenQuerys[index].Item1.Item;
             var count = 1;
             for (var i = index + 1; i < OpenQuerys.Count; i++)
             {
-                if (OpenQuerys[index].Query1.Item != head) return count;
+                if (OpenQuerys[index].Item1.Item != head) return count;
                 count += 1;
             }
             return count;

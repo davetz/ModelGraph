@@ -267,10 +267,10 @@ namespace ModelGraphSTD
         #endregion
 
         #region RefreshViewList  ==============================================
-        internal void RefreshViewList(RootModel root, int scroll = 0, ChangeType change = ChangeType.NoChange)
+        internal void RefreshViewFlatList(RootModel root, int scroll = 0, ChangeType change = ChangeType.NoChange)
         {
             var select = root.SelectModel;
-            var viewList = root.FlatListModels;
+            var viewList = root.ViewFlatList;
             var capacity = root.ViewCapacity;
             var offset = viewList.IndexOf(select);
 
@@ -390,7 +390,7 @@ namespace ModelGraphSTD
             }
             else
             {
-                root.FlatListModels.Clear();
+                root.ViewFlatList.Clear();
                 root.SelectModel = null;
             }
 
@@ -6589,7 +6589,7 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    if (!m.Query.TryGetQuerys(m.Item, out List<Query> items)) return (false, false);
+                    if (!m.Query.TryGetQuerys(m.Item, out Query[] items)) return (false, false);
 
                     m.InitChildModels(prev);
 
@@ -6642,7 +6642,7 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    if (!m.Query.TryGetQuerys(m.Item, out List<Query> items)) return (false, false);
+                    if (!m.Query.TryGetQuerys(m.Item, out Query[] items)) return (false, false);
 
                     m.InitChildModels(prev);
 
@@ -6713,7 +6713,7 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    if (!m.Query.TryGetQuerys(m.Item, out List<Query> items)) return (false, false);
+                    if (!m.Query.TryGetQuerys(m.Item, out Query[] items)) return (false, false);
 
                     m.InitChildModels(prev);
 
@@ -6784,7 +6784,7 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    if (!m.Query.TryGetQuerys(m.Item, out List<Query> items)) return (false, false);
+                    if (!m.Query.TryGetQuerys(m.Item, out Query[] items)) return (false, false);
 
                     m.InitChildModels(prev);
 
@@ -7283,7 +7283,7 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var q = m.Query;
-                    if (!q.TryGetItems(out List<Item> items)) return (false, false);
+                    if (!q.TryGetItems(out Item[] items)) return (false, false);
 
                     m.InitChildModels(prev);
 
@@ -7298,7 +7298,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            (string, string) GetKindName(ItemModel m) => (null, m.TableX.Name);
+            (string, string) GetKindName(ItemModel m) => (null, m.RowX.TableX.Name);
         }
         #endregion
 
@@ -7330,7 +7330,7 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     List<Edge> edges = null;
-                    if (!m.IsExpandedRight && (m.IsExpandedLeft && !m.Graph.Node_Edges.TryGetValue(m.Node, out edges))) return (false, false);
+                    if (!m.IsExpandedRight && (m.IsExpandedLeft && !m.Node.Graph.Node_Edges.TryGetValue(m.Node, out edges))) return (false, false);
 
                     m.InitChildModels(prev);
 
@@ -7440,10 +7440,10 @@ namespace ModelGraphSTD
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var e in g.OpenQuerys)
+                    foreach (var (q1, q2) in g.OpenQuerys)
                     {
-                        var h = e.Query1;
-                        var t = e.Query2;
+                        var h = q1;
+                        var t = q2;
                         anyChange |= AddChildModel(prev, m, Trait.GraphOpen_M, g, h, t, GraphOpen_X);
                     }
                     return (true, anyChange);

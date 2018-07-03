@@ -4,11 +4,18 @@ namespace ModelGraphSTD
 {
     public class FlaredPath : Path
     {
+        readonly Path[] _paths;
+        internal override Path[] Paths => _paths; 
+
         #region Constructor  ==================================================
-        internal FlaredPath(Graph owner, List<Path> paths) 
-            : base(owner, Trait.FlaredPath, paths)
+        internal FlaredPath(Graph owner, Path[] paths) 
         {
+            Owner = owner;
+            Trait = Trait.FlaredPath;
             IsRadial = true;
+            _paths = paths;
+
+            owner.Add(this);
         }
         #endregion
 

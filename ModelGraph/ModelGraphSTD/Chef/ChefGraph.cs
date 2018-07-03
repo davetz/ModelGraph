@@ -31,22 +31,22 @@ namespace ModelGraphSTD
             List<ItemPair> validItemPair = null;
             var validPathPairs = new Dictionary<Item, List<ItemPair>>();
 
-            foreach (var item in g.PathQuerys)
+            foreach (var (q1, q2) in g.PathQuerys)
             {
-                var sd = item.Query1.QueryX;
+                var sd = q1.QueryX;
                 if (!validPathPairs.TryGetValue(sd, out validItemPair))
                 {
                     validItemPair = new List<ItemPair>(g.PathQuerys.Count);
                     validPathPairs.Add(sd, validItemPair);
                 }
 
-                g.NodeItems.Add(item.Query1.Item);
+                g.NodeItems.Add(q1.Item);
 
-                for (int i = 0; i < item.Query2.ItemCount; i++)
+                for (int i = 0; i < q2.ItemCount; i++)
                 {
-                    g.NodeItems.Add(item.Query2.Items[i]);
+                    g.NodeItems.Add(q2.Items[i]);
 
-                    validItemPair.Add(new ItemPair(item.Query1.Item, item.Query2.Items[i]));
+                    validItemPair.Add(new ItemPair(q1.Item, q2.Items[i]));
                 }
             }
             #endregion
@@ -297,9 +297,9 @@ namespace ModelGraphSTD
             var N = g.OpenQuerys.Count;
             for (int i = 0; i < N;)
             {
-                var item = g.OpenQuerys[i].Query1.Item;
+                var item = g.OpenQuerys[i].Item1.Item;
                 var j = i + 1;
-                for (; j < N; j++) { if (g.OpenQuerys[j].Query1.Item != item) break; }
+                for (; j < N; j++) { if (g.OpenQuerys[j].Item1.Item != item) break; }
                 if (g.Item_Node.TryGetValue(item, out Node node)) { node.OpenPathIndex = i; }
                 i = j;
             }
@@ -444,12 +444,12 @@ namespace ModelGraphSTD
                     }
                     g.GroupColors = colors;
                     g.Item_ColorIndex = new Dictionary<Item, int>(g.NodeItems.Count);
-                    foreach (var pair in g.GroupQuerys)
+                    foreach (var (q1, q2) in g.GroupQuerys)
                     {
-                        var grp = pair.Query2.Items[0];
+                        var grp = q2.Items[0];
                         if (g.Group_ColorIndex.TryGetValue(grp, out int inx))
                         {
-                            var itm = pair.Query1.Item;
+                            var itm = q1.Item;
                             g.Item_ColorIndex.Add(itm, inx);
                         }
                     }

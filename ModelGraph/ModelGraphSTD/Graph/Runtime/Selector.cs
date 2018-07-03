@@ -205,9 +205,9 @@ namespace ModelGraphSTD
                     {
                         var edge = nodeEdges[i];
                         if (edge.Node1 == PrevNode)
-                            HitNodeEdgeCuts[i] = new EdgeCut(edge, 0, edge.Tm1 + 1);
+                            HitNodeEdgeCuts.Add(new EdgeCut(edge, 0, edge.Tm1 + 1));
                         else
-                            HitNodeEdgeCuts[i] = new EdgeCut(edge, edge.Tm2, edge.Points.Length);
+                            HitNodeEdgeCuts.Add(new EdgeCut(edge, edge.Tm2, edge.Points.Length));
                     }
                 }
                 return;  // we are done;
@@ -216,11 +216,11 @@ namespace ModelGraphSTD
             // test all nodes
             foreach (var node in Graph.Nodes)
             {
-                // quick eliminate unqualified nodes
+                // eliminate unqualified nodes
                 if (!node.Core.HitTest(p)) continue;
 
                 // now refine the hit test results
-                //node.RefineHitTest(p, ref HitLocation, ref HitPoint);
+                // node.RefineHitTest(p, ref HitLocation, ref HitPoint);
                 var (hit, pnt) = node.Core.RefinedHit(p);
                 HitLocation |= hit;
                 HitPoint = pnt;
@@ -234,9 +234,9 @@ namespace ModelGraphSTD
                     {
                         var edge = nodeEdges[i];
                         if (edge.Node1 == node)
-                            HitNodeEdgeCuts[i] = new EdgeCut(edge, 0, edge.Tm1 + 1);
+                            HitNodeEdgeCuts.Add(new EdgeCut(edge, 0, edge.Tm1 + 1));
                         else
-                            HitNodeEdgeCuts[i] = new EdgeCut(edge, edge.Tm2, edge.Points.Length);
+                            HitNodeEdgeCuts.Add(new EdgeCut(edge, edge.Tm2, edge.Points.Length));
                     }
                 }
                 return;  // we are done;
@@ -245,7 +245,7 @@ namespace ModelGraphSTD
             // test all edges
             foreach (var edge in Graph.Edges)
             {
-                // quickly eliminate unqualified edges
+                // eliminate unqualified edges
                 if (!edge.HitTest(p)) continue;
 
                 // now refine the hit test results
@@ -275,7 +275,7 @@ namespace ModelGraphSTD
 
             if ((HitLocation & HitLocation.Region) == 0)
             {
-                HitNode.Move(delta);
+                HitNode.Move(delta); //BUG - HitNode was Null !
                 if (HitNodeEdgeCuts != null)
                     foreach (var cut in HitNodeEdgeCuts) { cut.Edge.Move(delta, cut.Index1, cut.Index2); }
             }

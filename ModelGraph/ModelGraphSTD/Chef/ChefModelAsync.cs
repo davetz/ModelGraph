@@ -2,9 +2,7 @@
 using System.Threading.Tasks;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public partial class Chef
     {
         #region PostRequest  ==================================================
@@ -31,7 +29,7 @@ namespace ModelGraphSTD
             if (root.ControlType == ControlType.AppRootChef) return;
 
             root.SelectModel = select;
-            PostModelRequest(root, () => RefreshViewList(root, scroll, change));
+            PostModelRequest(root, () => RefreshViewFlatList(root, scroll, change));
         }
         internal void PostSetValue(ItemModel model, bool value)
         {
@@ -78,7 +76,7 @@ namespace ModelGraphSTD
 
                     case ControlType.PrimaryTree:
                     case ControlType.PartialTree:
-                        PostModelRequest(root, () => RefreshViewList(root));
+                        PostModelRequest(root, () => RefreshViewFlatList(root));
                         break;
 
                     case ControlType.SymbolEditor:

@@ -17,7 +17,7 @@ namespace ModelGraphSTD
             if (cx == null || qList == null || qList.Count == 0) return false;
 
             var q = qList[0];
-            if (q.Items == null || q.Items.Count == 0) return false;
+            if (q.Items == null || q.Items.Length == 0) return false;
 
             var qx = q.QueryX;
             if (!qx.HasSelect) return false;

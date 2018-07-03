@@ -571,7 +571,7 @@ namespace ModelGraphUWP
             if (ViewIsNotReady()) return;
 
             _viewList.Clear();
-            _viewList.AddRange(_root.FlatListModels);
+            _viewList.AddRange(_root.ViewFlatList);
             _select = _root.SelectModel;
 
             _pointWheelEnabled = false;

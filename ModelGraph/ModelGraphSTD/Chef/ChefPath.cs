@@ -13,9 +13,9 @@ namespace ModelGraphSTD
         {
             if (g.PathQuerys.Count == 0) return false;
             var L = new Level(g);
-            foreach (var item in g.PathQuerys)
+            foreach (var (q1, q2) in g.PathQuerys)
             {
-                L.Add(new QueryPath(g, item.Query1, item.Query2));
+                L.Add(new QueryPath(g, q1, q2));
             }
             return (L.Count > 0);
         }
@@ -536,7 +536,7 @@ namespace ModelGraphSTD
             {
                 list.Reverse();
                 if (list.Count > 1)
-                    L.Add(new SeriesPath(G, list, true));
+                    L.Add(new SeriesPath(G, list.ToArray(), true));
                 else if (list.Count == 1 && list[0] != null)
                     L.Add(list[0]);
 
@@ -545,7 +545,7 @@ namespace ModelGraphSTD
             foreach (var list in innerPaths)
             {
                 if (list.Count > 1)
-                    L.Add(new SeriesPath(G, list));
+                    L.Add(new SeriesPath(G, list.ToArray()));
                 else if (list.Count == 1 && list[0] != null)
                     L.Add(list[0]);
             }
@@ -553,13 +553,13 @@ namespace ModelGraphSTD
             foreach (var list in parallelPaths)
             {
                 if (list.Count < 2) continue;
-                L.Add(new ParallelPath(G, list, list[0].IsRadial));
+                L.Add(new ParallelPath(G, list.ToArray(), list[0].IsRadial));
             }
 
             foreach (var list in flaredPaths)
             {
                 if (list.Count < 2) continue;
-                L.Add(new FlaredPath(G, list));
+                L.Add(new FlaredPath(G, list.ToArray()));
             }
             #endregion
 

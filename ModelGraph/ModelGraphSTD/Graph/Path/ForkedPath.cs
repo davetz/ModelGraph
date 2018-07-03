@@ -6,14 +6,20 @@ namespace ModelGraphSTD
  */
     public class ForkedPath : Path
     {
-        internal Path Path1;
+        readonly Path Path1;
+        readonly Path[] _paths;
+        internal override Path[] Paths => _paths;
 
         #region Constructor  ==================================================
-        internal ForkedPath(Graph owner, Path path1, List<Path> paths)
-            : base (owner, Trait.ForkedPath, paths)
+        internal ForkedPath(Graph owner, Path path1, Path[] paths)
         {
+            Owner = owner;
+            Trait = Trait.ForkedPath;
             IsRadial = true;
             Path1 = path1;
+            _paths = paths;
+
+            owner.Add(this);
         }
         #endregion
 

@@ -9,47 +9,46 @@ namespace ModelGraphSTD
         /// <summary>
         /// Return a GraphX forest of query trees
         /// </summary>
-        private List<Query> GetForest(Graph g, Item seed, HashSet<Store> nodeOwners)
+        private List<Query> GetForest(Graph graph, Item seed, HashSet<Store> nodeOwners)
         {
-            var gd = g.GraphX;
-            var roots = GraphX_QueryX.GetChildren(gd); 
-            if (roots == null) return null;
+            var gx = graph.GraphX;
+            if (!GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> roots)) return null; 
 
-            List<Query> segList = new List<Query>();
-            var forest = GetQueryRoots(roots, seed, segList);
+            var queryList = new List<Query>();
+            var forest = GetQueryRoots(roots, seed, queryList);
             if (forest == null) return null;
 
             var keyPairs = new Dictionary<byte, List<ItemPair>>();
             var workQueue = new Queue<Query>(forest);
             while (workQueue.Count > 0)
             {
-                var seg = workQueue.Dequeue();
+                var query = workQueue.Dequeue();
 
-                if (nodeOwners.Contains(seg.Item.Store)) g.NodeItems.Add(seg.Item);
-                if (seg.Items == null) continue;
-                foreach (var itm in seg.Items) { if (nodeOwners.Contains(itm.Store)) g.NodeItems.Add(itm); }
-
-                var sdChildren = QueryX_QueryX.GetChildren(seg.Owner);
-                if (sdChildren == null) continue;
-
-                var N = seg.Items.Count;
-                var M = sdChildren.Count;
-
-                seg.Children = new List<List<Query>>(N);
-                for (int i = 0; i < N; i++)
+                if (nodeOwners.Contains(query.Item.Store)) graph.NodeItems.Add(query.Item);
+                if (query.Items == null) continue;
+                foreach (var itm in query.Items) { if (nodeOwners.Contains(itm.Store)) graph.NodeItems.Add(itm); }
+               
+                if (QueryX_QueryX.TryGetChildren(query.Owner, out IList<QueryX> qxChildren))
                 {
-                    var item = seg.Items[i];
-                    segList.Clear();
+                    var N = query.Items.Length;
+                    var M = qxChildren.Count;
 
-                    foreach (var sd in sdChildren)
+                    query.Children = new Query[N][];
+                    for (int i = 0; i < N; i++)
                     {
-                        var child = GetChildQuery(g, sd, seg, item, keyPairs);
-                        if (child == null) continue;
+                        var item = query.Items[i];
+                        queryList.Clear();
 
-                        segList.Add(child);
-                        workQueue.Enqueue(child);
+                        foreach (var sd in qxChildren)
+                        {
+                            var child = GetChildQuery(graph, sd, query, item, keyPairs);
+                            if (child == null) continue;
+
+                            queryList.Add(child);
+                            workQueue.Enqueue(child);
+                        }
+                        if (queryList.Count > 0) query.Children[i] = queryList.ToArray();
                     }
-                    if (segList.Count > 0) seg.Children[i] = segList;
                 }
             }
             return forest;
@@ -66,8 +65,8 @@ namespace ModelGraphSTD
             var qxRoots = ComputeX_QueryX.GetChildren(cx);
             if (qxRoots == null) return null;
 
-            var qList = new List<Query>();
-            var forest = GetQueryRoots(qxRoots, seed, qList);
+            var qcList = new List<Query>();
+            var forest = GetQueryRoots(qxRoots, seed, qcList);
             if (forest == null) return null;
 
             var workQueue = new Queue<Query>(forest);
@@ -79,31 +78,32 @@ namespace ModelGraphSTD
                 var qxChildren = QueryX_QueryX.GetChildren(q.Owner);
                 if (qxChildren != null)
                 {
-                    var N = q.Items.Count;
+                    var N = q.Items.Length;
                     var M = qxChildren.Count;
 
-                    q.Children = new List<List<Query>>(N);
+                    q.Children = new Query[N][];
                     for (int i = 0; i < N; i++)
                     {
                         var item = q.Items[i];
 
+                        qcList.Clear();
                         foreach (var qx in qxChildren)
                         {
-                            var child = GetChildQuery(qx, q, item);
-                            if (child == null) continue;
-                            if (child.IsTail && qx.HasValidSelect)
+                            var qc = GetChildQuery(qx, q, item);
+                            if (qc == null) continue;
+                            if (qc.IsTail && qx.HasValidSelect)
                             {
-                                var p = child.Parent;
+                                var p = qc.Parent;
                                 while(p.Parent != null) { p = p.Parent; }
                                 var qp = p.QueryX;
                                 if (qp.HasValidSelect)
                                     selectors.Add(p);
-                                selectors.Add(child);
+                                selectors.Add(qc);
                             }
-                            qList.Add(child);
-                            workQueue.Enqueue(child);
+                            qcList.Add(qc);
+                            workQueue.Enqueue(qc);
                         }
-                        if (qList.Count > 0) q.Children[i] = qList;
+                        if (qcList.Count > 0) q.Children[i] = qcList.ToArray();
                     }
                 }
             }
@@ -126,13 +126,11 @@ namespace ModelGraphSTD
                         var items = sto.GetItems();
                         if (qx.HasWhere) items = ApplyFilter(qx, items);
 
-                        if (items != null) qList.Add(new Query(qx, null, sto, items));
+                        if (items != null) qList.Add(new Query(qx, null, sto, items.ToArray()));
                     }
                     else if (seed != null && seed.Owner == sto)
-                    {/*
-
-                     */
-                        qList.Add(new Query(qx, null, sto, new List<Item> { seed }));
+                    {
+                        qList.Add(new Query(qx, null, sto, new Item[] { seed }));
                     }
                 }
             }
@@ -173,25 +171,25 @@ namespace ModelGraphSTD
 
             if (QueryX_QueryX.HasNoChildren(qx)) { qx.IsTail = true; }
 
-            var s2 = new Query(qx, q, item, items);
+            var q2 = new Query(qx, q, item, items.ToArray());
             if (qx.IsTail)
             {
-                var s1 = s2.GetHeadQuery();
+                var q1 = q2.GetHeadQuery();
                 switch (qx.QueryKind)
                 {
                     case QueryType.Path:
-                        g.PathQuerys.Add(new QueryPair(s1, s2));
+                        g.PathQuerys.Add((q1, q2));
                         break;
                     case QueryType.Group:
-                        g.GroupQuerys.Add(new QueryPair(s1, s2));
+                        g.GroupQuerys.Add((q1, q2));
                         break;
                     case QueryType.Segue:
-                        g.SegueQuerys.Add(new QueryPair(s1, s2));
+                        g.SegueQuerys.Add((q1, q2));
                         break;
                 }
             }
 
-            return s2;
+            return q2;
         }
         private void AddOpenQueryPair(Graph g, Query  q2)
         {
@@ -199,11 +197,11 @@ namespace ModelGraphSTD
             var N = g.OpenQuerys.Count;
             for (int i = 0; i < N; i++)
             {
-                if (g.OpenQuerys[i].Query1.Item != q1.Item) continue;
-                g.OpenQuerys.Insert(i, new QueryPair(q1, q2));
+                if (g.OpenQuerys[i].Item1.Item != q1.Item) continue;
+                g.OpenQuerys.Insert(i, (q1, q2));
                 return;
             }
-            g.OpenQuerys.Add(new QueryPair(q1, q2));
+            g.OpenQuerys.Add((q1, q2));
         }
         #endregion
 
@@ -222,7 +220,7 @@ namespace ModelGraphSTD
             if (qx.HasWhere) items = ApplyFilter(qx, items);
             if (items == null) return null;
 
-            return new Query(qx, q, item, items);
+            return new Query(qx, q, item, items.ToArray());
         }
         #endregion
 
