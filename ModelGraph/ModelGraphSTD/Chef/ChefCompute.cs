@@ -152,9 +152,7 @@ namespace ModelGraphSTD
             bool TryGetRelated()
             {
                 var selectors = new List<Query>();
-                var forest = GetForest(cx, key, selectors);
-                if (selectors.Count == 0)
-                    return false;
+                if (!TryGetForest(cx, key, selectors, out Query[] forest) || selectors.Count == 0) return false;
 
                 return cx.Value.LoadCache(cx, key, selectors);
             }
@@ -167,9 +165,7 @@ namespace ModelGraphSTD
             bool TryGetCompositeString(bool reverse = false)
             {
                 var selectors = new List<Query>();
-                var forest = GetForest(cx, key, selectors);
-                if (forest == null || forest.Count == 0 || selectors.Count == 0)
-                    return false;
+                if (!TryGetForest(cx, key, selectors, out Query[] forest) || selectors.Count == 0) return false;
 
                 var sb = new StringBuilder(128);
 

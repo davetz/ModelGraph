@@ -23,20 +23,20 @@ namespace ModelGraphSTD
         bool ValidateGraphParms(Graph g)
         {
             var gx = g.GraphX;
-            var rt = (g.RootItem == null) ? _dummy : (Item)g.RootItem;
+            var rt = (g.SeedItem == null) ? _dummy : (Item)g.SeedItem;
             var anyChange = false;
 
             #region Build validPathPairs dictionary  ==========================
 
-            List<ItemPair> validItemPair = null;
-            var validPathPairs = new Dictionary<Item, List<ItemPair>>();
+            List<(Item, Item)> validItemPair = null;
+            var validPathPairs = new Dictionary<Item, List<(Item, Item)>>();
 
             foreach (var (q1, q2) in g.PathQuerys)
             {
                 var sd = q1.QueryX;
                 if (!validPathPairs.TryGetValue(sd, out validItemPair))
                 {
-                    validItemPair = new List<ItemPair>(g.PathQuerys.Count);
+                    validItemPair = new List<(Item, Item)>(g.PathQuerys.Count);
                     validPathPairs.Add(sd, validItemPair);
                 }
 
@@ -46,7 +46,7 @@ namespace ModelGraphSTD
                 {
                     g.NodeItems.Add(q2.Items[i]);
 
-                    validItemPair.Add(new ItemPair(q1.Item, q2.Items[i]));
+                    validItemPair.Add((q1.Item, q2.Items[i]));
                 }
             }
             #endregion
@@ -306,13 +306,11 @@ namespace ModelGraphSTD
             #endregion
 
             #region AssignSymbolIndex  ========================================
-            var symbols = g.Symbols = GraphX_SymbolX.GetChildren(gx);
-            if (symbols == null)
+            
+            if (GraphX_SymbolX.TryGetChildren(gx, out IList<SymbolX> symbols))
             {
-                g.Symbols = new List<SymbolX>(0);
-            }
-            else
-            {
+                g.Symbols = symbols.ToArray();
+
                 var storeNonSymbols = new HashSet<Store>();
                 var storeSymbolXQueryX = new Dictionary<Store, (List<SymbolX>, List<QueryX>)>();
                 foreach (var node in g.Nodes)
@@ -376,7 +374,7 @@ namespace ModelGraphSTD
         private bool CreateGraph(GraphX gd, out Graph graph, Item root = null)
         {
             if (!gd.TryGetGraph(root, out graph))
-                graph = new Graph(gd, null, root);
+                graph = new Graph(gd);
 
             RefreshGraph(graph);
 
@@ -397,11 +395,11 @@ namespace ModelGraphSTD
         private void RefreshGraph(Graph g)
         {
             var gx = g.GraphX;
-            var rt = g.RootItem;
+            var rt = g.SeedItem;
             var nodeOwners = GetNodeOwners(gx);
 
             g.Reset();
-            g.Forest = GetForest(g, rt, nodeOwners);
+            TryGetForest(g, rt, nodeOwners);
             var anyChange = ValidateGraphParms(g);
 
             TryGetColorCriteria(g);
@@ -492,10 +490,9 @@ namespace ModelGraphSTD
         {
             var nodeOwners = new HashSet<Store>();
 
-            var sxChildren = GraphX_QueryX.GetChildren(gx);
-            if (sxChildren != null)
+            if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> qxChildren))
             {
-                var workQueue = new Queue<QueryX>(sxChildren);
+                var workQueue = new Queue<QueryX>(qxChildren);
                 while (workQueue.Count > 0)
                 {
                     var qx = workQueue.Dequeue();
@@ -513,15 +510,15 @@ namespace ModelGraphSTD
                             nodeOwners.Add(tail);
                         }
                     }
-                    else if ((sxChildren = QueryX_QueryX.GetChildren(qx)) != null)
+                    else if (QueryX_QueryX.TryGetChildren(qx, out qxChildren))
                     {
-                        foreach (var cx in sxChildren) 
+                        foreach (var qc in qxChildren) 
                         {
-                            switch (cx.QueryKind)
+                            switch (qc.QueryKind)
                             {
                                 case QueryType.Path:
                                 case QueryType.Graph:
-                                    workQueue.Enqueue(cx);
+                                    workQueue.Enqueue(qc);
                                     break;
                             }
                         }

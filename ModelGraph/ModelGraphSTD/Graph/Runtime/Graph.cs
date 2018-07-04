@@ -5,9 +5,9 @@ namespace ModelGraphSTD
  */
     public partial class Graph : Item
     {
-        public Item RootItem;    // specified root of graph (if any)
-        public List<Query> Forest;   // roots of the query forest
-        public IList<SymbolX> Symbols; // referenced by (byte)Node.NodeCore.Symbol
+        public Item SeedItem;    // seed of graph forest 
+        public Query[] Forest;   // roots of the query forest
+        public SymbolX[] Symbols; // referenced by (byte)Node.NodeCore.Symbol
 
         public List<Node> Nodes = new List<Node>();
         public List<Edge> Edges = new List<Edge>();
@@ -32,12 +32,10 @@ namespace ModelGraphSTD
         public Extent Extent;  // current x,y extent of this graph
 
         #region Constructor  ==================================================
-        internal Graph(GraphX owner, List<Query> querys, Item rootItem = null)
+        internal Graph(GraphX owner)
         {
             Owner = owner;
             Trait = Trait.Graph;
-            RootItem = rootItem;
-            Forest = querys;
 
             owner.Add(this);
         }
@@ -47,8 +45,8 @@ namespace ModelGraphSTD
         public void Add(Path path) { Paths.Add(path); }
         public void Add(Level level) { Levels.Add(level); }
 
-        public GraphX GraphX { get { return Owner as GraphX; } }
-        public int QueryCount { get { return (Forest == null) ? 0 : Forest.Count; } }
+        public GraphX GraphX => Owner as GraphX;
+        public int QueryCount => (Forest == null) ? 0 : Forest.Length;
         public int OpenPathCount(int index)
         {
             if (index < 0 || index > OpenQuerys.Count) return 0;
@@ -62,14 +60,15 @@ namespace ModelGraphSTD
             return count;
         }
         public int Count => Levels.Count;
+        private int Last => Count - 1;
 
-        public bool TryGetTopLevel(out Level lvl) { lvl = null; if (Count == 0) return false; lvl = Levels[Count - 1] as Level; return true; }
+        public bool TryGetTopLevel(out Level lvl) { lvl = null; if (Count == 0) return false; lvl = Levels[Last] as Level; return true; }
 
         public string Name => GraphX.Name;
 
         public int NodeCount { get { return (Nodes == null) ? 0 : Nodes.Count; } }
         public int EdgeCount { get { return (Edges == null) ? 0 : Edges.Count; } }
-        public int SymbolCount { get { return (Symbols == null) ? 0 : Symbols.Count; } }
+        public int SymbolCount { get { return (Symbols == null) ? 0 : Symbols.Length; } }
 
         public void Reset()
         {

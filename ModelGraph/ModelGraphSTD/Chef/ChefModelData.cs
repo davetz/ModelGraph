@@ -691,10 +691,10 @@ namespace ModelGraphSTD
                 case ControlType.GraphDisplay:
                     var g = root.Item as Graph;
                     var gx = g.GraphX;
-                    if (g.RootItem == null)
+                    if (g.SeedItem == null)
                         return $"{gx.Name}";
                     else
-                        return $"{gx.Name} - {GetIdentity(g.RootItem, IdentityStyle.Double)}";
+                        return $"{gx.Name} - {GetIdentity(g.SeedItem, IdentityStyle.Double)}";
 
                 case ControlType.SymbolEditor:
 
@@ -6882,7 +6882,7 @@ namespace ModelGraphSTD
 
                     foreach (var tg in gx.Items)
                     {
-                        if (tg.RootItem == d.Item) return DropAction.None;
+                        if (tg.SeedItem == d.Item) return DropAction.None;
                     }
 
                     if (doDrop)
@@ -7298,7 +7298,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            (string, string) GetKindName(ItemModel m) => (null, m.RowX.TableX.Name);
+            (string, string) GetKindName(ItemModel m) => (null, m.TableX.Name);
         }
         #endregion
 

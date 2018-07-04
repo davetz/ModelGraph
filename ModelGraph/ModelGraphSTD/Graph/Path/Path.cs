@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 namespace ModelGraphSTD
-{/*
- */
+{
     public abstract class Path : Item
     {
         internal abstract Item Head { get; }
@@ -16,17 +13,5 @@ namespace ModelGraphSTD
         internal int Count => (Paths == null) ? 0 : Paths.Length;
         internal void Reverse() { IsReversed = !IsReversed; }
         protected int Last => Count - 1;
-
-        //internal Path(Graph owner, Trait trait, List<Path
-        //{
-        //    Owner = owner;
-        //    Trait = trait;
-        //    if (buffer != null)
-        //    {
-        //        _paths = new List<Path>(buffer);
-        //        buffer.Clear();
-        //    }
-        //    owner.Add(this);
-        //}
     }
 }

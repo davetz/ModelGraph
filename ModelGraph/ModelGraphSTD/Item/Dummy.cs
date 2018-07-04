@@ -3,11 +3,11 @@
 namespace ModelGraphSTD
 {
     /// <summary>
-    /// Well Known Dummy Item (used as an item reference place holder)
+    /// Placeholder Dummy Item 
     /// </summary>
     public class Dummy : Item
     {
-        internal Guid Guid;
+        internal readonly Guid Guid;
         internal Dummy(Chef owner)
         {
             Owner = owner;

@@ -9,49 +9,53 @@ namespace ModelGraphSTD
         /// <summary>
         /// Return a GraphX forest of query trees
         /// </summary>
-        private List<Query> GetForest(Graph graph, Item seed, HashSet<Store> nodeOwners)
+        private bool TryGetForest(Graph g, Item seed, HashSet<Store> nodeOwners)
         {
-            var gx = graph.GraphX;
-            if (!GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> roots)) return null; 
-
-            var queryList = new List<Query>();
-            var forest = GetQueryRoots(roots, seed, queryList);
-            if (forest == null) return null;
-
-            var keyPairs = new Dictionary<byte, List<ItemPair>>();
-            var workQueue = new Queue<Query>(forest);
-            while (workQueue.Count > 0)
+            g.Forest = null;
+            var gx = g.GraphX;
+            if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> roots))
             {
-                var query = workQueue.Dequeue();
-
-                if (nodeOwners.Contains(query.Item.Store)) graph.NodeItems.Add(query.Item);
-                if (query.Items == null) continue;
-                foreach (var itm in query.Items) { if (nodeOwners.Contains(itm.Store)) graph.NodeItems.Add(itm); }
-               
-                if (QueryX_QueryX.TryGetChildren(query.Owner, out IList<QueryX> qxChildren))
+                var workList = new List<Query>();
+                if (TryGetForestRoots(roots, seed, workList, out Query[] forest))
                 {
-                    var N = query.Items.Length;
-                    var M = qxChildren.Count;
+                    g.Forest = forest;
 
-                    query.Children = new Query[N][];
-                    for (int i = 0; i < N; i++)
+                    var keyPairs = new Dictionary<byte, List<(Item, Item)>>();
+                    var workQueue = new Queue<Query>(forest);
+                    while (workQueue.Count > 0)
                     {
-                        var item = query.Items[i];
-                        queryList.Clear();
+                        var query = workQueue.Dequeue();
 
-                        foreach (var sd in qxChildren)
+                        if (nodeOwners.Contains(query.Item.Store)) g.NodeItems.Add(query.Item);
+                        if (query.Items == null) continue;
+                        foreach (var itm in query.Items) { if (nodeOwners.Contains(itm.Store)) g.NodeItems.Add(itm); }
+
+                        if (QueryX_QueryX.TryGetChildren(query.Owner, out IList<QueryX> qxChildren))
                         {
-                            var child = GetChildQuery(graph, sd, query, item, keyPairs);
-                            if (child == null) continue;
+                            var N = query.Items.Length;
+                            query.Children = new Query[N][];
 
-                            queryList.Add(child);
-                            workQueue.Enqueue(child);
+                            for (int i = 0; i < N; i++)
+                            {
+                                var item = query.Items[i];
+                                workList.Clear();
+
+                                foreach (var qc in qxChildren)
+                                {
+                                    var child = GetChildQuery(g, qc, query, item, keyPairs);
+                                    if (child == null) continue;
+
+                                    workList.Add(child);
+                                    workQueue.Enqueue(child);
+                                }
+                                if (workList.Count > 0) query.Children[i] = workList.ToArray();
+                            }
                         }
-                        if (queryList.Count > 0) query.Children[i] = queryList.ToArray();
                     }
+                    return true;
                 }
             }
-            return forest;
+            return false;
         }
         #endregion
 
@@ -60,62 +64,63 @@ namespace ModelGraphSTD
         /// Return a query forest for the callers computeX.
         /// Also return a list of query's who's parent queryX has a valid select clause. 
         /// </summary>
-        private List<Query> GetForest(ComputeX cx, Item seed, List<Query> selectors)
+        private bool TryGetForest(ComputeX cx, Item seed, List<Query> selectors, out Query[] forest)
         {
-            var qxRoots = ComputeX_QueryX.GetChildren(cx);
-            if (qxRoots == null) return null;
-
-            var qcList = new List<Query>();
-            var forest = GetQueryRoots(qxRoots, seed, qcList);
-            if (forest == null) return null;
-
-            var workQueue = new Queue<Query>(forest);
-            while (workQueue.Count > 0)
+            forest = null;
+            if (ComputeX_QueryX.TryGetChildren(cx, out IList<QueryX> qxRoots))
             {
-                var q = workQueue.Dequeue();
-                if (q.Items == null) continue;
-
-                var qxChildren = QueryX_QueryX.GetChildren(q.Owner);
-                if (qxChildren != null)
+                var workList = new List<Query>();
+                if (TryGetForestRoots(qxRoots, seed, workList, out forest))
                 {
-                    var N = q.Items.Length;
-                    var M = qxChildren.Count;
-
-                    q.Children = new Query[N][];
-                    for (int i = 0; i < N; i++)
+                    var workQueue = new Queue<Query>(forest);
+                    while (workQueue.Count > 0)
                     {
-                        var item = q.Items[i];
-
-                        qcList.Clear();
-                        foreach (var qx in qxChildren)
+                        var q = workQueue.Dequeue();
+                        if (q.Items != null)
                         {
-                            var qc = GetChildQuery(qx, q, item);
-                            if (qc == null) continue;
-                            if (qc.IsTail && qx.HasValidSelect)
+                            if (QueryX_QueryX.TryGetChildren(q.Owner, out IList<QueryX> qxChildren))
                             {
-                                var p = qc.Parent;
-                                while(p.Parent != null) { p = p.Parent; }
-                                var qp = p.QueryX;
-                                if (qp.HasValidSelect)
-                                    selectors.Add(p);
-                                selectors.Add(qc);
+                                var N = q.Items.Length;
+                                q.Children = new Query[N][];
+
+                                for (int i = 0; i < N; i++)
+                                {
+                                    var item = q.Items[i];
+
+                                    workList.Clear();
+                                    foreach (var qx in qxChildren)
+                                    {
+                                        var qc = GetChildQuery(qx, q, item);
+                                        if (qc == null) continue;
+                                        if (qc.IsTail && qx.HasValidSelect)
+                                        {
+                                            var p = qc.Parent;
+                                            while (p.Parent != null) { p = p.Parent; }
+                                            var qp = p.QueryX;
+                                            if (qp.HasValidSelect)
+                                                selectors.Add(p);
+                                            selectors.Add(qc);
+                                        }
+                                        workList.Add(qc);
+                                        workQueue.Enqueue(qc);
+                                    }
+                                    if (workList.Count > 0) q.Children[i] = workList.ToArray();
+                                }
                             }
-                            qcList.Add(qc);
-                            workQueue.Enqueue(qc);
                         }
-                        if (qcList.Count > 0) q.Children[i] = qcList.ToArray();
                     }
                 }
             }
-            return forest;
+            return (forest != null);
         }
         #endregion
 
         #region GetRoots  =====================================================
-        List<Query> GetQueryRoots(IList<QueryX> qxRoots, Item seed, List<Query> qList)
+        bool TryGetForestRoots(IList<QueryX> qxRoots, Item seed, List<Query> workList, out Query[] forest)
         {/*
             Create the roots of a query forest.
          */
+            workList.Clear();
             if (qxRoots != null && qxRoots.Count > 0)
             {
                 foreach (var qx in qxRoots)
@@ -126,21 +131,21 @@ namespace ModelGraphSTD
                         var items = sto.GetItems();
                         if (qx.HasWhere) items = ApplyFilter(qx, items);
 
-                        if (items != null) qList.Add(new Query(qx, null, sto, items.ToArray()));
+                        if (items != null) workList.Add(new Query(qx, null, sto, items.ToArray()));
                     }
                     else if (seed != null && seed.Owner == sto)
                     {
-                        qList.Add(new Query(qx, null, sto, new Item[] { seed }));
+                        workList.Add(new Query(qx, null, sto, new Item[] { seed }));
                     }
                 }
             }
-
-            return (qList.Count > 0) ? qList : null;
+            forest = (workList.Count > 0) ? workList.ToArray() : null;
+            return (forest != null);
         }
         #endregion
 
         #region GetChildQuery  ================================================
-        Query GetChildQuery(Graph g, QueryX qx, Query q, Item item, Dictionary<byte, List<ItemPair>> keyPairs)
+        Query GetChildQuery(Graph g, QueryX qx, Query q, Item item, Dictionary<byte, List<(Item, Item)>> keyPairs)
         {
             var r = Relation_QueryX.GetParent(qx);
             if (r == null) return null;
@@ -244,15 +249,15 @@ namespace ModelGraphSTD
 
         #region RemoveDuplicates  =============================================
         // do not cross the same edge (item to input[n]) twice
-        List<Item> RemoveDuplicates(QueryX sd, Item item, List<Item> input, Dictionary<byte, List<ItemPair>> keyPairs)
+        List<Item> RemoveDuplicates(QueryX sd, Item item, List<Item> input, Dictionary<byte, List<(Item, Item)>> keyPairs)
         {
             var output = input;
             var M = input.Count;
             var N = M;
 
-            if (!keyPairs.TryGetValue(sd.ExclusiveKey, out List<ItemPair> itemPairs))
+            if (!keyPairs.TryGetValue(sd.ExclusiveKey, out List<(Item, Item)> itemPairs))
             {
-                itemPairs = new List<ItemPair>(M);
+                itemPairs = new List<(Item, Item)>(M);
                 keyPairs.Add(sd.ExclusiveKey, itemPairs);
             }
 
@@ -268,7 +273,7 @@ namespace ModelGraphSTD
                     item2 = input[i] = null; N--;
                     break;
                 }
-                if (item2 != null) itemPairs.Add(new ItemPair(item, item2));
+                if (item2 != null) itemPairs.Add((item, item2));
             }
             return RemoveNulls(input, M, N);
         }

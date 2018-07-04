@@ -378,6 +378,12 @@ namespace ModelGraphSTD
             child.RefChanged();
             return GetIndex(parent, child);
         }
+
+        internal bool TryGetChildren(GraphX gx, out bool v)
+        {
+            throw new NotImplementedException();
+        }
+
         override internal (int ParentIndex, int ChildIndex) GetIndex(Item parentItem, Item childItem)
         {
             var child = childItem as T2;

@@ -44,7 +44,7 @@ namespace ModelGraphSTD
                 foreach (var item in Items)
                 {
                     var g = item as Graph;
-                    if (g.RootItem != root) continue;
+                    if (g.SeedItem != root) continue;
                     graph = g;
                     return true;
                 }
