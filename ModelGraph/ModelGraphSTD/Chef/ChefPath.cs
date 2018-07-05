@@ -26,8 +26,8 @@ namespace ModelGraphSTD
         {
             if (!G.TryGetTopLevel(out Level L)) return false;
 
-            var inputPaths = L.Paths;
-            var N = inputPaths.Count;
+            var inputPaths = L.Paths.ToArray(); // copy of this levels path list
+            var N = inputPaths.Length;
             if (N < 2) return false;
 
             var nodeIndex = new Dictionary<Item, List<int>>(N * 2); // index into inputPaths 

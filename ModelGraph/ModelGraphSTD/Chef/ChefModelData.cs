@@ -163,6 +163,7 @@ namespace ModelGraphSTD
         }
         internal bool AddChildModel(List<ItemModel> prev, ItemModel m, Trait trait, Item item, Item aux1, Item aux2, ModelAction get)
         {
+            if (m.ChildModels == null) m.ChildModels = new List<ItemModel>();
             if (m.ChildModelCount < prev.Count && TryCopyPrevious(m.ChildModelCount)) return false;
 
             var c = m.ChildModelCount;
@@ -5479,6 +5480,10 @@ namespace ModelGraphSTD
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelSummary = (m) => GetIdentity(m.Item, IdentityStyle.Summary),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ReorderItems = ReorderStoreItem,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
