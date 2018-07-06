@@ -186,7 +186,7 @@ namespace ModelGraphSTD
             {
                 var p = _columnXIsChoiceProperty = new PropertyOf<ColumnX, bool>(_propertyStore, Trait.ColumnIsChoice_P);
                 p.GetValFunc = (item) => p.Cast(item).IsChoice;
-                p.SetValFunc = (item, value) => { return SetColumnIsChoice(p.Cast(item), value); };
+                p.SetValFunc = (item, value) => p.Cast(item).IsChoice = value;
                 p.Value = new BoolValue(p);
                 props.Add(p);
             }
@@ -560,19 +560,17 @@ namespace ModelGraphSTD
 
             if (store.IsTableX)
             {
-                var cols = TableX_ColumnX.GetChildren(store);
-                if (cols != null)
+                if (TableX_ColumnX.TryGetChildren(store, out IList<ColumnX> ls1))
                 {
-                    foreach (var col in cols)
+                    foreach (var col in ls1)
                     {
                         if (string.IsNullOrWhiteSpace(col.Name)) continue;
                         if (string.Compare(col.Name, name, true) == 0) { prop = col; return true; }
                     }
                 }
-                var cds = Store_ComputeX.GetChildren(store);
-                if (cds != null)
+                if (Store_ComputeX.TryGetChildren(store, out IList<ComputeX> ls2))
                 {
-                    foreach (var cd in cds)
+                    foreach (var cd in ls2)
                     {
                         var n = cd.Name;
                         if (string.IsNullOrWhiteSpace(n)) continue;
@@ -596,10 +594,9 @@ namespace ModelGraphSTD
             }
             else
             {
-                var props = Store_Property.GetChildren(store);
-                if (props != null)
+                if (Store_Property.TryGetChildren(store, out IList<Property> ls3))
                 {
-                    foreach (var pr in props)
+                    foreach (var pr in ls3)
                     {
                         if (string.Compare(name, _localize(pr.NameKey), true) == 0) { prop = pr; return true; }
                     }
@@ -627,8 +624,7 @@ namespace ModelGraphSTD
 
         private string GetQueryXRelationName(Item item)
         {
-            var rel = Relation_QueryX.GetParent(item);
-            return (rel == null) ? string.Empty : GetRelationName(rel as RelationX);
+            return Relation_QueryX.TryGetParent(item, out Relation rel) ? GetRelationName(rel as RelationX) : string.Empty;
         }
         #endregion
     }

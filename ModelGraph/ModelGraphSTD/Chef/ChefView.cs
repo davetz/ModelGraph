@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public partial class Chef
     {
         private bool TryGetQueryItems(QueryX query, out List<Item> items, Item key = null)
@@ -13,16 +11,14 @@ namespace ModelGraphSTD
             {
                 if (key == null)
                 {
-                    var sto = Store_QueryX.GetParent(query);
-                    if (sto != null && sto.Count > 0)
+                    if (Store_QueryX.TryGetParent(query, out Store sto))
                     {
                         items = sto.GetItems();
                     }
                 }
                 else
                 {
-                    var rel = Relation_QueryX.GetParent(query);
-                    if (rel != null)
+                    if (Relation_QueryX.TryGetParent(query, out Relation rel))
                     {
                         if (query.IsReversed)
                             rel.TryGetParents(key, out items);
@@ -35,18 +31,13 @@ namespace ModelGraphSTD
             return (items != null && items.Count > 0);
         }
 
-        private (int L1, IList<Property> PropertyList, int L2, IList<QueryX> QueryList, int L3, IList<ViewX> ViewList) GetQueryXChildren(QueryX query)
+        private (int L1, IList<Property> PropertyList, int L2, IList<QueryX> QueryList, int L3, IList<ViewX> ViewList) GetQueryXChildren(QueryX qx)
         {
-            var PropertyList = QueryX_Property.GetChildren(query);
-            int L1 = (PropertyList == null) ? 0 : PropertyList.Count;
+            int L1 = QueryX_Property.TryGetChildren(qx, out IList<Property> ls1) ? ls1.Count : 0;
+            int L2 = QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> ls2) ? ls2.Count : 0;
+            int L3 = QueryX_ViewX.TryGetChildren(qx, out IList<ViewX> ls3) ? ls3.Count : 0;
 
-            var QueryList = QueryX_QueryX.GetChildren(query);
-            int L2 = (QueryList == null) ? 0 : QueryList.Count;
-
-            var ViewList = QueryX_ViewX.GetChildren(query);
-            int L3 = (ViewList == null) ? 0 : ViewList.Count;
-
-            return (L1, PropertyList, L2, QueryList, L3, ViewList);
+            return (L1, ls1, L2, ls2, L3, ls3);
         }
 
     }

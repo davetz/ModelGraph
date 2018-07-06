@@ -146,19 +146,10 @@ namespace ModelGraphUWP.Views
             }
             else
             {
-                var item = args.SelectedItem as NavigationViewItem;
-                if (item == null)
+                if (args.SelectedItem is NavigationViewItem item && item.Tag is RootModel model)
                 {
-                    return;
+                    ModelPageService.Current.ShowModelControl(model);
                 }
-
-                var model = item.Tag as RootModel;
-                if (model == null)
-                {
-                    return;
-                }
-
-                ModelPageService.Current.ShowModelControl(model);
             }
         }
     }

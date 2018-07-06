@@ -7,64 +7,30 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        #region InitializeChoiceColumns  ======================================
-        private void InitializeChoiceColumns()
-        {
-            foreach (var tbl in _tableXStore.Items) { ValidateTableChoiceColumns(tbl); }
-        }
-        private void ValidateTableChoiceColumns(TableX tbl)
-        {
-            var colList = TableX_ColumnX.GetChildren(tbl);
-            if (colList != null)
-            {
-                foreach (var col in colList)
-                {
-                    if (col.IsChoice)
-                    {
-                        tbl.HasChoiceColumns = true;
-                        return;
-                    } 
-                }
-            }
-            tbl.HasChoiceColumns = false;
-        }
-        #endregion
-
         #region ChoiceColumns  ================================================
         private bool HasChoiceColumns(TableX tx)
         {
-            var columns = TableX_ColumnX.GetChildren(tx);
-            if (columns != null)
-            {
-                foreach (var col in columns)
+            if (TableX_ColumnX.TryGetChildren(tx, out IList<ColumnX> lst))
+            { 
+                foreach (var col in lst)
                 {
                     if (col.IsChoice) return true;
                 }
             }
             return false;
         }
-        private List<ColumnX> GetChoiceColumns(TableX tx)
+        private bool TryGetChoiceColumns(TableX tx, out IList<ColumnX> columns)
         {
-            var columns = TableX_ColumnX.GetChildren(tx);
-            if (columns == null) return null;
+            if (!TableX_ColumnX.TryGetChildren(tx, out columns)) return false;
 
-            var choiceColumns = new List<ColumnX>();
-            foreach (var col in columns)
+            var allColumns = columns;
+            columns = new List<ColumnX>(allColumns.Count);
+
+            foreach (var col in allColumns)
             {
-                if (col.IsChoice) choiceColumns.Add(col);
+                if (col.IsChoice) columns.Add(col);
             }
-            return choiceColumns;
-        }
-        #endregion
-
-        #region SetColumnIsChoice  ============================================
-        private bool SetColumnIsChoice(ColumnX cx, bool value)
-        {
-            cx.IsChoice = value;
-
-            var tbl = TableX_ColumnX.GetParent(cx);
-            if (tbl != null) ValidateTableChoiceColumns(tbl);
-            return true;
+            return columns.Count > 0;
         }
         #endregion
 
@@ -79,8 +45,7 @@ namespace ModelGraphSTD
             var newGroup = Value.GetValGroup(type);
             var preGroup = Value.GetValGroup(col.Value.ValType);
 
-            var tbl = TableX_ColumnX.GetParent(col);
-            if (tbl == null) return false;
+            if (!TableX_ColumnX.TryGetParent(col, out TableX tbl)) return false;
 
             var N = tbl.Count;
 

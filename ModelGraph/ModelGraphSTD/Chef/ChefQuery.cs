@@ -175,8 +175,7 @@ namespace ModelGraphSTD
         internal bool CanConvertQueryType(ItemModel model)
         {
             var qx = model.Item as QueryX;
-            var prev = QueryX_QueryX.GetParent(qx);
-            if (prev == null) return false;
+            if (!QueryX_QueryX.TryGetParent(qx, out QueryX prev)) return false;
             if (!prev.IsQueryGraphLink && !prev.IsQueryGraphRoot) return false;
 
             while (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> items))
@@ -214,16 +213,14 @@ namespace ModelGraphSTD
         internal Store  GetQueryXTarget(QueryX qx)
         {
             Store target = null;
-            var re = Relation_QueryX.GetParent(qx);
-            if (re != null)
+            if (Relation_QueryX.TryGetParent(qx, out Relation re))
             {
                 GetHeadTail(re, out Store head, out target);
                 if (qx.IsReversed) { target = head; }
             }
             else
-            {
-                target = Store_QueryX.GetParent(qx);
-            }
+                Store_QueryX.TryGetParent(qx, out target);
+
             return target;
         }
         #endregion
@@ -231,15 +228,15 @@ namespace ModelGraphSTD
         #region GetHeadTail  ==================================================
         internal void GetHeadTail(QueryX sx, out Store head, out Store tail)
         {
-            var re = Relation_QueryX.GetParent(sx);
-            if (re != null)
+            if (Relation_QueryX.TryGetParent(sx, out Relation re))
             {
                 GetHeadTail(re, out head, out tail);
                 if (sx.IsReversed) { var temp = head; head = tail; tail = temp; }
             }
             else
             {
-                head = tail = Store_QueryX.GetParent(sx);
+                Store_QueryX.TryGetParent(sx, out head);
+                tail = head;
             }
         }
         string GetSelectName(QueryX vx)
@@ -257,32 +254,33 @@ namespace ModelGraphSTD
         #region GetSymbolXQueryX  =============================================
         int GetSymbolQueryXCount(GraphX gx, Store nodeOwner)
         {
-            var qxList = GraphX_SymbolQueryX.GetChildren(gx);
-            if (qxList == null) return 0;
-
             var N = 0;
-            foreach (var qx in qxList) { if (nodeOwner == Store_QueryX.GetParent(qx)) N += 1; }
+            if (GraphX_SymbolQueryX.TryGetChildren(gx, out IList<QueryX> qxList))
+            {
+                foreach (var qx in qxList) { if (Store_QueryX.TryGetParent(qx, out Store parent) && nodeOwner == parent) N++; }
+            }
             return N;
         }
         (List<SymbolX> symbols, List<QueryX> querys) GetSymbolXQueryX(GraphX gx, Store nodeOwner)
         {
-            var sqxList = GraphX_SymbolQueryX.GetChildren(gx);
-            if (sqxList == null) return (null, null);
-
-            var sxList = new List<SymbolX>(sqxList.Count);
-            var qxList = new List<QueryX>(sqxList.Count);
-
-            foreach (var qx in sqxList)
+            if (GraphX_SymbolQueryX.TryGetChildren(gx, out IList<QueryX> sqxList))
             {
-                if (nodeOwner == Store_QueryX.GetParent(qx))
-                {
-                    var sx = SymbolX_QueryX.GetParent(qx);
-                    sxList.Add(sx);
-                    qxList.Add(qx);
-                }
-            }
-            if (sxList.Count > 0) return (sxList, qxList);
+                var sxList = new List<SymbolX>(sqxList.Count);
+                var qxList = new List<QueryX>(sqxList.Count);
 
+                foreach (var qx in sqxList)
+                {
+                    if (Store_QueryX.TryGetParent(qx, out Store store) && store == nodeOwner)
+                    {
+                        if (SymbolX_QueryX.TryGetParent(qx, out SymbolX sx))
+                        {
+                            sxList.Add(sx);
+                            qxList.Add(qx);
+                        }
+                    }
+                }
+                if (sxList.Count > 0) return (sxList, qxList);
+            }
             return (null, null);
         }
         #endregion
@@ -344,10 +342,10 @@ namespace ModelGraphSTD
         }
         private void ClearParentTailFlags(QueryX qx)
         {
-            var parents = QueryX_QueryX.GetParents(qx);
-            if (parents == null) return;
-
-            foreach (var qp in parents) { qp.IsTail = false; }
+            if (QueryX_QueryX.TryGetParents(qx, out IList<QueryX> list))
+            {
+                foreach (var qp in list) { qp.IsTail = false; }
+            }
         }
         #endregion
 
@@ -426,16 +424,10 @@ namespace ModelGraphSTD
 
         //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-        QueryX GetQueryXTail(QueryX sd)
+        QueryX GetQueryXTail(QueryX qx)
         {
-            var sd2 = sd;
-            var sd3 = sd2;
-            while (sd3 != null)
-            {
-                sd2 = sd3;
-                sd3 = QueryX_QueryX.GetChild(sd3);
-            }
-            return sd2;
+            while (QueryX_QueryX.TryGetChild(qx, out QueryX qx2)) { qx = qx2; }
+            return qx;
         }
     }
 }

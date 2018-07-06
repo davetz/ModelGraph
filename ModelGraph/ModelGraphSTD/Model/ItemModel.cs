@@ -155,6 +155,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Auxiliary Items  ==============================================
+        public Chef Chef => Item as Chef;
         public RowX RowX => (Item is RowX item) ? item : (Aux1 is RowX aux1) ? aux1 : Aux2 as RowX;
         public Node Node => (Item is Node item) ? item : (Aux1 is Node aux1) ? aux1 : Aux2 as Node;
         public Edge Edge => (Item is Edge item) ? item : (Aux1 is Edge aux1) ? aux1 : Aux2 as Edge;

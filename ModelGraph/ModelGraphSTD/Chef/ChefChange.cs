@@ -190,13 +190,11 @@ namespace ModelGraphSTD
 
             if (item.IsRowX)
             {
-                var row = item as RowX;
-                var tbl = row.Owner as TableX;
+                var rx = item as RowX;
+                var tx = rx.TableX;
 
-                tbl.Remove(row);
-
-                var cols = TableX_ColumnX.GetChildren(tbl);
-                if (cols != null) { foreach (var col in cols) { col.Value.Remove(row); } }
+                tx.Remove(rx);
+                if (TableX_ColumnX.TryGetChildren(tx, out IList<ColumnX> lst)) { foreach (var cx in lst) { cx.Value.Remove(rx); } }
             }
             else
             {
@@ -214,16 +212,16 @@ namespace ModelGraphSTD
 
             if (item.IsRowX)
             {
-                var row = item as RowX;
-                var tbl = row.Owner as TableX;
+                var rx = item as RowX;
+                var tx = rx.TableX;
 
-                tbl.Insert(row, index);
+                tx.Insert(rx, index);
                 if (chng.Columns != null)
                 {
                     var N = chng.Columns.Count;
                     for (int i = 0; i < N; i++)
                     {
-                        chng.Columns[i].Value.SetString(row, chng.Values[i]);
+                        chng.Columns[i].Value.SetString(rx, chng.Values[i]);
                     }
                 }
             }

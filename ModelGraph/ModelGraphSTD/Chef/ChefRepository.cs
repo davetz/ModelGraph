@@ -29,7 +29,6 @@ namespace ModelGraphSTD
 
         internal void PostReadValidation()
         {
-            InitializeChoiceColumns();
             ValidateQueryXStore();
         }
 

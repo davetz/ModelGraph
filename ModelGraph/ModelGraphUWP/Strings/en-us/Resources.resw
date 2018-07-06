@@ -2090,4 +2090,22 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>ModelGraph</value>
     <comment>Application's Title</comment>
   </data>
+  <data name="620N" xml:space="preserve">
+    <value>Parm</value>
+  </data>
+  <data name="620S" xml:space="preserve">
+    <value>Model parameters</value>
+  </data>
+  <data name="621S" xml:space="preserve">
+    <value>List of errors</value>
+  </data>
+  <data name="622S" xml:space="preserve">
+    <value>List of changes</value>
+  </data>
+  <data name="623S" xml:space="preserve">
+    <value>Model schema and metadata</value>
+  </data>
+  <data name="624S" xml:space="preserve">
+    <value>Model modeling data</value>
+  </data>
 </root>

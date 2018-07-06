@@ -125,17 +125,19 @@ namespace ModelGraphSTD
             {
                 foreach (var qx in qxRoots)
                 {
-                    var sto = Store_QueryX.GetParent(qx);
-                    if (seed == null || seed.Owner != sto && sto.Count > 0)
+                    if (Store_QueryX.TryGetParent(qx, out Store sto))
                     {
-                        var items = sto.GetItems();
-                        if (qx.HasWhere) items = ApplyFilter(qx, items);
+                        if (seed == null || seed.Owner != sto && sto.Count > 0)
+                        {
+                            var items = sto.GetItems();
+                            if (qx.HasWhere) items = ApplyFilter(qx, items);
 
-                        if (items != null) workList.Add(new Query(qx, null, sto, items.ToArray()));
-                    }
-                    else if (seed != null && seed.Owner == sto)
-                    {
-                        workList.Add(new Query(qx, null, sto, new Item[] { seed }));
+                            if (items != null) workList.Add(new Query(qx, null, sto, items.ToArray()));
+                        }
+                        else if (seed != null && seed.Owner == sto)
+                        {
+                            workList.Add(new Query(qx, null, sto, new Item[] { seed }));
+                        }
                     }
                 }
             }
@@ -147,8 +149,7 @@ namespace ModelGraphSTD
         #region GetChildQuery  ================================================
         Query GetChildQuery(Graph g, QueryX qx, Query q, Item item, Dictionary<byte, List<(Item, Item)>> keyPairs)
         {
-            var r = Relation_QueryX.GetParent(qx);
-            if (r == null) return null;
+            if (!Relation_QueryX.TryGetParent(qx, out Relation r)) return null;
 
             List<Item> items = null;
             if (qx.IsReversed)
@@ -213,8 +214,7 @@ namespace ModelGraphSTD
         #region GetChildQuery  ================================================
         Query GetChildQuery(QueryX qx, Query q, Item item)
         {
-            var r = Relation_QueryX.GetParent(qx);
-            if (r == null) return null;
+            if (!Relation_QueryX.TryGetParent(qx, out Relation r)) return null;
 
             List<Item> items = null;
             if (qx.IsReversed)

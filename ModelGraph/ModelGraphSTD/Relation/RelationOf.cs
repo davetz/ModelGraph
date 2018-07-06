@@ -131,7 +131,6 @@ namespace ModelGraphSTD
 
 
         #region <Get,TryGet><Child,Parent,Children,Parents>  ==================
-        internal T2 GetChild(Item key) => TryGetChild(key, out T2 child) ? child : null;
         internal bool TryGetChild(Item key, out T2 child)
         {
             if (_children1 != null)
@@ -146,7 +145,6 @@ namespace ModelGraphSTD
             child = null;
             return false;
         }
-        internal IList<T2> GetChildren(Item key) => TryGetChildren(key, out IList<T2> children) ? children : null;
         internal bool TryGetChildren(Item key, out IList<T2> children)
         {
             if (_children1 != null && _children1.TryGetVal(key, out T2 child))
@@ -164,7 +162,6 @@ namespace ModelGraphSTD
 
         //=====================================================================
 
-        internal T1 GetParent(Item key) => TryGetParent(key, out T1 parent) ? parent : null;
         internal bool TryGetParent(Item key, out T1 parent)
         {
             if (_parents1 != null)
@@ -177,7 +174,6 @@ namespace ModelGraphSTD
             parent = null;
             return false;
         }
-        internal IList<T1> GetParents(Item key) => TryGetParents(key, out IList<T1> parents) ? parents : null;
         internal bool TryGetParents(Item key, out IList<T1> parents)
         {
             if (_parents1 != null && _parents1.TryGetVal(key, out T1 parent))

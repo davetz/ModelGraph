@@ -26,30 +26,26 @@ namespace ModelGraphSTD
         #region <Get/Set>SelectString  ========================================
         internal string GetWhereProperty(ComputeX cx)
         {
-            var qx = ComputeX_QueryX.GetChild(cx);
-            if (qx == null) return InvalidItem;
+            if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx)) return InvalidItem;
 
             return (qx.HasWhere) ? qx.WhereString : null;
         }
         internal bool TrySetWhereProperty(ComputeX cx, string value)
         {
-            var qx = ComputeX_QueryX.GetChild(cx);
-            if (qx == null) return false;
+            if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx)) return false;
 
             return TrySetWhereProperty(qx, value);
         }
         internal string GetSelectProperty(ComputeX cx)
         {
-            var qx = ComputeX_QueryX.GetChild(cx);
-            if (qx == null) return InvalidItem;
+            if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx)) return InvalidItem;
 
             return (qx.HasSelect) ? qx.SelectString : null;
         }
         internal bool TrySetSelectProperty(ComputeX cx, string value)
         {
             MajorDelta += 1;
-            var qx = ComputeX_QueryX.GetChild(cx);
-            if (qx == null) return false;
+            if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx)) return false;
 
             return TrySetSelectProperty(qx, value);
         }
@@ -120,8 +116,7 @@ namespace ModelGraphSTD
             This method is called by valueDictionary when a key-value-pair does
             not exist for the callers key.
          */
-            var qx = ComputeX_QueryX.GetChild(cx);
-            if (qx == null || cx.Value.IsEmpty)
+            if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx) || cx.Value.IsEmpty)
                 return false;
 
             switch (cx.CompuType)
@@ -142,8 +137,8 @@ namespace ModelGraphSTD
 
             bool TryGetRowValue()
             {
-                if (!qx.HasValidSelect || !qx.Select.GetValue(key, out string val))
-                    return false;
+                if (!qx.HasValidSelect) return false;
+                if (!qx.Select.GetValue(key, out string val)) return false;
 
                 cx.Value.SetValue(key, val);
                 return true;
@@ -209,8 +204,7 @@ namespace ModelGraphSTD
             {
                 case CompuType.RowValue:
 
-                    var vx = ComputeX_QueryX.GetChild(cx) as QueryX;
-                    if (vx == null || vx.Select == null || vx.Select.ValueType == ValType.IsInvalid)
+                    if (!ComputeX_QueryX.TryGetChild(cx, out QueryX vx) || vx.Select == null || vx.Select.ValueType == ValType.IsInvalid)
                         cx.Value = ValuesInvalid;
                     else
                         AllocateCache(vx);
@@ -258,16 +252,14 @@ namespace ModelGraphSTD
         #region GetRelatedValueType  ==========================================
         ValType GetRelatedValueType(ComputeX cx)
         {
-            var qx = ComputeX_QueryX.GetChild(cx);
-            if (qx == null)
+            if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
                 return ValType.IsInvalid; //computeX must have a root queryX reference
 
-            var children = QueryX_QueryX.GetChildren(qx);
-            if (children == null || children.Count == 0)
+            if (!QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> ls1))
                 return ValType.IsInvalid; //computeX must have atleast one queryX reference
 
-            var workQueue = new Queue<QueryX>(children);
-            var isMultiple = children.Count > 1;
+            var workQueue = new Queue<QueryX>(ls1);
+            var isMultiple = ls1.Count > 1;
 
             var vTypes = new HashSet<ValType>();
 
@@ -277,8 +269,7 @@ namespace ModelGraphSTD
              */
                 var qt = workQueue.Dequeue();
 
-                var r = Relation_QueryX.GetParent(qt);
-                if (r != null && (r.Pairing == Pairing.ManyToMany || (!qt.IsReversed && r.Pairing == Pairing.OneToMany)))
+                if (Relation_QueryX.TryGetParent(qt, out Relation r) && (r.Pairing == Pairing.ManyToMany || (!qt.IsReversed && r.Pairing == Pairing.OneToMany)))
                     isMultiple = true;
 
                 if (qt.HasValidSelect && qt.Select.ValueType < ValType.MaximumType)
@@ -286,11 +277,10 @@ namespace ModelGraphSTD
                     vTypes.Add(qt.Select.ValueType);
                 }
 
-                children = QueryX_QueryX.GetChildren(qt);
-                if (children != null)
+                if (QueryX_QueryX.TryGetChildren(qt, out IList<QueryX> ls2))
                 {
-                    isMultiple |= children.Count > 1;
-                    foreach (var child in children) { workQueue.Enqueue(child); }
+                    isMultiple |= ls2.Count > 1;
+                    foreach (var child in ls2) { workQueue.Enqueue(child); }
                 }                
             }
 
@@ -357,8 +347,7 @@ namespace ModelGraphSTD
         #region GetSelectorName  ==============================================
         string GetSelectorName(ComputeX item)
         {
-            var tbl = Store_ComputeX.GetParent(item);
-            return (tbl != null) ? GetIdentity(tbl, IdentityStyle.Single) : "Select";
+            return Store_ComputeX.TryGetParent(item, out Store tbl) ? GetIdentity(tbl, IdentityStyle.Single) : "Select";
         }
         int GetValueType(QueryX qx)
         {

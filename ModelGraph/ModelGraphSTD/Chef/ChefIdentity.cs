@@ -71,10 +71,10 @@ namespace ModelGraphSTD
             if (item is RowX itm)
             {
                 var pa = itm.Owner as TableX;
-                var nc = TableX_NameProperty.GetChild(pa);
+                TableX_NameProperty.TryGetChild(pa, out Property nc);
                 var ix = pa.IndexOf(itm);
 
-                string name = (nc == null) ? null : nc.Value.GetString(itm);
+                string name = nc?.Value.GetString(itm);
                 if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
 
                 var parent = pa.Name;
@@ -96,8 +96,7 @@ namespace ModelGraphSTD
                         return _localize(itm.KindKey);
 
                     case IdentityStyle.Summary:
-                        var ns = TableX_SummaryProperty.GetChild(pa);
-                        return (ns == null) ? name : ns.Value.GetString(itm);
+                        return TableX_SummaryProperty.TryGetChild(pa, out Property ns) ? ns.Value.GetString(itm) : name;
 
                     case IdentityStyle.Description:
                         return null;
@@ -331,22 +330,20 @@ namespace ModelGraphSTD
                 var name = string.Empty;
                 if (qx.IsRoot)
                 {
-                    var st = Store_QueryX.GetParent(qx);
-                    if (st == null)
-                        name = Chef.InvalidItem;
-                    else
+                    if (Store_QueryX.TryGetParent(qx, out Store st))
                         name = GetIdentity(st, IdentityStyle.Double);
+                    else
+                        name = InvalidItem;
                 }
                 else
                 {
-                    var re = Relation_QueryX.GetParent(qx);
-                    if (re == null)
-                        name = Chef.InvalidItem;
-                    else
+                    if (Relation_QueryX.TryGetParent(qx, out Relation re))
                     {
                         GetHeadTail(qx, out Store head, out Store tail);
-                        name = $"{GetIdentity(head, IdentityStyle.Single)} --> {GetIdentity(tail, IdentityStyle.Single)}";                       
+                        name = $"{GetIdentity(head, IdentityStyle.Single)} --> {GetIdentity(tail, IdentityStyle.Single)}";
                     }
+                    else
+                        name = InvalidItem;
                 }
 
                 if (qx.HasSelect || qx.HasWhere || qx.IsRoot || qx.IsHead || qx.IsTail)
@@ -398,8 +395,8 @@ namespace ModelGraphSTD
                 var name = itm.Name;
                 if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
 
-                var pa = GraphX_SymbolX.GetParent(itm);
-                var parent = (pa == null) ? BlankName : pa.Name;
+                ;
+                var parent = GraphX_SymbolX.TryGetParent(itm, out GraphX pa) ? pa.Name : BlankName;
                 if (string.IsNullOrWhiteSpace(parent)) parent = $"{_localize(pa.KindKey)} {Index_Identity(pa)}";
 
                 switch (style)
@@ -436,8 +433,7 @@ namespace ModelGraphSTD
                 var name = itm.Name;
                 if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
 
-                var pa = TableX_ColumnX.GetParent(itm);
-                var parent = (pa == null) ? BlankName : pa.Name;
+                var parent = TableX_ColumnX.TryGetParent(itm, out TableX pa) ? pa.Name : BlankName;
                 if (string.IsNullOrWhiteSpace(parent)) parent = $"{_localize(pa.KindKey)} {Index_Identity(pa)}";
 
                 switch (style)
@@ -474,8 +470,7 @@ namespace ModelGraphSTD
                 var name = itm.Name;
                 if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
 
-                var pa = Store_ComputeX.GetParent(itm);
-                var parent = (pa == null) ? BlankName : GetIdentity(pa, IdentityStyle.Single);
+                var parent = (Store_ComputeX.TryGetParent(itm, out Store pa)) ? GetIdentity(pa, IdentityStyle.Single) : BlankName;
 
                 switch (style)
                 {
@@ -511,11 +506,11 @@ namespace ModelGraphSTD
                 var name = string.IsNullOrWhiteSpace(itm.Name) ? string.Empty : $"({itm.Name})";
                 if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
 
-                var ch = TableX_ParentRelationX.GetParent(itm);
-                var pa = TableX_ChildRelationX.GetParent(itm);
+                ;
+                ;
 
-                var child = (ch == null) ? BlankName : GetIdentity(ch, IdentityStyle.Single);
-                var parent = (pa == null) ? BlankName : GetIdentity(pa, IdentityStyle.Single);
+                var child = (TableX_ParentRelationX.TryGetParent(itm, out TableX ch)) ? GetIdentity(ch, IdentityStyle.Single) : BlankName;
+                var parent = (TableX_ChildRelationX.TryGetParent(itm, out TableX pa)) ? GetIdentity(pa, IdentityStyle.Single) : BlankName;
 
                 switch (style)
                 {
@@ -585,8 +580,8 @@ namespace ModelGraphSTD
                 var kind = _localize(GetKindKey(Trait.Property));
                 var name = _localize(itm.NameKey);
 
-                var pa = Store_Property.GetParent(itm);
-                if (pa == null) pa = item.Owner as Store;
+                if (!Store_Property.TryGetParent(itm, out Store pa))
+                    pa = item.Owner as Store;
                 var parent = (pa == null) ? BlankName : _localize(pa.NameKey);
 
                 switch (style)

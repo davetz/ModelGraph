@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace ModelGraphSTD
 {
@@ -21,6 +19,7 @@ namespace ModelGraphSTD
             Initialize_ComboProperty_X();
             Initialize_TextCompute_X();
 
+            Initialize_ParmRoot_X();
             Initialize_ErrorRoot_X();
             Initialize_ChangeRoot_X();
             Initialize_MetadataRoot_X();
@@ -154,34 +153,36 @@ namespace ModelGraphSTD
         #endregion
 
         #region AddChildModel  ================================================
-        /// <summary>
-        /// Try to find and reuse an existing model matching the callers parameters
-        /// </summary>
-        private static bool TryGetPrevModel(ItemModel m, Trait trait, int index, Item item = null, Item aux1 = null, Item aux2 = null)
-        {
-            return false;
-        }
         internal bool AddChildModel(List<ItemModel> prev, ItemModel m, Trait trait, Item item, Item aux1, Item aux2, ModelAction get)
-        {
-            if (m.ChildModels == null) m.ChildModels = new List<ItemModel>();
-            if (m.ChildModelCount < prev.Count && TryCopyPrevious(m.ChildModelCount)) return false;
+        {/*
+            I am construction a new list of itemModels but if posible I want to reuse an existing model from the previous itemModel list.
+            The existing models are compared with the parameters of the candidate model to see if it matches. A new model will be created if I necessary.
+            In lists of 20,000 itemModels it is important to be strategic. The new list will be very much, if not exactly, like the previous one.
+            It is not posible to know what changed or why, however I have the previous list and am being feed parameters for candidates one at a time,
+         */
+            var C = m.ChildModelCount;  // index of next model to be added
+            var N = prev.Count;         // length of the previous model list
+            var M = N - 1;   // last index of previous list
 
-            var c = m.ChildModelCount;
-            var N = prev.Count;
-            for (int i = 1, k = c; i < N; i++)
+            if (C > M)
+                C = (N / 2);  // keep within the constraints
+            else if (TryCopyPrevious(C))
+                return false; // lucky dog, got it on the first try.
+
+            for (int i = 0, j = 0, k = C; i < N; i++)
             {/*
-                First look on either side of expected index, 
-                alternating from left to right in ever increasing
-                distances from the expected index.
-                Skip the expected index because we have already tried that. 
+                First look at the index then on either side of the index,  
+                alternating from left to right in increasing increments.
              */
-                k += i * ((i % 2 == 0) ? 1 : -1);
-                var j = (k < 0) ? (k + N) : (k >= N) ? (k - N) : k;
+                k = (i % 2 == 0) ? (k + i) : (k - i); // right (+0, +2, +4,..)  left (-1, -3, -5,..)
+                j = (k < 0) ? (k + N) : (k > M) ? (k - N) : k; // wrap arround if necessary
 
-                if (TryCopyPrevious(j)) return true;
+                if (TryCopyPrevious(j)) return false; // I reused the existing model.
             }
             m.ChildModels.Add(new ItemModel(m, trait, item, aux1, aux2, get));
-            return true;
+            return true; // I had to create a new model
+
+            // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             bool TryCopyPrevious(int inx)
             {
@@ -192,18 +193,20 @@ namespace ModelGraphSTD
                     return true;
                 }
                 return false;
-            }
 
-            bool IsMatch(ItemModel cm)
-            {
-                if (cm == null) return false;
-                if (cm.ParentModel != m) return false;
-                if (cm.Trait != trait) return false;
-                if (cm.Item != item) return false;
-                if (cm.Aux1 != aux1) return false;
-                if (cm.Aux2 != aux2) return false;
-                if (cm.Get != get) return false;
-                return true;
+                // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+
+                bool IsMatch(ItemModel cm)
+                {
+                    if (cm == null) return false;
+                    if (cm.ParentModel != m) return false;
+                    if (cm.Trait != trait) return false;
+                    if (cm.Item != item) return false;
+                    if (cm.Aux1 != aux1) return false;
+                    if (cm.Aux2 != aux2) return false;
+                    if (cm.Get != get) return false;
+                    return true;
+                }
             }
         }
         #endregion
@@ -267,7 +270,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region RefreshViewList  ==============================================
+        #region RefreshViewFlatList  ==========================================
         internal void RefreshViewFlatList(RootModel root, int scroll = 0, ChangeType change = ChangeType.NoChange)
         {
             var select = root.SelectModel;
@@ -745,9 +748,6 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    m.CanExpandLeft = true;
-                    m.IsExpandedLeft = true;
-
                     return (null, null, 0, ModelType.Default);
                 },
 
@@ -764,27 +764,6 @@ namespace ModelGraphSTD
                             break;
                     }
                 },
-
-                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-                Validate = (m,prev) =>
-                {
-                    var chef = m.Item as Chef;
-
-                    var N = chef.Count;
-                    if (N == 0) return (false, false);
-                    if (m.Delta == chef.Delta) return (true, false);
-
-                    var anyChange = false;
-                    m.InitChildModels(prev);
-                    foreach (var child in chef.Items)
-                    {
-                        var itm = child as Chef;
-                        anyChange |= AddChildModel(prev, m, Trait.DataChef_M, itm, null, null, itm.DataChef_X);
-                    }
-
-                    return (true, anyChange);
-                }
             };
 
 
@@ -812,7 +791,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 612 DataChef_X  ===============================================
+        #region 613 DataChef_X  ===============================================
         internal ModelAction DataChef_X;
         void Initialize_DataChef_X()
         {
@@ -863,12 +842,13 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                Validate = (m,prev) =>
+                Validate = (m, prev) =>
                 {
-                    if (m.ChildModelCount == 4) return (true, false); 
+                    if (m.ChildModelCount == 5) return (true, false);
 
                     m.InitChildModels(prev);
 
+                    AddChildModel(prev, m, Trait.ParmRoot_M, _errorStore, null, null, ParmRoot_X);
                     AddChildModel(prev, m, Trait.ErrorRoot_M, _errorStore, null, null, ErrorRoot_X);
                     AddChildModel(prev, m, Trait.ChangeRoot_M, _changeRoot, null, null, ChangeRoot_X);
                     AddChildModel(prev, m, Trait.MetadataRoot_M, m.Item, null, null, MetadataRoot_X);
@@ -1217,6 +1197,42 @@ namespace ModelGraphSTD
 
 
 
+        #region 620 ParmRoot  =================================================
+        ModelAction ParmRoot_X;
+        void Initialize_ParmRoot_X()
+        {
+            ParmRoot_X = new ModelAction
+            {
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+
+                    return (kind, name, 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => _localize(m.SummaryKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m, prev) =>
+                {
+                    return (false, false);
+                },
+            };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
+        }
+        #endregion
+
         #region 621 ErrorRoot  ================================================
         ModelAction ErrorRoot_X;
         void Initialize_ErrorRoot_X()
@@ -1286,6 +1302,10 @@ namespace ModelGraphSTD
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ModelKindName = GetKindName,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -1715,8 +1735,8 @@ namespace ModelGraphSTD
                     {
                         if (doDrop)
                         {
-                            var vxDropParent = ViewX_ViewX.GetParent(vxDrop);
-                            if (vxDropParent != null) RemoveLink(ViewX_ViewX, vxDropParent, vxDrop);
+                            if (ViewX_ViewX.TryGetParent(vxDrop, out ViewX vxDropParent))
+                                RemoveLink(ViewX_ViewX, vxDropParent, vxDrop);
 
                             var prevIndex = _viewXStore.IndexOf(vxDrop);
                             ItemMoved(vxDrop, prevIndex, 0);
@@ -1825,8 +1845,8 @@ namespace ModelGraphSTD
                                 {
                                     if (doDrop)
                                     {
-                                        var oldParent = ViewX_ViewX.GetParent(vx);
-                                        if (oldParent != null) RemoveLink(ViewX_ViewX, oldParent, vx);
+                                        if (ViewX_ViewX.TryGetParent(vx, out ViewX oldParent))
+                                            RemoveLink(ViewX_ViewX, oldParent, vx);
                                         AppendLink(ViewX_ViewX, view, vx);
                                     }
                                     return DropAction.Move;
@@ -1893,28 +1913,25 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var propertyList = ViewX_Property.GetChildren(vx);
-                        if (propertyList != null)
+                        if (ViewX_Property.TryGetChildren(vx, out IList<Property> pls))
                         {
-                            foreach (var pc in propertyList)
+                            foreach (var pc in pls)
                             {
                                 anyChange |= AddChildModel(prev, m, Trait.ViewXProperty_M, pc, ViewX_Property, vx, ViewXProperty_X);
                             }
                         }
 
-                        var queryList = ViewX_QueryX.GetChildren(vx);
-                        if (queryList != null)
+                        if (ViewX_QueryX.TryGetChildren(vx, out IList<QueryX> qls))
                         {
-                            foreach (var qc in queryList)
+                            foreach (var qc in qls)
                             {
                                 anyChange |= AddChildModel(prev, m, Trait.ViewXQuery_M, qc, ViewX_QueryX, vx, ViewXQuery_X);
                             }
                         }
 
-                        var viewList = ViewX_ViewX.GetChildren(vx);
-                        if (viewList != null)
+                        if (ViewX_ViewX.TryGetChildren(vx, out IList<ViewX> vls))
                         {
-                            foreach (var vc in viewList)
+                            foreach (var vc in vls)
                             {
                                 anyChange |= AddChildModel(prev, m, Trait.ViewXView_M, vc, ViewX_ViewX, vx, ViewXViewM_X);
                             }
@@ -1961,7 +1978,7 @@ namespace ModelGraphSTD
                     m.CanFilter = count > 2;
                     m.CanExpandLeft = count > 0;
 
-                    if (Relation_QueryX.GetParent(qx) != null)
+                    if (Relation_QueryX.TryGetParent(qx, out Relation _))
                     {
                         return (kind, name, count, ModelType.Default);
                     }
@@ -2037,28 +2054,25 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var propertyList = QueryX_Property.GetChildren(qx);
-                        if (propertyList != null)
+                        if (QueryX_Property.TryGetChildren(qx, out IList<Property> pls))
                         {
-                            foreach (var pc in propertyList)
+                            foreach (var pc in pls)
                             {
                                 anyChange |= AddChildModel(prev, m, Trait.ViewXProperty_M, pc, QueryX_Property, qx, ViewXProperty_X);
                             }
                         }
 
-                        var queryList = QueryX_QueryX.GetChildren(qx);
-                        if (queryList != null)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> qls))
                         {
-                            foreach (var qc in queryList)
+                            foreach (var qc in qls)
                             {
                                 anyChange |= AddChildModel(prev, m, Trait.ViewXQuery_M, qc, QueryX_QueryX, qx, ViewXQuery_X);
                             }
                         }
 
-                        var viewList = QueryX_ViewX.GetChildren(qx);
-                        if (viewList != null)
+                        if (QueryX_ViewX.TryGetChildren(qx, out IList<ViewX> vls))
                         {
-                            foreach (var vc in viewList)
+                            foreach (var vc in vls)
                             {
                                 anyChange |= AddChildModel(prev, m, Trait.ViewXView_M, vc, QueryX_ViewX, qx, ViewXViewM_X);
                             }
@@ -2074,16 +2088,15 @@ namespace ModelGraphSTD
             (string, string) GetKindName(ItemModel m)
             {
                 var qx = m.Item as QueryX;
-                var rel = Relation_QueryX.GetParent(qx);
-                if (rel != null)
+                if (Relation_QueryX.TryGetParent(qx, out Relation re))
                 {
                     return (_localize(m.KindKey), GetIdentity(qx, IdentityStyle.Single));
                 }
-                else
+                else if (Store_QueryX.TryGetParent(qx, out Store sto))
                 {
-                    var sto = Store_QueryX.GetParent(qx);
                     return (GetIdentity(sto, IdentityStyle.Kind), GetIdentity(sto, IdentityStyle.Double));
                 }
+                return (Chef.BlankName, Chef.BlankName);
             }
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -2152,7 +2165,6 @@ namespace ModelGraphSTD
         }
         #endregion
 
-
         #region 63A ViewView_ZM  ==============================================
         ModelAction ViewView_X;
         void Initialize_ViewView_X()
@@ -2220,8 +2232,7 @@ namespace ModelGraphSTD
                     var key = m.Aux1; // may be null
                     var (kind, name) = GetKindName(m);
                     var count = 0;
-                    var querys = ViewX_QueryX.GetChildren(vx);
-                    if (querys != null)
+                    if (ViewX_QueryX.TryGetChildren(vx, out IList<QueryX> querys))
                     {
                         if (querys.Count == 1 && Store_QueryX.HasParentLink(querys[0]))
                         {
@@ -2260,12 +2271,8 @@ namespace ModelGraphSTD
                     var key = m.Aux1; // may be null
                     var anyChange = false;
 
-                    var queryList = ViewX_QueryX.GetChildren(vx);
-                    var viewList = ViewX_ViewX.GetChildren(vx);
-
-                    var L2 = (queryList == null) ? 0 : queryList.Count;
-                    var L3 = (viewList == null) ? 0 : viewList.Count;
-
+                    var L2 = (ViewX_QueryX.TryGetChildren(vx, out IList<QueryX> queryList)) ? queryList.Count : 0;
+                    var L3 = (ViewX_ViewX.TryGetChildren(vx, out IList<ViewX> viewList)) ? viewList.Count : 0;
                     if ((L2 + L3) == 0) return (false, false);
 
 
@@ -2689,10 +2696,11 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var gx = m.GraphX;
-                    if (GraphX_SymbolX.ChildCount(gx) == 0) return (false, false);
+                    if (!GraphX_SymbolX.TryGetChildren(gx, out IList<SymbolX> items)) return (false, false);
+
+                    m.InitChildModels(prev, items.Count);
 
                     var anyChange = false;
-                    var items  = GraphX_SymbolX.GetChildren(gx);
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.SymbolX_M, itm, GraphX_SymbolX, gx, SymbolX_X);
@@ -2717,7 +2725,6 @@ namespace ModelGraphSTD
             }
         }
         #endregion
-
 
         #region 647 TableList  ================================================
         ModelAction TableList_X;
@@ -2824,6 +2831,7 @@ namespace ModelGraphSTD
             (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
+
 
 
         #region 652 PairX  ====================================================
@@ -3240,9 +3248,8 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var cx = m.ComputeX;
-                    var qx = ComputeX_QueryX.GetChild(cx);
+                    var count = ComputeX_QueryX.TryGetChild(cx, out QueryX qx) ? QueryX_QueryX.ChildCount(qx) : 0;
                     var (kind, name) = GetKindName(m);
-                    var count = (qx == null) ? 0 : QueryX_QueryX.ChildCount(qx);
 
                     m.CanDrag = true;
                     m.CanExpandLeft = (count > 0);
@@ -3276,12 +3283,10 @@ namespace ModelGraphSTD
                 {
                     if (!(d.Item is Relation rel)) return DropAction.None;
 
-                    var cd = m.Item as ComputeX;
-                    var root = ComputeX_QueryX.GetChild(cd);
-                    if (root == null) return DropAction.None;
+                    var cx = m.ComputeX;
+                    if (!ComputeX_QueryX.TryGetChild(cx, out QueryX root)) return DropAction.None;
+                    if (!Store_ComputeX.TryGetParent(cx, out Store sto)) return DropAction.None;
 
-
-                    var sto = Store_ComputeX.GetParent(cd);
                     GetHeadTail(rel, out Store sto1, out Store sto2);
                     if (sto != sto1 && sto != sto2) return DropAction.None;
 
@@ -3298,7 +3303,7 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var cx = m.Item as ComputeX;
-                    var qx = ComputeX_QueryX.GetChild(cx);
+                    if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx)) return (false, false);
 
                     m.InitChildModels(prev);
 
@@ -3351,14 +3356,15 @@ namespace ModelGraphSTD
                         }
                     }
 
-                    if (m.IsExpandedLeft && qx != null && QueryX_QueryX.ChildCount(qx) > 0)
+                    if (m.IsExpandedLeft)
                     {
-                        var items = QueryX_QueryX.GetChildren(qx);
-                        foreach (var itm in items)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            AddChildModel(prev, m, Trait.ValueXHead_M, itm, null, null, ValueHead_X);
+                            foreach (var itm in list)
+                            {
+                                AddChildModel(prev, m, Trait.ValueXHead_M, itm, null, null, ValueHead_X);
+                            }
                         }
-
                     }
                     return (true, true);
                 }
@@ -3414,12 +3420,12 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var tx = m.TableX;
-                    var items = TableX_ColumnX.GetChildren(tx);
-                    if (items == null) return (false, false);
+                    if (!TableX_ColumnX.TryGetChildren(tx, out IList<ColumnX> list)) return (false, false);
 
                     m.InitChildModels(prev);
+
                     var anyChange = false;
-                    foreach (var itm in items)
+                    foreach (var itm in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.ColumnX_M, itm, TableX_ColumnX, tx, ColumnX_X);
                     }
@@ -3483,12 +3489,12 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var tx = m.TableX;
-                    var items = TableX_ChildRelationX.GetChildren(tx);
-                    if (items == null) return (false, false);
+                    if (!TableX_ChildRelationX.TryGetChildren(tx, out IList<RelationX> list)) return (false, false);
 
                     m.InitChildModels(prev);
+
                     var anyChange = false;
-                    foreach (var rel in items)
+                    foreach (var rel in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.ChildRelationX_M, rel, TableX_ChildRelationX, tx, ChildRelationX_X);
                     }
@@ -3552,12 +3558,11 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var tx = m.TableX;
-                    var items = TableX_ParentRelationX.GetChildren(tx);
-                    if (items == null) return (false, false);
+                    if (!TableX_ParentRelationX.TryGetChildren(tx, out IList<RelationX> list)) return (false, false);
 
                     m.InitChildModels(prev);
                     var anyChange = false;
-                    foreach (var rel in items)
+                    foreach (var rel in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.ParentRelationX_M, rel, TableX_ParentRelationX, tx, ParentRelationX_X);
                     }
@@ -3699,15 +3704,16 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var ex = m.EnumX;
-                    var items = EnumX_ColumnX.GetChildren(ex);
-                    if (items == null) return (false, false);
+                    if (!EnumX_ColumnX.TryGetChildren(ex, out IList<ColumnX> list)) return (false, false);
 
                     m.InitChildModels(prev);
                     var anyChange = false;
-                    foreach (var cx in items)
+                    foreach (var cx in list)
                     {
-                        var tx = TableX_ColumnX.GetParent(cx);
-                        anyChange |= AddChildModel(prev, m, Trait.EnumRelatedColumn_M, cx, tx, ex, EnumRelatedColumn_X);
+                        if (TableX_ColumnX.TryGetParent(cx, out TableX tx))
+                        {
+                            anyChange |= AddChildModel(prev, m, Trait.EnumRelatedColumn_M, cx, tx, ex, EnumRelatedColumn_X);
+                        }
                     }
                     return (true, anyChange);
                 }
@@ -3761,12 +3767,11 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var st = m.Store;
-                    var items = Store_ComputeX.GetChildren(st);
-                    if (items == null) return (false, false);
+                    if (!Store_ComputeX.TryGetChildren(st, out IList<ComputeX> list)) return (false, false);
 
                     m.InitChildModels(prev);
                     var anyChange = false;
-                    foreach (var itm in items)
+                    foreach (var itm in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.ComputeX_M, itm, Store_ComputeX, st, ComputeX_X);
                     }
@@ -4281,13 +4286,12 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var gx = m.GraphX;
-                    var items = GraphX_QueryX.GetChildren(gx);
-                    if (items == null) return (false, false);
+                    if (!GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var itm in items)
+                    foreach (var itm in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphXRoot_M, itm, gx, null, QueryXRoot_X);
                     }
@@ -4303,12 +4307,11 @@ namespace ModelGraphSTD
 
             bool GraphXAlreadyHasThisRoot(Item gd, Item table)
             {
-                if (GraphX_QueryX.ChildCount(gd) > 0)
+                if (GraphX_QueryX.TryGetChildren(gd, out IList<QueryX> list))
                 {
-                    var items = GraphX_QueryX.GetChildren(gd);
-                    foreach (var sd in items)
+                    foreach (var qx in list)
                     {
-                        if (Store_QueryX.ContainsLink(table, sd)) return true;
+                        if (Store_QueryX.ContainsLink(table, qx)) return true;
                     }
                 }
                 return false;
@@ -4501,13 +4504,12 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var qx = m.QueryX;
-                    var items = QueryX_QueryX.GetChildren(qx);
-                    if (items == null) return (false, false);
+                    if (!QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var qc in items)
+                    foreach (var qc in list)
                     {
                         if (qc.IsPath)
                         {
@@ -4541,7 +4543,11 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            (string, string) GetKindName(ItemModel m) => (_localize(m.NameKey), GetIdentity(Store_QueryX.GetParent(m.Item), IdentityStyle.Single));
+            (string, string) GetKindName(ItemModel m)
+            {
+                var name = (Store_QueryX.TryGetParent(m.Item, out Store sto)) ? GetIdentity(sto, IdentityStyle.Single) : Chef.BlankName;
+                return (_localize(m.NameKey), name);
+            }
         }
         #endregion
 
@@ -4625,35 +4631,36 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var items = QueryX_QueryX.GetChildren(qx);
-
-                        foreach (var qc in items)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            if (qc.IsPath)
+                            foreach (var qc in list)
                             {
-                                if (qc.IsHead)
-                                    anyChange |= AddChildModel(prev, m, Trait.GraphXPathHead_M, qc, null, null, QueryXPathHead_X);
+                                if (qc.IsPath)
+                                {
+                                    if (qc.IsHead)
+                                        anyChange |= AddChildModel(prev, m, Trait.GraphXPathHead_M, qc, null, null, QueryXPathHead_X);
+                                    else
+                                        anyChange |= AddChildModel(prev, m, Trait.GraphXPathLink_M, qc, null, null, QueryXPathLink_X);
+                                }
+                                else if (qc.IsGroup)
+                                {
+                                    if (qc.IsHead)
+                                        anyChange |= AddChildModel(prev, m, Trait.GraphXGroupHead_M, qc, null, null, QueryXGroupHead_X);
+                                    else
+                                        anyChange |= AddChildModel(prev, m, Trait.GraphXGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                                    break;
+                                }
+                                else if (qc.IsSegue)
+                                {
+                                    if (qc.IsHead)
+                                        anyChange |= AddChildModel(prev, m, Trait.GraphXEgressHead_M, qc, null, null, QueryXEgressHead_X);
+                                    else
+                                        anyChange |= AddChildModel(prev, m, Trait.GraphXEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                                }
                                 else
-                                    anyChange |= AddChildModel(prev, m, Trait.GraphXPathLink_M, qc, null, null, QueryXPathLink_X);
-                            }
-                            else if (qc.IsGroup)
-                            {
-                                if (qc.IsHead)
-                                    anyChange |= AddChildModel(prev, m, Trait.GraphXGroupHead_M, qc, null, null, QueryXGroupHead_X);
-                                else
-                                    anyChange |= AddChildModel(prev, m, Trait.GraphXGroupLink_M, qc, null, null, QueryXGroupLink_X);
-                                break;
-                            }
-                            else if (qc.IsSegue)
-                            {
-                                if (qc.IsHead)
-                                    anyChange |= AddChildModel(prev, m, Trait.GraphXEgressHead_M, qc, null, null, QueryXEgressHead_X);
-                                else
-                                    anyChange |= AddChildModel(prev, m, Trait.GraphXEgressLink_M, qc, null, null, QueryXEgressLink_X);
-                            }
-                            else
-                            {
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXLink_M, qc, null, null, QueryXLink_X);
+                                {
+                                    anyChange |= AddChildModel(prev, m, Trait.GraphXLink_M, qc, null, null, QueryXLink_X);
+                                }
                             }
                         }
                     }
@@ -4744,11 +4751,12 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var items = QueryX_QueryX.GetChildren(qx);
-
-                        foreach (var qc in items)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.GraphXPathLink_M, qc, null, null, QueryXPathLink_X);
+                            foreach (var qc in list)
+                            {
+                                anyChange |= AddChildModel(prev, m, Trait.GraphXPathLink_M, qc, null, null, QueryXPathLink_X);
+                            }
                         }
                     }
                     return (true, anyChange);
@@ -4829,11 +4837,12 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var items = QueryX_QueryX.GetChildren(qx);
-
-                        foreach (var qc in items)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.GraphXPathLink_M, qc, null, null, QueryXPathLink_X);
+                            foreach (var qc in list)
+                            {
+                                anyChange |= AddChildModel(prev, m, Trait.GraphXPathLink_M, qc, null, null, QueryXPathLink_X);
+                            }
                         }
                     }
                     return (true, anyChange);
@@ -4912,11 +4921,12 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var items = QueryX_QueryX.GetChildren(qx);
-
-                        foreach (var qc in items)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.GraphXGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                            foreach (var qc in list)
+                            {
+                                anyChange |= AddChildModel(prev, m, Trait.GraphXGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                            }
                         }
                     }
                     return (true, anyChange);
@@ -4996,11 +5006,12 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var items = QueryX_QueryX.GetChildren(qx);
-
-                        foreach (var qc in items)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.GraphXGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                            foreach (var qc in list)
+                            {
+                                anyChange |= AddChildModel(prev, m, Trait.GraphXGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                            }
                         }
                     }
                     return (true, anyChange);
@@ -5083,11 +5094,12 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var items = QueryX_QueryX.GetChildren(qx);
-
-                        foreach (var qc in items)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.GraphXEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                            foreach (var qc in list)
+                            {
+                                anyChange |= AddChildModel(prev, m, Trait.GraphXEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                            }
                         }
                     }
                     return (true, anyChange);
@@ -5167,11 +5179,12 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var items = QueryX_QueryX.GetChildren(qx);
-
-                        foreach (var qc in items)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.GraphXEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                            foreach (var qc in list)
+                            {
+                                anyChange |= AddChildModel(prev, m, Trait.GraphXEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                            }
                         }
                     }
                     return (true, anyChange);
@@ -5238,6 +5251,7 @@ namespace ModelGraphSTD
             (string, string) GetKindName(ItemModel m) => (_localize(m.KindKey), (SymbolX_QueryX.TryGetParent(m.Item, out SymbolX sym)) ? sym.Name : null);
         }
         #endregion
+
 
 
         #region 69E ValueXHead  ===============================================
@@ -5322,11 +5336,12 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var items = QueryX_QueryX.GetChildren(qx);
-
-                        foreach (var qc in items)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.ValueXLink_M, qc, null, null, ValueLink_X);
+                            foreach (var qc in list)
+                            {
+                                anyChange |= AddChildModel(prev, m, Trait.ValueXLink_M, qc, null, null, ValueLink_X);
+                            }
                         }
                     }
                     return (true, anyChange);
@@ -5410,11 +5425,12 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        var items = QueryX_QueryX.GetChildren(qx);
-
-                        foreach (var qc in items)
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.ValueXLink_M, qc, null, null, ValueLink_X);
+                            foreach (var qc in list)
+                            {
+                                anyChange |= AddChildModel(prev, m, Trait.ValueXLink_M, qc, null, null, ValueLink_X);
+                            }
                         }
                     }
                     return (true, anyChange);
@@ -5446,7 +5462,7 @@ namespace ModelGraphSTD
                 while (q3 != null)
                 {
                     q2 = q3;
-                    q3 = QueryX_QueryX.GetChild(q3);
+                    QueryX_QueryX.TryGetChild(q3, out q3);
                 }
                 return q2;
             }
@@ -5512,9 +5528,8 @@ namespace ModelGraphSTD
             m.InitChildModels(prev);
 
             var anyChange = false;
-            if (m.IsExpandedRight)
+            if (m.IsExpandedRight && TryGetChoiceColumns(rx.TableX, out IList<ColumnX> columns))
             {
-                var columns = GetChoiceColumns(rx.TableX);
                 anyChange |= AddProperyModels(prev, m, columns);
             }
 
@@ -5625,10 +5640,12 @@ namespace ModelGraphSTD
 
                     var anyChange = false;
                     var items = tx.Items;
-                    var cx = TableX_NameProperty.GetChild(tx);
-                    foreach (var rx in items)
+                    if (TableX_NameProperty.TryGetChild(tx, out Property cx))
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.Row_M, rx, tx, cx, RowX_X);
+                        foreach (var rx in items)
+                        {
+                            anyChange |= AddChildModel(prev, m, Trait.Row_M, rx, tx, cx, RowX_X);
+                        }
                     }
                     return (true, anyChange);
                 }
@@ -5784,13 +5801,12 @@ namespace ModelGraphSTD
                 {
                     var rx = m.RowX;
                     var re = m.RelationX;
-                    var items = re.GetChildren(rx);
-                    if (items == null) return (false, false);
+                    if (!re.TryGetChildren(rx, out IList<RowX> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var rr in items)
+                    foreach (var rr in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.RowRelatedChild_M, rr, re, rx, RowRelatedChild_X);
                     }
@@ -5857,13 +5873,12 @@ namespace ModelGraphSTD
                 {
                     var rx = m.RowX;
                     var re = m.RelationX;
-                    var items = re.GetParents(rx);
-                    if (items == null) return (false, false);
+                    if (!re.TryGetParents(rx, out IList<RowX> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var rr in items)
+                    foreach (var rr in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.RowRelatedParent_M, rr, re, rx, RowRelatedParent_X);
                     }
@@ -6099,12 +6114,11 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var rx = m.RowX;
-                    var items = TableX_ColumnX.GetChildren(rx.TableX);
-                    if (items == null) return (false, false);
+                    if (!TableX_ColumnX.TryGetChildren(rx.TableX, out IList<ColumnX> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
-                    var anyChange = AddProperyModels(prev, m, items);
+                    var anyChange = AddProperyModels(prev, m, list);
 
                     return (true, anyChange);
                 }
@@ -6148,13 +6162,12 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var rx = m.RowX;
-                    var items = TableX_ChildRelationX.GetChildren(rx.TableX);
-                    if (items == null) return (false, false);
+                    if (!TableX_ChildRelationX.TryGetChildren(rx.TableX, out IList<RelationX> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var rel in items)
+                    foreach (var rel in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.RowChildRelation_M, rx, rel, null, RowChildRelation_X);
                     }
@@ -6200,13 +6213,12 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var rx = m.RowX;
-                    var items = TableX_ParentRelationX.GetChildren(rx.TableX);
-                    if (items == null) return (false, false);
+                    if (!TableX_ParentRelationX.TryGetChildren(rx.TableX, out IList<RelationX> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var re in items)
+                    foreach (var re in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.RowParentRelation_M, rx, re, null, RowParentRelation_X);
                     }
@@ -6246,16 +6258,15 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    var ro = m.Item;
-                    var list = Store_ComputeX.GetChildren(ro.Owner);
-                    if (list == null) return (false, false);
+                    var itm = m.Item;
+                    if (!Store_ComputeX.TryGetChildren(itm.Owner, out IList<ComputeX> items)) return (false, false);
 
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var cx in Items)
+                    foreach (var cx in items)
                     {
-                        anyChange = AddChildModel(prev, m, Trait.TextProperty_M, ro, cx, null, TextCompute_X);
+                        anyChange = AddChildModel(prev, m, Trait.TextProperty_M, itm, cx, null, TextCompute_X);
                     }
                     return (true, anyChange);
                 }
@@ -6878,12 +6889,14 @@ namespace ModelGraphSTD
 
                     if (GraphX_QueryX.ChildCount(gx) == 0) return DropAction.None;
 
-                    var items = GraphX_QueryX.GetChildren(gx);
-                    foreach (var item in items)
+                    if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> list))
                     {
-                        if (item.IsQueryGraphRoot && Store_QueryX.TryGetParent(item, out st) && d.Item.Owner == st) break;
+                        foreach (var item in list)
+                        {
+                            if (item.IsQueryGraphRoot && Store_QueryX.TryGetParent(item, out st) && d.Item.Owner == st) break;
+                        }
+                        if (st == null) return DropAction.None;
                     }
-                    if (st == null) return DropAction.None;
 
                     foreach (var tg in gx.Items)
                     {
@@ -7412,7 +7425,6 @@ namespace ModelGraphSTD
         }
         #endregion
 
-
         #region 6EB GraphOpenList  ============================================
         ModelAction GraphOpenList_X;
         void Initialize_GraphOpenList_X()
@@ -7489,6 +7501,7 @@ namespace ModelGraphSTD
             }
         }
         #endregion
+
 
 
         #region 7D0 PrimeCompute  =============================================
@@ -7578,13 +7591,12 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var st = m.Store;
-                    var items = Store_ComputeX.GetChildren(st);
-                    if (items == null) return (false, false);
+                    if (!Store_ComputeX.TryGetChildren(st, out IList<ComputeX> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var cx in items)
+                    foreach (var cx in list)
                     {
                         anyChange |= AddChildModel(prev, m,  Trait.TextProperty_M, st, cx, null, TextCompute_X);
                     }
@@ -7597,6 +7609,7 @@ namespace ModelGraphSTD
             (string, string) GetKindName(ItemModel m) => (null, GetIdentity(m.Store, IdentityStyle.Single));
         }
         #endregion
+
 
 
         #region 7F0 InternlStoreList  =========================================

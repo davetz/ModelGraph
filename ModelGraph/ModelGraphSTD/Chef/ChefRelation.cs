@@ -18,13 +18,13 @@ namespace ModelGraphSTD
             }
             else if (rel.IsRelationX)
             {
-                head = TableX_ChildRelationX.GetParent(rel);
-                tail = TableX_ParentRelationX.GetParent(rel);
+                TableX_ChildRelationX.TryGetParent(rel, out TableX ch); head = ch; 
+                TableX_ParentRelationX.TryGetParent(rel, out TableX pa); tail = pa;
             }
             else
             {
-                head = Store_ChildRelation.GetParent(rel);
-                tail = Store_ParentRelation.GetParent(rel);
+                Store_ChildRelation.TryGetParent(rel, out head);
+                Store_ParentRelation.TryGetParent(rel, out tail);
             }
         }
         #endregion

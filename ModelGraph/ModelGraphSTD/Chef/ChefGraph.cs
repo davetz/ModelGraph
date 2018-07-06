@@ -502,9 +502,8 @@ namespace ModelGraphSTD
                         {
                             nodeOwners.Add(head);
 
-                            var cx = qx;
-                            var tx = cx;
-                            while (cx != null) { tx = cx; cx = QueryX_QueryX.GetChild(cx); }
+                            var tx = qx;
+                            while (QueryX_QueryX.TryGetChild(tx, out QueryX cx)) { tx = cx; }
                             if (tx != qx) GetHeadTail(tx, out head, out tail);
 
                             nodeOwners.Add(tail);
