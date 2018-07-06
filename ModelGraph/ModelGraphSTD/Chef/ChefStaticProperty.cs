@@ -41,9 +41,6 @@ namespace ModelGraphSTD
         private PropertyOf<RelationX, string> _relationXSummaryProperty;
         private PropertyOf<RelationX, string> _relationXPairingProperty;
         private PropertyOf<RelationX, bool> _relationXIsRequiredProperty;
-        private PropertyOf<RelationX, bool> _relationXIsLimitedProperty;
-        private PropertyOf<RelationX, short> _relationXMinOccuranceProperty;
-        private PropertyOf<RelationX, short> _relationXMaxOccuranceProperty;
 
         private PropertyOf<GraphX, string> _graphXNameProperty;
         private PropertyOf<GraphX, string> _graphXSummaryProperty;

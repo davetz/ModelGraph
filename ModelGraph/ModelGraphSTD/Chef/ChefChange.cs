@@ -457,8 +457,6 @@ namespace ModelGraphSTD
             FindDependents(target, hitList);
             hitList.Reverse();
 
-            List<Item> items;
-
             var relItems = new Dictionary<Relation, Dictionary<Item, List<Item>>>();
 
             foreach (var item in hitList)

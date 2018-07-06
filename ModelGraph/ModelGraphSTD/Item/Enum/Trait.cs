@@ -6,7 +6,7 @@ namespace ModelGraphSTD
     /// </summary>
     public enum Trait : ushort
     {
-        // Trait provides flags and identity for items, models, and commands. 
+        // Trait provides identity for items, models, and commands. 
         // It also is used as a key to locate resource strings.
         //
         // Resource string keys are of the form:
@@ -348,6 +348,25 @@ namespace ModelGraphSTD
         #region Model ================================================(600-7FF)
 
         //=====================================================================
+        S_600_M = 0x600,
+        S_601_M = 0x601,
+        S_602_M = 0x602,
+        S_603_M = 0x603,
+        S_604_M = 0x604,
+        S_605_M = 0x605,
+        S_606_M = 0x606,
+        S_607_M = 0x607,
+        S_608_M = 0x608,
+        S_609_M = 0x609,
+        S_60A_M = 0x60A,
+        S_60B_M = 0x60B,
+        S_60C_M = 0x60C,
+        S_60D_M = 0x60D,
+        S_60E_M = 0x60E,
+        S_60F_M = 0x60F,
+
+        //=====================================================================
+        S_610_M = 0x610,
         RootChef_M = 0x611,
         DataChef_M = 0x612,
         MockChef_M = 0x613,
@@ -358,6 +377,11 @@ namespace ModelGraphSTD
         CheckProperty_M = 0x618,
         ComboProperty_M = 0x619,
         TextCompute_M = 0x61A,
+        S_61B_M = 0x61B,
+        S_61C_M = 0x61C,
+        S_61D_M = 0x61D,
+        S_61E_M = 0x61E,
+        S_61F_M = 0x61F,
 
         //=====================================================================
         ParmRoot_M = 0x620,
@@ -370,18 +394,30 @@ namespace ModelGraphSTD
         ErrorText_M = 0x627,
         ChangeSet_M = 0x628,
         ItemChange_M = 0x629,
+        S_62A_M = 0x62A,
+        S_62B_M = 0x62B,
+        S_62C_M = 0x62C,
+        S_62D_M = 0x62D,
+        S_62E_M = 0x62E,
+        S_62F_M = 0x62F,
 
         //=====================================================================
+        S_630_M = 0x630,
         ViewXViewList_M = 0x631,
         ViewXView_M = 0x632,
         ViewXQuery_M = 0x633,
         ViewXCommand_M = 0x634,
         ViewXProperty_M = 0x635,
-
+        S_636_M = 0x636,
+        S_637_M = 0x637,
+        S_638_M = 0x638,
+        S_639_M = 0x639,
         ViewViewList_M = 0x63A,
         ViewView_M = 0x63B,
         ViewItem_M = 0x63C,
         ViewQuery_M = 0x63D,
+        S_63E_M = 0x63E,
+        S_63F_M = 0x63F,
 
         //=====================================================================
         EnumXList_M = 0x642,
