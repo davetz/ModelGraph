@@ -28,6 +28,7 @@ namespace ModelGraphSTD
                 return (string.Compare(a, b) == 0);
             }
         }
+        private bool IsNotSameValue(string a, string b) => !IsSameValue(a, b);
         #endregion
 
         #region CongealChanges  ===============================================
@@ -234,27 +235,24 @@ namespace ModelGraphSTD
         #endregion
 
         #region ItemUpdated  ==================================================
-        private void SetValue(ItemModel model, string newValue)
+        private void SetValue(ItemModel m, string newValue)
         {
-            var itm1 = model.Item;
-            var itm2 = model.Aux1;
-            var prop = itm2 as Property;
-            var oldValue = prop.Value.GetString(itm1);
-
-            string name = $"{GetIdentity(itm1, IdentityStyle.ChangeLog)}    {GetIdentity(itm2, IdentityStyle.Single)}:  old<{oldValue}>  new<{newValue}>";
-
-
-            if (IsSameValue(oldValue, newValue)) return;
-            MinorDelta += 1;
-
-            if (prop.Value.SetString(itm1, newValue))
+            if (m.Property.IsCovert)
             {
-                ItemUpdated(itm1, name, prop, oldValue, newValue);
+                m.Property.Value.SetString(m.Item, newValue);
             }
-        }
-        internal void ItemUpdated(Item item, string name, Property property, string oldValue, string newValue)
-        {
-            new ItemUpdated(_changeSet, item, property, oldValue, newValue, name);
+            else
+            {
+                var oldValue = m.Property.Value.GetString(m.Item);
+                if (IsNotSameValue(oldValue, newValue))
+                {
+                    var name = $"{GetIdentity(m.Item, IdentityStyle.ChangeLog)}    {GetIdentity(m.Property, IdentityStyle.Single)}:  old<{oldValue}>  new<{newValue}>";
+                    if (m.Property.Value.SetString(m.Item, newValue))
+                    {
+                        new ItemUpdated(_changeSet, m.Item, m.Property, oldValue, newValue, name);
+                    }
+                }
+            }
         }
         internal void Undo(ItemUpdated chng)
         {

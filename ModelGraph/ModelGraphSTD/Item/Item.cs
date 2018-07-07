@@ -37,6 +37,7 @@ namespace ModelGraphSTD
         internal bool IsItemLinkMoved => Trait == Trait.ItemChildMoved;
 
 
+        internal bool IsCovert => (Trait & Trait.IsCovert) != 0;
         internal bool IsReadOnly => (Trait & Trait.IsReadOnly) != 0;
         internal bool CanMultiline => (Trait & Trait.CanMultiline) != 0;
 
@@ -105,6 +106,8 @@ namespace ModelGraphSTD
         #endregion
 
         #region Property/Methods ==============================================
+        internal int Index => (Owner is Store st) ? st.IndexOf(this) : -1;
+        internal string IdentityIndex => $"[{Owner.Index}.{Index}]";
         internal bool IsInvalid => Owner == null || IsDeleted;
         internal bool IsValid => !IsInvalid;
         internal Store Store => Owner as Store;

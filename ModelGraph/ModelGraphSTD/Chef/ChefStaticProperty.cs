@@ -6,6 +6,8 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
+        private PropertyOf<Chef, bool> _includeItemIdentityIndexProperty;
+
         private PropertyOf<ViewX, string> _viewXNameProperty;
         private PropertyOf<ViewX, string> _viewXSummaryProperty;
 
@@ -84,6 +86,19 @@ namespace ModelGraphSTD
         private void InitializeProperties()
         {
             var props = new List<Property>();
+
+            #region Chef  =====================================================
+            props.Clear();
+            {
+                {
+                    var p = _includeItemIdentityIndexProperty = new PropertyOf<Chef, bool>(_propertyStore, Trait.IncludeItemIdentityIndex_P);
+                    p.GetValFunc = (item) => p.Cast(item).IncludeItemIdentityIndex;
+                    p.SetValFunc = (item, value) => p.Cast(item).IncludeItemIdentityIndex = value;
+                    p.Value = new BoolValue(p);
+                    props.Add(p);
+                }
+            }
+            #endregion
 
             #region ViewX  ====================================================
             props.Clear();

@@ -2108,4 +2108,16 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
   <data name="624S" xml:space="preserve">
     <value>Model modeling data</value>
   </data>
+  <data name="403N" xml:space="preserve">
+    <value>Include Item Identity Index</value>
+  </data>
+  <data name="403S" xml:space="preserve">
+    <value>Include a Table-Row index  in item identifiers</value>
+  </data>
+  <data name="600N" xml:space="preserve">
+    <value>Diagnostic</value>
+  </data>
+  <data name="600S" xml:space="preserve">
+    <value>List of diagnostic options</value>
+  </data>
 </root>

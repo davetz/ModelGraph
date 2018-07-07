@@ -802,6 +802,7 @@ namespace ModelGraphUWP
         {
             var obj = sender as TextBlock;
             _itemIdentityTip.DataContext = obj.DataContext;
+            ToolTipService.SetToolTip(obj, _itemIdentityTip);
         }
         void ItemName_DragStarting(UIElement sender, DragStartingEventArgs args)
         {
@@ -903,6 +904,7 @@ namespace ModelGraphUWP
         {
             var obj = sender as TextBlock;
             _modelIdentityTip.DataContext = obj.DataContext as ItemModel;
+            ToolTipService.SetToolTip(obj, _modelIdentityTip);
         }
         #endregion
 

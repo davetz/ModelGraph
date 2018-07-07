@@ -171,7 +171,6 @@ namespace ModelGraphUWP
                 obj.DragOver += ItemName_DragOver;
                 obj.Drop += ItemName_Drop;
                 obj.PointerEntered += ItemName_PointerEntered;
-                ToolTipService.SetToolTip(obj, _itemIdentityTip);
             }
 
             obj.Text = name;
@@ -526,7 +525,6 @@ namespace ModelGraphUWP
 
                 obj.Style = _modelIdentityStyle;
                 obj.PointerEntered += ModelIdentity_PointerEntered;
-                ToolTipService.SetToolTip(obj, _modelIdentityTip);
             }
 
             obj.DataContext = model;

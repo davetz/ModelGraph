@@ -21,6 +21,7 @@ namespace ModelGraphSTD
 
         IsExternal = 0x8000, // Item, specify load/save to storage file
 
+        IsCovert = 0x4000, // Property - don't include in model change log
         IsReadOnly = 0x2000, // Property
         CanMultiline = 0x1000, // Property
 
@@ -252,6 +253,7 @@ namespace ModelGraphSTD
         //=========================================
         ViewName_P = 0x401,
         ViewSummary_P = 0x402,
+        IncludeItemIdentityIndex_P = 0x403 | IsCovert,
 
         //=========================================
         EnumName_P = 0x411,
@@ -348,7 +350,7 @@ namespace ModelGraphSTD
         #region Model ================================================(600-7FF)
 
         //=====================================================================
-        S_600_M = 0x600,
+        ParmDebugList_M = 0x600,
         S_601_M = 0x601,
         S_602_M = 0x602,
         S_603_M = 0x603,

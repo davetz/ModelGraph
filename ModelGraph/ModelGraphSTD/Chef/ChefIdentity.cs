@@ -61,7 +61,7 @@ namespace ModelGraphSTD
             var inx = own.IndexOf(item);
             if (inx < 0) return InvalidItem;
 
-            return $"{inx}";
+            return $"#{inx}";
         }
         #endregion
 
@@ -70,33 +70,41 @@ namespace ModelGraphSTD
         {
             if (item is RowX itm)
             {
-                var pa = itm.Owner as TableX;
-                TableX_NameProperty.TryGetChild(pa, out Property nc);
-                var ix = pa.IndexOf(itm);
+                var name1 = TableX_NameProperty.TryGetChild(itm.TableX, out Property nc) ? nc.Value.GetString(itm) : null;
+                var name2 = itm.TableX.Name;
 
-                string name = nc?.Value.GetString(itm);
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
+                var noName1 = string.IsNullOrWhiteSpace(name1);
+                var noName2 = string.IsNullOrWhiteSpace(name2);
 
-                var parent = pa.Name;
-                if (string.IsNullOrWhiteSpace(parent)) parent = $"{_localize(pa.KindKey)} {Index_Identity(pa)}";
+                if (noName1) name1 = BlankName;
+                if (noName2) name2 = BlankName;
 
                 switch (style)
                 {
                     case IdentityStyle.Single:
-                        return name;
+                        return (IncludeItemIdentityIndex || noName1) ?
+                            $"{item.IdentityIndex} {name1}" :
+                            name1;
 
                     case IdentityStyle.Double:
                     case IdentityStyle.StoreItem:
-                        return $"{parent} {ix}:  {name}";
+                        return (IncludeItemIdentityIndex || noName1 || noName2) ?
+                            $"{item.IdentityIndex} {name2} {name1}" :
+                            $"{name2} {name1}";
+
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_localize(itm.KindKey)} {Index_Identity(itm)}: {parent} : {name}";
+
+                        return IncludeItemIdentityIndex ?
+                            $"{_localize(itm.KindKey)} {item.IdentityIndex} {name2} : {name1}" :
+                            $"{_localize(itm.KindKey)} {item.IdentityIndex} {name2} : {name1}";
+
 
                     case IdentityStyle.Kind:
                         return _localize(itm.KindKey);
 
                     case IdentityStyle.Summary:
-                        return TableX_SummaryProperty.TryGetChild(pa, out Property ns) ? ns.Value.GetString(itm) : name;
+                        return TableX_SummaryProperty.TryGetChild(itm.TableX, out Property ns) ? ns.Value.GetString(itm) : name1;
 
                     case IdentityStyle.Description:
                         return null;

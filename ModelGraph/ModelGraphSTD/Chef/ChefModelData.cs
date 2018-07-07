@@ -9,7 +9,7 @@ namespace ModelGraphSTD
         #region Initialize_ModelActions  ======================================
         void Initialize_ModelActions()
         {
-            Initialize_S_600_X();
+            Initialize_ParmDebugList_X();
             Initialize_S_601_X();
             Initialize_S_602_X();
             Initialize_S_603_X();
@@ -768,18 +768,24 @@ namespace ModelGraphSTD
         #endregion
 
 
-        #region 600 S_600_X  ==================================================
-        internal ModelAction S_600_X;
-        void Initialize_S_600_X()
+        #region 600 ParmDebugList_X  ==========================================
+        internal ModelAction ParmDebugList_X;
+        void Initialize_ParmDebugList_X()
         {
-            S_600_X = new ModelAction
+            ParmDebugList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
                     var (kind, name) = GetKindName(m);
 
+                    m.CanExpandLeft = true;
+
                     return (kind, name, 0, ModelType.Default);
                 },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => _localize(m.SummaryKey),
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -789,7 +795,13 @@ namespace ModelGraphSTD
 
                 Validate = (m, prev) =>
                 {
-                    return (false, false);
+                    if (m.ChildModelCount == 1) return (true, false);
+
+                    m.InitChildModels(prev);
+
+                    AddProperyModel(prev, m, _includeItemIdentityIndexProperty);
+
+                    return (true, true);
                 },
             };
 
@@ -1919,6 +1931,7 @@ namespace ModelGraphSTD
                 {
                     var (kind, name) = GetKindName(m);
 
+                    m.CanExpandLeft = true;
 
                     return (kind, name, 0, ModelType.Default);
                 },
@@ -1935,7 +1948,13 @@ namespace ModelGraphSTD
 
                 Validate = (m, prev) =>
                 {
-                    return (false, false);
+                    if (m.ChildModelCount == 1) return (true, false);
+
+                    m.InitChildModels(prev);
+
+                    AddChildModel(prev, m, Trait.ParmDebugList_M, this, null, null, ParmDebugList_X);
+
+                    return (true, true);
                 },
             };
 
@@ -3758,7 +3777,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                ReorderItems = ReorderRelatedChild,
+                ReorderItems = ReorderStoreItem,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3790,12 +3809,14 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var count = m.EnumX.Count;
                     var (kind, name) = GetKindName(m);
 
                     m.CanDrag = true;
+                    m.CanExpandLeft = count > 0;
                     m.CanExpandRight = true;
 
-                    return (kind, name, 0, ModelType.Default);
+                    return (kind, name, count, ModelType.Default);
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -3829,15 +3850,9 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var ex = m.EnumX;
+                    m.InitChildModels(prev);
+
                     var anyChange = false;
-                    m.InitChildModels(prev);
-
-                    var L = m.IsExpandedLeft ? 2 : 0;
-                    var R = m.IsExpandedRight ? 2 : 0;
-                    if ((L + R) == m.ChildModelCount) return (true, false);
-
-                    m.InitChildModels(prev);
-
                     if (m.IsExpandedRight)
                     {
                         anyChange |= AddProperyModel(prev, m, _enumXNameProperty);
@@ -4490,9 +4505,8 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var ex = m.EnumX;
+                    var count = m.EnumX.Count;
                     var (kind, name) = GetKindName(m);
-                    var count = ex.Count;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
@@ -4529,10 +4543,10 @@ namespace ModelGraphSTD
                     if (ex.Delta == m.Delta) return (true, false);
 
                     m.Delta = ex.Delta;
-                    m.InitChildModels(prev, ex.Count);
+                    m.InitChildModels(prev);
 
-                    var anyChange = false;
                     var items = ex.Items;
+                    var anyChange = false;
                     foreach (var px in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.PairX_M, px, ex, null, PairX_X);
