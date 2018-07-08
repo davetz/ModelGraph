@@ -51,7 +51,7 @@ namespace ModelGraphSTD
             Delta++;
             _items.Add(item);
         }
-        internal override void Add(Item item) => _items.Add(Cast(item));
+        internal override void Add(Item item) => Add(Cast(item));
 
         // Remove  ==========================================================
         internal void Remove(T item)
@@ -59,7 +59,7 @@ namespace ModelGraphSTD
             Delta++;
             _items.Remove(item);
         }
-        public override void Remove(Item item) => _items.Remove(Cast(item));
+        public override void Remove(Item item) => Remove(Cast(item));
 
         // Insert  ============================================================
         internal void Insert(T item, int index)
@@ -76,7 +76,7 @@ namespace ModelGraphSTD
 
         // IndexOf  ===========================================================
         internal int IndexOf(T item) => _items.IndexOf(item);
-        internal override int IndexOf(Item item) => _items.IndexOf(Cast(item));
+        internal override int IndexOf(Item item) => IndexOf(Cast(item));
 
         // Move  ==============================================================
         internal void Move(T item, int index)

@@ -133,7 +133,6 @@ namespace ModelGraphSTD
             {
                 foreach (var qxi in list) { qxi.QueryKind = QueryType.Graph; qxi.IsHead = false; qxi.IsTail = false; }
             }
-            MajorDelta += 1;
         }
         private void MakePathtHead(ItemModel model)
         {
@@ -145,7 +144,6 @@ namespace ModelGraphSTD
                 list[0].IsHead = true;
                 list[tail].IsTail = true;
             }
-            MajorDelta += 1;
         }
         private void MakeGroupHead(ItemModel model)
         {
@@ -157,7 +155,6 @@ namespace ModelGraphSTD
                 list[0].IsHead = true;
                 list[tail].IsTail = true;
             }
-            MajorDelta += 1;
         }
         private void MakeBridgeHead(ItemModel model)
         {
@@ -169,7 +166,6 @@ namespace ModelGraphSTD
                 list[0].IsHead = true;
                 list[tail].IsTail = true;
             }
-            MajorDelta += 1;
         }
 
         internal bool CanConvertQueryType(ItemModel model)
@@ -354,7 +350,6 @@ namespace ModelGraphSTD
 
         bool TrySetWhereProperty(QueryX qx, string val)
         {
-            MajorDelta += 1;
             qx.WhereString = val;
             ValidateDependants(qx);
             return qx.IsValid;
@@ -364,7 +359,6 @@ namespace ModelGraphSTD
 
         bool TrySetSelectProperty(QueryX qx, string val)
         {
-            MajorDelta += 1;
             qx.SelectString = val;
             ValidateDependants(qx);
             return qx.IsValid;

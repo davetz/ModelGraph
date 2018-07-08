@@ -1437,16 +1437,12 @@ namespace ModelGraphSTD
                 var repo = parm1 as IRepository;
                 var root = model as RootModel;
                 var dataChef = root.Chef;
-
-                MajorDelta += 1;
                 dataChef.SaveToRepository(repo);
             }
             void SaveModel(ItemModel model)
             {
                 var root = model as RootModel;
                 var dataChef = root.Chef;
-
-                MajorDelta += 1;
                 dataChef.SaveToRepository();
             }
             void CloseModel(ItemModel m) => m.GetRootModel().UIRequestCloseModel();
@@ -2381,7 +2377,6 @@ namespace ModelGraphSTD
             {
                 var chg = model.Item as ChangeSet;
                 chg.Merge();
-                MajorDelta += 1;
             }
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -6549,8 +6544,8 @@ namespace ModelGraphSTD
                     m.Delta = tx.Delta;
                     m.InitChildModels(prev, tx.Count);
 
-                    var anyChange = false;
                     var items = tx.Items;
+                    var anyChange = (items.Count != prev.Count);
                     if (TableX_NameProperty.TryGetChild(tx, out Property cx))
                     {
                         foreach (var rx in items)
@@ -7819,7 +7814,6 @@ namespace ModelGraphSTD
                         CreateGraph(gx, out Graph g, d.Item);
 
                         m.IsExpandedLeft = true;
-                        MajorDelta += 1;
 
                         var root = m.GetRootModel();
                         root.UIRequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X, m);
@@ -7858,7 +7852,6 @@ namespace ModelGraphSTD
             CreateGraph(m.GraphX, out Graph g);
 
             m.IsExpandedLeft = true;
-            MajorDelta += 1;
 
             var root = m.GetRootModel();
             root.UIRequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, g, GraphRef_X);

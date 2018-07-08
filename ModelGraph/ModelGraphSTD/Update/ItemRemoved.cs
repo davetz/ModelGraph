@@ -8,7 +8,7 @@ namespace ModelGraphSTD
     public class ItemRemoved : ItemChange
     {
         internal Item Item;
-        internal int Index;  // remember the item's location before it was removed
+        internal int AtIndex;  // remember the item's location before it was removed
         internal IList<ColumnX> Columns; // remember the item,s column values (only applies to RowX items) 
         internal List<String> Values;
 
@@ -20,7 +20,7 @@ namespace ModelGraphSTD
             Name = name;
 
             Item = item;
-            Index = index;
+            AtIndex = index;
             Columns = columns;
             Values = values;
 

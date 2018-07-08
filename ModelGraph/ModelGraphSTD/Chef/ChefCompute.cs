@@ -44,7 +44,6 @@ namespace ModelGraphSTD
         }
         internal bool TrySetSelectProperty(ComputeX cx, string value)
         {
-            MajorDelta += 1;
             if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx)) return false;
 
             return TrySetSelectProperty(qx, value);
@@ -54,7 +53,6 @@ namespace ModelGraphSTD
         #region TrySet...Property  ============================================
         private bool TrySetComputeTypeProperty(ComputeX cx, int val)
         {
-            MajorDelta += 1;
             var type = (CompuType)val;
             if (cx.CompuType != type)
             {
@@ -66,7 +64,6 @@ namespace ModelGraphSTD
         }
         private bool TrySetNumericSetProperty(ComputeX cx, int val)
         {
-            MajorDelta += 1;
             var type = (NumericSet)val;
             if (cx.NumericSet != type)
             {
@@ -77,7 +74,6 @@ namespace ModelGraphSTD
         }
         private bool TrySetResultsProperty(ComputeX cx, int val)
         {
-            MajorDelta += 1;
             var type = (Results)val;
             if (cx.Results != type)
             {
@@ -88,7 +84,6 @@ namespace ModelGraphSTD
         }
         private bool TrySetSortingProperty(ComputeX cx, int val)
         {
-            MajorDelta += 1;
             var type = (Sorting)val;
             if (cx.Sorting != type)
             {
@@ -99,7 +94,6 @@ namespace ModelGraphSTD
         }
         private bool TrySetTakeSetProperty(ComputeX cx, int val)
         {
-            MajorDelta += 1;
             var type = (TakeSet)val;
             if (cx.TakeSet != type)
             {

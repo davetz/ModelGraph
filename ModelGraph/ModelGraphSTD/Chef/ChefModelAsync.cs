@@ -13,7 +13,6 @@ namespace ModelGraphSTD
             if (model.IsInvalid) return;
 
             PostModelRequest(model, action);
-            RequestUIRefresh();
         }
         internal void PostCommand(ModelCommand command)
         {
@@ -22,7 +21,6 @@ namespace ModelGraphSTD
                 PostModelRequest(model, () => { command.Action(model); });
             else if (command.Action1 != null)
                 PostModelRequest(model, () => { command.Action1(model, command.Parameter1); });
-            RequestUIRefresh();
         }
         internal void PostRefreshViewList(RootModel root, ItemModel select, int scroll, ChangeType change)
         {
@@ -45,7 +43,6 @@ namespace ModelGraphSTD
             if (IsSameValue(value, oldValue)) return;
 
             PostModelRequest(model, () => {SetValue(model, value); });
-            RequestUIRefresh();
         }
         internal void PostSetValue(ItemModel model, int index)
         {
@@ -65,28 +62,6 @@ namespace ModelGraphSTD
                 if (index < zvals.Length) PostSetValue(model, zvals[index]);
             }
         }
-        void RequestUIRefresh()
-        {
-            foreach (var root in _rootModels)
-            {
-                switch (root.ControlType)
-                {
-                    case ControlType.AppRootChef:
-                        break;
-
-                    case ControlType.PrimaryTree:
-                    case ControlType.PartialTree:
-                        PostModelRequest(root, () => RefreshViewFlatList(root));
-                        break;
-
-                    case ControlType.SymbolEditor:
-                        break;
-
-                    case ControlType.GraphDisplay:
-                        break;
-                }
-            }
-        }
         #endregion
 
         #region ExecuteRequest ================================================
@@ -100,7 +75,7 @@ namespace ModelGraphSTD
             //(some time later the worker task completes and signals the ui thread)
 
             //===> the ui thread returns here and continues executing the following code            
-            foreach (var root in _rootModels) { root.PageDispatch(); }            
+            foreach (var root in _rootModels) { root.PageDispatch(); }
         }
 
         private void ExecuteRequest(ModelRequest request)
@@ -111,8 +86,29 @@ namespace ModelGraphSTD
             {
                 request.Execute();
                 if (!IsRootChef) CheckChanges();
+                foreach (var root in _rootModels)
+                {
+                    switch (root.ControlType)
+                    {
+                        case ControlType.AppRootChef:
+                            break;
+
+                        case ControlType.PrimaryTree:
+                        case ControlType.PartialTree:
+                            RefreshViewFlatList(root);
+                            break;
+
+                        case ControlType.SymbolEditor:
+                            break;
+
+                        case ControlType.GraphDisplay:
+                            break;
+                    }
+                    root.UIRequestRefreshModel();
+                }
             }
         }
+
         class ModelRequest
         {
             ItemModel _model;

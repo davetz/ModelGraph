@@ -32,7 +32,6 @@ namespace ModelGraphSTD
 
             rootChef.Add(this);
             rootChef.SetLocalizer(this);
-            rootChef.MajorDelta += 1;
 
             if (repository == null)
                 _newChefNumber = (_newChefCount += 1);
@@ -47,8 +46,6 @@ namespace ModelGraphSTD
             if (Owner is Chef rootChef && rootChef != this)
             {
                 rootChef.Remove(this);
-                rootChef.MajorDelta += 1;
-
                 rootChef.PrimaryRootModel.PageDispatch();
                 _rootModels.Clear();
             }
@@ -63,15 +60,11 @@ namespace ModelGraphSTD
             if (PrimaryRootModel == null) PrimaryRootModel = root;
 
             if (root.Item is Graph g) g.AddRootModel(root);
-
-            MajorDelta += 1;
             _rootModels.Add(root);
         }
         internal void RemoveRootModel(RootModel root)
         {
             if (root.Item is Graph g) g.RemoveRootModel(root);
-            MajorDelta += 1;
-
             _rootModels.Remove(root);
         }
         #endregion
