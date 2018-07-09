@@ -5,10 +5,12 @@ namespace ModelGraphSTD
 {
     public class ItemCreated : ItemChange
     {
-        internal Item Item;
-        internal int Index; // remember item's location in the Items list 
-        internal IList<ColumnX> Columns; // remember the item,s column values (only applies to RowX items) 
         internal List<String> Values;
+        internal IList<ColumnX> Columns; // remember the item,s column values (only applies to RowX items) 
+
+        internal Item Item;
+        internal int AtIndex; // remember item's location in the Items list 
+
 
         #region Constructor  ==================================================
         internal ItemCreated(ChangeSet owner, Item item, int index, string name, IList<ColumnX> columns = null, List<String> values = null)
@@ -17,7 +19,7 @@ namespace ModelGraphSTD
             Trait = Trait.ItemCreated;
             Name = name;
             Item = item;
-            Index = index;
+            AtIndex = index;
             Columns = columns;
             Values = values;
 

@@ -6,7 +6,7 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        private PropertyOf<Chef, bool> _includeItemIdentityIndexProperty;
+        private PropertyOf<Chef, bool> _showItemIndexProperty;
 
         private PropertyOf<ViewX, string> _viewXNameProperty;
         private PropertyOf<ViewX, string> _viewXSummaryProperty;
@@ -91,9 +91,9 @@ namespace ModelGraphSTD
             props.Clear();
             {
                 {
-                    var p = _includeItemIdentityIndexProperty = new PropertyOf<Chef, bool>(_propertyStore, Trait.IncludeItemIdentityIndex_P);
-                    p.GetValFunc = (item) => p.Cast(item).IncludeItemIdentityIndex;
-                    p.SetValFunc = (item, value) => p.Cast(item).IncludeItemIdentityIndex = value;
+                    var p = _showItemIndexProperty = new PropertyOf<Chef, bool>(_propertyStore, Trait.IncludeItemIdentityIndex_P);
+                    p.GetValFunc = (item) => p.Cast(item).ShowItemIndex;
+                    p.SetValFunc = (item, value) => p.Cast(item).ShowItemIndex = value;
                     p.Value = new BoolValue(p);
                     props.Add(p);
                 }

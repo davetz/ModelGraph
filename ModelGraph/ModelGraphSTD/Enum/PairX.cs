@@ -27,6 +27,7 @@ namespace ModelGraphSTD
 
             owner.Add(this);
         }
+        internal EnumX EnumX => Owner as EnumX;
         #endregion
     }
 }

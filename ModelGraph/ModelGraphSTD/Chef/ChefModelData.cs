@@ -799,7 +799,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddProperyModel(prev, m, _includeItemIdentityIndexProperty);
+                    AddProperyModel(prev, m, _showItemIndexProperty);
 
                     return (true, true);
                 },
@@ -6390,7 +6390,7 @@ namespace ModelGraphSTD
 
                     m.CanDrag = true;
                     m.CanExpandLeft = true;
-                    m.CanExpandRight = m.RowX.TableX.HasChoiceColumns;
+                    m.CanExpandRight = HasChoiceColumns(m.RowX.TableX);
 
                     return (kind, name, 0, ModelType.Default);
                 },
@@ -6429,10 +6429,10 @@ namespace ModelGraphSTD
         private (bool, bool) RowX_VX(ItemModel m, List<ItemModel> prev)
         {
             var rx = m.RowX;
-            if (!m.IsExpandedLeft && m.IsExpandedRight && !HasChoiceColumns(rx.TableX)) return (false, false);
 
             m.InitChildModels(prev);
 
+            
             var anyChange = false;
             if (m.IsExpandedRight && TryGetChoiceColumns(rx.TableX, out IList<ColumnX> columns))
             {
@@ -6441,11 +6441,12 @@ namespace ModelGraphSTD
 
             if (m.IsExpandedLeft)
             {
-                anyChange = AddChildModel(prev, m, Trait.RowPropertyList_M, rx, TableX_ColumnX, null, RowPropertyList_X);
-                anyChange = AddChildModel(prev, m, Trait.RowComputeList_M, rx, Store_ComputeX, null, RowComputeList_X);
-                anyChange = AddChildModel(prev, m, Trait.RowChildRelationList_M, rx, TableX_ChildRelationX, null, RowChildRelationList_X);
-                anyChange = AddChildModel(prev, m, Trait.RowParentRelationList_M, rx, TableX_ParentRelationX, null, RowParentRelationList_X);
+                anyChange |= AddChildModel(prev, m, Trait.RowPropertyList_M, rx, TableX_ColumnX, null, RowPropertyList_X);
+                anyChange |= AddChildModel(prev, m, Trait.RowComputeList_M, rx, Store_ComputeX, null, RowComputeList_X);
+                anyChange |= AddChildModel(prev, m, Trait.RowChildRelationList_M, rx, TableX_ChildRelationX, null, RowChildRelationList_X);
+                anyChange |= AddChildModel(prev, m, Trait.RowParentRelationList_M, rx, TableX_ParentRelationX, null, RowParentRelationList_X);
             }
+            if (prev.Count != m.ChildModelCount) anyChange = true;
             return (true, anyChange);
         }
 

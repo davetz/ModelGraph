@@ -193,7 +193,7 @@ namespace ModelGraphSTD
         internal void Redo(ItemCreated chng)
         {
             var item = chng.Item;
-            var index = chng.Index;
+            var index = chng.AtIndex;
 
             if (item.IsRowX)
             {
@@ -302,15 +302,15 @@ namespace ModelGraphSTD
         #endregion
 
         #region ItemLinked  ===================================================
-        internal void ItemLinked(Relation relation, Item item1, Item item2)
+        internal void ItemLinked(Relation rel, Item item1, Item item2)
         {
-            var nam1 = GetIdentity(item1, IdentityStyle.ChangeLog);
-            var nam2 = GetIdentity(item2, IdentityStyle.ChangeLog);
-            var rnam = GetIdentity(relation, IdentityStyle.ChangeLog);
+            var nam1 = GetIdentity(item1, IdentityStyle.Double);
+            var nam2 = GetIdentity(item2, IdentityStyle.Double);
+            var rnam = GetIdentity(rel, IdentityStyle.Single);
 
-            var name = $"{rnam}  ;  ({nam1}) --> ({nam2})";
-            (int parentIndex, int chilldIndex) = relation.AppendLink(item1, item2);
-            var chg = new ItemLinked(_changeSet, relation, item1, item2, parentIndex, chilldIndex, name);
+            var name = $" [{rnam}]   ({nam1}) --> ({nam2})";
+            (int parentIndex, int chilldIndex) = rel.AppendLink(item1, item2);
+            var chg = new ItemLinked(_changeSet, rel, item1, item2, parentIndex, chilldIndex, name);
         }
         internal void Undo(ItemLinked chng)
         {

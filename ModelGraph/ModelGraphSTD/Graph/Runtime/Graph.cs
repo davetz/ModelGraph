@@ -26,10 +26,10 @@ namespace ModelGraphSTD
         public Dictionary<Item, int> Item_ColorIndex;
         public Dictionary<Item, int> Group_ColorIndex;
 
-        public int MinorDelta = 1; // incremented each time am item property changes
-        public int MajorDelta = 1; // incremented each time an item collection changes
-
         public Extent Extent;  // current x,y extent of this graph
+
+        public ushort MinorDelta;      // increments whenever node/edge property changes
+        public ushort MajorDelta;      // increments whenever the graph changes
 
         #region Constructor  ==================================================
         internal Graph(GraphX owner)

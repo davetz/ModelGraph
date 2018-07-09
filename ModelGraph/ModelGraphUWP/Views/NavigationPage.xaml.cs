@@ -126,16 +126,16 @@ namespace ModelGraphUWP.Views
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            if (args.IsSettingsInvoked)
-            {
-                //ContentFrame.Navigate(typeof(SettingsPage));
-            }
-            else
-            {
-                switch (args.InvokedItem)
-                {
-                }
-            }
+            //if (args.IsSettingsInvoked)
+            //{
+            //    ContentFrame.Navigate(typeof(SettingsPage));
+            //}
+            //else
+            //{
+            //    switch (args.InvokedItem)
+            //    {
+            //    }
+            //}
         }
 
         private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

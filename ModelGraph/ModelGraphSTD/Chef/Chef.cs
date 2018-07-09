@@ -13,7 +13,7 @@ namespace ModelGraphSTD
         public static ItemModel DragDropSource; 
 
         private object _executionLock = new object(); // only one thread may modify the data
-        private bool IncludeItemIdentityIndex;
+        private bool ShowItemIndex;
 
         #region RootChef  =====================================================
         internal Chef() : base(null, Trait.RootChef, Guid.Empty, 10)

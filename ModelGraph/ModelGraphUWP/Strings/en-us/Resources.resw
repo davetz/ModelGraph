@@ -2109,15 +2109,21 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Model modeling data</value>
   </data>
   <data name="403N" xml:space="preserve">
-    <value>Include Item Identity Index</value>
+    <value>Show Item Index</value>
   </data>
   <data name="403S" xml:space="preserve">
-    <value>Include a Table-Row index  in item identifiers</value>
+    <value>Include the Item's index in the item's name string</value>
   </data>
   <data name="600N" xml:space="preserve">
     <value>Diagnostic</value>
   </data>
   <data name="600S" xml:space="preserve">
     <value>List of diagnostic options</value>
+  </data>
+  <data name="404N" xml:space="preserve">
+    <value>Show Item Hash Code</value>
+  </data>
+  <data name="404S" xml:space="preserve">
+    <value>Include the Item's hash code in the item's name string</value>
   </data>
 </root>

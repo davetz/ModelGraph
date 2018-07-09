@@ -107,7 +107,7 @@ namespace ModelGraphSTD
 
         #region Property/Methods ==============================================
         internal int Index => (Owner is Store st) ? st.IndexOf(this) : -1;
-        internal string IdentityIndex => $"[{Owner.Index}.{Index}]";
+
         internal bool IsInvalid => Owner == null || IsDeleted;
         internal bool IsValid => !IsInvalid;
         internal Store Store => Owner as Store;

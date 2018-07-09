@@ -8,7 +8,6 @@ namespace ModelGraphSTD
         internal string Name;
         internal string Summary;
         internal string Description;
-        internal bool HasChoiceColumns;
 
         #region Constructors  =================================================
         internal TableX(StoreOf<TableX> owner)

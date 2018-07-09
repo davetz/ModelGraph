@@ -68,81 +68,74 @@ namespace ModelGraphSTD
         #region RowX_Identity  ================================================
         private string RowX_Identity(Item item, IdentityStyle style = IdentityStyle.Single)
         {
-            if (item is RowX itm)
+            if (item is RowX rx)
             {
-                var name1 = TableX_NameProperty.TryGetChild(itm.TableX, out Property nc) ? nc.Value.GetString(itm) : null;
-                var name2 = itm.TableX.Name;
-
+                var name1 = TableX_NameProperty.TryGetChild(rx.TableX, out Property pr) ? pr.Value.GetString(rx) : null;
                 var noName1 = string.IsNullOrWhiteSpace(name1);
-                var noName2 = string.IsNullOrWhiteSpace(name2);
+                if (noName1) name1 = $"#{rx.Index}";
 
-                if (noName1) name1 = BlankName;
-                if (noName2) name2 = BlankName;
+                var name2 = rx.TableX.Name;
+                var noName2 = string.IsNullOrWhiteSpace(name2);
+                if (noName2) name2 = $"{_localize(rx.TableX.KindKey)}[{rx.TableX.Index}]";
 
                 switch (style)
                 {
                     case IdentityStyle.Single:
-                        return (IncludeItemIdentityIndex || noName1) ?
-                            $"{item.IdentityIndex} {name1}" :
-                            name1;
+                        return name1;
 
                     case IdentityStyle.Double:
                     case IdentityStyle.StoreItem:
-                        return (IncludeItemIdentityIndex || noName1 || noName2) ?
-                            $"{item.IdentityIndex} {name2} {name1}" :
-                            $"{name2} {name1}";
+                        return $"{name2} : {name1}";
 
 
                     case IdentityStyle.ChangeLog:
-
-                        return IncludeItemIdentityIndex ?
-                            $"{_localize(itm.KindKey)} {item.IdentityIndex} {name2} : {name1}" :
-                            $"{_localize(itm.KindKey)} {item.IdentityIndex} {name2} : {name1}";
+                        return $"{name2} : {name1}";
 
 
                     case IdentityStyle.Kind:
-                        return _localize(itm.KindKey);
+                        return _localize(rx.KindKey);
 
                     case IdentityStyle.Summary:
-                        return TableX_SummaryProperty.TryGetChild(itm.TableX, out Property ns) ? ns.Value.GetString(itm) : name1;
+                        return TableX_SummaryProperty.TryGetChild(rx.TableX, out Property ns) ? ns.Value.GetString(rx) : name1;
 
                     case IdentityStyle.Description:
                         return null;
                 }
             }
-            return $"{BlankName} {item.Trait.ToString()}";
+            return $"{BlankName} {item.Trait}";
         }
         #endregion
 
         #region PairX_Identity  ===============================================
         private string PairX_Identity(Item item, IdentityStyle style)
         {
-            if (item is PairX itm)
+            if (item is PairX px)
             {
-                var name = itm.DisplayValue;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
+                var name1 = px.DisplayValue;
+                var noName1 = string.IsNullOrWhiteSpace(name1);
+                if (noName1) name1 = $"{_localize(px.KindKey)} {BlankName}";
 
-                var pa = itm.Owner as EnumX;
-                var parent = pa.Name;
-                if (string.IsNullOrWhiteSpace(parent)) parent = $"{_localize(pa.KindKey)} {Index_Identity(pa)}";
+                var name2 = px.EnumX.Name;
+                var noName2 = string.IsNullOrWhiteSpace(name2);
+                if (noName2) name2 = $"{_localize(px.EnumX.KindKey)}[{px.EnumX.Index}]";
 
                 switch (style)
                 {
                     case IdentityStyle.Single:
-                        return name;
+                        return name1;
 
                     case IdentityStyle.Double:
                     case IdentityStyle.StoreItem:
-                        return $"{parent} : {name}";
+                        return $"{name2} : {name1}";
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_localize(itm.KindKey)} {Index_Identity(itm)}: {parent} : {name}";
+                        return $"{name2} : {name1}";
 
                     case IdentityStyle.Kind:
-                        return _localize(itm.KindKey);;
+                        return _localize(px.KindKey);;
 
                     case IdentityStyle.Summary:
-                        return itm.ActualValue;
+                        return px.ActualValue;
 
                     case IdentityStyle.Description:
                         return null;
@@ -187,10 +180,11 @@ namespace ModelGraphSTD
         #region EnumX_Identity  ===============================================
         private string EnumX_Identity(Item item, IdentityStyle style)
         {
-            if (item is EnumX itm)
+            if (item is EnumX ex)
             {
-                var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
+                var name = ex.Name;
+                var noName = string.IsNullOrWhiteSpace(name);
+                if (noName) name = $"#{ex.Index}";
 
                 switch (style)
                 {
@@ -200,16 +194,16 @@ namespace ModelGraphSTD
                         return name;
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_localize(itm.KindKey)} {Index_Identity(itm)}: {name}";
+                        return $"{_localize(ex.KindKey)} {name}";
 
                     case IdentityStyle.Kind:
-                        return _localize(itm.KindKey);;
+                        return _localize(ex.KindKey);;
 
                     case IdentityStyle.Summary:
-                        return itm.Summary;
+                        return ex.Summary;
 
                     case IdentityStyle.Description:
-                        return itm.Description;
+                        return ex.Description;
                 }
             }
             return $"{BlankName} {item.Trait.ToString()}";
@@ -219,10 +213,11 @@ namespace ModelGraphSTD
         #region TableX_Identity  ==============================================
         private string TableX_Identity(Item item, IdentityStyle style)
         {
-            if (item is TableX itm)
+            if (item is TableX tx)
             {
-                var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
+                var name = tx.Name;
+                var noName = string.IsNullOrWhiteSpace(name);
+                if (noName) name = $"#{tx.Index}";
 
                 switch (style)
                 {
@@ -231,19 +226,19 @@ namespace ModelGraphSTD
                         return name;
 
                     case IdentityStyle.Double:
-                        return $"{GetIdentity(item, IdentityStyle.Kind)} : {name}";
+                        return $"{_localize(tx.KindKey)} : {name}";
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_localize(itm.KindKey)} {Index_Identity(itm)}: {name}";
+                        return $"{tx.Index} {_localize(tx.KindKey)}: {name}";
 
                     case IdentityStyle.Kind:
-                        return _localize(itm.KindKey);
+                        return _localize(tx.KindKey);
 
                     case IdentityStyle.Summary:
-                        return itm.Summary;
+                        return tx.Summary;
 
                     case IdentityStyle.Description:
-                        return itm.Description;
+                        return tx.Description;
                 }
             }
             return $"{BlankName} {item.Trait.ToString()}";
@@ -436,31 +431,33 @@ namespace ModelGraphSTD
         #region ColumnX_Identity  =============================================
         private string ColumnX_Identity(Item item, IdentityStyle style)
         {
-            if (item is ColumnX itm)
+            if (item is ColumnX cx)
             {
-                var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
+                var name1 = cx.Name;
+                var noName1 = string.IsNullOrWhiteSpace(name1);
+                if (noName1) name1 = $"#{cx.Index}";
 
-                var parent = TableX_ColumnX.TryGetParent(itm, out TableX pa) ? pa.Name : BlankName;
-                if (string.IsNullOrWhiteSpace(parent)) parent = $"{_localize(pa.KindKey)} {Index_Identity(pa)}";
+                var name2 = TableX_ColumnX.TryGetParent(cx, out TableX tx) ? tx.Name : null;
+                var noName2 = string.IsNullOrWhiteSpace(name2);
+                if (noName2) name2 = $"{_localize(GetKindKey(Trait.TableX))} {BlankName}";
 
                 switch (style)
                 {
                     case IdentityStyle.Single:
-                        return name;
+                        return name1;
 
                     case IdentityStyle.Double:
                     case IdentityStyle.StoreItem:
-                        return $"{parent} : {name}";
+                        return $"{name2} {name1}";
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_localize(itm.KindKey)} {Index_Identity(itm)}: {parent} : {name}";
+                        return $"{cx.Index} {_localize(cx.KindKey)} {name2} {name1}";
 
                     case IdentityStyle.Kind:
-                        return _localize(itm.KindKey);;
+                        return _localize(cx.KindKey);;
 
                     case IdentityStyle.Summary:
-                        return itm.Summary;
+                        return cx.Summary;
 
                     case IdentityStyle.Description:
                         return null;
@@ -473,30 +470,33 @@ namespace ModelGraphSTD
         #region ComputeX_Identity  ============================================
         private string ComputeX_Identity(Item item, IdentityStyle style)
         {
-            if (item is ComputeX itm)
+            if (item is ComputeX cx)
             {
-                var name = itm.Name;
-                if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
+                var name1 = cx.Name;
+                var noName1 = string.IsNullOrWhiteSpace(name1);
+                if (noName1) name1 = $"#{cx.Index}";
 
-                var parent = (Store_ComputeX.TryGetParent(itm, out Store pa)) ? GetIdentity(pa, IdentityStyle.Single) : BlankName;
+                var name2 = (Store_ComputeX.TryGetParent(cx, out Store pa)) ? GetIdentity(pa, IdentityStyle.Single) : null;
+                var noName2 = string.IsNullOrWhiteSpace(name2);
+                if (noName2) name2 = $"{_localize(GetKindKey(Trait.TableX))} {BlankName}";
 
                 switch (style)
                 {
                     case IdentityStyle.Single:
-                        return name;
+                        return $"{name1}";
 
                     case IdentityStyle.Double:
                     case IdentityStyle.StoreItem:
-                        return $"{parent} : {name}";
+                        return $"{name2} : {name1}";
 
                     case IdentityStyle.ChangeLog:
-                        return $"{_localize(itm.KindKey)} {Index_Identity(itm)} : {parent} : {name}";
+                        return $"{_localize(cx.KindKey)}: {name2} : {name1}";
 
                     case IdentityStyle.Kind:
-                        return _localize(itm.KindKey);;
+                        return _localize(cx.KindKey);;
 
                     case IdentityStyle.Summary:
-                        return itm.Summary;
+                        return cx.Summary;
 
                     case IdentityStyle.Description:
                         return null;
@@ -514,9 +514,6 @@ namespace ModelGraphSTD
                 var name = string.IsNullOrWhiteSpace(itm.Name) ? string.Empty : $"({itm.Name})";
                 if (string.IsNullOrWhiteSpace(name)) name = $"{_localize(itm.KindKey)} {Index_Identity(itm)}";
 
-                ;
-                ;
-
                 var child = (TableX_ParentRelationX.TryGetParent(itm, out TableX ch)) ? GetIdentity(ch, IdentityStyle.Single) : BlankName;
                 var parent = (TableX_ChildRelationX.TryGetParent(itm, out TableX pa)) ? GetIdentity(pa, IdentityStyle.Single) : BlankName;
 
@@ -528,7 +525,7 @@ namespace ModelGraphSTD
 
                     case IdentityStyle.Double:
                     case IdentityStyle.ChangeLog:
-                        return $"{_localize(itm.KindKey)}:  {parent} --> {child}    ({name})";
+                        return $"{parent} --> {child}    ({name})";
 
                     case IdentityStyle.Kind:
                         return _localize(itm.KindKey);
