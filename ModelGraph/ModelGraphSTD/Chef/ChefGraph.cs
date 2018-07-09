@@ -402,87 +402,70 @@ namespace ModelGraphSTD
             TryGetForest(g, rt, nodeOwners);
             var anyChange = ValidateGraphParms(g);
 
-            TryGetColorCriteria(g);
             TryCreateQueryPaths(g);
             while (TryPathReduction(g)) { }
+            AssignNodeColor(g);
 
             if (anyChange) g.CheckLayout();
             g.RefreshGraphPoints();
         }
         #endregion
 
-        #region TryGetColorCriteria  ==========================================
-        private bool TryGetColorCriteria(Graph g)
+        #region AssignNodeColor  ==============================================
+        private void AssignNodeColor(Graph g)
         {
+            g.GroupColor.Clear();
 
-            if (GraphX_ColorColumnX.TryGetChild(g.GraphX, out ColumnX col) && TableX_ColumnX.TryGetParent(col, out TableX tbl))
+            if (GraphX_ColorColumnX.TryGetChild(g.GraphX, out ColumnX cx) && TableX_ColumnX.TryGetParent(cx, out TableX tx) && tx.Count > 0)
             {
-                var N = tbl.Count;
-                if (N > 0)
+                var items = tx.Items;
+                foreach (var item in items)
                 {
-                    var items = tbl.Items;
-                    var colors = new List<GroupColor>(N);
-                    g.Group_ColorIndex = new Dictionary<Item, int>(N);
+                    g.GroupColor.Add(GetARGB(cx.Value.GetString(item)));
+                }
 
-                    for (int i = 0; i < N; i++)
-                    {
-                        var key = items[i];
-                        var argb = GetGroupColor(col.Value.GetString(key));
-                        int j = 0;
-                        for (; j < colors.Count; j++)
-                        {
-                            if (colors[j].A != argb.A) continue;
-                            if (colors[j].R != argb.R) continue;
-                            if (colors[j].G != argb.G) continue;
-                            if (colors[j].B != argb.B) continue;
-                            break;
-                        }
-                        if (j == colors.Count) colors.Add(argb);
-                        g.Group_ColorIndex.Add(key, j);
-                    }
-                    g.GroupColors = colors;
-                    g.Item_ColorIndex = new Dictionary<Item, int>(g.NodeItems.Count);
-                    foreach (var (q1, q2) in g.GroupQuerys)
-                    {
-                        var grp = q2.Items[0];
-                        if (g.Group_ColorIndex.TryGetValue(grp, out int inx))
-                        {
-                            var itm = q1.Item;
-                            g.Item_ColorIndex.Add(itm, inx);
-                        }
-                    }
-                    return true;
+                var item_GroupIndex = new Dictionary<Item, byte>();
+                foreach (var (q1, q2) in g.GroupQuerys)
+                {
+                    var inx = q2.Items[0].Index;
+                    item_GroupIndex.Add(q1.Item, (byte)((inx < items.Count) ? inx : 0));
+                }
+
+                foreach (var node in g.Nodes)
+                {
+                    node.Core.Color = item_GroupIndex.TryGetValue(node.Item, out byte ix) ? ix : (byte)0;
                 }
             }
-            g.Group_ColorIndex = null;
-            g.Item_ColorIndex = null;
-            g.GroupColors = null;
-            return false;
-        }
-        private static string _hexValues = "0123456789abcdef";
-        private GroupColor GetGroupColor(string color)
-        {
-            const int N = 9;
-            var argb = new GroupColor(0xFF, 0x80, 0x80, 0x70);
-            if (!string.IsNullOrWhiteSpace(color) && color.Length == N)
+            else
             {
-                var ca = color.ToLower().ToCharArray();
-                if (ca[0] == '#')
-                {
-                    int[] va = new int[N];
-                    for (int j = 1; j < N; j++)
-                    {
-                        va[j] = _hexValues.IndexOf(ca[j]);
-                        if (va[j] < 0) return argb;
-                    }
-                    argb.A = (byte)((va[1] << 4) | va[2]);
-                    argb.R = (byte)((va[3] << 4) | va[4]);
-                    argb.G = (byte)((va[5] << 4) | va[6]);
-                    argb.B = (byte)((va[7] << 4) | va[8]);
-                }
+                g.GroupColor.Add(GetARGB("#FF800080")); // default when there is no color criteria
+                foreach (var node in g.Nodes) { node.Core.Color = 0; }
             }
-            return argb;
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (byte, byte, byte, byte) GetARGB(string color)
+            {
+                const int N = 9;
+                var argb = ((byte)0xFF, (byte)0x80, (byte)0x80, (byte)0x70); // default color when there is a bad color string 
+                if (!string.IsNullOrWhiteSpace(color) && color.Length == N)
+                {
+                    var ca = color.ToLower().ToCharArray();
+                    if (ca[0] == '#')
+                    {
+                        int[] va = new int[N];
+                        for (int j = 1; j < N; j++)
+                        {
+                            va[j] = _hexValues.IndexOf(ca[j]);
+                            if (va[j] < 0) return argb;
+                        }
+                        argb = ((byte)((va[1] << 4) | va[2]), (byte)((va[3] << 4) | va[4]), (byte)((va[5] << 4) | va[6]), (byte)((va[7] << 4) | va[8]));
+                    }
+                }
+                return argb;
+            }
         }
+        static string _hexValues = "0123456789abcdef";
         #endregion
 
         #region GetNodeOwners  ================================================

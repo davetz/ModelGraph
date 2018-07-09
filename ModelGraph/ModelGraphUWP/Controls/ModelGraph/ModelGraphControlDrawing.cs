@@ -13,7 +13,6 @@ namespace ModelGraphUWP
 {
     public sealed partial class ModelGraphControl
     {
-        #region Fields  =======================================================
         private int _centerOffset; // determines the drawCanvas size
 
         private int _minorDelta; // incremented when a node or edge property changes
@@ -22,8 +21,7 @@ namespace ModelGraphUWP
         private float _zoomFactor;
         private Extent _viewExtent = new Extent();
 
-        private Color[] _groupColor;
-        #endregion
+        private List<Color> _groupColor = new List<Color>() { Color.FromArgb(255, 255, 255, 127) };
 
         #region DrawingStyles  ================================================
         public static List<T> GetEnumAsList<T>() { return Enum.GetValues(typeof(T)).Cast<T>().ToList(); }
@@ -35,29 +33,25 @@ namespace ModelGraphUWP
         #region DrawCanvas_Draw  ==============================================
         private void DrawCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
         {
-            #region MajorDelta  ===============================================
-            if (_graph.MajorDelta != _majorDelta)
+            #region RefreshGroupColors  =======================================
+            if (_graph.GroupColor.Count > 0)
             {
-                _majorDelta = _graph.MajorDelta;
-                if (_graph.GroupColors != null)
+                _groupColor.Clear();
+                foreach (var (a, r, g, b) in _graph.GroupColor)
                 {
-                    var len = _graph.GroupColors.Count;
-                    _groupColor = new Color[len];
-                    for (int i = 0; i < len; i++)
-                    {
-                        _groupColor[i] = Color.FromArgb(_graph.GroupColors[i].A, _graph.GroupColors[i].R, _graph.GroupColors[i].G, _graph.GroupColors[i].B);
-                    }
-                }
-
-                if (_zoomFactor == 0)
-                {
-                    _zoomFactor = 1;
-                    _viewExtent =_graph.Extent;
-                    RootGrid.Width = RootCanvas.Width = DrawCanvas.Width = this.ActualWidth;
-                    RootGrid.Height = RootCanvas.Height = DrawCanvas.Height = this.ActualHeight;
+                    _groupColor.Add(Color.FromArgb(a, r, g, b));
                 }
             }
-            _minorDelta = _rootModel.MinorDelta;
+            #endregion
+
+            #region InitializeZoomFactor  =====================================
+            if (_zoomFactor == 0)
+            {
+                _zoomFactor = 1;
+                _viewExtent = _graph.Extent;
+                RootGrid.Width = RootCanvas.Width = DrawCanvas.Width = ActualWidth;
+                RootGrid.Height = RootCanvas.Height = DrawCanvas.Height = ActualHeight;
+            }
             #endregion
 
             #region InitialCallup  ============================================
@@ -85,12 +79,10 @@ namespace ModelGraphUWP
                 var len = (points == null) ? 0 : points.Length;
                 if (len > 1)
                 {
-                    var itm1 = _graph.Edges[i].Node1.Item;
-                    var itm2 = _graph.Edges[i].Node2.Item;
-                    if (_graph.Item_ColorIndex != null && (_graph.Item_ColorIndex.TryGetValue(itm1, out int inx) || _graph.Item_ColorIndex.TryGetValue(itm2, out inx)))
-                    {
-                        pen.Color = _groupColor[inx];
-                    }
+                    var ix1 = _graph.Edges[i].Node1.Core.Color;
+                    var ix2 = _graph.Edges[i].Node2.Core.Color;
+                    var ix = (ix1 > ix2) ? ix1 : ix2;
+                    pen.Color = _groupColor[ix];
                     pen.Initialize();
                     for (int j = 0; j < len; j++)
                     {
@@ -109,10 +101,7 @@ namespace ModelGraphUWP
                 var k = node.Core.Symbol - 2;
                 if (k < 0 || k >= _graph.SymbolCount || _graph.Symbols[k].Data == null)
                 {
-                    if (_graph.Item_ColorIndex != null && _graph.Item_ColorIndex.TryGetValue(node.Item, out int inx))
-                    {
-                        pen.Color = _groupColor[inx];
-                    }
+                    pen.Color = _groupColor[node.Core.Color];
                     pen.Initialize();
                     if (node.Core.IsPointNode)
                     {

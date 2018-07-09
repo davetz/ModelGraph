@@ -9,6 +9,7 @@ namespace ModelGraphSTD
         public int Y;
         public byte DX;
         public byte DY;
+        public byte Color;
         public byte Symbol;
         public Labeling Labeling;
         public Resizing Resizing;

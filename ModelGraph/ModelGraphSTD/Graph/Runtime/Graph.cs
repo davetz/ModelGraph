@@ -22,14 +22,12 @@ namespace ModelGraphSTD
         public Dictionary<Node, List<Edge>> Node_Edges = new Dictionary<Node, List<Edge>>(); // list of edges for each node
         public Dictionary<Item, Node> Item_Node = new Dictionary<Item, Node>();              // look up item -> node
 
-        public List<GroupColor> GroupColors;
-        public Dictionary<Item, int> Item_ColorIndex;
-        public Dictionary<Item, int> Group_ColorIndex;
+        public List<(byte A, byte R, byte G, byte B)> GroupColor = new List<(byte A, byte R, byte G, byte B)>();
 
         public Extent Extent;  // current x,y extent of this graph
 
         public ushort MinorDelta;      // increments whenever node/edge property changes
-        public ushort MajorDelta;      // increments whenever the graph changes
+        public ushort MajorDelta = 1;      // increments whenever the graph changes
 
         #region Constructor  ==================================================
         internal Graph(GraphX owner)
@@ -88,10 +86,6 @@ namespace ModelGraphSTD
             NodeItems.Clear();
             Item_Node.Clear();
             Node_Edges.Clear();
-
-            GroupColors = null;
-            Item_ColorIndex = null;
-            Group_ColorIndex = null;
         }
 
         #endregion
@@ -123,31 +117,4 @@ namespace ModelGraphSTD
         }
         #endregion
     }
-
-    #region RelatedStructures  ================================================
-    public struct GroupColor
-    {
-        public byte A;
-        public byte R;
-        public byte G;
-        public byte B;
-        public GroupColor(byte a, byte r, byte g, byte b)
-        {
-            A = a;
-            R = r;
-            G = g;
-            B = b;
-        }
-    }
-    public struct QueryPair
-    {
-        public Query Query1;
-        public Query Query2;
-        public QueryPair(Query query1, Query query2)
-        {
-            Query1 = query1;
-            Query2 = query2;
-        }
-    }
-    #endregion
 }

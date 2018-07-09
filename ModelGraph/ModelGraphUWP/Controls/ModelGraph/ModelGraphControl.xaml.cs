@@ -19,7 +19,7 @@ namespace ModelGraphUWP
             _chef = root.Chef;
             _rootModel = root;
             _rootModel.ModelControl = this;
-            _graph = root.Item as Graph;
+            _graph = root.Graph;
             _selector = new Selector(_graph);
 
             InitializeComponent();
@@ -45,13 +45,9 @@ namespace ModelGraphUWP
 
         public (int Width, int Height) PreferredMinSize => (400, 320);
 
-
         public void SetSize(double width, double height)
         {
-            if (DrawCanvas == null)
-            {
-                return;
-            }
+            if (DrawCanvas == null) return;
 
             RootGrid.Width = RootCanvas.Width = DrawCanvas.Width = this.Width = width;
             RootGrid.Height = RootCanvas.Height = DrawCanvas.Height = this.Height = height;
@@ -59,10 +55,7 @@ namespace ModelGraphUWP
 
         public void Close()
         {
-            if (DrawCanvas == null)
-            {
-                return;
-            }
+            if (DrawCanvas == null) return;
 
             DrawCanvas.RemoveFromVisualTree();
             DrawCanvas = null;
@@ -72,10 +65,7 @@ namespace ModelGraphUWP
 
         public void Refresh()
         {
-            if (DrawCanvas == null)
-            {
-                return;
-            }
+            if (DrawCanvas == null) return;
 
             DrawCanvas.Invalidate();
         }
@@ -83,10 +73,7 @@ namespace ModelGraphUWP
         // needed because win2D.uwp canvaseControl is implemented in c++ (prevent memory leaks)
         private void ModelGraphControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            if (DrawCanvas == null)
-            {
-                return;
-            }
+            if (DrawCanvas == null) return;
 
             DrawCanvas.RemoveFromVisualTree();
             DrawCanvas = null;
