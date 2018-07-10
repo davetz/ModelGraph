@@ -12,7 +12,6 @@ namespace ModelGraphSTD
             foreach (var node in Nodes) { AdjustNode(node); }
             foreach (var edge in Edges) { edge.Refresh(); }
             SetExtent();
-            MinorDelta += 1;
         }
         public void AdjustGraph(Selector selector)
         {
@@ -34,7 +33,6 @@ namespace ModelGraphSTD
             foreach (var edge in edges) { edge.Refresh(); }
 
             SetExtent();
-            MinorDelta += 1;
         }
         private void AddNodeEdges(Node node, HashSet<Node> nodeHash, HashSet<Edge> edgeHash)
         {

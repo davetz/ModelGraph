@@ -309,28 +309,28 @@ namespace ModelGraphSTD
 
 
         //=========================================
-        SymbolName_P = 0x481,
-        SymbolTopContact_P = 0x482,
-        SymbolLeftContactt_P = 0x483,
-        SymbolRightContact_P = 0x484,
-        SymbolBottomContact_P = 0x485,
+        SymbolXName_P = 0x481,
+        SymbolXTopContact_P = 0x482,
+        SymbolXLeftContactt_P = 0x483,
+        SymbolXRightContact_P = 0x484,
+        SymbolXBottomContact_P = 0x485,
 
         //=========================================
-        NodeCenterXY_P = 0x491,
-        NodeSizeWH_P = 0x492,
-        NodeLabeling_P = 0x493,
-        NodeResizing_P = 0x494,
-        NodeBarWidth_P = 0x495,
-        NodeOrientation_P = 0x496,
-        NodeFlipRotate_P = 0x497,
+        NodeCenterXY_P = 0x491 | IsCovert,
+        NodeSizeWH_P = 0x492 | IsCovert,
+        NodeLabeling_P = 0x493 | IsCovert,
+        NodeResizing_P = 0x494 | IsCovert,
+        NodeBarWidth_P = 0x495 | IsCovert,
+        NodeOrientation_P = 0x496 | IsCovert,
+        NodeFlipRotate_P = 0x497 | IsCovert,
 
         //=========================================
-        EdgeFace1_P = 0x4A1,
-        EdgeFace2_P = 0x4A2,
-        EdgeGnarl1_P = 0x4A3,
-        EdgeGnarl2_P = 0x4A4,
-        EdgeConnect1_P = 0x4A5,
-        EdgeConnect2_P = 0x4A6,
+        EdgeFace1_P = 0x4A1 | IsCovert,
+        EdgeFace2_P = 0x4A2 | IsCovert,
+        EdgeGnarl1_P = 0x4A3 | IsCovert,
+        EdgeGnarl2_P = 0x4A4 | IsCovert,
+        EdgeConnect1_P = 0x4A5 | IsCovert,
+        EdgeConnect2_P = 0x4A6 | IsCovert,
 
         //=========================================
         ComputeXName_P = 0x4B1,

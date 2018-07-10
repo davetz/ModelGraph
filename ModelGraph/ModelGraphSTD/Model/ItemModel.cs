@@ -266,7 +266,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region PostAction  ===================================================
-        public void PostRefreshGraph() { }
+        public void PostRefresh() => DataChef?.PostRefresh(this);
         public void PostRefreshViewList(ItemModel select, int scroll = 0, ChangeType change = ChangeType.NoChange) => DataChef?.PostRefreshViewList(GetRootModel(), select, scroll, change);
         public void PostSetValue(int value) => DataChef?.PostSetValue(this, value);
         public void PostSetValue(bool value) => DataChef?.PostSetValue(this, value);

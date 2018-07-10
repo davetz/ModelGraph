@@ -13,15 +13,10 @@ namespace ModelGraphUWP
 {
     public sealed partial class ModelGraphControl
     {
+        private List<Color> _groupColor = new List<Color>() { Color.FromArgb(255, 255, 255, 127) };
         private int _centerOffset; // determines the drawCanvas size
-
-        private int _minorDelta; // incremented when a node or edge property changes
-        private int _majorDelta; // incremented when the node or edge collection changes
-
         private float _zoomFactor;
         private Extent _viewExtent = new Extent();
-
-        private List<Color> _groupColor = new List<Color>() { Color.FromArgb(255, 255, 255, 127) };
 
         #region DrawingStyles  ================================================
         public static List<T> GetEnumAsList<T>() { return Enum.GetValues(typeof(T)).Cast<T>().ToList(); }

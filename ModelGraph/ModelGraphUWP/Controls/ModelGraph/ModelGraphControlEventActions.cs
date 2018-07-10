@@ -165,7 +165,7 @@ namespace ModelGraphUWP
             DragAction = null;
             HoverAction = IdleHitTest;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); }; 
+            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); PostRefresh(); }; 
             CancelAction = null;
             Begin1Action = SetMovingNode;
             Begin3Action = null;
@@ -242,11 +242,11 @@ namespace ModelGraphUWP
             //Cursor = Cursors.ScrollAll;
             _enableHitTest = false;
 
-            EndAction = () => { SetIdleOnNode(); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); };
+            EndAction = () => { SetIdleOnNode(); _graph.AdjustGraph(_selector); PostRefresh(); };
             DragAction = () => { _selector.Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
             HoverAction = null;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); };
+            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); PostRefresh(); };
             CancelAction = null;
             Begin1Action = null;
             Begin3Action = null;
@@ -353,7 +353,7 @@ namespace ModelGraphUWP
             DragAction = null;
             HoverAction = IdleHitTest;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); };
+            ArrowAction = () => { _selector.Move(_arrowDelta); _graph.AdjustGraph(_selector); PostRefresh(); };
             CancelAction = () => { RemoveSelectors(); SetIdleOnVoid(); };
             Begin1Action = SetMovingRegion;
             Begin3Action = null;
@@ -367,8 +367,8 @@ namespace ModelGraphUWP
                 switch (_keyName)
                 {
                 //    case "A": Allign(); break;
-                    case "V": _selector.AlignVertical(); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); break;
-                    case "H": _selector.AlignHorizontal(); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); break;
+                    case "V": _selector.AlignVertical(); _graph.AdjustGraph(_selector); PostRefresh(); break;
+                    case "H": _selector.AlignHorizontal(); _graph.AdjustGraph(_selector); PostRefresh(); break;
                 //    case "R": RegionRotate(); break;
                 //    case "Delete": DeleteRegionNodes(); break;
                 }
@@ -387,7 +387,7 @@ namespace ModelGraphUWP
             //Cursor = Cursors.ScrollAll;
             _enableHitTest = false;
 
-            EndAction = () => { SetIdleOnRegion(); _graph.AdjustGraph(_selector); _rootModel.PostRefreshGraph(); };
+            EndAction = () => { SetIdleOnRegion(); _graph.AdjustGraph(_selector); PostRefresh(); };
             DragAction = () => { _selector.Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
             HoverAction = null;
             WheelAction = null;
@@ -450,6 +450,14 @@ namespace ModelGraphUWP
         }
         #endregion
 
+        #endregion
+
+        #region PostRefresh  ==================================================
+        void PostRefresh()
+        {
+            HideTootlip();
+            _model.PostRefresh();
+        }
         #endregion
 
         #region IdleHitTest  ==================================================

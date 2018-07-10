@@ -26,9 +26,6 @@ namespace ModelGraphSTD
 
         public Extent Extent;  // current x,y extent of this graph
 
-        public ushort MinorDelta;      // increments whenever node/edge property changes
-        public ushort MajorDelta = 1;      // increments whenever the graph changes
-
         #region Constructor  ==================================================
         internal Graph(GraphX owner)
         {

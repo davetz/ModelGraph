@@ -142,8 +142,8 @@ namespace ModelGraphUWP
                 case VirtualKey.Left: _arrowDelta = new XYPoint(-1, 0); ArrowAction?.Invoke(); break;
                 case VirtualKey.Right: _arrowDelta = new XYPoint(1, 0); ArrowAction?.Invoke(); break;
                 case VirtualKey.Home: ZoomToExtent(_graph.Extent); break;
-                case VirtualKey.Z: if (_modifier == Modifier.Ctrl) { _graph.TryUndo(); _rootModel.PostRefreshGraph();} break;
-                case VirtualKey.Y: if (_modifier == Modifier.Ctrl) { _graph.TryRedo(); _rootModel.PostRefreshGraph(); } break;
+                case VirtualKey.Z: if (_modifier == Modifier.Ctrl) { _graph.TryUndo(); PostRefresh();} break;
+                case VirtualKey.Y: if (_modifier == Modifier.Ctrl) { _graph.TryRedo(); PostRefresh(); } break;
                 default: _keyName = e.Key.ToString(); ShortCutAction?.Invoke(); break;
             }
         }

@@ -14,6 +14,10 @@ namespace ModelGraphSTD
 
             PostModelRequest(model, action);
         }
+        internal void PostRefresh(ItemModel model)
+        {
+            PostModelRequest(model, () => { });
+        }
         internal void PostCommand(ModelCommand command)
         {
             var model = command.Model;

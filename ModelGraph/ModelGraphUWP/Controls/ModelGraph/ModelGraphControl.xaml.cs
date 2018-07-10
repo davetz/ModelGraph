@@ -12,14 +12,14 @@ namespace ModelGraphUWP
     {
         private Chef _chef;
         private Graph _graph;
-        private RootModel _rootModel;
+        private RootModel _model;
 
-        public ModelGraphControl(RootModel root)
+        public ModelGraphControl(RootModel model)
         {
-            _chef = root.Chef;
-            _rootModel = root;
-            _rootModel.ModelControl = this;
-            _graph = root.Graph;
+            _chef = model.Chef;
+            _model = model;
+            _model.ModelControl = this;
+            _graph = model.Graph;
             _selector = new Selector(_graph);
 
             InitializeComponent();
