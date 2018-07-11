@@ -199,7 +199,7 @@ namespace ModelGraphSTD
                 if (i == Tm1)
                 {
                     var t1 = new Extent(Points[0], p2);
-                    if (t1.Intersects(ref E))
+                    if (t1.Intersects(E))
                     {
                         gotHit = true;
                         hitPoint = Points[i];
@@ -210,7 +210,7 @@ namespace ModelGraphSTD
                 else if (i == sp2)
                 {
                     var t2 = new Extent(Points[Tm2], p2);
-                    if (t2.Intersects(ref E))
+                    if (t2.Intersects(E))
                     {
                         gotHit = true;
                         hitPoint = Points[i];
@@ -221,7 +221,7 @@ namespace ModelGraphSTD
                 else if (i > Tm1 && i <= Tm2)
                 {
                     var e = new Extent(p1, p2);
-                    if (e.Intersects(ref E))
+                    if (e.Intersects(E))
                     {
                         if (e.IsHorizontal)
                         {

@@ -489,7 +489,7 @@ namespace RepositoryUWP
                     if (e2.Value.Count > 0)
                     {
                         #region WriteRoots  ===================================
-                        GetOffset(chef, e2.Value, out int x0, out int y0);
+                        var (x0, y0) = GetCenter(chef, e2.Value); // used to center the drawing arround point(0,0)
 
                         foreach (var e3 in e2.Value)//SG
                         {
@@ -566,7 +566,7 @@ namespace RepositoryUWP
             }
         }
         #region TryGetOffset  =================================================
-        private void GetOffset(Chef chef, Dictionary<Item, List<Item>> sgParams, out int x0, out int y0)
+        private (int X0, int Y0) GetCenter(Chef chef, Dictionary<Item, List<Item>> sgParams)
         {
             int x1, y1, x2, y2;
             x1 = y1 = int.MaxValue;
@@ -578,7 +578,7 @@ namespace RepositoryUWP
                     foreach (var gp in e3.Value)//GP
                     {
                         var nd = gp as Node;
-                        if (nd.Core.TryGetCenter(out int x, out int y))
+                        var (x, y) = nd.Core.GetCenter();
                         {
                             if (x < x1) x1 = x;
                             if (y < y1) y1 = y;
@@ -588,12 +588,7 @@ namespace RepositoryUWP
                     }
                 }
             }
-            x0 = (x1 + x2) / 2;
-            y0 = (y1 + y2) / 2;
-            if (x1 == int.MaxValue)
-            {
-                x0 = y0 = GraphParm.CenterOffset;
-            }
+            return (x1 == int.MaxValue) ? (0, 0) : ((x1 + x2) / 2, (y1 + y2) / 2);
         }
         #endregion
         #endregion

@@ -768,8 +768,6 @@ namespace RepositoryUWP
                 var rt = items[rtIndex];
                 if (rt == null) throw new Exception($"Expected root object, got null {rtIndex}");
 
-                var cp = GraphParm.CenterOffset;
-
                 #region FindCreate MsParms ====================================
                 if (!RtMsParms.TryGetValue(rt, out MsParms))
                 {
@@ -821,7 +819,7 @@ namespace RepositoryUWP
 
                                 if (!itemNodeParms.TryGetValue(nd, out Node node))
                                 {
-                                    node = new Node(cp)
+                                    node = new Node()
                                     {
                                         Item = nd
                                     };
@@ -830,8 +828,8 @@ namespace RepositoryUWP
                                     Parms.Add(node);
                                 }
 
-                                node.Core.X = r.ReadInt32() + cp;
-                                node.Core.Y = r.ReadInt32() + cp;
+                                node.Core.X = r.ReadInt32();
+                                node.Core.Y = r.ReadInt32();
                                 node.Core.DX = r.ReadByte();
                                 node.Core.DY = r.ReadByte();
                                 node.Core.Symbol = r.ReadByte();

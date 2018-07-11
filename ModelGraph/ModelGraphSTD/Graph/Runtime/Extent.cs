@@ -11,8 +11,7 @@ namespace ModelGraphSTD
         public int Y2;
 
         #region Constructor  ==================================================
-        public Extent() { }
-        public Extent(int s)
+        public Extent(int s = 0)
         {
             X1 = X2 = Y1 = Y2 = s;
         }
@@ -258,9 +257,6 @@ namespace ModelGraphSTD
         public XYPoint TopRight { get { return new XYPoint(Xmax, Ymin); } }
         public XYPoint BottomLeft { get { return new XYPoint(Xmin, Ymax); } }
         public XYPoint BottomRight { get { return new XYPoint(Xmax, Ymax); } }
-
-        public void ScrollVertical(int ds) { Y1 += ds; Y2 += ds; }
-        public void ScrollHorizontal(int ds) { X1 += ds; X2 += ds; }
         #endregion
 
         #region Comparison  ===================================================
@@ -327,7 +323,7 @@ namespace ModelGraphSTD
         //
         public bool HitTest(ref XYPoint p, ref Extent E)
         {
-            if (Intersects(ref E))  // my extent intersects with E
+            if (Intersects(E))  // my extent intersects with E
             {
                 if (IsHorizontal)   // my Y1 == my Y2
                 {
@@ -376,7 +372,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Intersection  =================================================
-        public bool Intersects(ref Extent e)
+        public bool Intersects(Extent e)
         {
             if (IsVertical)
             {

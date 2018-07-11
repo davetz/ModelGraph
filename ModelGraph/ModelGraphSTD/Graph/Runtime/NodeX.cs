@@ -53,8 +53,6 @@ namespace ModelGraphSTD
         #endregion
 
         #region SetSize, GetValues  ===========================================
-        static int _maxValue = GraphParm.CenterOffset * 2;
-
         internal void SetSize(int x, int y)
         {
             DX = (byte)((x < _min) ? _min : ((x > _max) ? _max : x));
@@ -64,22 +62,11 @@ namespace ModelGraphSTD
         {
             return IsPointNode ? (X, Y, 1, 1) : (X, Y, DX, DY);
         }
-        internal bool TryGetCenter(out int x, out int y)
-        {
-            x = X;
-            y = Y;
-            return (X != 0) && (Y != 0);
-        }
+        internal (int X, int Y) GetCenter() => (X, Y);
         internal int[] CenterXY
         {
             get { return new int[] { X, Y }; }
-            set { if (value != null && value.Length == 2) { X = ValidValue(value[0]); Y = ValidValue(value[1]); } }
-        }
-        internal int ValidValue(int val)
-        {
-            if (val < 0) return 0;
-            if (val > _maxValue) return _maxValue;
-            return val;
+            set { if (value != null && value.Length == 2) { X = value[0]; Y = value[1]; } }
         }
 
         internal int[] SizeWH
@@ -227,7 +214,7 @@ namespace ModelGraphSTD
         static int _ds = GraphParm.HitMargin;
         static int _ds2 = GraphParm.HitMarginSquared;
 
-        public void Minimize(ref Extent e)
+        public void Minimize(Extent e)
         {
             var t = e;
             var p = Center;

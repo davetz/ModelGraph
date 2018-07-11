@@ -109,7 +109,7 @@ namespace ModelGraphSTD
         }
         private void SetExtent()
         {
-            Extent = new Extent(GraphParm.CenterOffset);
+            Extent = new Extent();
             Extent = Extent.SetExtent(Nodes, 16);
         }
         #endregion

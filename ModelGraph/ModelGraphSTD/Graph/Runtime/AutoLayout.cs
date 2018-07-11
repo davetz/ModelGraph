@@ -9,8 +9,7 @@ namespace ModelGraphSTD
     {
         internal void CheckLayout()
         {
-            var cp = GraphParm.CenterOffset;
-
+            var cp = 0;
             foreach (var node in Nodes)
             {
                 if (node.Core.TryInitialize(cp)) cp += 8;
