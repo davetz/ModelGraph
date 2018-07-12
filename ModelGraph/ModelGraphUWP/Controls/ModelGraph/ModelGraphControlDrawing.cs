@@ -116,7 +116,7 @@ namespace ModelGraphUWP
             if (_traceRegion != null)
             {
                 pen.Color = (_traceRegion.IsPolygon) ? Colors.DimGray : Colors.LightGray;
-                pen.DrawRectangle(_traceRegion.Normal, x, y, z);
+                pen.DrawRectangle(_traceRegion.Normal);
 
                 var points = _traceRegion.Points;
                 pen.Color = (_traceRegion.IsPolygon) ? Colors.LightGray : Colors.DimGray;
@@ -146,7 +146,7 @@ namespace ModelGraphUWP
                     }
                     else
                     {
-                        pen.DrawRectangle(region.Normal, x, y, z);
+                        pen.DrawRectangle(region.Normal);
                     }
                 }
             }
@@ -232,12 +232,11 @@ namespace ModelGraphUWP
                 _p1 = p2;
                 //Debug.WriteLine($"{point} => {p2},   O: {_offset} Z: {_zoom}");
             }
-            internal void DrawRectangle(Extent e) => DrawRectangle(new Rect(e.Xmin, e.Ymin, e.Width, e.Hieght));
-            internal void DrawRectangle(Extent e, int x, int y, float z)
+            internal void DrawRectangle(Extent e)
             {
                 var r = new Rect(e.Xmin, e.Ymin, e.Width, e.Hieght);
 
-                DrawRectangle(new Rect(z * (r.X - x), z * (r.Y - y), z * r.Width, z * r.Height));
+                DrawRectangle(new Rect(r.X * _zoom + _offset.X, r.Y * _zoom + _offset.Y, r.Width * _zoom, r.Height * _zoom));
             }
             internal void DrawRectangle(Rect rect)
             {

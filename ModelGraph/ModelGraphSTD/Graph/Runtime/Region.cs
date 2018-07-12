@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ModelGraphSTD
 {
@@ -95,7 +96,9 @@ namespace ModelGraphSTD
                 Points[i] = ((Points[i].X + delta.X), (Points[i].Y + delta.Y));
             }
             Normal.Move(delta);
-            Extent.Move(delta);
+            //Extent.Move(delta);
+
+            Debug.WriteLine("Move Region");
         }
         #endregion
 
