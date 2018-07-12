@@ -103,17 +103,17 @@ namespace ModelGraphUWP
             _wheelDelta = cp.Properties.MouseWheelDelta;
             WheelAction?.Invoke();
         }
-        private XYPoint GridPoint(PointerRoutedEventArgs e)
+        private (int X, int Y) GridPoint(PointerRoutedEventArgs e)
         {
             var p = e.GetCurrentPoint(RootGrid).Position;
-            return new XYPoint(p.X, p.Y);
+            return ((int)p.X, (int)p.Y);
         }
-        private XYPoint DrawPoint(PointerRoutedEventArgs e)
+        private (int X, int Y) DrawPoint(PointerRoutedEventArgs e)
         {
             var p = e.GetCurrentPoint(DrawCanvas).Position;
-            var x = _viewExtent.X1 + (p.X / _zoomFactor);
-            var y = _viewExtent.Y1 + (p.Y / _zoomFactor);
-            return new XYPoint(x, y);
+            var x = (p.X - _offset.X) / _zoomFactor;
+            var y = (p.Y - _offset.Y) / _zoomFactor;
+            return ((int)x, (int)y);
         }
         #endregion
 
@@ -137,10 +137,10 @@ namespace ModelGraphUWP
                 case VirtualKey.Shift: _modifier |= Modifier.Shift; break;
                 case VirtualKey.Control: _modifier |= Modifier.Ctrl; break;
                 case VirtualKey.Escape: CancelAction?.Invoke(); break;
-                case VirtualKey.Up: _arrowDelta = new XYPoint(0, -1); ArrowAction?.Invoke(); break;
-                case VirtualKey.Down: _arrowDelta = new XYPoint(0, 1); ArrowAction?.Invoke(); break;
-                case VirtualKey.Left: _arrowDelta = new XYPoint(-1, 0); ArrowAction?.Invoke(); break;
-                case VirtualKey.Right: _arrowDelta = new XYPoint(1, 0); ArrowAction?.Invoke(); break;
+                case VirtualKey.Up: _arrowDelta = (0, -1); ArrowAction?.Invoke(); break;
+                case VirtualKey.Down: _arrowDelta = (0, 1); ArrowAction?.Invoke(); break;
+                case VirtualKey.Left: _arrowDelta = (-1, 0); ArrowAction?.Invoke(); break;
+                case VirtualKey.Right: _arrowDelta = (1, 0); ArrowAction?.Invoke(); break;
                 case VirtualKey.Home: ZoomToExtent(_graph.Extent); break;
                 case VirtualKey.Z: if (_modifier == Modifier.Ctrl) { _graph.TryUndo(); PostRefresh();} break;
                 case VirtualKey.Y: if (_modifier == Modifier.Ctrl) { _graph.TryRedo(); PostRefresh(); } break;

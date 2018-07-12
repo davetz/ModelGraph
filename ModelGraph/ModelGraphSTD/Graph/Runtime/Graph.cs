@@ -27,9 +27,10 @@ namespace ModelGraphSTD
         public Extent Extent;  // current x,y extent of this graph
 
         #region Constructor  ==================================================
-        internal Graph(GraphX owner)
+        internal Graph(GraphX owner, Item seedItem = null)
         {
             Owner = owner;
+            SeedItem = seedItem;
             Trait = Trait.Graph;
 
             owner.Add(this);

@@ -17,7 +17,7 @@ namespace ModelGraphSTD
         public Edge HitEdge; // index of edge
         public int HitBend;  // index of bend point (relative to edge.Core.bends)
         public int HitIndex; // index of start of the hit segment (relative to edge.point)
-        public XYPoint HitPoint; // the refined hit point location
+        public (int x, int y) HitPoint; // the refined hit point location
         public Region HitRegion; // hit this specific region
         public HitLocation HitLocation; // nuanced hit location details
 
@@ -163,7 +163,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region HitTest  ======================================================
-        public void HitTest(XYPoint p)
+        public void HitTest((int x, int y) p)
         {
             PrevNode = HitNode;
             PrevEdge = HitEdge;
@@ -269,7 +269,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Move  =========================================================
-        public void Move(XYPoint delta)
+        public void Move((int X, int Y) delta)
         {
             if (_enableSnapShot) TakeSnapShot();
 

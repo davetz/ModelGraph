@@ -2,7 +2,7 @@
 {
     public class EdgeX
     {
-        public XYPoint[] Bends;
+        public (int X, int Y)[] Bends;
         public Face Face1;
         public Face Face2;
         public FacetOf Facet1;

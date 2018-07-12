@@ -275,14 +275,14 @@ namespace ModelGraphUWP
 
             internal int Width { get { return Style.Width; } }
             internal Color Color { get { return Style.Color; } }
-            internal List<XYPoint> Points = new List<XYPoint>();
+            internal List<(int X, int Y)> Points = new List<(int X, int Y)>();
             internal readonly LineStyle Style = new LineStyle();
 
             private int Last { get { return Points.Count - 1; } }
-            internal XYPoint LastPoint { get { return Points[Last]; } }
-            internal XYPoint FirstPoint { get { return Points[0]; } }
+            internal (int X, int Y) LastPoint { get { return Points[Last]; } }
+            internal (int X, int Y) FirstPoint { get { return Points[0]; } }
 
-            internal bool IsSamePoint(XYPoint p, XYPoint q) { return (p.X == q.X && p.Y == q.Y); }
+            internal bool IsSamePoint((int X, int Y) p, (int X, int Y) q) { return (p.X == q.X && p.Y == q.Y); }
             internal bool IsClosedPolygon { get { return IsSamePoint(FirstPoint, LastPoint); } }
 
             internal bool TryExtendLine(Extent e, LineStyle s)
@@ -332,7 +332,7 @@ namespace ModelGraphUWP
                 return false;
             }
 
-            private bool MidPointMatch(XYPoint p)
+            private bool MidPointMatch((int X, int Y) p)
             {
                 var n = Last;
                 for (int i = 1; i < n; i++)
@@ -364,7 +364,7 @@ namespace ModelGraphUWP
         private Action DragAction;
         private Action BeginAction;
 
-        private XYPoint _rawRef;
+        private (int X, int Y) _rawRef;
         private Extent _drawRef = new Extent();
         private bool _pointerIsPressed;
 
@@ -444,7 +444,7 @@ namespace ModelGraphUWP
                 {
                     var dx = (sbyte)data[i++];
                     var dy = (sbyte)data[i++];
-                    line.Points.Add(new XYPoint(_CP + dx, _CP + dy));
+                    line.Points.Add((_CP + dx, _CP + dy));
                 }
             }
         }
@@ -867,7 +867,7 @@ namespace ModelGraphUWP
 
                 foreach (var p in line.Points)
                 {
-                    newLine.Points.Add(new XYPoint(p.X + 1, p.Y + 1));
+                    newLine.Points.Add((p.X + 1, p.Y + 1));
                 }
                 var i = _workingLines.IndexOf(line);
                 _workingLines.Insert(i + 1, newLine);
@@ -890,9 +890,9 @@ namespace ModelGraphUWP
             DrawCanvas.Invalidate();
         }
 
-        private XYPoint GetCenter()
+        private (int X, int Y) GetCenter()
         {
-            return new XYPoint(12, 12);
+            return (12, 12);
         }
         private void VFlipButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
@@ -901,7 +901,7 @@ namespace ModelGraphUWP
             {
                 for (int i = 0; i < line.Points.Count; i++)
                 {
-                    line.Points[i] = line.Points[i].VerticalFlip(center.Y);
+                    line.Points[i] = XYPoint.VerticalFlip(line.Points[i], center.Y);
                 }
             }
             DrawCanvas.Invalidate();
@@ -914,7 +914,7 @@ namespace ModelGraphUWP
             {
                 for (int i = 0; i < line.Points.Count; i++)
                 {
-                    line.Points[i] = line.Points[i].HorizontalFlip(center.X);
+                    line.Points[i] = XYPoint.HorizontalFlip(line.Points[i], center.X);
                 }
             }
             DrawCanvas.Invalidate();
@@ -927,7 +927,7 @@ namespace ModelGraphUWP
             {
                 for (int i = 0; i < line.Points.Count; i++)
                 {
-                    line.Points[i] = line.Points[i].Rotate(center.X, center.Y);
+                    line.Points[i] = XYPoint.Rotate(line.Points[i], (center.X, center.Y));
                 }
             }
             DrawCanvas.Invalidate();
@@ -997,7 +997,7 @@ namespace ModelGraphUWP
 
         private void MoveSelectedPoints()
         {
-            if (_drawRef.TryGetDelta(out XYPoint delta) && _selectLines.Count > 0)
+            if (_drawRef.TryGetDelta(out (int X, int Y) delta) && _selectLines.Count > 0)
             {
                 foreach (var line in _selectLines)
                 {
@@ -1007,21 +1007,21 @@ namespace ModelGraphUWP
                         continue;
                     }
 
-                    line.Points[i] = line.Points[i].Move(delta);
+                    line.Points[i] = XYPoint.Move(line.Points[i], delta);
                 }
                 Consolidate();
             }
         }
         private void MoveSelectedLines()
         {
-            if (_drawRef.TryGetDelta(out XYPoint delta) && _selectLines.Count > 0)
+            if (_drawRef.TryGetDelta(out (int X, int Y) delta) && _selectLines.Count > 0)
             {
                 foreach (var line in _selectLines)
                 {
                     var n = line.Points.Count;
                     for (int i = 0; i < n; i++)
                     {
-                        line.Points[i] = line.Points[i].Move(delta);
+                        line.Points[i] = XYPoint.Move(line.Points[i], delta);
                     }
                 }
                 Consolidate();
@@ -1046,7 +1046,7 @@ namespace ModelGraphUWP
             DrawCanvas.Invalidate();
         }
 
-        private XYPoint _hitPoint;
+        private (int X, int Y) _hitPoint;
         private void HitTest()
         {
             var p = _hitPoint = _drawRef.Point1;
@@ -1092,7 +1092,7 @@ namespace ModelGraphUWP
                 for (int i = 1; i < n; i++)
                 {
                     e.Record(points[i], _zoomFactor);
-                    if (e.HitTest(ref p, ref E))
+                    if (e.HitTest(ref p, E))
                     {
                         line.HitSegmentIndex = i;
                         gotHit = true;
@@ -1212,7 +1212,7 @@ namespace ModelGraphUWP
             UpdateSymbolSize();
             DrawCanvas.Invalidate();
         }
-        private bool HasSameInteriorPoint(List<XYPoint> p1, List<XYPoint> p2)
+        private bool HasSameInteriorPoint(List<(int X, int Y)> p1, List<(int X, int Y)> p2)
         {
             int i1 = 1;
             int i2 = p1.Count - 1;
@@ -1802,20 +1802,20 @@ namespace ModelGraphUWP
             EndAction?.Invoke();
         }
 
-        private XYPoint RawPoint(PointerRoutedEventArgs e)
+        private (int X, int Y) RawPoint(PointerRoutedEventArgs e)
         {
             var p = e.GetCurrentPoint(DrawCanvas).Position;
             var x = (p.X - _offset);
             var y = (p.Y - _offset);
-            return new XYPoint(x, y);
+            return ((int)x, (int)y);
         }
 
-        private XYPoint DrawPoint(PointerRoutedEventArgs e)
+        private (int X, int Y) DrawPoint(PointerRoutedEventArgs e)
         {
             var p = e.GetCurrentPoint(DrawCanvas).Position;
             var x = Round((p.X - _offset) / _zoomFactor);
             var y = Round((p.Y - _offset) / _zoomFactor);
-            return new XYPoint(x, y);
+            return (x, y);
         }
         private int Round(double v)
         {

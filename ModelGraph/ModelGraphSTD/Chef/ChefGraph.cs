@@ -371,10 +371,10 @@ namespace ModelGraphSTD
         #endregion
 
         #region CreateGraph  ==================================================
-        private bool CreateGraph(GraphX gd, out Graph graph, Item root = null)
+        private bool CreateGraph(GraphX gd, out Graph graph, Item seed = null)
         {
-            if (!gd.TryGetGraph(root, out graph))
-                graph = new Graph(gd);
+            if (!gd.TryGetGraph(seed, out graph))
+                graph = new Graph(gd, seed);
 
             RefreshGraph(graph);
 

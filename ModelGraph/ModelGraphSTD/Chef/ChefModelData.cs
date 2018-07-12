@@ -722,7 +722,7 @@ namespace ModelGraphSTD
                     return $"{GetRepositoryName()} - {GetName(root.Trait)}";
 
                 case ControlType.GraphDisplay:
-                    var g = root.Item as Graph;
+                    var g = root.Graph;
                     var gx = g.GraphX;
                     if (g.SeedItem == null)
                         return $"{gx.Name}";
@@ -7817,7 +7817,7 @@ namespace ModelGraphSTD
                         m.IsExpandedLeft = true;
 
                         var root = m.GetRootModel();
-                        root.UIRequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, GraphRef_X, m);
+                        root.UIRequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, g, GraphRef_X);
                     }
                     return DropAction.Copy;
                 },

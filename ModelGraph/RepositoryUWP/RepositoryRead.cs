@@ -879,7 +879,7 @@ namespace RepositoryUWP
                                 var pnCount = r.ReadUInt16();
                                 if (pnCount > 0)
                                 {
-                                    edge.Core.Bends = new XYPoint[pnCount];
+                                    edge.Core.Bends = new(int X, int Y)[pnCount];
                                     for (int n = 0; n < pnCount; n++)
                                     {
                                         edge.Core.Bends[n].X = r.ReadInt32();

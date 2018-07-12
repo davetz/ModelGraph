@@ -3,7 +3,7 @@
     public struct EdgeCopy
     {
         internal Edge Edge;
-        internal XYPoint[] Points;
+        internal (int X, int Y)[] Points;
         internal EdgeX Core;
 
         internal EdgeCopy(Edge edge)

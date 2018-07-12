@@ -17,7 +17,7 @@ namespace ModelGraphSTD
         public FlipRotate FlipRotate;
         public Orientation Orientation;
 
-        public XYPoint Center => new XYPoint(X, Y);
+        public (int x, int y) Center => (X, Y);
         public Extent Extent => new Extent(X - DX, Y - DY, X + DX, Y + DY);
         //public Rect Rect => new Rect(X - DX, Y - DY, DX * 2, DY * 2);
         public int Radius => (DX + DY) / 2;
@@ -102,7 +102,7 @@ namespace ModelGraphSTD
 
         #region Move, Resize, Flip, Rotate  ===================================
 
-        internal void Resize(XYPoint delta)
+        internal void Resize((int X, int Y) delta)
         {
             var dx = DX + delta.X;
             var dy = DY + delta.Y;
@@ -110,14 +110,14 @@ namespace ModelGraphSTD
             DY = (byte)((dy < _min) ? _min : ((dy > _max) ? _max : dx));
         }
 
-        internal void Rotate(XYPoint p, SymbolX sym)
+        internal void Rotate((int X, int Y) p, SymbolX sym)
         {
             var x = X;
             var y = Y;
             var dx = DX;
             var dy = DY;
-            X = (int)(p.X + (y - p.Y));
-            Y = (int)(p.Y - (x - p.X));
+            X = (p.X + (y - p.Y));
+            Y = (p.Y - (x - p.X));
             DX = dy;
             DY = dx;
 
@@ -211,8 +211,8 @@ namespace ModelGraphSTD
         #endregion
 
         #region Minimize, HitTest  ============================================
-        static int _ds = GraphParm.HitMargin;
-        static int _ds2 = GraphParm.HitMarginSquared;
+        static readonly int _ds = GraphParm.HitMargin;
+        static readonly int _ds2 = GraphParm.HitMarginSquared;
 
         public void Minimize(Extent e)
         {
@@ -224,7 +224,7 @@ namespace ModelGraphSTD
 
 
         // quickly eliminate nodes that don't qaulify
-        public bool HitTest(XYPoint p)
+        public bool HitTest((int X, int Y) p)
         {
             var x = p.X + 1;
             if (x < (X - DX - _ds)) return false;
@@ -236,13 +236,13 @@ namespace ModelGraphSTD
             return true;
         }
 
-        public (HitLocation hit, XYPoint pnt) RefinedHit(XYPoint p)
+        public (HitLocation hit, (int X, int Y) pnt) RefinedHit((int X, int Y) p)
         {
             int ds;
             int x = p.X + 1;
             int y = p.Y + 1;
             var hit = HitLocation.Node;
-            var pnt = new XYPoint(X, Y);
+            var pnt = (X, Y);
 
             if (DX >= _ds)
             {
@@ -278,10 +278,10 @@ namespace ModelGraphSTD
             return (hit, pnt);
         }
 
-        public void RefineHitTest(XYPoint p, ref HitLocation hit, ref XYPoint hitPoint)
+        public void RefineHitTest((int X, int Y) p, ref HitLocation hit, ref (int X, int Y) hitPoint)
         {
             hit |= HitLocation.Node;
-            hitPoint = new XYPoint(X, Y);
+            hitPoint = (X, Y);
             int ds;
 
             if (DX >= _ds)

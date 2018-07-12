@@ -13,7 +13,7 @@ namespace ModelGraphSTD
         public Node Node1;
         public Node Node2;
 
-        public XYPoint[] Points;
+        public (int X, int Y)[] Points;
         public Extent Extent = new Extent(); // all points are withing this extent
         public short Tm1; // index of terminal point 1
         public short Bp1; // index of closes bend point after Tm1 (to the right) 
@@ -43,7 +43,7 @@ namespace ModelGraphSTD
 
 
         #region Move  =========================================================
-        internal void Move(XYPoint delta)
+        internal void Move((int X, int Y) delta)
         {
             if (Core.HasBends)
             {
@@ -59,7 +59,7 @@ namespace ModelGraphSTD
                 Points[i].Y = Points[i].Y + delta.Y;
             }
         }
-        internal void Move(XYPoint delta, int index1, int index2)
+        internal void Move((int X, int Y) delta, int index1, int index2)
         {
             if (Core.HasBends)
             {
@@ -87,13 +87,13 @@ namespace ModelGraphSTD
             var len = Points.Length;
             for (int i = 0; i < len;)
             {
-                Points[i] = Points[i].Rotate(x, y);
+                Points[i] = XYPoint.Rotate(Points[i], (x, y));
             }
 
             len = (Core.Bends == null) ? 0 : Core.Bends.Length;
             for (int i = 0; i < len;)
             {
-                Core.Bends[i] = Core.Bends[i].Rotate(x, y);
+                Core.Bends[i] = XYPoint.Rotate(Core.Bends[i], (x, y));
             }
         }
 
@@ -102,13 +102,13 @@ namespace ModelGraphSTD
             var len = Points.Length;
             for (int i = 0; i < len;)
             {
-                Points[i] = Points[i].VerticalFlip(y);
+                Points[i] = XYPoint.VerticalFlip(Points[i], y);
             }
 
             len = (Core.Bends == null) ? 0 : Core.Bends.Length;
             for (int i = 0; i < len;)
             {
-                Core.Bends[i] = Core.Bends[i].VerticalFlip(y);
+                Core.Bends[i] = XYPoint.VerticalFlip(Core.Bends[i], y);
             }
         }
 
@@ -117,19 +117,19 @@ namespace ModelGraphSTD
             var len = Points.Length;
             for (int i = 0; i < len;)
             {
-                Points[i] = Points[i].HorizontalFlip(x);
+                Points[i] = XYPoint.HorizontalFlip(Points[i], x);
             }
 
             len = (Core.Bends == null) ? 0 : Core.Bends.Length;
             for (int i = 0; i < len;)
             {
-                Core.Bends[i] = Core.Bends[i].HorizontalFlip(x);
+                Core.Bends[i] = XYPoint.HorizontalFlip(Core.Bends[i], x);
             }
         }
         #endregion
 
         #region LineOrder  ====================================================
-        internal XYPoint GetClosestBend(Node node)
+        internal (int X, int Y) GetClosestBend(Node node)
         {
             if (Points == null) Refresh();
             if (node == Node1)
@@ -155,22 +155,22 @@ namespace ModelGraphSTD
         static int _ds = GraphParm.HitMargin;
         static int _ds2 = GraphParm.HitMarginSquared;
 
-        internal void SetExtent(XYPoint[] points, int margin)
+        internal void SetExtent((int X, int Y)[] points, int margin)
         {
             Extent = Extent.SetExtent(points, margin);
         }
 
 
         // quickly eliminate edges that don't qaulify
-        internal bool HitTest(XYPoint p)
+        internal bool HitTest((int X, int Y) p)
         {
             return Extent.Contains(p);
         }
 
-        internal bool HitTest(XYPoint p, ref HitLocation hit, ref int hitBend, ref int hitIndex, ref XYPoint hitPoint)
+        internal bool HitTest((int X, int Y) p, ref HitLocation hit, ref int hitBend, ref int hitIndex, ref (int X, int Y) hitPoint)
         {
-            var p1 = new XYPoint();    // used for testing line segments
-            var p2 = new XYPoint();    // used for testing line segments
+            (int X, int Y) p1 = (0, 0);    // used for testing line segments
+            (int X, int Y) p2 = (0, 0);    // used for testing line segments
             var E = new Extent(p, _ds); // extent of hit point sensitivity
 
             var gotHit = false;
@@ -227,14 +227,14 @@ namespace ModelGraphSTD
                         {
                             gotHit = true;
                             hitIndex = i;
-                            hitPoint = new XYPoint(p.X, p2.Y);
+                            hitPoint = (p.X, p2.Y);
                             break;
                         }
                         else if (e.IsVertical)
                         {
                             gotHit = true;
                             hitIndex = i;
-                            hitPoint = new XYPoint(p1.X, p.Y);
+                            hitPoint = (p1.X, p.Y);
                             break;
                         }
                         else
@@ -247,7 +247,7 @@ namespace ModelGraphSTD
                             {
                                 gotHit = true;
                                 hitIndex = i;
-                                hitPoint = new XYPoint(xi, p.Y);
+                                hitPoint = (xi, p.Y);
                                 break;
                             }
                             xi = (int)(p2.X + (dx * (p.Y - p2.Y)) / dy);
@@ -255,7 +255,7 @@ namespace ModelGraphSTD
                             {
                                 gotHit = true;
                                 hitIndex = i;
-                                hitPoint = new XYPoint(xi, p.Y);
+                                hitPoint = (xi, p.Y);
                                 break;
                             }
 
@@ -264,7 +264,7 @@ namespace ModelGraphSTD
                             {
                                 gotHit = true;
                                 hitIndex = i;
-                                hitPoint = new XYPoint(p.X, yi);
+                                hitPoint = (p.X, yi);
                                 break;
                             }
                             yi = (int)(p2.Y + (dy * (p.X - p2.X)) / dx);
@@ -272,7 +272,7 @@ namespace ModelGraphSTD
                             {
                                 gotHit = true;
                                 hitIndex = i;
-                                hitPoint = new XYPoint(p.X, yi);
+                                hitPoint = (p.X, yi);
                                 break;
                             }
                         }
@@ -359,7 +359,7 @@ namespace ModelGraphSTD
             var len2 = facet2.Length / 2;
 
             var len = len1 + bendCount + len2 + 4;  // allow for pseudo points sp1 tp1 tp2 sp2 (x,y)
-            var points = new XYPoint[len];        // line coordinate values x,y,x,y,...
+            var points = new(int X, int Y)[len];        // line coordinate values x,y,x,y,...
 
             var sp1 = 0;               // index of surface point 1 value
             var tm1 = len1 + 1;        // index of terminal point 1 value

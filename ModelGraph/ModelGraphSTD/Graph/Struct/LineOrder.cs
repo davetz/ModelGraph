@@ -28,7 +28,7 @@ namespace ModelGraphSTD
         internal Edge[] Opens;      // list of open ended lines
         internal Edge[] Lines;      // list of closed lines (connects to someother node)
         internal Node[] Other;      // list of nodes at the other end of the line
-        internal XYPoint[] Bends;  // list of inflection points closest to the node
+        internal (int X, int Y)[] Bends;  // list of inflection points closest to the node
         internal EdgeRotator[] Conn;// flip and rotate edge connects
 
         internal int[] Quad;        // the line's quadrant code (1,2,3,4)
@@ -45,7 +45,7 @@ namespace ModelGraphSTD
 
             var opens = new List<Edge>();
             var lines = new List<Edge>();
-            var bends = new List<XYPoint>();
+            var bends = new List<(int X, int Y)>();
             var others = new List<Node>();
 
             foreach (var edge in edges)
@@ -93,10 +93,10 @@ namespace ModelGraphSTD
 
                 //	find the line slope and radial quadrant
                 var dt = ext.Delta;
-                var qd = dt.Quad;
+                var qd = XYPoint.Quad(dt);
                 Quad[i] = qd;
                 NQuad[qd] += 1;
-                slope[i] = dt.Slope;
+                slope[i] = XYPoint.Slope(dt);
 
                 //	count the number of connections in each radial section
                 if (Quad[i] == 1)

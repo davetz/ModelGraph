@@ -31,7 +31,7 @@ namespace ModelGraphSTD
         //    return new Rect(z * (r.X - x), z * (r.Y - y), z * r.Width, z * r.Height);
         //}
 
-        internal void Move(XYPoint delta)
+        internal void Move((int X, int Y) delta)
         {
             Core.X = Core.X + delta.X;
             Core.Y = Core.Y + delta.Y;

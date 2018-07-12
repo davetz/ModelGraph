@@ -15,8 +15,9 @@ namespace ModelGraphUWP
     public sealed partial class ModelGraphControl
     {
         private List<Color> _groupColor = new List<Color>() { Color.FromArgb(255, 255, 255, 127) };
-        private float _zoomFactor;
-        private Vector2 _offset;
+        private float _zoomFactor; //scale the view extent so that it fits on the canvas
+        private Vector2 _offset; //complete offset need to exactly center the view extent on the canvas
+
         private Extent _viewExtent = new Extent();
 
         #region DrawingStyles  ================================================
@@ -51,8 +52,7 @@ namespace ModelGraphUWP
             }
             #endregion
 
-
-            #region Initialize  ===============================================
+            #region CreateDrawingPen  =========================================
             var x = _viewExtent.Xmin;
             var y = _viewExtent.Ymin;
             var z = _zoomFactor;
@@ -215,10 +215,10 @@ namespace ModelGraphUWP
                 _firstItteration = true;
                 return index + 9;
             }
-            internal void DrawLine(XYPoint pxy) => DrawLine(new Vector2(pxy.X, pxy.Y));
+            internal void DrawLine((int X, int Y) pxy) => DrawLine(new Vector2(pxy.X, pxy.Y));
             internal void DrawLine(Vector2 point)
             {
-                Vector2 p2 = (point + _offset) * _zoom;
+                Vector2 p2 = point * _zoom + _offset;
 
                 if (_firstItteration)
                 {
@@ -230,7 +230,7 @@ namespace ModelGraphUWP
                 }
 
                 _p1 = p2;
-                Debug.WriteLine($"{point} => {p2},   O: {_offset} Z: {_zoom}");
+                //Debug.WriteLine($"{point} => {p2},   O: {_offset} Z: {_zoom}");
             }
             internal void DrawRectangle(Extent e) => DrawRectangle(new Rect(e.Xmin, e.Ymin, e.Width, e.Hieght));
             internal void DrawRectangle(Extent e, int x, int y, float z)
@@ -248,7 +248,7 @@ namespace ModelGraphUWP
             {
                 var center = new Vector2(core.X, core.Y);
                 var radius = core.Radius;
-                Vector2 p = (center + _offset) * _zoom;
+                Vector2 p = center * _zoom + _offset;
                 _session.DrawLine(p, p, Color, (radius * 2 * _zoom), Style);
             }
 
@@ -256,14 +256,14 @@ namespace ModelGraphUWP
             {
                 if (dx > dy)
                 {
-                    Vector2 p1 = (new Vector2(x - dx, y) + _offset) * _zoom;
-                    Vector2 p2 = (new Vector2(x + dx, y) + _offset) * _zoom;
+                    Vector2 p1 = new Vector2(x - dx, y) * _zoom + _offset;
+                    Vector2 p2 = new Vector2(x + dx, y) * _zoom + _offset;
                     _session.DrawLine(p1, p2, Color, (dy * 2 * _zoom));
                 }
                 else
                 {
-                    Vector2 p1 = (new Vector2(x, y - dy) + _offset) * _zoom;
-                    Vector2 p2 = (new Vector2(x, y + dy) + _offset) * _zoom;
+                    Vector2 p1 = new Vector2(x, y - dy) * _zoom + _offset;
+                    Vector2 p2 = new Vector2(x, y + dy) * _zoom + _offset;
                     _session.DrawLine(p1, p2, Color, (dx * 2 * _zoom));
                 }
             }
@@ -563,14 +563,14 @@ namespace ModelGraphUWP
             ZoomToPoint(zoom, p);
         }
 
-        internal void PanToPoint(XYPoint p)
+        internal void PanToPoint((int X, int Y) p)
         {
             ZoomToPoint(_zoomFactor, p);
         }
         #endregion
 
         #region Primary  ======================================================
-        void ZoomToPoint(float zoom, XYPoint p)
+        void ZoomToPoint(float zoom, (int X, int Y) p)
         {
             var z = (zoom < maxZoomFactor) ? zoom : maxZoomFactor;
             if (_graph.Extent.Diagonal * z < minZoomDiagonal)
@@ -596,12 +596,12 @@ namespace ModelGraphUWP
             Initialize(extent);
             DrawCanvas.Invalidate();
         }
-        void Initialize(Extent extent)
+        void Initialize(Extent e)
         {
             var aw = (float)ActualWidth;
             var ah = (float)ActualHeight;
-            var ew = (float)extent.Width;
-            var eh = (float)extent.Hieght;
+            var ew = (float)e.Width;
+            var eh = (float)e.Hieght;
 
             if (aw < 1) aw = 1;
             if (ah < 1) ah = 1;
@@ -612,11 +612,15 @@ namespace ModelGraphUWP
             var zh = ah / eh;
             var z = (zw < zh) ? zw : zh;
 
+            // zoom required to make the view extent fit the canvas
             if (z > maxZoomFactor) z = maxZoomFactor;
-
             _zoomFactor = z;
-            _offset = new Vector2((aw - ew * z) / 2, (ah - (eh * z)) / 2);
-            _viewExtent = extent;
+
+            var ec = new Vector2(e.CenterX, e.CenterY) * z; //center point of scaled view extent
+            var ac = new Vector2(aw / 2, ah / 2); //center point of the canvas
+            _offset = ac - ec; //complete offset need to center the view extent on the canvas
+
+            _viewExtent = e;
         }
 
         private void ScrollVerticalDelta(double dy)

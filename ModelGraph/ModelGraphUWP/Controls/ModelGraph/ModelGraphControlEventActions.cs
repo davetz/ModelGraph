@@ -50,7 +50,7 @@ namespace ModelGraphUWP
 
         private Modifier _modifier;
         private string _keyName;
-        private XYPoint _arrowDelta;
+        private (int X, int Y) _arrowDelta;
         private int _wheelDelta;
 
         private Region _traceRegion;

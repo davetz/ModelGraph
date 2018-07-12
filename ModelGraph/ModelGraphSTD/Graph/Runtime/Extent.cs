@@ -16,7 +16,7 @@ namespace ModelGraphSTD
             X1 = X2 = Y1 = Y2 = s;
         }
 
-        public Extent(XYPoint p)
+        public Extent((int X, int Y) p)
         {
             X1 = X2 = p.X;
             Y1 = Y2 = p.Y;
@@ -36,7 +36,7 @@ namespace ModelGraphSTD
             Y2 = y2;
         }
 
-        public Extent(XYPoint p, int ds)
+        public Extent((int X, int Y) p, int ds)
         {
             X1 = p.X + 1 - ds;
             X2 = p.X + 1 + ds;
@@ -52,7 +52,7 @@ namespace ModelGraphSTD
         //    Y2 = p.Y + (int)ds.Y;
         //}
 
-        public Extent(XYPoint p1, XYPoint p2)
+        public Extent((int X, int Y) p1, (int X, int Y) p2)
         {
             if (p1.X < p2.X)
             {
@@ -78,7 +78,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Move  =========================================================
-        public void Move(XYPoint delta)
+        public void Move((int X, int Y) delta)
         {
             X1 += delta.X;
             X2 += delta.X;
@@ -99,18 +99,18 @@ namespace ModelGraphSTD
         #region Center  =======================================================
         public int CenterX { get { return (X2 + X1) / 2; } }
         public int CenterY { get { return (Y2 + Y1) / 2; } }
-        public XYPoint Center { get { return new XYPoint(CenterX, CenterY); } }
+        public (int X, int Y) Center { get { return (CenterX, CenterY); } }
         #endregion
 
         #region Points  =======================================================
-        public void Points(XYPoint p1, XYPoint p2) { Point1 = p1; Point2 = p2; }
-        public XYPoint Point1 { get { return new XYPoint(X1, Y1); } set { X1 = value.X; Y1 = value.Y; } }
-        public XYPoint Point2 { get { return new XYPoint(X2, Y2); } set { X2 = value.X; Y2 = value.Y; } }
-        public void Record(XYPoint p) { Point1 = Point2; Point2 = p; }
+        public void Points((int X, int Y) p1, (int X, int Y) p2) { Point1 = p1; Point2 = p2; }
+        public (int X, int Y) Point1 { get { return (X1, Y1); } set { X1 = value.X; Y1 = value.Y; } }
+        public (int X, int Y) Point2 { get { return (X2, Y2); } set { X2 = value.X; Y2 = value.Y; } }
+        public void Record((int X, int Y) p) { Point1 = Point2; Point2 = p; }
 
-        public void Record(XYPoint p, float scale) { Point1 = Point2; SetPoint2(p, scale); }
-        public void SetPoint1(XYPoint p, float scale) { X1 = (int)(p.X * scale); Y1 = (int)(p.Y * scale); }
-        public void SetPoint2(XYPoint p, float scale) { X2 = (int)(p.X * scale); Y2 = (int)(p.Y * scale); }
+        public void Record((int X, int Y) p, float scale) { Point1 = Point2; SetPoint2(p, scale); }
+        public void SetPoint1((int X, int Y) p, float scale) { X1 = (int)(p.X * scale); Y1 = (int)(p.Y * scale); }
+        public void SetPoint2((int X, int Y) p, float scale) { X2 = (int)(p.X * scale); Y2 = (int)(p.Y * scale); }
         #endregion
 
         #region Expand  =======================================================
@@ -129,7 +129,7 @@ namespace ModelGraphSTD
             if (x > X2) X2 = x;
             if (y > Y2) Y2 = y;
         }
-        public void Expand(XYPoint p)
+        public void Expand((int X, int Y) p)
         {
             if (p.X < X1) X1 = p.X;
             if (p.Y < Y1) Y1 = p.Y;
@@ -142,12 +142,12 @@ namespace ModelGraphSTD
         public int DX { get { return X2 - X1; } }
         public int DY { get { return Y2 - Y1; } }
         public int Length { get { return (int)Math.Sqrt(Diagonal); } }
-        public int Diagonal { get { return Delta.Diagonal; } }
-        public float Slope { get { return Delta.Slope; } }
-        public int Quad { get { return Delta.Quad; } }
-        public XYPoint Delta { get { return new XYPoint(DX, DY); } }
+        public int Diagonal { get { return XYPoint.Diagonal(Delta); } }
+        public float Slope { get { return XYPoint.Slope(Delta); } }
+        public int Quad { get { return XYPoint.Quad(Delta); } }
+        public (int X, int Y) Delta { get { return (DX, DY); } }
 
-        public bool TryGetDelta(out XYPoint delta)
+        public bool TryGetDelta(out (int X, int Y) delta)
         {
             delta = Delta;
             if (X2 == X1 && Y2 == Y1)
@@ -167,7 +167,7 @@ namespace ModelGraphSTD
             Normalize(Point1, Point2);
         }
 
-        public void Normalize(XYPoint p1, XYPoint p2)
+        public void Normalize((int X, int Y) p1, (int X, int Y) p2)
         {
             if (p2.X < p1.X)
             {
@@ -217,7 +217,7 @@ namespace ModelGraphSTD
             return this;
         }
 
-        public Extent SetExtent(XYPoint[] points, int margin)
+        public Extent SetExtent((int X, int Y)[] points, int margin)
         {
             var len = (points == null) ? 0 : points.Length;
             if (len == 0)
@@ -253,10 +253,10 @@ namespace ModelGraphSTD
 
         public int Width { get { return (Xmax - Xmin); } }
         public int Hieght { get { return (Ymax - Ymin); } }
-        public XYPoint TopLeft { get { return new XYPoint(Xmin, Ymin); } }
-        public XYPoint TopRight { get { return new XYPoint(Xmax, Ymin); } }
-        public XYPoint BottomLeft { get { return new XYPoint(Xmin, Ymax); } }
-        public XYPoint BottomRight { get { return new XYPoint(Xmax, Ymax); } }
+        public (int X, int Y) TopLeft { get { return (Xmin, Ymin); } }
+        public (int X, int Y) TopRight { get { return (Xmax, Ymin); } }
+        public (int X, int Y) BottomLeft { get { return (Xmin, Ymax); } }
+        public (int X, int Y) BottomRight { get { return (Xmax, Ymax); } }
         #endregion
 
         #region Comparison  ===================================================
@@ -279,7 +279,7 @@ namespace ModelGraphSTD
             return true;
         }
 
-        public bool Contains(XYPoint p)
+        public bool Contains((int X, int Y) p)
         {
             if (p.X < X1) return false;
             if (p.Y < Y1) return false;
@@ -321,7 +321,7 @@ namespace ModelGraphSTD
         //                     :      \:
         //                     - - - - o my Point2
         //
-        public bool HitTest(ref XYPoint p, ref Extent E)
+        public bool HitTest(ref (int X, int Y) p, Extent E)
         {
             if (Intersects(E))  // my extent intersects with E
             {

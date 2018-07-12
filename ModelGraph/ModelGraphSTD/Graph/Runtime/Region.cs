@@ -10,7 +10,7 @@ namespace ModelGraphSTD
         private double _perimeterLength; // polygon's perimeter length;
 
         public HashSet<Node> Nodes = new HashSet<Node>();   // nodes inside the region
-        public List<XYPoint> Points; // region's boundry
+        public List<(int X, int Y)> Points; // region's boundry
         public Extent Delta;
         public Extent Extent;
         public Extent Normal;
@@ -21,7 +21,7 @@ namespace ModelGraphSTD
         public bool IsViable { get { return (Points.Count > 1 && Extent.HasArea); } }
 
         #region Constructor  ==================================================
-        public Region(XYPoint p, int minSpacing = -1)
+        public Region((int X, int Y) p, int minSpacing = -1)
         {
             _ds = (minSpacing < 0) ? GraphParm.PolygonPointSpacing : minSpacing;
 
@@ -30,7 +30,7 @@ namespace ModelGraphSTD
             Normal = new Extent(p);
             Closing = new Extent(p);
 
-            Points = new List<XYPoint>
+            Points = new List<(int X, int Y)>
             {
                 p
             };
@@ -39,7 +39,7 @@ namespace ModelGraphSTD
 
         #region Add, Close  ===================================================
         // try to add another point to the region
-        public bool Add(XYPoint p)
+        public bool Add((int X, int Y) p)
         {
             if (_ds == 0)
             {
@@ -65,7 +65,7 @@ namespace ModelGraphSTD
             }
         }
         // common method adds XYPair to Points
-        private void AddPoint(XYPoint p)
+        private void AddPoint((int X, int Y) p)
         {
             Points.Add(p);
             Extent.Expand(p);
@@ -73,12 +73,12 @@ namespace ModelGraphSTD
         }
 
         // enter the last point and close the region
-        public void Close(XYPoint p)
+        public void Close((int X, int Y) p)
         {
             Add(p);
             if (IsPolygon) return;
 
-            Points = new List<XYPoint>(2)
+            Points = new List<(int X, int Y)>(2)
             {
                 Normal.TopLeft,
                 Normal.BottomRight
@@ -88,11 +88,11 @@ namespace ModelGraphSTD
         #endregion
 
         #region Move  =========================================================
-        public void Move(XYPoint delta)
+        public void Move((int X, int Y) delta)
         {
             for (int i = 0; i < Points.Count; i++)
             {
-                Points[i] = new XYPoint((Points[i].X + delta.X), (Points[i].Y + delta.Y));
+                Points[i] = ((Points[i].X + delta.X), (Points[i].Y + delta.Y));
             }
             Normal.Move(delta);
             Extent.Move(delta);
@@ -101,7 +101,7 @@ namespace ModelGraphSTD
 
         #region HitTest  ======================================================
         // hit test the point
-        public bool HitTest(XYPoint p)
+        public bool HitTest((int X, int Y) p)
         {
             if (IsPolygon)
             {
