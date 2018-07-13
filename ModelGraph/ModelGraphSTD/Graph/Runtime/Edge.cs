@@ -286,7 +286,7 @@ namespace ModelGraphSTD
                 var e1 = new Extent(Points[Tm1], hitPoint);
                 var e2 = new Extent(Points[Tm2], hitPoint);
 
-                if (e1.IsLessThan(ref e2))
+                if (e1.IsLessThan(e2))
                     hit |= (HitLocation.Edge | HitLocation.End1);
                 else
                     hit |= (HitLocation.Edge | HitLocation.End2);
@@ -347,10 +347,10 @@ namespace ModelGraphSTD
 
             if (Owner != null && Owner.IsGraph)
             {
-                var gd = GraphX;
-                tmLen = gd.TerminalLength;
-                tmSpc = gd.TerminalSpacing / 2;
-                tmSkf = gd.TerminalSkew;
+                var gx = GraphX;
+                tmLen = gx.TerminalLength;
+                tmSpc = gx.TerminalSpacing / 2;
+                tmSkf = gx.TerminalSkew;
             }
 
             var bendCount = (Core.Bends == null) ? 0 : Core.Bends.Length;

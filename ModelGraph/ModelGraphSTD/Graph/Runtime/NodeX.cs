@@ -19,7 +19,6 @@ namespace ModelGraphSTD
 
         public (int x, int y) Center => (X, Y);
         public Extent Extent => new Extent(X - DX, Y - DY, X + DX, Y + DY);
-        //public Rect Rect => new Rect(X - DX, Y - DY, DX * 2, DY * 2);
         public int Radius => (DX + DY) / 2;
 
         #region Booleans  =====================================================

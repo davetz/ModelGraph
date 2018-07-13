@@ -19,7 +19,7 @@ namespace ModelGraphSTD
         public int HitIndex; // index of start of the hit segment (relative to edge.point)
         public (int x, int y) HitPoint; // the refined hit point location
         public Region HitRegion; // hit this specific region
-        public HitLocation HitLocation; // nuanced hit location details
+        public HitLocation HitLocation; // hit location details
 
         public Edge BendEdge;     // when bending an edge, remember which edge it is
         public int BendIndex;     // when moving an bend point, remember which point it is

@@ -44,14 +44,6 @@ namespace ModelGraphSTD
             Y2 = p.Y + 1 + ds;
         }
 
-        //public Extent(XYPoint p, Vector2 ds)
-        //{
-        //    X1 = p.X - (int)ds.X;
-        //    X2 = p.X + (int)ds.X;
-        //    Y1 = p.Y - (int)ds.Y;
-        //    Y2 = p.Y + (int)ds.Y;
-        //}
-
         public Extent((int X, int Y) p1, (int X, int Y) p2)
         {
             if (p1.X < p2.X)
@@ -97,9 +89,9 @@ namespace ModelGraphSTD
         #endregion
 
         #region Center  =======================================================
-        public int CenterX { get { return (X2 + X1) / 2; } }
-        public int CenterY { get { return (Y2 + Y1) / 2; } }
-        public (int X, int Y) Center { get { return (CenterX, CenterY); } }
+        public int CenterX => (X2 + X1) / 2;
+        public int CenterY => (Y2 + Y1) / 2;
+        public (int X, int Y) Center => (CenterX, CenterY);
         #endregion
 
         #region Points  =======================================================
@@ -139,13 +131,13 @@ namespace ModelGraphSTD
         #endregion
 
         #region Diagonal  =====================================================
-        public int DX { get { return X2 - X1; } }
-        public int DY { get { return Y2 - Y1; } }
-        public int Length { get { return (int)Math.Sqrt(Diagonal); } }
-        public int Diagonal { get { return XYPoint.Diagonal(Delta); } }
-        public float Slope { get { return XYPoint.Slope(Delta); } }
-        public int Quad { get { return XYPoint.Quad(Delta); } }
-        public (int X, int Y) Delta { get { return (DX, DY); } }
+        public int DX => X2 - X1;
+        public int DY => Y2 - Y1;
+        public (int X, int Y) Delta => (DX, DY);
+        public int Length => (int)Math.Sqrt(Diagonal);
+        public int Diagonal => XYPoint.Diagonal(Delta);
+        public float Slope => XYPoint.Slope(Delta);
+        public int Quad => XYPoint.Quad(Delta);
 
         public bool TryGetDelta(out (int X, int Y) delta)
         {
@@ -195,17 +187,18 @@ namespace ModelGraphSTD
 
         #region SetExtent  ====================================================
         // enforce  (X1 < X2) and  (Y1 < Y2)
-        public Extent SetExtent(List<Node> nodes, int margin)
+        public Extent SetExtent(List<Node> nodeList, int margin)
         {
-            if (nodes.Count > 0)
+            if (nodeList.Count > 0)
             {
                 X1 = Y1 = int.MaxValue;
                 X2 = Y2 = int.MinValue;
-                foreach (var node in nodes)
+                foreach (var node in nodeList)
                 {
                     var e = node.Core.Extent;
                     if (e.X1 < X1) X1 = e.X1;
                     if (e.Y1 < Y1) Y1 = e.Y1;
+
                     if (e.X2 > X2) X2 = e.X2;
                     if (e.Y2 > Y2) Y2 = e.Y2;
                 }
@@ -232,6 +225,7 @@ namespace ModelGraphSTD
                 {
                     if (points[i].X < X1) X1 = points[i].X;
                     if (points[i].Y < Y1) Y1 = points[i].Y;
+
                     if (points[i].X > X2) X2 = points[i].X;
                     if (points[i].Y > Y2) Y2 = points[i].Y;
                 }
@@ -246,22 +240,22 @@ namespace ModelGraphSTD
 
         #region Rectangle  ====================================================
         // independant of order (x1,y1), (x2,y2)
-        public int Xmin { get { return (X1 < X2) ? X1 : X2; } }
-        public int Ymin { get { return (Y1 < Y2) ? Y1 : Y2; } }
-        public int Xmax { get { return (X2 > X1) ? X2 : X1; } }
-        public int Ymax { get { return (Y2 > Y1) ? Y2 : Y1; } }
+        public int Xmin => (X1 < X2) ? X1 : X2;
+        public int Ymin => (Y1 < Y2) ? Y1 : Y2;
+        public int Xmax => (X2 > X1) ? X2 : X1;
+        public int Ymax => (Y2 > Y1) ? Y2 : Y1;
 
-        public int Width { get { return (Xmax - Xmin); } }
-        public int Hieght { get { return (Ymax - Ymin); } }
-        public (int X, int Y) TopLeft { get { return (Xmin, Ymin); } }
-        public (int X, int Y) TopRight { get { return (Xmax, Ymin); } }
-        public (int X, int Y) BottomLeft { get { return (Xmin, Ymax); } }
-        public (int X, int Y) BottomRight { get { return (Xmax, Ymax); } }
+        public int Width => (Xmax - Xmin);
+        public int Hieght => (Ymax - Ymin);
+        public (int X, int Y) TopLeft => (Xmin, Ymin);
+        public (int X, int Y) TopRight => (Xmax, Ymin);
+        public (int X, int Y) BottomLeft => (Xmin, Ymax);
+        public (int X, int Y) BottomRight => (Xmax, Ymax);
         #endregion
 
         #region Comparison  ===================================================
-        public bool IsLessThan(ref Extent e) { return Diagonal < (e.Diagonal); }
-        public bool IsGreaterThan(ref Extent e) { return Diagonal > (e.Diagonal); }
+        public bool IsLessThan(Extent e) => Diagonal < (e.Diagonal);
+        public bool IsGreaterThan(Extent e) => Diagonal > (e.Diagonal); 
         #endregion
 
         #region Contains  =====================================================

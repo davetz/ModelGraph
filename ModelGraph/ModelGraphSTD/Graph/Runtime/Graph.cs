@@ -5,7 +5,7 @@ namespace ModelGraphSTD
  */
     public partial class Graph : Item
     {
-        public Item SeedItem;    // seed of graph forest 
+        public Item SeedItem;    // seed of query forest 
         public Query[] Forest;   // roots of the query forest
         public SymbolX[] Symbols; // referenced by (byte)Node.NodeCore.Symbol
 
