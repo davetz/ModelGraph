@@ -357,7 +357,7 @@ namespace ModelGraphUWP
             CancelAction = () => { RemoveSelectors(); SetIdleOnVoid(); };
             Begin1Action = SetMovingRegion;
             Begin3Action = null;
-            ExecuteAction = null;
+            ExecuteAction = () => { var e = Extent.Create(_selector.Nodes, 16); _ignorePointerMoved = true; ZoomToExtent(e); };
             ShortCutAction = IdleOnRegionShortCuts;
         }
         private void IdleOnRegionShortCuts()

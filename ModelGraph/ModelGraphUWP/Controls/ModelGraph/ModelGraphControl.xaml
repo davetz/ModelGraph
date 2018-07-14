@@ -34,7 +34,7 @@
         <canvas:CanvasControl x:Name="DrawCanvas" Draw="DrawCanvas_Draw" IsTabStop="False" CreateResources="DrawCanvas_CreateResources" />
 
         <Canvas x:Name="RootCanvas" Background="Transparent" DoubleTapped="RootCanvas_DoubleTapped">
-            <Button x:Name="RootButton" Width="4" Height="4" KeyDown="RootButton_KeyDown" KeyUp="RootButton_KeyUp"/>
+            <Button x:Name="RootButton" Width="4" Height="4" PreviewKeyDown="RootButton_KeyDown" KeyUp="RootButton_KeyUp"/>
             <Border x:Name="ToolTipBorder" Style="{StaticResource ToolTipBorderStyle}" IsTapEnabled="False">
                 <TextBlock x:Name="ItemToolTip" Style="{StaticResource ToolTipStyle}" IsTapEnabled="False"/>
             </Border>

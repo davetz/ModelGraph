@@ -590,6 +590,11 @@ namespace ModelGraphUWP
             DrawCanvas.Invalidate();
         }
 
+        private void ZoomToExtent(int X1, int Y1, int X2, int Y2)
+        {
+            Initialize(new Extent(X1, Y1, X2, Y2));
+            DrawCanvas.Invalidate();
+        }
         private void ZoomToExtent(Extent extent)
         {
             Initialize(extent);

@@ -122,7 +122,6 @@ namespace ModelGraphUWP
         {
             _ignorePointerMoved = true;
             e.Handled = true;
-
             switch (e.Key)
             {
                 case VirtualKey.LeftWindows:
@@ -136,6 +135,7 @@ namespace ModelGraphUWP
                 case VirtualKey.Menu: _modifier |= Modifier.Menu; break;
                 case VirtualKey.Shift: _modifier |= Modifier.Shift; break;
                 case VirtualKey.Control: _modifier |= Modifier.Ctrl; break;
+                case VirtualKey.Enter: ExecuteAction?.Invoke(); break;
                 case VirtualKey.Escape: CancelAction?.Invoke(); break;
                 case VirtualKey.Up: _arrowDelta = (0, -1); ArrowAction?.Invoke(); break;
                 case VirtualKey.Down: _arrowDelta = (0, 1); ArrowAction?.Invoke(); break;

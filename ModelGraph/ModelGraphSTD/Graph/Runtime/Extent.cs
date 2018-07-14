@@ -52,6 +52,11 @@ namespace ModelGraphSTD
             Y2 = p.Y + 1 + ds;
         }
 
+        public static Extent Create (IEnumerable<Node> nodes, int margin)
+        {
+            var e = new Extent();
+            return e.SetExtent(nodes, margin);
+        }
         public Extent((int X, int Y) p1, (int X, int Y) p2)
         {
             if (p1.X < p2.X)
@@ -195,26 +200,33 @@ namespace ModelGraphSTD
 
         #region SetExtent  ====================================================
         // enforce  (X1 < X2) and  (Y1 < Y2)
-        public Extent SetExtent(List<Node> nodeList, int margin)
+        public Extent SetExtent(IEnumerable<Node> nodeList, int margin)
         {
-            if (nodeList.Count > 0)
+            X1 = Y1 = int.MaxValue;
+            X2 = Y2 = int.MinValue;
+            foreach (var node in nodeList)
             {
-                X1 = Y1 = int.MaxValue;
-                X2 = Y2 = int.MinValue;
-                foreach (var node in nodeList)
-                {
-                    var e = node.Core.Extent;
-                    if (e.X1 < X1) X1 = e.X1;
-                    if (e.Y1 < Y1) Y1 = e.Y1;
+                var e = node.Core.Extent;
+                if (e.X1 < X1) X1 = e.X1;
+                if (e.Y1 < Y1) Y1 = e.Y1;
 
-                    if (e.X2 > X2) X2 = e.X2;
-                    if (e.Y2 > Y2) Y2 = e.Y2;
-                }
+                if (e.X2 > X2) X2 = e.X2;
+                if (e.Y2 > Y2) Y2 = e.Y2;
             }
-            X1 -= margin;
-            Y1 -= margin;
-            X2 += margin;
-            Y2 += margin;
+            if (X1 == int.MaxValue)
+            {
+                X1 = -margin;
+                Y1 = -margin;
+                X2 = margin;
+                Y2 = margin;
+            }
+            else
+            {
+                X1 -= margin;
+                Y1 -= margin;
+                X2 += margin;
+                Y2 += margin;
+            }
             return this;
         }
 

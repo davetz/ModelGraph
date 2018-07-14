@@ -275,7 +275,7 @@ namespace ModelGraphSTD
 
             if ((HitLocation & HitLocation.Region) == 0)
             {
-                HitNode.Move(delta); //BUG - HitNode was Null !
+                HitNode?.Move(delta); //BUG - HitNode was Null !
                 if (HitNodeEdgeCuts != null)
                     foreach (var cut in HitNodeEdgeCuts) { cut.Edge.Move(delta, cut.Index1, cut.Index2); }
             }
