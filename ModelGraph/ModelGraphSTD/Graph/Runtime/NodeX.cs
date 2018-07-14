@@ -18,7 +18,7 @@ namespace ModelGraphSTD
         public Orientation Orientation;
 
         public (int x, int y) Center => (X, Y);
-        public Extent Extent => new Extent(X - DX, Y - DY, X + DX, Y + DY);
+        public (int X1, int Y1, int X2, int Y2) Extent => (X - DX, Y - DY, X + DX, Y + DY);
         public int Radius => (DX + DY) / 2;
 
         #region Booleans  =====================================================

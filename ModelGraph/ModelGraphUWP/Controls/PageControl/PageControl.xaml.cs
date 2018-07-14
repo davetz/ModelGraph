@@ -50,10 +50,12 @@ namespace ModelGraphUWP
 
         private void PageControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _activeModel?.ModelControl?.SetSize(ActualWidth, ActualHeight);
+            _activeModel?.ModelControl?.SetSize(ControlWidth, ControlHeight);
         }
 
-        public void SetActualSize() => _activeModel?.ModelControl?.SetSize(ActualWidth, ActualHeight);
+        public void SetActualSize() => _activeModel?.ModelControl?.SetSize(ControlWidth, ControlHeight);
+        double ControlHeight => (ActualHeight - ButtonGrid.ActualHeight);
+        double ControlWidth => ActualWidth;
         #endregion
 
         #region InitializeModel/ShowModelControl  =============================

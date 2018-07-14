@@ -15,6 +15,14 @@ namespace ModelGraphSTD
         {
             X1 = X2 = Y1 = Y2 = s;
         }
+        public Extent(Extent e)
+        {
+            X1 = e.X1;
+            Y1 = e.Y1;
+            X2 = e.X2;
+            Y2 = e.Y2;
+        }
+        public Extent Clone => new Extent(this);
 
         public Extent((int X, int Y) p)
         {

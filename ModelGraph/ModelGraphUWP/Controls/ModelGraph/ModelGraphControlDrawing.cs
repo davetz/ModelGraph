@@ -619,7 +619,7 @@ namespace ModelGraphUWP
             var ac = new Vector2(aw / 2, ah / 2); //center point of the canvas
             _offset = ac - ec; //complete offset need to center the view extent on the canvas
 
-            _viewExtent = e;
+            _viewExtent = e.Clone; //copy of viewExtent
         }
 
         private void ScrollVerticalDelta(double dy)
