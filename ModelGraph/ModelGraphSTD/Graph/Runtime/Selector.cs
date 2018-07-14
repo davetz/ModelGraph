@@ -13,8 +13,8 @@ namespace ModelGraphSTD
         public Edge PrevEdge;
         public HitLocation PrevLocation;
 
-        public Node HitNode; // index of node
-        public Edge HitEdge; // index of edge
+        public Node HitNode;
+        public Edge HitEdge;
         public int HitBend;  // index of bend point (relative to edge.Core.bends)
         public int HitIndex; // index of start of the hit segment (relative to edge.point)
         public (int x, int y) HitPoint; // the refined hit point location
