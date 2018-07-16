@@ -8,19 +8,6 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        #region ItemPair  =====================================================
-        internal struct ItemPair
-        {
-            internal Item Item1;
-            internal Item Item2;
-            internal ItemPair(Item item1, Item item2)
-            {
-                Item1 = item1;
-                Item2 = item2;
-            }
-        }
-        #endregion
-
         #region ValidateQueryXStore  ==========================================
         /// <summary>
         /// Validate all uses cases of queryX

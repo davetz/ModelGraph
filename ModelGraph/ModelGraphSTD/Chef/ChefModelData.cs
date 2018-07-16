@@ -5278,8 +5278,9 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
+                    var st = m.Item as Store;
                     var (kind, name) = GetKindName(m);
-                    var count = GetSymbolQueryXCount(m.GraphX, m.Store);
+                    var count = GetSymbolQueryXCount(m.GraphX, st);
 
                     m.CanExpandLeft = (count > 0);
 
@@ -5310,7 +5311,7 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var gx = m.GraphX;
-                    var st = m.Store;
+                    var st = m.Item as Store;
 
                     (var symbols, var querys) = GetSymbolXQueryX(gx, st);
                     if (querys == null) return (false, false);
@@ -8615,7 +8616,7 @@ namespace ModelGraphSTD
 
                     var list = st.GetItems();
                     var anyChange = false;
-                    foreach (var item in Items)
+                    foreach (var item in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.StoreItem_M, item, null, null, StoreItem_X);
                     }
