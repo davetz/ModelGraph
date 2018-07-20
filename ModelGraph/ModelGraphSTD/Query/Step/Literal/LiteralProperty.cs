@@ -26,19 +26,19 @@ namespace ModelGraphSTD
         {
             if (!_property.Value.GetValue(_getItem(), out bool val))
                 val = false;
-            return val;
+            return (_step.IsNegated) ? !val : val;
         }
         internal override Int64 AsInt64()
         {
             if (!_property.Value.GetValue(_getItem(), out Int64 val))
                 val = 0;
-            return val;
+            return (_step.IsNegated) ? ~val : val;
         }
         internal override double AsDouble()
         {
             if (!_property.Value.GetValue(_getItem(), out double val))
                 val = 0;
-            return val;
+            return (_step.IsNegated) ? -val : val;
         }
         internal override string AsString()
         {
