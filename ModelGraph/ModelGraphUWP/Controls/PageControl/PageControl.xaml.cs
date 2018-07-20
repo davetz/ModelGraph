@@ -173,41 +173,46 @@ namespace ModelGraphUWP
             switch (rq.RequestType)
             {
                 case RequestType.Save:
-                    if (rq.Root.ControlType == ControlType.SymbolEditor)
-                    {
-                        var editor = rq.Root.ModelControl as SymbolEditControl;
-                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.Save(); });
-                    }
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { SaveModel(rq.Root); });
                     break;
+
                 case RequestType.Close:
                     await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { CloseModel(rq.Root); });
                     break;
+
                 case RequestType.Reload:
-                    if (rq.Root.ControlType == ControlType.SymbolEditor)
-                    {
-                        var editor = rq.Root.ModelControl as SymbolEditControl;
-                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.Save(); });
-                    }
-                    else
-                    {
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ReloadModel(rq.Root); });
-                    }
                     break;
+
                 case RequestType.Refresh:
                     await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { _activeModel?.ModelControl?.Refresh(); });
                     break;
+
                 case RequestType.CreateView:
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InitializeModel(new RootModel(rq)));
                     break;
+
                 case RequestType.CreatePage:
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new RootModel(rq)));
+                    break;
+
+                case RequestType.SaveSymbol:
+                        var editor = rq.Root.ModelControl as SymbolEditControl;
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.SaveSymbol(); });
+                    break;
+
+                case RequestType.ReloadSymbol:
+                        editor = rq.Root.ModelControl as SymbolEditControl;
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.ReloadSymbol(); });
                     break;
             }
         }
 
+        private void SaveModel(RootModel model)
+        {
+        }
         private void ReloadModel(RootModel model)
         {
-            throw new NotImplementedException();
         }
 
         private void CloseModel(RootModel model)

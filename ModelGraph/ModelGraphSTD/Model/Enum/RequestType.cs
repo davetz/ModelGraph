@@ -9,5 +9,7 @@
         Refresh,
         CreateView,
         CreatePage,
+        SaveSymbol,
+        ReloadSymbol,
     }
 }

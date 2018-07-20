@@ -33,10 +33,10 @@ namespace ModelGraphSTD
                 [StepType.Descend] = ResolveDescend,
 
                 [StepType.Or1] = ResolveOr1,
-                [StepType.Or2] = ResolveFails,
+                [StepType.Or2] = ResolveOr2,
 
                 [StepType.And1] = ResolveFails,
-                [StepType.And2] = ResolveFails,
+                [StepType.And2] = ResolveAnd2,
 
                 [StepType.Plus] = ResolvePlus,
                 [StepType.Minus] = ResolveMinus,
@@ -474,6 +474,43 @@ namespace ModelGraphSTD
                     step.Error = StepError.InvalidArgsLHS;
                     break;
             }
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValType == ValType.IsUnresolved);
+        }
+        #endregion
+
+
+        #region ResolveOr2  ===================================================
+        static void ResolveOr2(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+            var group = step.Input[0].Evaluate.ValGroup;
+            var composite = step.ScanInputsAndReturnCompositeValueGroup();
+
+            if (composite == ValGroup.Bool)
+                step.Evaluate = new Or2Bool(step);
+            else
+                step.Error = StepError.InvalidArgsLHS;
+
+            step.IsError = (step.Error != StepError.None);
+            step.IsChanged = (type != step.Evaluate.GetType());
+            step.IsUnresolved = (step.Evaluate.ValType == ValType.IsUnresolved);
+        }
+        #endregion
+
+        #region ResolveAnd2  ==================================================
+        static void ResolveAnd2(ComputeStep step)
+        {
+            var type = step.Evaluate.GetType();
+            var group = step.Input[0].Evaluate.ValGroup;
+            var composite = step.ScanInputsAndReturnCompositeValueGroup();
+
+            if (composite == ValGroup.Bool)
+                step.Evaluate = new And2Bool(step);
+            else
+                step.Error = StepError.InvalidArgsLHS;
 
             step.IsError = (step.Error != StepError.None);
             step.IsChanged = (type != step.Evaluate.GetType());

@@ -437,6 +437,7 @@ namespace ModelGraphSTD
         SymbolX_M = 0x656,
         ColumnX_M = 0x657,
         ComputeX_M = 0x658,
+        SymbolXEditor_M = 0x659,
 
         //=====================================================================
         ColumnXList_M = 0x661,

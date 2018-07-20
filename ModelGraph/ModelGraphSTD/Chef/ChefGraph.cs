@@ -319,11 +319,11 @@ namespace ModelGraphSTD
                     if (storeNonSymbols.Contains(sto)) continue;
                     if (storeSymbolXQueryX.ContainsKey(sto)) continue;
 
-                    var symseg = GetSymbolXQueryX(gx, sto);
-                    if (symseg.symbols == null)
+                    var sxqx = GetSymbolXQueryX(gx, sto);
+                    if (sxqx.symbols == null)
                         storeNonSymbols.Add(sto);
                     else
-                        storeSymbolXQueryX.Add(sto, symseg);
+                        storeSymbolXQueryX.Add(sto, sxqx);
                 }
 
                 foreach (var node in g.Nodes)
@@ -333,20 +333,20 @@ namespace ModelGraphSTD
                     var sto = row.Store;
                     if (storeNonSymbols.Contains(sto)) continue;
 
-                    (var syms, var segs) = storeSymbolXQueryX[sto];
+                    (var sxList, var qxList) = storeSymbolXQueryX[sto];
 
                     int i, j;
-                    for (j = 0; j < syms.Count; j++)
+                    for (j = 0; j < sxList.Count; j++)
                     {
-                        var filter = segs[j].Where;
+                        var filter = qxList[j].Where;
                         if (filter == null || filter.Matches(row)) break;
                     }
-                    if (j == syms.Count) continue;
+                    if (j == sxList.Count) continue;
 
-                    var sym = syms[j];
+                    var sx = sxList[j];
                     for (i = 0; i < symbols.Count; i++)
                     {
-                        if (symbols[i] == sym) break;
+                        if (symbols[i] == sx) break;
                     }
                     if (i == symbols.Count) continue;
 
@@ -354,13 +354,13 @@ namespace ModelGraphSTD
                     node.Core.Orientation = Orientation.Central;
                     if ((node.Core.FlipRotate & FlipRotate.RotateClockWise) == 0)
                     {
-                        node.Core.DX = (byte)(sym.Width / 2);
-                        node.Core.DY = (byte)(sym.Height / 2);
+                        node.Core.DX = (byte)(sx.Width / 2);
+                        node.Core.DY = (byte)(sx.Height / 2);
                     }
                     else
                     {
-                        node.Core.DY = (byte)(sym.Width / 2);
-                        node.Core.DX = (byte)(sym.Height / 2);
+                        node.Core.DY = (byte)(sx.Width / 2);
+                        node.Core.DX = (byte)(sx.Height / 2);
                     }
                 }
             }

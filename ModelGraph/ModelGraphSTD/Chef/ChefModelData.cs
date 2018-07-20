@@ -84,6 +84,7 @@ namespace ModelGraphSTD
             Initialize_SymbolX_X();
             Initialize_ColumnX_X();
             Initialize_ComputeX_X();
+            Initialize_SymbolXEditor_X();
 
             Initialize_ColumnXList_X();
             Initialize_ChildRelationXList_X();
@@ -4031,7 +4032,6 @@ namespace ModelGraphSTD
                     var (kind, name) = GetKindName(m);
 
                     m.CanDrag = true;
-                    m.CanExpandLeft = true;
                     m.CanExpandRight = true;
 
                     return (kind, name, 0, ModelType.Default);
@@ -4083,7 +4083,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondarySymbolEdit(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.SymbolEditor, m);
+            void CreateSecondarySymbolEdit(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.SymbolEditor, Trait.SymbolXEditor_M, m.Item, SymbolXEditor_X);
         }
         #endregion
 
@@ -4281,6 +4281,73 @@ namespace ModelGraphSTD
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             (string, string) GetKindName(ItemModel m) => (null, m.ComputeX.Name);
+        }
+        #endregion
+
+        #region 659 SymbolXEditor  ============================================
+        ModelAction SymbolXEditor_X;
+        void Initialize_SymbolXEditor_X()
+        {
+            SymbolXEditor_X = new ModelAction
+            {
+                ModelParms = (m) =>
+                {
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => m.SymbolX.Summary,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ReorderItems = ReorderRelatedChild,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ButtonCommands = (m, bc) =>
+                {
+                    bc.Add(new ModelCommand(this, m, Trait.SaveCommand, Save));
+                    bc.Add(new ModelCommand(this, m, Trait.ReloadCommand, Reload));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m, prev) =>
+                {
+                    if (!m.IsExpandedRight) return (false, false);
+                    if (m.ChildModelCount == 1) return (true, false);
+
+                    m.InitChildModels(prev);
+
+                    AddProperyModel(prev, m, _symbolXNameProperty);
+
+                    return (true, true);
+                }
+            };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, m.SymbolX.Name);
+
+            #region ButtonCommands  ===========================================
+            void Save(ItemModel m)
+            {
+                var root = m as RootModel;
+                root.UIRequestSaveSymbol();
+            }
+            void Reload(ItemModel m)
+            {
+                var root = m as RootModel;
+                root.UIRequestReloadSymbol();
+            }
+            #endregion
         }
         #endregion
 

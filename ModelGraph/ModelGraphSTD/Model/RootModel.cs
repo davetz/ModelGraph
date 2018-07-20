@@ -77,6 +77,8 @@ namespace ModelGraphSTD
             _requestQueue.Enqueue(UIRequest.CreatePage(this, type, trait, m.Item, m.Aux1, m.Aux2, get));
         internal void UIRequestCreatePage(ControlType type, Trait trait, Item item, ModelAction get) =>
             _requestQueue.Enqueue(UIRequest.CreatePage(this, type, trait, item, null, null, get));
+        internal void UIRequestSaveSymbol() => _requestQueue.Enqueue(UIRequest.SaveSymbol(this));
+        internal void UIRequestReloadSymbol() => _requestQueue.Enqueue(UIRequest.ReloadSymbol(this));
         #endregion
 
         #region PageDispatch  =================================================

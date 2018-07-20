@@ -5,7 +5,7 @@ namespace ModelGraphSTD
     {
         internal And2Bool(ComputeStep step) { _step = step; }
 
-        internal override string Text => " || ";
+        internal override string Text => " && ";
 
         protected override bool GetVal()
         {

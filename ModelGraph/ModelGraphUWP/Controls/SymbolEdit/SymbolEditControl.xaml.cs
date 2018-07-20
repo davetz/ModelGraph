@@ -933,13 +933,13 @@ namespace ModelGraphUWP
             DrawCanvas.Invalidate();
         }
 
-        internal void Save()
+        internal void SaveSymbol()
         {
             _symbol.Data = PackageSymbolData();
             DrawCanvas.Invalidate();
         }
 
-        internal void Reload()
+        internal void ReloadSymbol()
         {
             UnpackSymbolData(_symbol.Data);
             UpdateSymbolSize();

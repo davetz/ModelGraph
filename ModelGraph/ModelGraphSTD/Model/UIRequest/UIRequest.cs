@@ -41,6 +41,22 @@ namespace ModelGraphSTD
                 RequestType = RequestType.Reload
             };
         }
+        internal static UIRequest SaveSymbol(RootModel root)
+        {
+            return new UIRequest()
+            {
+                Root = root,
+                RequestType = RequestType.SaveSymbol
+            };
+        }
+        internal static UIRequest ReloadSymbol(RootModel root)
+        {
+            return new UIRequest()
+            {
+                Root = root,
+                RequestType = RequestType.ReloadSymbol
+            };
+        }
         internal static UIRequest RefreshModel(RootModel root)
         {
             return new UIRequest()

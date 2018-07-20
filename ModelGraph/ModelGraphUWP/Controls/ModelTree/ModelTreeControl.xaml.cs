@@ -1071,6 +1071,8 @@ namespace ModelGraphUWP
                 {
                     obj.Text = mdl.TextValue ?? string.Empty;
                 }
+                _select = mdl.ParentModel;
+                mdl.PostRefreshViewList(_select);
             }
         }
         #endregion

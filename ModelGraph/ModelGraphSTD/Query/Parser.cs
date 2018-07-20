@@ -154,7 +154,7 @@ namespace ModelGraphSTD
         #region TryParse  =====================================================
         /* 
             Parse an expression string (or substring) and recursivly build a 
-            tree of elemental parse steps. return
+            tree of elemental parse steps.
         */
         void TryParse()
         {
@@ -657,11 +657,15 @@ namespace ModelGraphSTD
         };
         static Dictionary<string, StepType> functionParseType = new Dictionary<string, StepType>
         {
+            ["or"] = StepType.Or2,
+            ["and"] = StepType.And2,
+
             ["min"] = StepType.Min,
             ["max"] = StepType.Max,
             ["sum"] = StepType.Sum,
             ["ave"] = StepType.Ave,
             ["count"] = StepType.Count,
+
             ["length"] = StepType.Length,
             ["ascend"] = StepType.Ascend,
             ["descend"] = StepType.Descend,
