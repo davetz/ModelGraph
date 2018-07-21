@@ -29,7 +29,7 @@ namespace ModelGraphUWP
             TreeCanvas.Width = Width = width;
             TreeCanvas.Height = Height = height;
 
-            _root.ViewCapacity =(int)(Height / _elementHieght) - 1;
+            _root.ViewCapacity =(int)(Height / _elementHieght);
             _root.PostRefreshViewList(_select);
 
             _viewIsReady = true;

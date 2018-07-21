@@ -69,15 +69,6 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region GetRootChef  ==================================================
-        private Chef GetRootChef()
-        {
-            var chef = this;
-            while (!chef.IsRootChef) { chef = chef.Owner as Chef; }
-            return chef;
-        }
-        #endregion
-
         #region Initialize  ===================================================
         private void Initialize()
         {
