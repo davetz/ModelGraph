@@ -1994,9 +1994,9 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev, _errorStore.Count);
 
-                    var anyChange = false;
-                    var items = _errorStore.Items;
-                    foreach (var itm in items)
+                    var list = _errorStore.Items;
+                    var anyChange = prev.Count != list.Count;
+                    foreach (var itm in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.ErrorType_M, itm, null, null, ErrorType_X);
                     }
@@ -2668,9 +2668,10 @@ namespace ModelGraphSTD
                     if (_viewXStore.JointDelta == m.Delta) return (true, false);
                     Delta = _viewXStore.JointDelta;
 
-                    var anyChange = false;
                     var items = _viewXStore.Items;
                     m.InitChildModels(prev, items.Count);
+
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         if ((ViewX_ViewX.HasNoParent(itm)))
@@ -3116,8 +3117,9 @@ namespace ModelGraphSTD
                     m.Delta = _viewXStore.JointDelta;
 
                     m.InitChildModels(prev);
-                    var anyChange = false;
                     var items = _viewXStore.Items;
+
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         if (ViewX_ViewX.HasNoParent(itm)) anyChange |= AddChildModel(prev, m, Trait.ViewView_M, itm, null, null, ViewView_X);
@@ -3331,9 +3333,9 @@ namespace ModelGraphSTD
 
                     if (!TryGetQueryItems(qx, out List<Item> items, key))  return (false, false);
 
-                    var anyChange = false;
                     m.InitChildModels(prev);
 
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         anyChange = AddChildModel(prev, m, Trait.ViewItem_M, itm, qx, null, ViewItem_X);
@@ -3392,8 +3394,9 @@ namespace ModelGraphSTD
                     m.Delta = store.Delta;
                     m.InitChildModels(prev, store.Count);
 
-                    var anyChange = false;
                     var items = store.Items;
+
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.EnumX_M, itm, null, null, EnumX_X);
@@ -3459,8 +3462,9 @@ namespace ModelGraphSTD
                     m.Delta = store.Delta;
                     m.InitChildModels(prev, store.Count);
 
-                    var anyChange = false;
                     var items = store.Items;
+
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.TableX_M, itm, null, null, TableX_X);
@@ -3526,8 +3530,9 @@ namespace ModelGraphSTD
                     m.Delta = store.Delta;
                     m.InitChildModels(prev, store.Count);
 
-                    var anyChange = false;
                     var items = store.Items;
+
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphX_M, itm, null, null, GraphX_X);
@@ -3613,7 +3618,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev, items.Count);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.SymbolX_M, itm, GraphX_SymbolX, gx, SymbolX_X);
@@ -3676,8 +3681,9 @@ namespace ModelGraphSTD
                     m.Delta = store.Delta;
                     m.InitChildModels(prev, store.Count);
 
-                    var anyChange = false;
                     var items = store.Items;
+
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.Table_M, itm, null, null, Table_X);
@@ -3729,8 +3735,9 @@ namespace ModelGraphSTD
                     m.Delta = store.Delta;
                     m.InitChildModels(prev, store.Count);
 
-                    var anyChange = false;
                     var items = store.Items;
+
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphXRef_M, itm, null, null, GraphXRef_X);
@@ -4399,7 +4406,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.ColumnX_M, itm, TableX_ColumnX, tx, ColumnX_X);
@@ -4468,7 +4475,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var rel in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.ChildRelationX_M, rel, TableX_ChildRelationX, tx, ChildRelationX_X);
@@ -4536,7 +4543,7 @@ namespace ModelGraphSTD
                     if (!TableX_ParentRelationX.TryGetChildren(tx, out IList<RelationX> list)) return (false, false);
 
                     m.InitChildModels(prev);
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var rel in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.ParentRelationX_M, rel, TableX_ParentRelationX, tx, ParentRelationX_X);
@@ -4607,9 +4614,9 @@ namespace ModelGraphSTD
                     m.Delta = ex.Delta;
                     m.InitChildModels(prev);
 
-                    var items = ex.Items;
-                    var anyChange = false;
-                    foreach (var px in items)
+                    var list = ex.Items;
+                    var anyChange = prev.Count != list.Count;
+                    foreach (var px in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.PairX_M, px, ex, null, PairX_X);
                     }
@@ -4681,7 +4688,7 @@ namespace ModelGraphSTD
                     if (!EnumX_ColumnX.TryGetChildren(ex, out IList<ColumnX> list)) return (false, false);
 
                     m.InitChildModels(prev);
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var cx in list)
                     {
                         if (TableX_ColumnX.TryGetParent(cx, out TableX tx))
@@ -4744,7 +4751,7 @@ namespace ModelGraphSTD
                     if (!Store_ComputeX.TryGetChildren(st, out IList<ComputeX> list)) return (false, false);
 
                     m.InitChildModels(prev);
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.ComputeX_M, itm, Store_ComputeX, st, ComputeX_X);
@@ -5263,7 +5270,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphXRoot_M, itm, gx, null, QueryXRoot_X);
@@ -5322,7 +5329,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != owners.Count;
                     foreach (var sto in owners)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphXNode_M, sto, gx, null, GraphXNode_X);
@@ -5385,7 +5392,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != querys.Count;
                     foreach (var qx in querys)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphXNodeSymbol_M, qx, GraphX_SymbolQueryX, gx, GraphXNodeSymbol_X);
@@ -6780,7 +6787,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var rr in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.RowRelatedChild_M, rr, re, rx, RowRelatedChild_X);
@@ -6852,7 +6859,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var rr in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.RowRelatedParent_M, rr, re, rx, RowRelatedParent_X);
@@ -7141,7 +7148,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var rel in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.RowChildRelation_M, rx, rel, null, RowChildRelation_X);
@@ -7192,7 +7199,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var re in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.RowParentRelation_M, rx, re, null, RowParentRelation_X);
@@ -7234,12 +7241,12 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var itm = m.Item;
-                    if (!Store_ComputeX.TryGetChildren(itm.Owner, out IList<ComputeX> items)) return (false, false);
+                    if (!Store_ComputeX.TryGetChildren(itm.Owner, out IList<ComputeX> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
-                    foreach (var cx in items)
+                    var anyChange = prev.Count != list.Count;
+                    foreach (var cx in list)
                     {
                         anyChange = AddChildModel(prev, m, Trait.TextProperty_M, itm, cx, null, TextCompute_X);
                     }
@@ -7280,13 +7287,13 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var q = m.Query;
-                    var items = q.Items;
-                    if (items == null) return (false, false);
+                    var list = q.Items;
+                    if (list == null) return (false, false);
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
-                    foreach (var itm in items)
+                    var anyChange = prev.Count != list.Length;
+                    foreach (var itm in list)
                     {
                         anyChange = AddChildModel(prev, m, Trait.QueryRootItem_M, itm, q, null, QueryRootItem_X);
                     }
@@ -7456,7 +7463,7 @@ namespace ModelGraphSTD
 
             m.InitChildModels(prev);
 
-            var anyChange = false;
+            var anyChange = prev.Count != items.Length;
             if (q.IsTail)
                 foreach (var itm in items)
                 {
@@ -7539,7 +7546,7 @@ namespace ModelGraphSTD
 
             m.InitChildModels(prev);
 
-            var anyChange = false;
+            var anyChange = prev.Count != items.Length;
             if (q.IsTail)
                 foreach (var itm in items)
                 {
@@ -7585,7 +7592,7 @@ namespace ModelGraphSTD
                     m.InitChildModels(prev);
 
                     var itm = m.Item;
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Length;
                     foreach (var q in items)
                     {
                         if (q.IsGraphLink)
@@ -7638,7 +7645,7 @@ namespace ModelGraphSTD
                     m.InitChildModels(prev);
 
                     var itm = m.Item;
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Length;
                     foreach (var q in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.QueryPathLink_M, itm, q, null, QueryPathLink_X);
@@ -7709,7 +7716,7 @@ namespace ModelGraphSTD
                     m.InitChildModels(prev);
 
                     var itm = m.Item;
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Length;
                     foreach (var q in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.QueryGroupLink_M, itm, q, null, QueryGroupLink_X);
@@ -7780,7 +7787,7 @@ namespace ModelGraphSTD
                     m.InitChildModels(prev);
 
                     var itm = m.Item;
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Length;
                     foreach (var q in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.QueryEgressLink_M, itm, q, null, QueryEgressLink_X);
@@ -7901,9 +7908,9 @@ namespace ModelGraphSTD
                     m.Delta = gx.Delta;
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
-                    var items = gx.Items;
-                    foreach (var g in items)
+                    var list = gx.Items;
+                    var anyChange = prev.Count != list.Count;
+                    foreach (var g in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.Graph_M, g, null, null, Graph_X);
                     }
@@ -7963,7 +7970,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphNode_M, itm, null, null, GraphNode_X);
@@ -8014,7 +8021,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphEdge_M, itm, null, null, GraphEdge_X);
@@ -8065,7 +8072,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Length;
                     foreach (var q in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphRoot_M, q.Item, q, null, GraphRoot_X);
@@ -8115,7 +8122,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Count;
                     foreach (var lv in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphLevel_M, lv, null, null, GraphLevel_X);
@@ -8161,7 +8168,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != paths.Count;
                     foreach (var p in paths)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphPath_M, p, null, null, GraphPath_X);
@@ -8207,7 +8214,7 @@ namespace ModelGraphSTD
                     m.InitChildModels(prev);
 
                     var items = m.Path.Paths;
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Length;
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.GraphPath_M, itm, null, null, GraphPath_X);
@@ -8278,7 +8285,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != items.Length;
                     foreach (var itm in items)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.QueryRootItem_M, itm, q, null, QueryRootItem_X);
@@ -8425,12 +8432,13 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var g = m.Graph;
-                    if (g.OpenQuerys.Count == 0) return (false, false);
+                    var list = g.OpenQuerys;
+                    if (list.Count == 0) return (false, false);
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
-                    foreach (var (q1, q2) in g.OpenQuerys)
+                    var anyChange = prev.Count != list.Count;
+                    foreach (var (q1, q2) in list)
                     {
                         var h = q1;
                         var t = q2;
@@ -8568,7 +8576,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var cx in list)
                     {
                         anyChange |= AddChildModel(prev, m,  Trait.TextProperty_M, st, cx, null, TextCompute_X);
@@ -8682,7 +8690,7 @@ namespace ModelGraphSTD
                     m.InitChildModels(prev);
 
                     var list = st.GetItems();
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var item in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.StoreItem_M, item, null, null, StoreItem_X);
@@ -8818,7 +8826,7 @@ namespace ModelGraphSTD
 
                     var list = st.GetItems();
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
                         anyChange |= AddChildModel(prev, m, Trait.StoreItemItem_M, itm, null, null, StoreItemItem_X);
@@ -8869,7 +8877,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev, N);
 
-                    var anyChange = false;
+                    var anyChange = prev.Count != N;
                     for (int i = 0; i < N; i++)
                     {
                         var parent = parents[i];
@@ -9052,12 +9060,12 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    if (!m.Relation.TryGetChildren(m.Aux1, out List<Item> items)) return (false, false);
+                    if (!m.Relation.TryGetChildren(m.Aux1, out List<Item> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
-                    foreach (var itm in items)
+                    var anyChange = prev.Count != list.Count;
+                    foreach (var itm in list)
                     {
                         anyChange = AddChildModel(prev, m, Trait.StoreRelatedItem_M, itm, null, null, StoreRelatedItem_X);
                     }
@@ -9102,12 +9110,12 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    if (!m.Relation.TryGetParents(m.Aux1, out List<Item> items)) return (false, false);
+                    if (!m.Relation.TryGetParents(m.Aux1, out List<Item> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
-                    var anyChange = false;
-                    foreach (var itm in items)
+                    var anyChange = prev.Count != list.Count;
+                    foreach (var itm in list)
                     {
                         anyChange = AddChildModel(prev, m, Trait.StoreRelatedItem_M, itm, null, null, StoreRelatedItem_X);
                     }
