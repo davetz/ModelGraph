@@ -211,7 +211,6 @@ namespace ModelGraphSTD
 
         #region Minimize, HitTest  ============================================
         static readonly int _ds = GraphParm.HitMargin;
-        static readonly int _ds2 = GraphParm.HitMarginSquared;
 
         public void Minimize(Extent e)
         {
@@ -275,45 +274,6 @@ namespace ModelGraphSTD
                 }
             }
             return (hit, pnt);
-        }
-
-        public void RefineHitTest((int X, int Y) p, ref HitLocation hit, ref (int X, int Y) hitPoint)
-        {
-            hit |= HitLocation.Node;
-            hitPoint = (X, Y);
-            int ds;
-
-            if (DX >= _ds)
-            {
-                if (p.X < X)
-                {
-                    ds = X - DX - p.X;
-                    if (ds < 0 && ds + _ds >= 0) hit |= HitLocation.Left;
-                    else if (ds > 0 && ds - _ds <= 0) hit |= HitLocation.Left;
-                }
-                else
-                {
-                    ds = X + DX - p.X;
-                    if (ds < 0 && ds + _ds >= 0) hit |= HitLocation.Right;
-                    else if (ds > 0 && ds - _ds <= 0) hit |= HitLocation.Right;
-                }
-            }
-
-            if (DY >= _ds)
-            {
-                if (p.Y < Y)
-                {
-                    ds = Y - DY - p.Y;
-                    if (ds < 0 && ds + _ds >= 0) hit |= HitLocation.Top;
-                    else if (ds > 0 && ds - _ds <= 0) hit |= HitLocation.Top;
-                }
-                else
-                {
-                    ds = Y + DY - p.Y;
-                    if (ds < 0 && ds + _ds >= 0) hit |= HitLocation.Bottom;
-                    else if (ds > 0 && ds - _ds <= 0) hit |= HitLocation.Bottom;
-                }
-            }
         }
         #endregion
     }

@@ -14,7 +14,7 @@ namespace ModelGraphSTD
 
         public static int TerminalLength = 8;
         public static int TerminalSpacing = 8;
-        public static int TerminalSkew = 20;
+        public static int TerminalSkew = 100;
     }
 }
 

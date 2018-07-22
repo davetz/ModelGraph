@@ -207,7 +207,7 @@ namespace ModelGraphSTD
                 k = (i % 2 == 0) ? (k + i) : (k - i); // right (+0, +2, +4,..)  left (-1, -3, -5,..)
                 j = (k < 0) ? (k + N) : (k > M) ? (k - N) : k; // wrap arround if necessary
 
-                if (TryCopyPrevious(j)) return false; // I reused the existing model.
+                if (TryCopyPrevious(j)) return true; // I reused the existing model.
             }
             m.ChildModels.Add(new ItemModel(m, trait, item, aux1, aux2, get));
             return true; // I had to create a new model
@@ -4079,6 +4079,10 @@ namespace ModelGraphSTD
                     m.InitChildModels(prev);
 
                     AddProperyModel(prev, m, _symbolXNameProperty);
+                    AddProperyModel(prev, m, _symbolXTopContactProperty);
+                    AddProperyModel(prev, m, _symbolXLeftContacttProperty);
+                    AddProperyModel(prev, m, _symbolXRightContactProperty);
+                    AddProperyModel(prev, m, _symbolXBottomContactProperty);
 
                     return (true, true);
                 }

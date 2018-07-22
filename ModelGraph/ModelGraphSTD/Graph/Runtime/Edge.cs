@@ -343,14 +343,14 @@ namespace ModelGraphSTD
 
             var tmLen = GraphParm.TerminalLength;
             var tmSpc = GraphParm.TerminalSpacing / 2;
-            var tmSkf = GraphParm.TerminalSkew;
+            var tmSkf = (float)GraphParm.TerminalSkew / 10;
 
             if (Owner != null && Owner.IsGraph)
             {
                 var gx = GraphX;
                 tmLen = gx.TerminalLength;
                 tmSpc = gx.TerminalSpacing / 2;
-                tmSkf = gx.TerminalSkew;
+                tmSkf = (float)gx.TerminalSkew / 10;
             }
 
             var bendCount = (Core.Bends == null) ? 0 : Core.Bends.Length;
@@ -909,16 +909,16 @@ namespace ModelGraphSTD
                 switch (Core.Face1.Side)
                 {
                     case Side.East:
-                        if (dx < 0 && adx > tmSkf * ady) points[tm1].X = bx - (ady * tmSkf);
+                        if (dx < 0 && adx > tmSkf * ady) points[tm1].X = bx - (int)(ady * tmSkf);
                         break;
                     case Side.West:
-                        if (dx > 0 && adx > tmSkf * ady) points[tm1].X = bx + (ady * tmSkf);
+                        if (dx > 0 && adx > tmSkf * ady) points[tm1].X = bx + (int)(ady * tmSkf);
                         break;
                     case Side.South:
-                        if (dy < 0 && ady > tmSkf * adx) points[tm1].Y = by - (adx * tmSkf);
+                        if (dy < 0 && ady > tmSkf * adx) points[tm1].Y = by - (int)(adx * tmSkf);
                         break;
                     case Side.North:
-                        if (dy > 0 && ady > tmSkf * adx) points[tm1].Y = by + (adx * tmSkf);
+                        if (dy > 0 && ady > tmSkf * adx) points[tm1].Y = by + (int)(adx * tmSkf);
                         break;
                 }
                 #endregion
@@ -945,16 +945,16 @@ namespace ModelGraphSTD
                 switch (Core.Face1.Side)
                 {
                     case Side.East:
-                        if (dx < 0 && adx > tmSkf * ady) points[tm1].X = bx - (ady * tmSkf);
+                        if (dx < 0 && adx > tmSkf * ady) points[tm1].X = bx - (int)(ady * tmSkf);
                         break;
                     case Side.West:
-                        if (dx > 0 && adx > tmSkf * ady) points[tm1].X = bx + (ady * tmSkf);
+                        if (dx > 0 && adx > tmSkf * ady) points[tm1].X = bx + (int)(ady * tmSkf);
                         break;
                     case Side.South:
-                        if (dy < 0 && ady > tmSkf * adx) points[tm1].Y = by - (adx * tmSkf);
+                        if (dy < 0 && ady > tmSkf * adx) points[tm1].Y = by - (int)(adx * tmSkf);
                         break;
                     case Side.North:
-                        if (dy > 0 && ady > tmSkf * adx) points[tm1].Y = by + (adx * tmSkf);
+                        if (dy > 0 && ady > tmSkf * adx) points[tm1].Y = by + (int)(adx * tmSkf);
                         break;
                 }
                 #endregion
