@@ -74,13 +74,14 @@ namespace ModelGraphSTD
             Initialize_TableXList_X();
             Initialize_GraphXList_X();
             Initialize_SymbolXList_X();
+            Initialize_MetaGraphParmList_X();
             Initialize_TableList_X();
             Initialize_GraphList_X();
 
             Initialize_PairX_X();
             Initialize_EnumX_X();
             Initialize_TableX_X();
-            Initialize_GraphX_X();
+            Initialize_MetaGraph_X();
             Initialize_SymbolX_X();
             Initialize_ColumnX_X();
             Initialize_ComputeX_X();
@@ -2111,10 +2112,10 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.ViewXViewList_M, _viewXStore, null, null, ViewXViewList_X);
-                    AddChildModel(prev, m, Trait.EnumXList_M, _enumZStore, null, null, EnumXList_X);
-                    AddChildModel(prev, m, Trait.TableXList_M, _tableXStore, null, null, TableXList_X);
-                    AddChildModel(prev, m, Trait.GraphXList_M, _graphXStore, null, null, GraphXList_X);
+                    AddChildModel(prev, m, Trait.MetaViewViewList_M, _viewXStore, null, null, ViewXViewList_X);
+                    AddChildModel(prev, m, Trait.MetaEnumList_M, _enumZStore, null, null, EnumXList_X);
+                    AddChildModel(prev, m, Trait.MetaTableList_M, _tableXStore, null, null, TableXList_X);
+                    AddChildModel(prev, m, Trait.MetaGraphList_M, _graphXStore, null, null, GraphXList_X);
                     AddChildModel(prev, m, Trait.InternalStoreList_M, this, null, null, InternalStoreList_X);
 
                     return (true, true);
@@ -2215,8 +2216,8 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.NameColumnRelation_M, m.Item, TableX_NameProperty, null, NameColumnRelation_X);
-                    AddChildModel(prev, m, Trait.SummaryColumnRelation_M, m.Item, TableX_SummaryProperty, null, SummaryColumnRelation_X);
+                    AddChildModel(prev, m, Trait.MetaNameColumnRelation_M, m.Item, TableX_NameProperty, null, NameColumnRelation_X);
+                    AddChildModel(prev, m, Trait.MetaSummaryColumnRelation_M, m.Item, TableX_SummaryProperty, null, SummaryColumnRelation_X);
 
                     return (true, true);
                 }
@@ -2676,7 +2677,7 @@ namespace ModelGraphSTD
                     {
                         if ((ViewX_ViewX.HasNoParent(itm)))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.ViewXView_M, itm, null, null, ViewXViewM_X);
+                            anyChange |= AddChildModel(prev, m, Trait.MetaViewView_M, itm, null, null, ViewXViewM_X);
                         }
                     }
 
@@ -2831,7 +2832,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var pc in pls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.ViewXProperty_M, pc, ViewX_Property, vx, ViewXProperty_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewProperty_M, pc, ViewX_Property, vx, ViewXProperty_X);
                             }
                         }
 
@@ -2839,7 +2840,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in qls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.ViewXQuery_M, qc, ViewX_QueryX, vx, ViewXQuery_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewQuery_M, qc, ViewX_QueryX, vx, ViewXQuery_X);
                             }
                         }
 
@@ -2847,7 +2848,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var vc in vls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.ViewXView_M, vc, ViewX_ViewX, vx, ViewXViewM_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewView_M, vc, ViewX_ViewX, vx, ViewXViewM_X);
                             }
                         }
                     }
@@ -2972,7 +2973,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var pc in pls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.ViewXProperty_M, pc, QueryX_Property, qx, ViewXProperty_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewProperty_M, pc, QueryX_Property, qx, ViewXProperty_X);
                             }
                         }
 
@@ -2980,7 +2981,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in qls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.ViewXQuery_M, qc, QueryX_QueryX, qx, ViewXQuery_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewQuery_M, qc, QueryX_QueryX, qx, ViewXQuery_X);
                             }
                         }
 
@@ -2988,7 +2989,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var vc in vls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.ViewXView_M, vc, QueryX_ViewX, qx, ViewXViewM_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewView_M, vc, QueryX_ViewX, qx, ViewXViewM_X);
                             }
                         }
                     }
@@ -3399,7 +3400,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.EnumX_M, itm, null, null, EnumX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaEnum_M, itm, null, null, EnumX_X);
                     }
                     return (true, anyChange);
                 }
@@ -3467,7 +3468,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.TableX_M, itm, null, null, TableX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaTable_M, itm, null, null, TableX_X);
                     }
                     return (true, anyChange);
                 }
@@ -3535,7 +3536,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.GraphX_M, itm, null, null, GraphX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaGraph_M, itm, null, null, MetaGraph_X);
                     }
                     return (true, anyChange);
                 }
@@ -3621,7 +3622,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.SymbolX_M, itm, GraphX_SymbolX, gx, SymbolX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaSymbol_M, itm, GraphX_SymbolX, gx, SymbolX_X);
                     }
                     return (true, anyChange);
                 }
@@ -3641,6 +3642,53 @@ namespace ModelGraphSTD
                 AppendLink(GraphX_SymbolX, gd, sym);
                 model.IsExpandedLeft = true;
             }
+        }
+        #endregion
+
+        #region 646 MetaGraphParmList_X  ======================================
+        ModelAction MetaGraphParmList_X;
+        void Initialize_MetaGraphParmList_X()
+        {
+            MetaGraphParmList_X = new ModelAction
+            {
+                ModelParms = (m) =>
+                {
+                    var gx = m.Item as GraphX;
+                    var (kind, name) = GetKindName(m);
+
+                    m.CanExpandLeft = true;
+
+                    return (kind, name, 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelSummary = (m) => _localize(m.SummaryKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m, prev) =>
+                {
+                    var gx = m.GraphX;
+                    if (m.ChildModelCount == 3) return (true, false);
+
+                    m.InitChildModels(prev);
+
+                    AddProperyModel(prev, m, _graphXTerminalLengthProperty);
+                    AddProperyModel(prev, m, _graphXTerminalSpacingProperty);
+                    AddProperyModel(prev, m, _graphXTerminalStretchProperty);
+
+                    return (true, true);
+                }
+            };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -3864,8 +3912,8 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.EnumValueList_M, ex, null, null, PairXList_X);
-                        anyChange |= AddChildModel(prev, m, Trait.EnumColumnList_M, ex, null, null, EnumColumnList_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaEnumValueList_M, ex, null, null, PairXList_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaEnumColumnList_M, ex, null, null, EnumColumnList_X);
                     }
 
                     return (true, anyChange);
@@ -3941,10 +3989,10 @@ namespace ModelGraphSTD
                     if (m.IsExpandedLeft)
                     {
                         var tx = m.TableX;
-                        AddChildModel(prev, m, Trait.ColumnXList_M, tx, null, null, ColumnXList_X);
-                        AddChildModel(prev, m, Trait.ComputeXList_M, tx, null, null, ComputeXList_X);
-                        AddChildModel(prev, m, Trait.ChildRelationXList_M, tx, null, null, ChildRelationXList_X);
-                        AddChildModel(prev, m, Trait.ParentRelatationXList_M, tx, null, null, ParentRelationXList_X);
+                        AddChildModel(prev, m, Trait.MetaColumnList_M, tx, null, null, ColumnXList_X);
+                        AddChildModel(prev, m, Trait.MetaComputeList_M, tx, null, null, ComputeXList_X);
+                        AddChildModel(prev, m, Trait.MetaChildRelationList_M, tx, null, null, ChildRelationXList_X);
+                        AddChildModel(prev, m, Trait.MetaParentRelatationList_M, tx, null, null, ParentRelationXList_X);
                         AddChildModel(prev, m, Trait.MetaRelationList_M, tx, null, null, MetaRelationList_X);
                     }
                     return (true, true);
@@ -3957,11 +4005,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 655 GraphX  ===================================================
-        ModelAction GraphX_X;
-        void Initialize_GraphX_X()
+        #region 655 MetaGraph_X  ==============================================
+        ModelAction MetaGraph_X;
+        void Initialize_MetaGraph_X()
         {
-            GraphX_X = new ModelAction
+            MetaGraph_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3998,7 +4046,7 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var R = m.IsExpandedRight ? 2 : 0;
-                    var L = m.IsExpandedLeft ? 4 : 0;
+                    var L = m.IsExpandedLeft ? 5 : 0;
                     if (R + L == 0) return (false, false);
                     if (R + L == m.ChildModelCount) return (true, false);
 
@@ -4013,10 +4061,11 @@ namespace ModelGraphSTD
                     if (m.IsExpandedLeft)
                     {
                         var gx = m.GraphX;
-                        AddChildModel(prev, m, Trait.GraphXColoring_M, gx, null, null, GraphXColoring_X);
-                        AddChildModel(prev, m, Trait.GraphXRootList_M, gx, null, null, GraphXRootList_X);
-                        AddChildModel(prev, m, Trait.GraphXNodeList_M, gx, null, null, GraphXNodeList_X);
-                        AddChildModel(prev, m, Trait.SymbolXList_M, gx, null, null, SymbolXList_X);
+                        AddChildModel(prev, m, Trait.MetaGraphColoring_M, gx, null, null, GraphXColoring_X);
+                        AddChildModel(prev, m, Trait.MetaGraphRootList_M, gx, null, null, GraphXRootList_X);
+                        AddChildModel(prev, m, Trait.MetaGraphNodeList_M, gx, null, null, GraphXNodeList_X);
+                        AddChildModel(prev, m, Trait.MetaSymbolList_M, gx, null, null, SymbolXList_X);
+                        AddChildModel(prev, m, Trait.MetaGraphParmList_M, gx, null, null, MetaGraphParmList_X);
                     }
                     return (true, true);
                 }
@@ -4074,7 +4123,7 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     if (!m.IsExpandedRight) return (false, false);
-                    if (m.ChildModelCount == 1) return (true, false);
+                    if (m.ChildModelCount == 6) return (true, false);
 
                     m.InitChildModels(prev);
 
@@ -4083,6 +4132,7 @@ namespace ModelGraphSTD
                     AddProperyModel(prev, m, _symbolXLeftContacttProperty);
                     AddProperyModel(prev, m, _symbolXRightContactProperty);
                     AddProperyModel(prev, m, _symbolXBottomContactProperty);
+                    AddProperyModel(prev, m, _symbolXConnectStyleProperty);
 
                     return (true, true);
                 }
@@ -4094,7 +4144,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondarySymbolEdit(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.SymbolEditor, Trait.SymbolXEditor_M, m.Item, SymbolXEditor_X);
+            void CreateSecondarySymbolEdit(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.SymbolEditor, Trait.SymbolEditor_M, m.Item, SymbolXEditor_X);
         }
         #endregion
 
@@ -4281,7 +4331,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var itm in list)
                             {
-                                AddChildModel(prev, m, Trait.ValueXHead_M, itm, null, null, ValueHead_X);
+                                AddChildModel(prev, m, Trait.MetaValueHead_M, itm, null, null, ValueHead_X);
                             }
                         }
                     }
@@ -4413,7 +4463,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.ColumnX_M, itm, TableX_ColumnX, tx, ColumnX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaColumn_M, itm, TableX_ColumnX, tx, ColumnX_X);
                     }
                     return (true, anyChange);
                 }
@@ -4483,7 +4533,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var rel in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.ChildRelationX_M, rel, TableX_ChildRelationX, tx, ChildRelationX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaChildRelation_M, rel, TableX_ChildRelationX, tx, ChildRelationX_X);
                     }
                     return (true, anyChange);
                 }
@@ -4551,7 +4601,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var rel in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.ParentRelationX_M, rel, TableX_ParentRelationX, tx, ParentRelationX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaParentRelation_M, rel, TableX_ParentRelationX, tx, ParentRelationX_X);
                     }
                     return (true, anyChange);
                 }
@@ -4623,7 +4673,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var px in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.PairX_M, px, ex, null, PairX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaPair_M, px, ex, null, PairX_X);
                     }
                     return (true, anyChange);
                 }
@@ -4698,7 +4748,7 @@ namespace ModelGraphSTD
                     {
                         if (TableX_ColumnX.TryGetParent(cx, out TableX tx))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.EnumRelatedColumn_M, cx, tx, ex, EnumRelatedColumn_X);
+                            anyChange |= AddChildModel(prev, m, Trait.MetaEnumRelatedColumn_M, cx, tx, ex, EnumRelatedColumn_X);
                         }
                     }
                     return (true, anyChange);
@@ -4759,7 +4809,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.ComputeX_M, itm, Store_ComputeX, st, ComputeX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaCompute_M, itm, Store_ComputeX, st, ComputeX_X);
                     }
                     return (true, anyChange);
                 }
@@ -4986,7 +5036,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.NameColumn_M, pr, TableX_NameProperty, tx, NameColumn_X);
+                    AddChildModel(prev, m, Trait.MetaNameColumn_M, pr, TableX_NameProperty, tx, NameColumn_X);
 
                     return (true, true);
                 }
@@ -5055,7 +5105,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.SummaryColumn_M, pr, TableX_SummaryProperty, tx, SummaryColumn_X);
+                    AddChildModel(prev, m, Trait.MetaSummaryColumn_M, pr, TableX_SummaryProperty, tx, SummaryColumn_X);
 
                     return (true, true);
                 }
@@ -5211,7 +5261,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = AddChildModel(prev, m, Trait.GraphXColorColumn_M, cx, tx, null, GraphXColorColumn_X);
+                    var anyChange = AddChildModel(prev, m, Trait.MetaGraphColorColumn_M, cx, tx, null, GraphXColorColumn_X);
 
                     return (true, anyChange);
                 }
@@ -5278,7 +5328,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.GraphXRoot_M, itm, gx, null, QueryXRoot_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphRoot_M, itm, gx, null, QueryXRoot_X);
                     }
                     return (true, anyChange);
                 }
@@ -5337,7 +5387,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != owners.Count;
                     foreach (var sto in owners)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.GraphXNode_M, sto, gx, null, GraphXNode_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphNode_M, sto, gx, null, GraphXNode_X);
                     }
                     return (true, anyChange);
                 }
@@ -5400,7 +5450,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != querys.Count;
                     foreach (var qx in querys)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.GraphXNodeSymbol_M, qx, GraphX_SymbolQueryX, gx, GraphXNodeSymbol_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphNodeSymbol_M, qx, GraphX_SymbolQueryX, gx, GraphXNodeSymbol_X);
                     }
                     return (true, anyChange);
                 }
@@ -5500,27 +5550,27 @@ namespace ModelGraphSTD
                         if (qc.IsPath)
                         {
                             if (qc.IsHead)
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXPathHead_M, qc, null, null, QueryXPathHead_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathHead_M, qc, null, null, QueryXPathHead_X);
                             else
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXPathLink_M, qc, null, null, QueryXPathLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, QueryXPathLink_X);
                         }
                         else if (qc.IsGroup)
                         {
                             if (qc.IsHead)
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXGroupHead_M, qc, null, null, QueryXGroupHead_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupHead_M, qc, null, null, QueryXGroupHead_X);
                             else
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, QueryXGroupLink_X);
                         }
                         else if (qc.IsSegue)
                         {
                             if (qc.IsHead)
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXEgressHead_M, qc, null, null, QueryXEgressHead_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressHead_M, qc, null, null, QueryXEgressHead_X);
                             else
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, QueryXEgressLink_X);
                         }
                         else
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.GraphXLink_M, qc, null, null, QueryXLink_X);
+                            anyChange |= AddChildModel(prev, m, Trait.MetaGraphLink_M, qc, null, null, QueryXLink_X);
                         }
                     }
                     return(true, anyChange);
@@ -5624,28 +5674,28 @@ namespace ModelGraphSTD
                                 if (qc.IsPath)
                                 {
                                     if (qc.IsHead)
-                                        anyChange |= AddChildModel(prev, m, Trait.GraphXPathHead_M, qc, null, null, QueryXPathHead_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathHead_M, qc, null, null, QueryXPathHead_X);
                                     else
-                                        anyChange |= AddChildModel(prev, m, Trait.GraphXPathLink_M, qc, null, null, QueryXPathLink_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, QueryXPathLink_X);
                                 }
                                 else if (qc.IsGroup)
                                 {
                                     if (qc.IsHead)
-                                        anyChange |= AddChildModel(prev, m, Trait.GraphXGroupHead_M, qc, null, null, QueryXGroupHead_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupHead_M, qc, null, null, QueryXGroupHead_X);
                                     else
-                                        anyChange |= AddChildModel(prev, m, Trait.GraphXGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, QueryXGroupLink_X);
                                     break;
                                 }
                                 else if (qc.IsSegue)
                                 {
                                     if (qc.IsHead)
-                                        anyChange |= AddChildModel(prev, m, Trait.GraphXEgressHead_M, qc, null, null, QueryXEgressHead_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressHead_M, qc, null, null, QueryXEgressHead_X);
                                     else
-                                        anyChange |= AddChildModel(prev, m, Trait.GraphXEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, QueryXEgressLink_X);
                                 }
                                 else
                                 {
-                                    anyChange |= AddChildModel(prev, m, Trait.GraphXLink_M, qc, null, null, QueryXLink_X);
+                                    anyChange |= AddChildModel(prev, m, Trait.MetaGraphLink_M, qc, null, null, QueryXLink_X);
                                 }
                             }
                         }
@@ -5732,6 +5782,8 @@ namespace ModelGraphSTD
                         anyChange |= AddProperyModel(prev, m, _queryXIsBreakPointProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect2Property);
+                        anyChange |= AddProperyModel(prev, m, _queryXConnectStyle1Property);
+                        anyChange |= AddProperyModel(prev, m, _queryXConnectStyle2Property);
                         anyChange |= AddProperyModel(prev, m, _queryXRootWhereProperty);
                     }
 
@@ -5741,7 +5793,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXPathLink_M, qc, null, null, QueryXPathLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, QueryXPathLink_X);
                             }
                         }
                     }
@@ -5827,7 +5879,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXPathLink_M, qc, null, null, QueryXPathLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, QueryXPathLink_X);
                             }
                         }
                     }
@@ -5911,7 +5963,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, QueryXGroupLink_X);
                             }
                         }
                     }
@@ -5996,7 +6048,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, QueryXGroupLink_X);
                             }
                         }
                     }
@@ -6084,7 +6136,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, QueryXEgressLink_X);
                             }
                         }
                     }
@@ -6169,7 +6221,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.GraphXEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, QueryXEgressLink_X);
                             }
                         }
                     }
@@ -6326,7 +6378,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.ValueXLink_M, qc, null, null, ValueLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaValueLink_M, qc, null, null, ValueLink_X);
                             }
                         }
                     }
@@ -6415,7 +6467,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.ValueXLink_M, qc, null, null, ValueLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaValueLink_M, qc, null, null, ValueLink_X);
                             }
                         }
                     }

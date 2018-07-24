@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_4;
+            var fileFormat = _fileFormat_5;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -214,16 +214,23 @@ namespace RepositoryUWP
                 if (!string.IsNullOrWhiteSpace(qx.WhereString)) b |= B2;
                 if (!string.IsNullOrWhiteSpace(qx.SelectString)) b |= B3;
                 if (qx.IsExclusive) b |= B4;
-                if (qx.QueryKind == QueryType.Path && qx.IsHead == true && qx.Connect1 != Connect.Any) b |= B5;
-                if (qx.QueryKind == QueryType.Path && qx.IsHead == true && qx.Connect2 != Connect.Any) b |= B6;
+                if (qx.QueryKind == QueryType.Path && qx.IsHead == true)
+                {
+                    if (qx.Connect1 != Connect.Any) b |= B5;
+                    if (qx.Connect2 != Connect.Any) b |= B6;
+                    if (qx.ConnectStyle1 != ConnectStyle.Default) b |= B7;
+                    if (qx.ConnectStyle2 != ConnectStyle.Default) b |= B8;
+                }
 
-                w.WriteByte((byte)b);
+                w.WriteByte(b);
                 if ((b & B1) != 0) w.WriteUInt16(qx.GetFlags());
                 if ((b & B2) != 0) WriteString(w, qx.WhereString);
                 if ((b & B3) != 0) WriteString(w, qx.SelectString);
                 if ((b & B4) != 0) w.WriteByte(qx.ExclusiveKey);
                 if ((b & B5) != 0) w.WriteByte((byte)qx.Connect1);
                 if ((b & B6) != 0) w.WriteByte((byte)qx.Connect2);
+                if ((b & B7) != 0) w.WriteByte((byte)qx.ConnectStyle1);
+                if ((b & B8) != 0) w.WriteByte((byte)qx.ConnectStyle2);
             }
             w.WriteByte((byte)Mark.QueryXEnding); // itegrity marker
         }
@@ -239,25 +246,29 @@ namespace RepositoryUWP
             {
                 w.WriteInt32(itemIndex[sx]);
 
-                var b = BZ;
-                if (!string.IsNullOrWhiteSpace(sx.Name)) b |= B1;
-                if (!string.IsNullOrWhiteSpace(sx.Summary)) b |= B2;
-                if (!string.IsNullOrWhiteSpace(sx.Description)) b |= B3;
-                if (sx.Data != null && sx.Data.Length > 12) b |= B4;
-                if (sx.TopContact != Contact.Any) b |= B5;
-                if (sx.LeftContact != Contact.Any) b |= B6;
-                if (sx.RightContact != Contact.Any) b |= B7;
-                if (sx.BottomContact != Contact.Any) b |= B8;
+                var b = SZ;
+                if (sx.HasFlags()) b |= S1;
+                if (!string.IsNullOrWhiteSpace(sx.Name)) b |= S2;
+                if (!string.IsNullOrWhiteSpace(sx.Summary)) b |= S3;
+                if (!string.IsNullOrWhiteSpace(sx.Description)) b |= S4;
+                if (sx.Data != null && sx.Data.Length > 12) b |= S5;
+                if (sx.TopContact != Contact.Any) b |= S6;
+                if (sx.LeftContact != Contact.Any) b |= S7;
+                if (sx.RightContact != Contact.Any) b |= S8;
+                if (sx.BottomContact != Contact.Any) b |= S9;
+                if (sx.ConnectStyle != ConnectStyle.Default) b |= S10;
 
-                w.WriteByte(b);
-                if ((b & B1) != 0) WriteString(w, sx.Name);
-                if ((b & B2) != 0) WriteString(w, sx.Summary);
-                if ((b & B3) != 0) WriteString(w, sx.Description);
-                if ((b & B4) != 0) WriteBytes(w, sx.Data);
-                if ((b & B5) != 0) w.WriteByte((byte)sx.TopContact);
-                if ((b & B6) != 0) w.WriteByte((byte)sx.LeftContact);
-                if ((b & B7) != 0) w.WriteByte((byte)sx.RightContact);
-                if ((b & B8) != 0) w.WriteByte((byte)sx.BottomContact);
+                w.WriteUInt16(b);
+                if ((b & S1) != 0) w.WriteUInt16(sx.GetFlags());
+                if ((b & S2) != 0) WriteString(w, sx.Name);
+                if ((b & S3) != 0) WriteString(w, sx.Summary);
+                if ((b & S4) != 0) WriteString(w, sx.Description);
+                if ((b & S5) != 0) WriteBytes(w, sx.Data);
+                if ((b & S6) != 0) w.WriteByte((byte)sx.TopContact);
+                if ((b & S7) != 0) w.WriteByte((byte)sx.LeftContact);
+                if ((b & S8) != 0) w.WriteByte((byte)sx.RightContact);
+                if ((b & S9) != 0) w.WriteByte((byte)sx.BottomContact);
+                if ((b & S10) != 0) w.WriteByte((byte)sx.ConnectStyle);
             }
             w.WriteByte((byte)Mark.SymbolXEnding); // itegrity marker
         }

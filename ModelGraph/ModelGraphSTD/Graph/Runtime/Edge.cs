@@ -343,14 +343,14 @@ namespace ModelGraphSTD
 
             var tmLen = GraphParm.TerminalLength;
             var tmSpc = GraphParm.TerminalSpacing / 2;
-            var tmSkf = (float)GraphParm.TerminalSkew / 10;
+            var tmSkf = GraphParm.TerminalAngleSkew;
 
             if (Owner != null && Owner.IsGraph)
             {
                 var gx = GraphX;
                 tmLen = gx.TerminalLength;
                 tmSpc = gx.TerminalSpacing / 2;
-                tmSkf = (float)gx.TerminalSkew / 10;
+                tmSkf = gx.TerminalAngleSkew;
             }
 
             var bendCount = (Core.Bends == null) ? 0 : Core.Bends.Length;
@@ -893,7 +893,7 @@ namespace ModelGraphSTD
                 #region SkewFactor  ===========================================
                 //                 tm o--------------------------------o| Node1
                 //                   /
-                //                  /--skew angle(skewFactor)
+                //                  /--skew angle
                 //          Face2  /
                 //  Node2 |o------o bp
                 //
@@ -903,22 +903,19 @@ namespace ModelGraphSTD
                 var dx = points[tm1].X - bx;
                 var dy = points[tm1].Y - by;
 
-                var adx = (dx > 0) ? dx : -dx; // absolute value dx
-                var ady = (dy > 0) ? dy : -dy; // absolute value dy
-
                 switch (Core.Face1.Side)
                 {
                     case Side.East:
-                        if (dx < 0 && adx > tmSkf * ady) points[tm1].X = bx - (int)(ady * tmSkf);
+                        if (dx < 0) points[tm1].X = bx - tmSkf;
                         break;
                     case Side.West:
-                        if (dx > 0 && adx > tmSkf * ady) points[tm1].X = bx + (int)(ady * tmSkf);
+                        if (dx > 0) points[tm1].X = bx + tmSkf;
                         break;
                     case Side.South:
-                        if (dy < 0 && ady > tmSkf * adx) points[tm1].Y = by - (int)(adx * tmSkf);
+                        if (dy < 0) points[tm1].Y = by - tmSkf;
                         break;
                     case Side.North:
-                        if (dy > 0 && ady > tmSkf * adx) points[tm1].Y = by + (int)(adx * tmSkf);
+                        if (dy > 0) points[tm1].Y = by + tmSkf;
                         break;
                 }
                 #endregion
@@ -939,22 +936,19 @@ namespace ModelGraphSTD
                 var dx = points[tm2].X - bx;
                 var dy = points[tm2].Y - by;
 
-                var adx = (dx > 0) ? dx : -dx; // absolute value dx
-                var ady = (dy > 0) ? dy : -dy; // absolute value dy
-
                 switch (Core.Face1.Side)
                 {
                     case Side.East:
-                        if (dx < 0 && adx > tmSkf * ady) points[tm1].X = bx - (int)(ady * tmSkf);
+                        if (dx < 0) points[tm1].X = bx - tmSkf;
                         break;
                     case Side.West:
-                        if (dx > 0 && adx > tmSkf * ady) points[tm1].X = bx + (int)(ady * tmSkf);
+                        if (dx > 0) points[tm1].X = bx + tmSkf;
                         break;
                     case Side.South:
-                        if (dy < 0 && ady > tmSkf * adx) points[tm1].Y = by - (int)(adx * tmSkf);
+                        if (dy < 0) points[tm1].Y = by - tmSkf;
                         break;
                     case Side.North:
-                        if (dy > 0 && ady > tmSkf * adx) points[tm1].Y = by + (int)(adx * tmSkf);
+                        if (dy > 0) points[tm1].Y = by + tmSkf;
                         break;
                 }
                 #endregion

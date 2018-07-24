@@ -1,21 +1,18 @@
 ﻿
 namespace ModelGraphSTD
 {
-    /// <summary>
-    /// Complete catalog all items, models, and commands 
-    /// </summary>
     public enum Trait : ushort
-    {
-        // Trait provides identity for items, models, and commands. 
-        // It also is used as a key to locate resource strings.
-        //
-        // Resource string keys are of the form:
-        // xxxK - the item's Kind 
-        // xxxN - the item's Name
-        // xxxS - the item's Summary (tooltip text)
-        // xxxV - the item's Description
-        // where xxx are the three hex digits enumerated in this file
-
+    {/*
+        Provides identity for item, enum, pair, store, model, relation, property, and commands. 
+        It also is used as a key to locate resource strings.
+        
+        Resource string keys are of the form:
+        xxxK - the item's Kind 
+        xxxN - the item's Name
+        xxxS - the item's Summary (tooltip text)
+        xxxV - the item's Description
+        where xxx are the three hex digits enumerated in this file
+     */
         #region Flags  ========================================================
         Empty = 0,
 
@@ -285,12 +282,17 @@ namespace ModelGraphSTD
         //=========================================
         GraphName_P = 0x451,
         GraphSummary_P = 0x452,
+        GraphTerminalLength_P = 0x453,
+        GraphTerminalSpacing_P = 0x454,
+        GraphTerminalStretch_P = 0x455,
 
         //=========================================
-        QueryXFilter_P = 0x461 | CanMultiline,
-        QueryXWhere_P = 0x463 | CanMultiline,
-        QueryXConnect1_P = 0x464,
-        QueryXConnect2_P = 0x465,
+        QueryXFilter_P = 0x460 | CanMultiline,
+        QueryXWhere_P = 0x461 | CanMultiline,
+        QueryXConnect1_P = 0x462,
+        QueryXConnect2_P = 0x463,
+        QueryXConnectStyle1_P = 0x464,
+        QueryXConnectStyle2_P = 0x465,
         QueryXRelation_P = 0x466,
         QueryXIsReversed_P = 0x467,
         QueryXIsImmediate_P = 0x468,
@@ -314,6 +316,7 @@ namespace ModelGraphSTD
         SymbolXLeftContactt_P = 0x483,
         SymbolXRightContact_P = 0x484,
         SymbolXBottomContact_P = 0x485,
+        SymbolXConnectStyle_P = 0x486,
 
         //=========================================
         NodeCenterXY_P = 0x491 | IsCovert,
@@ -405,11 +408,11 @@ namespace ModelGraphSTD
 
         //=====================================================================
         S_630_M = 0x630,
-        ViewXViewList_M = 0x631,
-        ViewXView_M = 0x632,
-        ViewXQuery_M = 0x633,
-        ViewXCommand_M = 0x634,
-        ViewXProperty_M = 0x635,
+        MetaViewViewList_M = 0x631,
+        MetaViewView_M = 0x632,
+        MetaViewQuery_M = 0x633,
+        MetaViewCommand_M = 0x634,
+        MetaViewProperty_M = 0x635,
         S_636_M = 0x636,
         S_637_M = 0x637,
         S_638_M = 0x638,
@@ -422,59 +425,62 @@ namespace ModelGraphSTD
         S_63F_M = 0x63F,
 
         //=====================================================================
-        EnumXList_M = 0x642,
-        TableXList_M = 0x643,
-        GraphXList_M = 0x644,
-        SymbolXList_M = 0x645,
+        MetaEnumList_M = 0x642,
+        MetaTableList_M = 0x643,
+        MetaGraphList_M = 0x644,
+        MetaSymbolList_M = 0x645,
+        MetaGraphParmList_M = 0x646,
+
         TableList_M = 0x647,
         GraphList_M = 0x648,
 
         //=====================================================================
-        PairX_M = 0x652,
-        EnumX_M = 0x653,
-        TableX_M = 0x654,
-        GraphX_M = 0x655,
-        SymbolX_M = 0x656,
-        ColumnX_M = 0x657,
-        ComputeX_M = 0x658,
-        SymbolXEditor_M = 0x659,
+        MetaPair_M = 0x652,
+        MetaEnum_M = 0x653,
+        MetaTable_M = 0x654,
+        MetaGraph_M = 0x655,
+        MetaSymbol_M = 0x656,
+        MetaColumn_M = 0x657,
+        MetaCompute_M = 0x658,
+        SymbolEditor_M = 0x659,
 
         //=====================================================================
-        ColumnXList_M = 0x661,
-        ChildRelationXList_M = 0x662,
-        ParentRelatationXList_M = 0x663,
-        EnumValueList_M = 0x664,
-        EnumColumnList_M = 0x665,
-        ComputeXList_M = 0x666,
+        MetaColumnList_M = 0x661,
+        MetaChildRelationList_M = 0x662,
+        MetaParentRelatationList_M = 0x663,
+        MetaEnumValueList_M = 0x664,
+        MetaEnumColumnList_M = 0x665,
+        MetaComputeList_M = 0x666,
+        MetaEnumRelatedColumn_M = 0x667,
 
         //=====================================================================
-        ChildRelationX_M = 0x671,
-        ParentRelationX_M = 0x672,
-        NameColumnRelation_M = 0x673,
-        SummaryColumnRelation_M = 0x674,
-        NameColumn_M = 0x675,
-        SummaryColumn_M = 0x676,
+        MetaChildRelation_M = 0x671,
+        MetaParentRelation_M = 0x672,
+        MetaNameColumnRelation_M = 0x673,
+        MetaSummaryColumnRelation_M = 0x674,
+        MetaNameColumn_M = 0x675,
+        MetaSummaryColumn_M = 0x676,
 
         //=====================================================================
-        GraphXColoring_M = 0x681,
-        GraphXRootList_M = 0x682,
-        GraphXNodeList_M = 0x683,
-        GraphXNode_M = 0x684,
-        GraphXColorColumn_M = 0x685,
+        MetaGraphColoring_M = 0x681,
+        MetaGraphRootList_M = 0x682,
+        MetaGraphNodeList_M = 0x683,
+        MetaGraphNode_M = 0x684,
+        MetaGraphColorColumn_M = 0x685,
 
         //=====================================================================
-        GraphXRoot_M = 0x691,
-        GraphXLink_M = 0x692,
-        GraphXPathHead_M = 0x693,
-        GraphXPathLink_M = 0x694,
-        GraphXGroupHead_M = 0x695,
-        GraphXGroupLink_M = 0x696,
-        GraphXEgressHead_M = 0x697,
-        GraphXEgressLink_M = 0x698,
-        GraphXNodeSymbol_M = 0x699,
+        MetaGraphRoot_M = 0x691,
+        MetaGraphLink_M = 0x692,
+        MetaGraphPathHead_M = 0x693,
+        MetaGraphPathLink_M = 0x694,
+        MetaGraphGroupHead_M = 0x695,
+        MetaGraphGroupLink_M = 0x696,
+        MetaGraphEgressHead_M = 0x697,
+        MetaGraphEgressLink_M = 0x698,
+        MetaGraphNodeSymbol_M = 0x699,
 
-        ValueXHead_M = 0x69E,
-        ValueXLink_M = 0x69F,
+        MetaValueHead_M = 0x69E,
+        MetaValueLink_M = 0x69F,
 
         //=====================================================================
         Row_M = 0x6A1,
@@ -485,7 +491,6 @@ namespace ModelGraphSTD
         RowParentRelation_M = 0x6A8,
         RowRelatedChild_M = 0x6A9,
         RowRelatedParent_M = 0x6AA,
-        EnumRelatedColumn_M = 0x6AB,
 
         //=====================================================================
         RowPropertyList_M = 0x6B1,
@@ -749,8 +754,12 @@ namespace ModelGraphSTD
         TakeSet_Both = 0xD02,
         TakeSetEnum = 0xD3F,
 
-        StaticPairD40 = 0xD40,
-        StaticEnumD7F = 0xD7F,
+        ConnectStyle_Default = 0xD40,
+        ConnectStyle_Radial = 0xD41,
+        ConnectStyle_Normal = 0xD42,
+        ConnectStyle_RightAngle = 0xD43,
+        ConnectStyle_SkewedAngle = 0xD44,
+        ConnectStyleEnum = 0xD7F,
 
         StaticPairD80 = 0xD80,
         StaticEnumDBF = 0xDBF,

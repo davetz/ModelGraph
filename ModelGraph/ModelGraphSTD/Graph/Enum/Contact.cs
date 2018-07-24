@@ -1,7 +1,5 @@
 ﻿namespace ModelGraphSTD
-{/*
-
- */
+{
     public enum Contact : byte
     {
         Any = 0,

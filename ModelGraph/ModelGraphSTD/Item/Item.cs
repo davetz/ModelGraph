@@ -89,8 +89,6 @@ namespace ModelGraphSTD
         internal bool IsPathHead => IsHead && QueryKind == QueryType.Path;
         internal bool IsGroupHead => IsHead && QueryKind == QueryType.Group;
         internal bool IsSegueHead => IsHead && QueryKind == QueryType.Segue;
-
-
         #endregion
 
         #region StringKeys  ===================================================

@@ -8,7 +8,9 @@ namespace ModelGraphSTD
         internal WhereSelect Where;
         internal WhereSelect Select;
         internal Connect Connect1;
+        internal ConnectStyle ConnectStyle1;
         internal Connect Connect2;
+        internal ConnectStyle ConnectStyle2;
         internal byte ExclusiveKey;
         private PFlag _flags;
 

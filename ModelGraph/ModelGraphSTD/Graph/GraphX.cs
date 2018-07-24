@@ -14,7 +14,7 @@ namespace ModelGraphSTD
         internal byte MinNodeSize = 4;
         internal byte TerminalLength = 8;
         internal byte TerminalSpacing = 8;
-        internal byte TerminalSkew = 2;
+        internal byte TerminalAngleSkew = 2;
 
         #region Constructors  =================================================
         internal GraphX(Store owner)

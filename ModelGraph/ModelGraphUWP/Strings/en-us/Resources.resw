@@ -838,29 +838,29 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
   <data name="452S" xml:space="preserve">
     <value>Summary (used in hover over tool tip)</value>
   </data>
+  <data name="460N" xml:space="preserve">
+    <value>Rows Where</value>
+  </data>
+  <data name="460S" xml:space="preserve">
+    <value>Select expresion string</value>
+  </data>
   <data name="461N" xml:space="preserve">
     <value>Rows Where</value>
   </data>
   <data name="461S" xml:space="preserve">
-    <value>Select expresion string</value>
-  </data>
-  <data name="463N" xml:space="preserve">
-    <value>Rows Where</value>
-  </data>
-  <data name="463S" xml:space="preserve">
     <value>Filter the rows for specific property values</value>
   </data>
   <data name="464N" xml:space="preserve">
-    <value>Connect-1</value>
+    <value>ConnectStyle-1</value>
   </data>
   <data name="464S" xml:space="preserve">
-    <value>Specify allowed connections on head end</value>
+    <value>Specify the style of connection on the head end</value>
   </data>
   <data name="465N" xml:space="preserve">
-    <value>Connect-2</value>
+    <value>ConnectStyle-2</value>
   </data>
   <data name="465S" xml:space="preserve">
-    <value>Specify allowed conntions on tail end</value>
+    <value>Specify the style of conntion on tail end</value>
   </data>
   <data name="466N" xml:space="preserve">
     <value>Relation</value>
@@ -1316,7 +1316,7 @@ Drop the Relation here on this item.</value>
   <data name="6A8K" xml:space="preserve">
     <value>Relation</value>
   </data>
-  <data name="6ABK" xml:space="preserve">
+  <data name="667K" xml:space="preserve">
     <value>Column</value>
   </data>
   <data name="6B1N" xml:space="preserve">
@@ -2125,5 +2125,65 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
   </data>
   <data name="404S" xml:space="preserve">
     <value>Include the Item's hash code in the item's name string</value>
+  </data>
+  <data name="646N" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="453N" xml:space="preserve">
+    <value>Terminal Length</value>
+  </data>
+  <data name="453S" xml:space="preserve">
+    <value>Length of terminal</value>
+  </data>
+  <data name="454N" xml:space="preserve">
+    <value>Terminal Spacing</value>
+  </data>
+  <data name="454S" xml:space="preserve">
+    <value>Space between terminals</value>
+  </data>
+  <data name="455N" xml:space="preserve">
+    <value>Terminal Right Angle Skew</value>
+  </data>
+  <data name="455S" xml:space="preserve">
+    <value>Skew right angle conctions (greater than 90 degrees) </value>
+  </data>
+  <data name="486N" xml:space="preserve">
+    <value>Connection Style</value>
+  </data>
+  <data name="486S" xml:space="preserve">
+    <value>Specify the style of connection to point nodes </value>
+  </data>
+  <data name="462N" xml:space="preserve">
+    <value>Connect-1</value>
+  </data>
+  <data name="462S" xml:space="preserve">
+    <value>Specify allowed connections on head end</value>
+  </data>
+  <data name="463N" xml:space="preserve">
+    <value>Connect-2</value>
+  </data>
+  <data name="463S" xml:space="preserve">
+    <value>Specify allowed conntions on tail end</value>
+  </data>
+  <data name="D40N" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="D41N" xml:space="preserve">
+    <value>Radial</value>
+  </data>
+  <data name="D42N" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="D43N" xml:space="preserve">
+    <value>Right Angle</value>
+  </data>
+  <data name="D44N" xml:space="preserve">
+    <value>Skewed Angle</value>
+  </data>
+  <data name="D7FN" xml:space="preserve">
+    <value>Connection Style</value>
+  </data>
+  <data name="D7FS" xml:space="preserve">
+    <value>Style of connection</value>
   </data>
 </root>

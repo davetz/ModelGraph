@@ -50,7 +50,26 @@ namespace RepositoryUWP
 
             if (header == 0)
             {
-                if (fileFormat == _fileFormat_4)
+                if (fileFormat == _fileFormat_5)
+                {
+                    vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
+                    {
+                        null,               // 0
+                        ReadViewX_1,        // 1 ViewX
+                        ReadEnumX_1,        // 2 EnumX
+                        ReadTableX_1,       // 3 TableX
+                        ReadGraphX_1,       // 4 GraphX
+                        ReadQueryX_3,       // 5 QueryX
+                        ReadSymbolX_2,      // 6 SymbolX
+                        ReadColumnX_4,      // 7 ColumnX
+                        ReadComputeX_3,     // 8 ComputeX 
+                        null,               // 9 CommandX
+                        ReadRelationX_2,    // 10 RelationX
+                        ReadGraphParm_1,    // 11 GraphParam
+                        ReadRelationLink_1, // 12 RelationLink
+                    };
+                }
+                else if (fileFormat == _fileFormat_4)
                 {
                     vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
                     {
@@ -371,6 +390,36 @@ namespace RepositoryUWP
         }
         #endregion
 
+        #region ReadQueryX_3  =================================================
+        private void ReadQueryX_3(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            var store = chef.T_QueryXStore;
+            var count = r.ReadInt32();
+            if (count < 0) throw new Exception($"Invalid count {count}");
+
+            for (int i = 0; i < count; i++)
+            {
+                var index = r.ReadInt32();
+                if (index < 0 || index >= items.Length) throw new Exception($"Invalid index {index}");
+
+                var qx = new QueryX(store, guids[index]);
+                items[index] = qx;
+
+                var b = r.ReadByte();
+                if ((b & B1) != 0) qx.SetFlags(r.ReadUInt16());
+                if ((b & B2) != 0) qx.WhereString = ReadString(r);
+                if ((b & B3) != 0) qx.SelectString = ReadString(r);
+                if ((b & B4) != 0) qx.ExclusiveKey = r.ReadByte();
+                if ((b & B5) != 0) qx.Connect1 = (Connect)r.ReadByte();
+                if ((b & B6) != 0) qx.Connect2 = (Connect)r.ReadByte();
+                if ((b & B7) != 0) qx.ConnectStyle1 = (ConnectStyle)r.ReadByte();
+                if ((b & B8) != 0) qx.ConnectStyle2 = (ConnectStyle)r.ReadByte();
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
+        }
+        #endregion
+
         #region ReadSymbolX_1  ================================================
         private void ReadSymbolX_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
@@ -395,6 +444,38 @@ namespace RepositoryUWP
                 if ((b & B6) != 0) sx.LeftContact = (Contact)r.ReadByte();
                 if ((b & B7) != 0) sx.RightContact = (Contact)r.ReadByte();
                 if ((b & B8) != 0) sx.BottomContact = (Contact)r.ReadByte();
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.SymbolXEnding) throw new Exception($"Expected SymbolXEnding marker, instead got {mark}");
+        }
+        #endregion
+
+        #region ReadSymbolX_2  ================================================
+        private void ReadSymbolX_2(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            var store = chef.T_SymbolStore;
+            var count = r.ReadInt32();
+            if (count < 0) throw new Exception($"Invalid count {count}");
+
+            for (int i = 0; i < count; i++)
+            {
+                var index = r.ReadInt32();
+                if (index < 0 || index >= items.Length) throw new Exception($"Invalid index {index}");
+
+                var sx = new SymbolX(store, guids[index]);
+                items[index] = sx;
+
+                var b = r.ReadUInt16();
+                if ((b & S1) != 0) sx.SetFlags(r.ReadUInt16());
+                if ((b & S2) != 0) sx.Name = ReadString(r);
+                if ((b & S3) != 0) sx.Summary = ReadString(r);
+                if ((b & S4) != 0) sx.Description = ReadString(r);
+                if ((b & S5) != 0) sx.Data = ReadBytes(r);
+                if ((b & S6) != 0) sx.TopContact = (Contact)r.ReadByte();
+                if ((b & S7) != 0) sx.LeftContact = (Contact)r.ReadByte();
+                if ((b & S8) != 0) sx.RightContact = (Contact)r.ReadByte();
+                if ((b & S9) != 0) sx.BottomContact = (Contact)r.ReadByte();
+                if ((b & S10) != 0) sx.ConnectStyle = (ConnectStyle)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.SymbolXEnding) throw new Exception($"Expected SymbolXEnding marker, instead got {mark}");

@@ -271,20 +271,23 @@ namespace ModelGraphSTD
         #region Move  =========================================================
         public void Move((int X, int Y) delta)
         {
-            if (_enableSnapShot) TakeSnapShot();
+            if ((HitLocation & (HitLocation.Region | HitLocation.Node)) != 0)
+            {
+                if (_enableSnapShot) TakeSnapShot();
 
-            if ((HitLocation & HitLocation.Region) == 0)
-            {
-                HitNode?.Move(delta); //BUG - HitNode was Null !
-                if (HitNodeEdgeCuts != null)
-                    foreach (var cut in HitNodeEdgeCuts) { cut.Edge.Move(delta, cut.Index1, cut.Index2); }
-            }
-            else
-            {
-                foreach (var reg in Regions) { reg.Move(delta); }
-                foreach (var node in Nodes) { node.Move(delta); }
-                foreach (var edge in Edges) { edge.Move(delta); }
-                foreach (var cut in EdgeCuts) { cut.Edge.Move(delta, cut.Index1, cut.Index2); }
+                if ((HitLocation & HitLocation.Region) == 0)
+                {
+                    HitNode?.Move(delta); //BUG - HitNode was Null !
+                    if (HitNodeEdgeCuts != null)
+                        foreach (var cut in HitNodeEdgeCuts) { cut.Edge.Move(delta, cut.Index1, cut.Index2); }
+                }
+                else
+                {
+                    foreach (var reg in Regions) { reg.Move(delta); }
+                    foreach (var node in Nodes) { node.Move(delta); }
+                    foreach (var edge in Edges) { edge.Move(delta); }
+                    foreach (var cut in EdgeCuts) { cut.Edge.Move(delta, cut.Index1, cut.Index2); }
+                }
             }
         }
 

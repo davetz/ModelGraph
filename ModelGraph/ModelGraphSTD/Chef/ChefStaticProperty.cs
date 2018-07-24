@@ -52,10 +52,13 @@ namespace ModelGraphSTD
         private PropertyOf<SymbolX, string> _symbolXLeftContacttProperty;
         private PropertyOf<SymbolX, string> _symbolXRightContactProperty;
         private PropertyOf<SymbolX, string> _symbolXBottomContactProperty;
+        private PropertyOf<SymbolX, string> _symbolXConnectStyleProperty;
 
         private PropertyOf<QueryX, string> _queryXRootWhereProperty;
         private PropertyOf<QueryX, string> _queryXConnect1Property;
+        private PropertyOf<QueryX, string> _queryXConnectStyle1Property;
         private PropertyOf<QueryX, string> _queryXConnect2Property;
+        private PropertyOf<QueryX, string> _queryXConnectStyle2Property;
         private PropertyOf<QueryX, string> _queryXRelationProperty;
         private PropertyOf<QueryX, bool> _queryXIsReversedProperty;
         private PropertyOf<QueryX, bool> _queryXIsPersistentProperty;
@@ -82,6 +85,9 @@ namespace ModelGraphSTD
         private PropertyOf<Edge, string> _edgeConnect1Property;
         private PropertyOf<Edge, string> _edgeConnect2Property;
 
+        private PropertyOf<GraphX, int> _graphXTerminalLengthProperty;
+        private PropertyOf<GraphX, int> _graphXTerminalSpacingProperty;
+        private PropertyOf<GraphX, int> _graphXTerminalStretchProperty;
 
         private void InitializeProperties()
         {
@@ -351,6 +357,27 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
+            {
+                var p = _graphXTerminalLengthProperty = new PropertyOf<GraphX, int>(_propertyStore, Trait.GraphTerminalLength_P);
+                p.GetValFunc = (item) => p.Cast(item).TerminalLength;
+                p.SetValFunc = (item, value) => { p.Cast(item).TerminalLength = (byte)value; return true; };
+                p.Value = new Int32Value(p);
+                props.Add(p);
+            }
+            {
+                var p = _graphXTerminalSpacingProperty = new PropertyOf<GraphX, int>(_propertyStore, Trait.GraphTerminalSpacing_P);
+                p.GetValFunc = (item) => p.Cast(item).TerminalSpacing;
+                p.SetValFunc = (item, value) => { p.Cast(item).TerminalSpacing = (byte)value; return true; };
+                p.Value = new Int32Value(p);
+                props.Add(p);
+            }
+            {
+                var p = _graphXTerminalStretchProperty = new PropertyOf<GraphX, int>(_propertyStore, Trait.GraphTerminalStretch_P);
+                p.GetValFunc = (item) => p.Cast(item).TerminalAngleSkew;
+                p.SetValFunc = (item, value) => { p.Cast(item).TerminalAngleSkew = (byte)value; return true; };
+                p.Value = new Int32Value(p);
+                props.Add(p);
+            }
             Store_Property.SetLink(_graphXStore, props);
             #endregion
 
@@ -391,6 +418,13 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
+            {
+                var p = _symbolXConnectStyleProperty = new PropertyOf<SymbolX, string>(_propertyStore, Trait.SymbolXConnectStyle_P, _connectStyleEnum);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).ConnectStyle);
+                p.SetValFunc = (item, value) => { p.Cast(item).ConnectStyle = (ConnectStyle)GetEnumZKey(p.EnumZ, value); return true; };
+                p.Value = new StringValue(p);
+                props.Add(p);
+            }
             Store_Property.SetLink(_symbolXStore, props);
             #endregion
 
@@ -412,9 +446,23 @@ namespace ModelGraphSTD
                 props.Add(p);
             }
             {
+                var p = _queryXConnectStyle1Property = new PropertyOf<QueryX, string>(_propertyStore, Trait.QueryXConnectStyle1_P, _connectStyleEnum);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).ConnectStyle1);
+                p.SetValFunc = (item, value) => { p.Cast(item).ConnectStyle1 = (ConnectStyle)GetEnumZKey(p.EnumZ, value); return true; };
+                p.Value = new StringValue(p);
+                props.Add(p);
+            }
+            {
                 var p = _queryXConnect2Property = new PropertyOf<QueryX, string>(_propertyStore, Trait.QueryXConnect2_P, _connectEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Connect2);
                 p.SetValFunc = (item, value) => { p.Cast(item).Connect2 = (Connect)GetEnumZKey(p.EnumZ, value); return true; };
+                p.Value = new StringValue(p);
+                props.Add(p);
+            }
+            {
+                var p = _queryXConnectStyle2Property = new PropertyOf<QueryX, string>(_propertyStore, Trait.QueryXConnectStyle2_P, _connectStyleEnum);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).ConnectStyle2);
+                p.SetValFunc = (item, value) => { p.Cast(item).ConnectStyle2 = (ConnectStyle)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
