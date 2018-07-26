@@ -1,9 +1,10 @@
 ﻿using System;
 
-
 namespace ModelGraphSTD
-{/*
- */
+{
+    /// <summary>
+    /// State bit flags specific to each item type
+    /// </summary>
     [Flags]
     public enum State : ushort
     {
@@ -39,12 +40,14 @@ namespace ModelGraphSTD
         B11_spare = 0x400, // currently unused
 
         B12_spare = 0x800, // currently unused
-
         //=================================================
-        Mask = 0x0FFF,
-        IsNew = 0x1000, // all items
-        IsDeleted = 0x2000, // all items
-        AutoExpandLeft = 0x4000, // all items
-        AutoExpandRight = 0x8000, // all items
+
+        B13_spare = 0x1000, // currently unused
+
+        B14_spare = 0x2000, // currently unused
+
+        B15_spare = 0x4000, // currently unused
+
+        B16_spare = 0x8000, // currently unused
     }
 }

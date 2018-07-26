@@ -378,7 +378,7 @@ namespace RepositoryUWP
                 items[index] = qx;
 
                 var b = r.ReadByte();
-                if ((b & B1) != 0) qx.SetFlags(r.ReadUInt16());
+                if ((b & B1) != 0) qx.SetState(r.ReadUInt16());
                 if ((b & B2) != 0) qx.WhereString = ReadString(r);
                 if ((b & B3) != 0) qx.SelectString = ReadString(r);
                 if ((b & B4) != 0) qx.ExclusiveKey = r.ReadByte();
@@ -406,7 +406,7 @@ namespace RepositoryUWP
                 items[index] = qx;
 
                 var b = r.ReadByte();
-                if ((b & B1) != 0) qx.SetFlags(r.ReadUInt16());
+                if ((b & B1) != 0) qx.SetState(r.ReadUInt16());
                 if ((b & B2) != 0) qx.WhereString = ReadString(r);
                 if ((b & B3) != 0) qx.SelectString = ReadString(r);
                 if ((b & B4) != 0) qx.ExclusiveKey = r.ReadByte();
@@ -466,7 +466,7 @@ namespace RepositoryUWP
                 items[index] = sx;
 
                 var b = r.ReadUInt16();
-                if ((b & S1) != 0) sx.SetFlags(r.ReadUInt16());
+                if ((b & S1) != 0) sx.SetState(r.ReadUInt16());
                 if ((b & S2) != 0) sx.Name = ReadString(r);
                 if ((b & S3) != 0) sx.Summary = ReadString(r);
                 if ((b & S4) != 0) sx.Description = ReadString(r);
@@ -548,7 +548,7 @@ namespace RepositoryUWP
                 items[index] = cx;
 
                 var b = r.ReadByte();
-                if ((b & B1) != 0) cx.SetFlags(r.ReadUInt16());
+                if ((b & B1) != 0) cx.SetState(r.ReadUInt16());
                 if ((b & B2) != 0) cx.Name = ReadString(r);
                 if ((b & B3) != 0) cx.Summary = ReadString(r);
                 if ((b & B4) != 0) cx.Initial = ReadString(r);
@@ -603,7 +603,7 @@ namespace RepositoryUWP
                 items[index] = cx;
 
                 var b = r.ReadByte();
-                if ((b & B1) != 0) cx.SetFlags(r.ReadUInt16());
+                if ((b & B1) != 0) cx.SetState(r.ReadUInt16());
                 if ((b & B2) != 0) cx.Name = ReadString(r);
                 if ((b & B3) != 0) cx.Summary = ReadString(r);
                 if ((b & B5) != 0) cx.Description = ReadString(r);
@@ -633,7 +633,7 @@ namespace RepositoryUWP
                 items[index] = cx;
 
                 var b = r.ReadByte();
-                if ((b & B1) != 0) cx.SetFlags(r.ReadUInt16());
+                if ((b & B1) != 0) cx.SetState(r.ReadUInt16());
                 if ((b & B2) != 0) cx.Name = ReadString(r);
                 if ((b & B3) != 0) cx.Summary = ReadString(r);
                 if ((b & B5) != 0) cx.Description = ReadString(r);
@@ -796,7 +796,7 @@ namespace RepositoryUWP
                 items[index] = rx;
 
                 var b = r.ReadByte();
-                if ((b & B1) != 0) rx.SetFlags(r.ReadUInt16());
+                if ((b & B1) != 0) rx.SetState(r.ReadUInt16());
                 if ((b & B2) != 0) rx.Name = ReadString(r);
                 if ((b & B3) != 0) rx.Summary = ReadString(r);
                 if ((b & B4) != 0) rx.Description = ReadString(r);

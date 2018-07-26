@@ -210,7 +210,7 @@ namespace RepositoryUWP
                 w.WriteInt32(itemIndex[qx]);
 
                 var b = BZ;
-                if (qx.HasFlags()) b |= B1;
+                if (qx.HasState()) b |= B1;
                 if (!string.IsNullOrWhiteSpace(qx.WhereString)) b |= B2;
                 if (!string.IsNullOrWhiteSpace(qx.SelectString)) b |= B3;
                 if (qx.IsExclusive) b |= B4;
@@ -223,7 +223,7 @@ namespace RepositoryUWP
                 }
 
                 w.WriteByte(b);
-                if ((b & B1) != 0) w.WriteUInt16(qx.GetFlags());
+                if ((b & B1) != 0) w.WriteUInt16(qx.GetState());
                 if ((b & B2) != 0) WriteString(w, qx.WhereString);
                 if ((b & B3) != 0) WriteString(w, qx.SelectString);
                 if ((b & B4) != 0) w.WriteByte(qx.ExclusiveKey);
@@ -247,7 +247,7 @@ namespace RepositoryUWP
                 w.WriteInt32(itemIndex[sx]);
 
                 var b = SZ;
-                if (sx.HasFlags()) b |= S1;
+                if (sx.HasState()) b |= S1;
                 if (!string.IsNullOrWhiteSpace(sx.Name)) b |= S2;
                 if (!string.IsNullOrWhiteSpace(sx.Summary)) b |= S3;
                 if (!string.IsNullOrWhiteSpace(sx.Description)) b |= S4;
@@ -259,7 +259,7 @@ namespace RepositoryUWP
                 if (sx.ConnectStyle != ConnectStyle.Default) b |= S10;
 
                 w.WriteUInt16(b);
-                if ((b & S1) != 0) w.WriteUInt16(sx.GetFlags());
+                if ((b & S1) != 0) w.WriteUInt16(sx.GetState());
                 if ((b & S2) != 0) WriteString(w, sx.Name);
                 if ((b & S3) != 0) WriteString(w, sx.Summary);
                 if ((b & S4) != 0) WriteString(w, sx.Description);
@@ -285,13 +285,13 @@ namespace RepositoryUWP
                 w.WriteInt32(itemIndex[cx]);
 
                 var b = BZ;
-                if (cx.HasFlags()) b |= B1;
+                if (cx.HasState()) b |= B1;
                 if (!string.IsNullOrWhiteSpace(cx.Name)) b |= B2;
                 if (!string.IsNullOrWhiteSpace(cx.Summary)) b |= B3;
                 if (!string.IsNullOrWhiteSpace(cx.Description)) b |= B4;
 
                 w.WriteByte(b);
-                if ((b & B1) != 0) w.WriteUInt16(cx.GetFlags());
+                if ((b & B1) != 0) w.WriteUInt16(cx.GetState());
                 if ((b & B2) != 0) WriteString(w, cx.Name);
                 if ((b & B3) != 0) WriteString(w, cx.Summary);
                 if ((b & B5) != 0) WriteString(w, cx.Description);
@@ -358,7 +358,7 @@ namespace RepositoryUWP
                 var valCount = rx.ValueCount;
 
                 var b = BZ;
-                if (rx.HasFlags()) b |= B1;
+                if (rx.HasState()) b |= B1;
                 if (!string.IsNullOrWhiteSpace(rx.Name)) b |= B2;
                 if (!string.IsNullOrWhiteSpace(rx.Summary)) b |= B3;
                 if (!string.IsNullOrWhiteSpace(rx.Description)) b |= B4;
@@ -366,7 +366,7 @@ namespace RepositoryUWP
                 if ((keyCount + valCount) > 0) b |= B7;
 
                 w.WriteByte(b);
-                if ((b & B1) != 0) w.WriteUInt16(rx.GetFlags());
+                if ((b & B1) != 0) w.WriteUInt16(rx.GetState());
                 if ((b & B2) != 0) WriteString(w, rx.Name);
                 if ((b & B3) != 0) WriteString(w, rx.Summary);
                 if ((b & B4) != 0) WriteString(w, rx.Description);

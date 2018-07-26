@@ -4,9 +4,15 @@ namespace ModelGraphSTD
 {
     public class Item
     {
-        internal Item Owner;
-        internal Trait Trait;
-        private State _flags;
+        internal Item Owner;        //each item has an owner, this=> ... dataChef=> rootChef
+
+        internal Trait Trait;       //identity, static flags, and resource string key
+        private State _state;       //bit flags specific to each item type
+
+        private byte _flags;         //IsNew, IsDeleted, AutoExpandLeft, AutoExpandRight,..
+        internal byte PropertyDelta; //incremented whenever a property value has changed
+        internal byte RelationDelta; //incremented whenever a relation reference has changed
+        internal byte ItemListDelta; //incremented whenever the list of child items has changed (if any) 
 
         #region Trait  ========================================================
         internal bool IsExternal => (Trait & Trait.IsExternal) != 0;
@@ -44,13 +50,15 @@ namespace ModelGraphSTD
         internal byte TraitIndex => (byte)(Trait & Trait.IndexMask);
         #endregion
 
-        #region Flags  ========================================================
-        private bool GetFlag(State flag) => (_flags & flag) != 0;
-        private void SetFlag(State flag, bool value = true) { if (value) _flags |= flag; else _flags &= ~flag; }
-        internal bool HasFlags() => (_flags & State.Mask) != 0;
-        internal ushort GetFlags() => (ushort)(_flags & State.Mask);
-        internal void SetFlags(ushort flags) { _flags = ((State)flags & State.Mask); }
-        internal QueryType QueryKind { get { return (QueryType)(_flags & State.Index); } set { _flags = ((_flags & ~State.Index) | (State)(value)); } }
+        #region State  ========================================================
+        private bool GetFlag(State flag) => (_state & flag) != 0;
+        private void SetFlag(State flag, bool value = true) { if (value) _state |= flag; else _state &= ~flag; }
+
+        internal bool HasState() => _state != 0;
+        internal ushort GetState() => (ushort)_state;
+        internal void SetState(ushort state)  => _state = (State)state;
+
+        internal QueryType QueryKind { get { return (QueryType)(_state & State.Index); } set { _state = ((_state & ~State.Index) | (State)(value)); } }
 
         internal bool IsHead { get { return GetFlag(State.IsHead); } set { SetFlag(State.IsHead, value); } }
         internal bool IsTail { get { return GetFlag(State.IsTail); } set { SetFlag(State.IsTail, value); } }
@@ -72,11 +80,6 @@ namespace ModelGraphSTD
         internal bool IsVirgin { get { return GetFlag(State.IsVirgin); } set { SetFlag(State.IsVirgin, value); } }
         internal bool IsCongealed { get { return GetFlag(State.IsCongealed); } set { SetFlag(State.IsCongealed, value); } }
 
-        internal bool IsNew { get { return GetFlag(State.IsNew); } set { SetFlag(State.IsNew, value); } }
-        internal bool IsDeleted { get { return GetFlag(State.IsDeleted); } set { SetFlag(State.IsDeleted, value); } }
-        internal bool AutoExpandLeft { get { return GetFlag(State.AutoExpandLeft); } set { SetFlag(State.AutoExpandLeft, value); } }
-        internal bool AutoExpandRight { get { return GetFlag(State.AutoExpandRight); } set { SetFlag(State.AutoExpandRight, value); } }
-
         internal bool IsChoice { get { return GetFlag(State.IsChoice); } set { SetFlag(State.IsChoice, value); } }
 
 
@@ -89,6 +92,17 @@ namespace ModelGraphSTD
         internal bool IsPathHead => IsHead && QueryKind == QueryType.Path;
         internal bool IsGroupHead => IsHead && QueryKind == QueryType.Group;
         internal bool IsSegueHead => IsHead && QueryKind == QueryType.Egress;
+
+        // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+
+        internal bool IsNew { get { return (_flags & B1) != 0; } set { _flags = value ? (byte)(_flags | B1) : (byte)(_flags & ~B1); } }
+        const byte B1 = 0x1;
+        internal bool IsDeleted { get { return (_flags & B2) != 0; } set { _flags = value ? (byte)(_flags | B2) : (byte)(_flags & ~B2); } }
+        const byte B2 = 0x2;
+        internal bool AutoExpandLeft { get { return (_flags & B3) != 0; } set { _flags = value ? (byte)(_flags | B3) : (byte)(_flags & ~B3); } }
+        const byte B3 = 0x4;
+        internal bool AutoExpandRight { get { return (_flags & B4) != 0; } set { _flags = value ? (byte)(_flags | B4) : (byte)(_flags & ~B4); } }
+        const byte B4 = 0x8;
         #endregion
 
         #region StringKeys  ===================================================

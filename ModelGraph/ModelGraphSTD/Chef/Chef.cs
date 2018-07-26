@@ -19,7 +19,7 @@ namespace ModelGraphSTD
         internal Chef() : base(null, Trait.RootChef, Guid.Empty, 10)
         {
             Owner = this;
-            Initialize_RootChef_X();
+            Initer_RootChef_X();
         }
         #endregion
 

@@ -88,6 +88,7 @@ namespace ModelGraphSTD
 
             ChangedSort = 0x4,
             ChangedFilter = 0x2,
+            IsChanged = 0x1,
 
             IsExpanded = IsExpandLeft | IsExpandRight,
             IsSorted = IsAscendingSort | IsDescendingSort,
@@ -100,6 +101,7 @@ namespace ModelGraphSTD
         private void SetState(State state, bool value) { if (value) _state |= state; else _state &= ~state; }
         private void SetState(State state, State changedState, bool value) { var prev = GetState(state);  if (value) _state |= state; else _state &= ~state; if (prev != value) _state |= changedState; }
 
+        public bool IsChanged { get { return GetState(State.IsChanged); } set { SetState(State.IsChanged, !value); } }
         public bool IsReadOnly { get { return GetState(State.IsReadOnly); } set { SetState(State.IsReadOnly, !value); } }
         public bool IsMultiline { get { return GetState(State.IsMultiline); } set { SetState(State.IsMultiline, !value); } }
         public bool IsFilterFocus { get { return GetState(State.IsFilterFocus); } set { SetState(State.IsFilterFocus, value); } }
