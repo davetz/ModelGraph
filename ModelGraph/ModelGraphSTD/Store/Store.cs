@@ -14,8 +14,6 @@ namespace ModelGraphSTD
         internal abstract List<Item> GetItems();
         internal abstract int Count { get; }
 
-        internal abstract ushort GetDelta { get; }
-
         internal bool TryLookUpProperty(string name, out Property property, out int index)
         {
             property = null;

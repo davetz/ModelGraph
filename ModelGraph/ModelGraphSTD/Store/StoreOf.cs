@@ -8,10 +8,6 @@ namespace ModelGraphSTD
         private List<T> _items = new List<T>(0);    // list of child items
         internal Guid Guid; // all stores have a Guid
 
-        internal ushort Delta;      // increments whenever the _items list changes
-        internal ushort RefDelta;   // increments when ever any reference to a child item changes
-        internal ushort JointDelta => (ushort)(Delta + RefDelta);
-
         #region Constructor  ==================================================
         internal StoreOf() { }
         internal StoreOf(Chef owner, Trait trait, Guid guid, int capacity)
@@ -36,8 +32,6 @@ namespace ModelGraphSTD
         #region Methods  ======================================================
         private T Cast(Item item) => (item is T child) ? child : throw new InvalidCastException("StoreOf");
 
-        internal override ushort GetDelta => Delta;
-
         internal void SetCapacity(int exactCount)
         {
             var cap = (int)((exactCount + 1) * 1.1); // allow for modest expansion
@@ -48,7 +42,7 @@ namespace ModelGraphSTD
         // Add  =============================================================
         internal void Add(T item)
         {
-            Delta++;
+            ItemListDelta++;
             _items.Add(item);
         }
         internal override void Add(Item item) => Add(Cast(item));
@@ -56,7 +50,7 @@ namespace ModelGraphSTD
         // Remove  ==========================================================
         internal void Remove(T item)
         {
-            Delta++;
+            ItemListDelta++;
             _items.Remove(item);
         }
         public override void Remove(Item item) => Remove(Cast(item));
@@ -66,7 +60,7 @@ namespace ModelGraphSTD
         {
             var i = (index < 0) ? 0 : index;
 
-            Delta++;
+            ItemListDelta++;
             if (i < _items.Count)
                 _items.Insert(i, item);
             else
@@ -83,7 +77,7 @@ namespace ModelGraphSTD
         {
             if (_items.Remove(item))
             {
-                Delta++;
+                ItemListDelta++;
                 if (index < 0)
                     _items.Insert(0, item);
                 else if (index < _items.Count)

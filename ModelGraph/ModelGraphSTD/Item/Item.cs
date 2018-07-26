@@ -123,8 +123,6 @@ namespace ModelGraphSTD
         internal bool IsInvalid => Owner == null || IsDeleted;
         internal bool IsValid => !IsInvalid;
         internal Store Store => Owner as Store;
-        internal virtual void RefChanged() { } // for optimization of ItemModel tree construction
-
         /// <summary>
         /// Walk up item tree hierachy to find the parent DataChef
         /// </summary>

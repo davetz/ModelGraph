@@ -27,7 +27,6 @@ namespace ModelGraphSTD
 
             owner.Add(this);
         }
-        internal override void RefChanged() => (Owner as StoreOf<TableX>).RefDelta++;
         #endregion
     }
 }

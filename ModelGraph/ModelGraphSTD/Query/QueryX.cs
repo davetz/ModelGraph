@@ -37,7 +37,6 @@ namespace ModelGraphSTD
 
             owner.Add(this);
         }
-        internal override void RefChanged() => (Owner as StoreOf<QueryX>).RefDelta++;
         #endregion
 
         #region Validation  ===================================================

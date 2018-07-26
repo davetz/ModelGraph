@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.UI.Xaml.Controls;
 using ModelGraphSTD;
+using System.Collections.Generic;
 
 namespace ModelGraphUWP
 {
@@ -9,6 +10,9 @@ namespace ModelGraphUWP
         static int initialSize = 40; // visible lines on the screen
         int _cacheSize = initialSize;
 
+        int[] _viewIndex = new int[initialSize]; //indirection into cache arrays to optimize scroll behavior
+
+        byte[] _modelDeltaCache = new byte[initialSize];
         TextBlock[] _itemKindCache = new TextBlock[initialSize];
         TextBlock[] _itemNameCache = new TextBlock[initialSize];
         TextBlock[] _itemInfoCache = new TextBlock[initialSize];
@@ -31,29 +35,57 @@ namespace ModelGraphUWP
         StackPanel[] _stackPanelCache = new StackPanel[initialSize];
 
         #region ValidateCache  ================================================
-        void ValidateCache(int length)
+        void ValidateCache(int M)
         {
+            if (M == 0) return;
             ValidateCacheSize();
 
-            var hidden = -8 * _elementHieght;
             var N = _stackPanelCache.Length;
 
             for (int i = 0; i < N; i++)
             {
                 var sp = _stackPanelCache[i];
-                if (sp == null) return;         // end of cache
-                if (i < length) continue;       // visible element
+                if (sp == null) break;         // end of cache
+                if (i < M) continue;       // visible element
 
-                sp.Children.Clear();
+                sp.Children.Clear(); //unused ui elements
+                sp.DataContext = null;
             }
+
+            var (found, viewIndex, cacheIndex) = FindCacheModel();
+            if (!found)
+                for (int i = 0; i < M; i++) { _viewIndex[i] = i; }
+            else
+                for (int i = viewIndex, j = cacheIndex, k = 0; k < M; k++, i++, j++) { _viewIndex[i % M] = (j % M); }
+
+            #region FindCacheModel  ===========================================
+            (bool, int, int) FindCacheModel()
+            {
+                for (int i = 0; i < M; i++)
+                {
+                    var m = _viewList[i];
+                    for (int j = 0; j < M; j++)
+                    {
+                        var sp = _stackPanelCache[j];
+                        if (sp == null) break;
+                        var mc = sp.DataContext as ItemModel;
+                        if (mc == null) break;
+
+                        if (m == mc) return (true, i, j);
+                    }
+                }
+                return (false, -1, -1);
+            }
+            #endregion
 
             #region ValidateCacheSize  ============================================
             void ValidateCacheSize()
             {
-                if (length < _cacheSize) return;
+                if (M < _cacheSize) return;
 
-                var size = length + 30; // new size of the cache
-
+                var size = M + 30; // new size of the cache
+                _viewIndex = new int[size];
+                _modelDeltaCache = ExpandModelDeltaCache(_modelDeltaCache);
                 _itemKindCache = ExpandTextBlockCache(_itemKindCache);
                 _itemNameCache = ExpandTextBlockCache(_itemNameCache);
                 _itemInfoCache = ExpandTextBlockCache(_itemInfoCache);
@@ -79,6 +111,13 @@ namespace ModelGraphUWP
                 return;
 
                 #region ExpandElementArray   ==================================
+                byte[] ExpandModelDeltaCache(byte[] cache)
+                {
+                    var oldCache = cache;
+                    var newCache = new byte[size];
+                    Array.Copy(oldCache, newCache, oldCache.Length);
+                    return newCache;
+                }
                 TextBlock[] ExpandTextBlockCache(TextBlock[] cache)
                 {
                     var oldCache = cache;
@@ -535,8 +574,10 @@ namespace ModelGraphUWP
 
 
         #region AddStackPanel  ================================================
-        private void AddStackPanel(int index, ItemModel m)
+        private void AddStackPanel(int viewIndex, ItemModel m)
         {
+            var index = _viewIndex[viewIndex];
+
             var sp = _stackPanelCache[index];
             if (sp == null)
             {
@@ -546,11 +587,14 @@ namespace ModelGraphUWP
                 sp.Orientation = Windows.UI.Xaml.Controls.Orientation.Horizontal;
 
                 TreeCanvas.Children.Add(sp);
-                Canvas.SetTop(sp, index * _elementHieght);
             }
+            Canvas.SetTop(sp, viewIndex * _elementHieght);
+
+            if (sp.DataContext == m && _modelDeltaCache[index] == m.ModelDelta) return;
 
             sp.Children.Clear();
             sp.DataContext = m;
+            _modelDeltaCache[index] = m.ModelDelta;
 
             var (kind, name, count, type) = m.ModelParms;
 

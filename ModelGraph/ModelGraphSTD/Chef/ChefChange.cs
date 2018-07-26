@@ -230,6 +230,7 @@ namespace ModelGraphSTD
                 var oldValue = m.Property.Value.GetString(m.Item);
                 if (IsNotSameValue(oldValue, newValue))
                 {
+                    m.Item.PropertyDelta++;
                     var name = $"{GetIdentity(m.Item, IdentityStyle.ChangeLog)}    {GetIdentity(m.Property, IdentityStyle.Single)}:  old<{oldValue}>  new<{newValue}>";
                     if (m.Property.Value.SetString(m.Item, newValue))
                     {
@@ -242,6 +243,7 @@ namespace ModelGraphSTD
         {
             if (chng.Item.IsValid && chng.CanUndo && chng.Property.Value.SetString(chng.Item, chng.OldValue))
             {
+                chng.Item.PropertyDelta++;
                 chng.IsUndone = true;
             }
         }
@@ -250,6 +252,7 @@ namespace ModelGraphSTD
         {
             if (chng.Item.IsValid && chng.CanRedo && chng.Property.Value.SetString(chng.Item, chng.NewValue))
             {
+                chng.Item.PropertyDelta++;
                 chng.IsUndone = false;
             }
         }
@@ -279,7 +282,7 @@ namespace ModelGraphSTD
         {
             var itm = cg.Item;
             var sto = itm.Store;
-            (sto).Remove(itm);
+            sto.Remove(itm);
 
             var N = (cg.Columns != null) ? cg.Columns.Count : 0;
             for (int i = 0; i < N; i++) { cg.Columns[i].Value.Remove(itm); }
