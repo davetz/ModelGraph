@@ -305,7 +305,7 @@ namespace ModelGraphSTD
                         else
                             trait = Trait.QueryGroupLink;
                         break;
-                    case QueryType.Segue:
+                    case QueryType.Egress:
                         if (qx.IsHead)
                             trait = Trait.QuerySegueHead;
                         else

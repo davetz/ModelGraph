@@ -392,7 +392,6 @@ namespace ModelGraphSTD
         #endregion
 
         #region RemoveItem  ===================================================
-        internal void RemoveItem(ItemModel m) => RemoveItem(m.Item);
         private void RemoveItem(Item target)
         {
             var relItems = new Dictionary<Relation, Dictionary<Item, List<Item>>>();

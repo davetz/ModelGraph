@@ -57,7 +57,7 @@ namespace ModelGraphSTD
         internal bool IsRoot { get { return GetFlag(State.IsRoot); } set { SetFlag(State.IsRoot, value); } }
         internal bool IsPath => (QueryKind == QueryType.Path);
         internal bool IsGroup => (QueryKind == QueryType.Group);
-        internal bool IsSegue => (QueryKind == QueryType.Segue);
+        internal bool IsSegue => (QueryKind == QueryType.Egress);
         internal bool IsValue => (QueryKind == QueryType.Value);
         internal bool IsReversed { get { return GetFlag(State.IsReversed); } set { SetFlag(State.IsReversed, value); } }
         internal bool IsRadial { get { return GetFlag(State.IsRadial); } set { SetFlag(State.IsRadial, value); } }
@@ -88,7 +88,7 @@ namespace ModelGraphSTD
         internal bool IsGraphLink => (!IsRoot && QueryKind == QueryType.Graph);
         internal bool IsPathHead => IsHead && QueryKind == QueryType.Path;
         internal bool IsGroupHead => IsHead && QueryKind == QueryType.Group;
-        internal bool IsSegueHead => IsHead && QueryKind == QueryType.Segue;
+        internal bool IsSegueHead => IsHead && QueryKind == QueryType.Egress;
         #endregion
 
         #region StringKeys  ===================================================

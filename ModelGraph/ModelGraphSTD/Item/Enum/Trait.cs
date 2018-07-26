@@ -448,7 +448,7 @@ namespace ModelGraphSTD
         MetaColumnList_M = 0x661,
         MetaChildRelationList_M = 0x662,
         MetaParentRelatationList_M = 0x663,
-        MetaEnumValueList_M = 0x664,
+        MetaEnumPairList_M = 0x664,
         MetaEnumColumnList_M = 0x665,
         MetaComputeList_M = 0x666,
         MetaEnumRelatedColumn_M = 0x667,

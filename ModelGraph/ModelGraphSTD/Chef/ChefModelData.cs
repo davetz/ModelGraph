@@ -6,180 +6,180 @@ namespace ModelGraphSTD
 {
     public partial class Chef
     {
-        #region Initialize_ModelActions  ======================================
+        #region Initer_ModelActions  ======================================
         void Initialize_ModelActions()
         {
-            Initialize_ParmDebugList_X();
-            Initialize_S_601_X();
-            Initialize_S_602_X();
-            Initialize_S_603_X();
-            Initialize_S_604_X();
-            Initialize_S_605_X();
-            Initialize_S_606_X();
-            Initialize_S_607_X();
-            Initialize_S_608_X();
-            Initialize_S_609_X();
-            Initialize_S_60A_X();
-            Initialize_S_60B_X();
-            Initialize_S_60C_X();
-            Initialize_S_60D_X();
-            Initialize_S_60E_X();
-            Initialize_S_60F_X();
+            Initer_ParmDebugList_X();
+            Initer_S_601_X();
+            Initer_S_602_X();
+            Initer_S_603_X();
+            Initer_S_604_X();
+            Initer_S_605_X();
+            Initer_S_606_X();
+            Initer_S_607_X();
+            Initer_S_608_X();
+            Initer_S_609_X();
+            Initer_S_60A_X();
+            Initer_S_60B_X();
+            Initer_S_60C_X();
+            Initer_S_60D_X();
+            Initer_S_60E_X();
+            Initer_S_60F_X();
 
-            Initialize_S_610_X();
-            Initialize_RootChef_X();
-            Initialize_DataChef_X();
-            Initialize_TextColumn_X();
-            Initialize_CheckColumn_X();
-            Initialize_ComboColumn_X();
-            Initialize_TextProperty_X();
-            Initialize_CheckProperty_X();
-            Initialize_ComboProperty_X();
-            Initialize_TextCompute_X();
-            Initialize_S_61B_X();
-            Initialize_S_61C_X();
-            Initialize_S_61D_X();
-            Initialize_S_61E_X();
-            Initialize_S_61F_X();
+            Initer_S_610_X();
+            Initer_RootChef_X();
+            Initer_DataChef_X();
+            Initer_TextColumn_X();
+            Initer_CheckColumn_X();
+            Initer_ComboColumn_X();
+            Initer_TextProperty_X();
+            Initer_CheckProperty_X();
+            Initer_ComboProperty_X();
+            Initer_TextCompute_X();
+            Initer_S_61B_X();
+            Initer_S_61C_X();
+            Initer_S_61D_X();
+            Initer_S_61E_X();
+            Initer_S_61F_X();
 
-            Initialize_ParmRoot_X();
-            Initialize_ErrorRoot_X();
-            Initialize_ChangeRoot_X();
-            Initialize_MetadataRoot_X();
-            Initialize_ModelingRoot_X();
-            Initialize_MetaRelationList_X();
-            Initialize_ErrorType_X();
-            Initialize_ErrorText_X();
-            Initialize_ChangeSet_X();
-            Initialize_ItemChange_X();
-            Initialize_S_62A_X();
-            Initialize_S_62B_X();
-            Initialize_S_62C_X();
-            Initialize_S_62D_X();
-            Initialize_S_62E_X();
-            Initialize_S_62F_X();
+            Initer_ParmRoot_X();
+            Initer_ErrorRoot_X();
+            Initer_ChangeRoot_X();
+            Initer_MetadataRoot_X();
+            Initer_ModelingRoot_X();
+            Initer_MetaRelationList_X();
+            Initer_ErrorType_X();
+            Initer_ErrorText_X();
+            Initer_ChangeSet_X();
+            Initer_ItemChange_X();
+            Initer_S_62A_X();
+            Initer_S_62B_X();
+            Initer_S_62C_X();
+            Initer_S_62D_X();
+            Initer_S_62E_X();
+            Initer_S_62F_X();
 
-            Initialize_ViewXView_X();
-            Initialize_ViewXViewM_X();
-            Initialize_ViewXQuery_X();
-            Initialize_ViewXCommand_X();
-            Initialize_ViewXProperty_X();
+            Initer_MetaViewXViewList_X();
+            Initer_MetaViewView_X();
+            Initer_MetaViewQuery_X();
+            Initer_MetaViewCommand_X();
+            Initer_MetaViewProperty_X();
 
-            Initialize_ViewView_X();
-            Initialize_ViewViewM_X();
-            Initialize_ViewItem_X();
-            Initialize_ViewQuery_X();
+            Initer_ViewView_X();
+            Initer_ViewViewM_X();
+            Initer_ViewItem_X();
+            Initer_ViewQuery_X();
 
-            Initialize_EnumXList_X();
-            Initialize_TableXList_X();
-            Initialize_GraphXList_X();
-            Initialize_SymbolXList_X();
-            Initialize_MetaGraphParmList_X();
-            Initialize_TableList_X();
-            Initialize_GraphList_X();
+            Initer_MetaEnumList_X();
+            Initer_MetaTableList_X();
+            Initer_MetaGraphList_X();
+            Initer_MetaSymbolList_X();
+            Initer_MetaGraphParmList_X();
+            Initer_TableList_X();
+            Initer_GraphList_X();
 
-            Initialize_PairX_X();
-            Initialize_EnumX_X();
-            Initialize_TableX_X();
-            Initialize_MetaGraph_X();
-            Initialize_SymbolX_X();
-            Initialize_ColumnX_X();
-            Initialize_ComputeX_X();
-            Initialize_SymbolXEditor_X();
+            Initer_MetaPair_X();
+            Initer_MetaEnum_X();
+            Initer_MetaTable_X();
+            Initer_MetaGraph_X();
+            Initer_MetaSymbol_X();
+            Initer_MetaColumn_X();
+            Initer_MetaCompute_X();
+            Initer_SymbolEditor_X();
 
-            Initialize_ColumnXList_X();
-            Initialize_ChildRelationXList_X();
-            Initialize_ParentRelationXList_X();
-            Initialize_PairXList_X();
-            Initialize_EnumColumnList_X();
-            Initialize_ComputeXList_X();
+            Initer_MetaColumnList_X();
+            Initer_MetaChildRelationList_X();
+            Initer_MetaParentRelatationList_X();
+            Initer_MetaEnumPairList_X();
+            Initer_MetaEnumColumnList_X();
+            Initer_MetaComputeList_X();
 
-            Initialize_ChildRelationX_X();
-            Initialize_ParentRelationX_X();
-            Initialize_NameColumnRelation_X();
-            Initialize_SummaryColumnRelation_X();
-            Initialize_NameColumn_X();
-            Initialize_SummaryColumn_X();
+            Initer_MetaChildRelation_X();
+            Initer_MetaParentRelation_X();
+            Initer_MetaNameColumnRelation_X();
+            Initer_MetaSummaryColumnRelation_X();
+            Initer_MetaNameColumn_X();
+            Initer_MetaSummaryColumn_X();
 
-            Initialize_GraphXColoring_X();
-            Initialize_GraphXRootList_X();
-            Initialize_GraphXNodeList_X();
-            Initialize_GraphXNode_X();
-            Initialize_GraphXColorColumn_X();
+            Initer_MetaGraphColoring_X();
+            Initer_MetaGraphRootList_X();
+            Initer_MetaGraphNodeList_X();
+            Initer_MetaGraphNode_X();
+            Initer_MetaGraphColorColumn_X();
 
-            Initialize_QueryXRoot_X();
-            Initialize_QueryXLink_X();
-            Initialize_QueryXPathHead_X();
-            Initialize_QueryXPathLink_X();
-            Initialize_QueryXGroupHead_X();
-            Initialize_QueryXGroupLink_X();
-            Initialize_QueryXEgressHead_X();
-            Initialize_QueryXEgressLink_X();
+            Initer_MetaGraphRoot_X();
+            Initer_MetaGraphLink_X();
+            Initer_MetaGraphPathHead_X();
+            Initer_MetaGraphPathLink_X();
+            Initer_MetaGraphGroupHead_X();
+            Initer_MetaGraphGroupLink_X();
+            Initer_MetaGraphEgressHead_X();
+            Initer_MetaGraphEgressLink_X();
 
-            Initialize_GraphXNodeSymbol_X();
+            Initer_MetaGraphNodeSymbol_X();
 
-            Initialize_ValueHead_X();
-            Initialize_ValueLink_X();
+            Initer_ValueHead_X();
+            Initer_ValueLink_X();
 
-            Initialize_Row_X();
-            Initialize_View_X();
-            Initialize_Table_X();
-            Initialize_Graph_X();
-            Initialize_RowChildRelation_X();
-            Initialize_RowParentRelation_X();
-            Initialize_RowRelatedChild_X();
-            Initialize_RowRelatedParent_X();
-            Initialize_EnumRelatedColumn_X();
+            Initer_Row_X();
+            Initer_View_X();
+            Initer_Table_X();
+            Initer_Graph_X();
+            Initer_RowChildRelation_X();
+            Initer_RowParentRelation_X();
+            Initer_RowRelatedChild_X();
+            Initer_RowRelatedParent_X();
+            Initer_EnumRelatedColumn_X();
 
-            Initialize_RowPropertyList_X();
-            Initialize_RowChildRelationList_X();
-            Initialize_RowParentRelationList_X();
-            Initialize_RowComputeList_X();
+            Initer_RowPropertyList_X();
+            Initer_RowChildRelationList_X();
+            Initer_RowParentRelationList_X();
+            Initer_RowComputeList_X();
 
-            Initialize_QueryRootLink_X();
-            Initialize_QueryPathHead_X();
-            Initialize_QueryPathLink_X();
-            Initialize_QueryGroupHead_X();
-            Initialize_QueryGroupLink_X();
-            Initialize_QueryEgressHead_X();
-            Initialize_QueryEgressLink_X();
+            Initer_QueryRootLink_X();
+            Initer_QueryPathHead_X();
+            Initer_QueryPathLink_X();
+            Initer_QueryGroupHead_X();
+            Initer_QueryGroupLink_X();
+            Initer_QueryEgressHead_X();
+            Initer_QueryEgressLink_X();
 
-            Initialize_QueryRootItem_X();
-            Initialize_QueryPathStep_X();
-            Initialize_QueryPathTail_X();
-            Initialize_QueryGroupStep_X();
-            Initialize_QueryGroupTail_X();
-            Initialize_QueryEgressStep_X();
-            Initialize_QueryEgressTail_X();
+            Initer_QueryRootItem_X();
+            Initer_QueryPathStep_X();
+            Initer_QueryPathTail_X();
+            Initer_QueryGroupStep_X();
+            Initer_QueryGroupTail_X();
+            Initer_QueryEgressStep_X();
+            Initer_QueryEgressTail_X();
 
-            Initialize_GraphXRef_X();
-            Initialize_GraphRef_X();
-            Initialize_GraphNodeList_X();
-            Initialize_GraphEdgeList_X();
-            Initialize_GraphRootList_X();
-            Initialize_GraphLevelList_X();
-            Initialize_GraphLevel_X();
-            Initialize_GraphPath_X();
-            Initialize_GraphRoot_X();
-            Initialize_GraphNode_X();
-            Initialize_GraphEdge_X();
-            Initialize_GraphOpenList_X();
-            Initialize_GraphOpen_X();
+            Initer_GraphXRef_X();
+            Initer_GraphRef_X();
+            Initer_GraphNodeList_X();
+            Initer_GraphEdgeList_X();
+            Initer_GraphRootList_X();
+            Initer_GraphLevelList_X();
+            Initer_GraphLevel_X();
+            Initer_GraphPath_X();
+            Initer_GraphRoot_X();
+            Initer_GraphNode_X();
+            Initer_GraphEdge_X();
+            Initer_GraphOpenList_X();
+            Initer_GraphOpen_X();
 
-            Initialize_PrimeCompute_X();
-            Initialize_ComputeStore_X();
-            Initialize_InternalStoreList_X();
-            Initialize_InternalStore_X();
-            Initialize_StoreItem_X();
-            Initialize_StoreItemItemList_X();
-            Initialize_StoreRelationLinkList_X();
-            Initialize_StoreChildRelationList_X();
-            Initialize_StoreParentRelationList_X();
-            Initialize_StoreItemItem_X();
-            Initialize_StoreRelationLink_X();
-            Initialize_StoreChildRelation_X();
-            Initialize_StoreParentRelation_X();
-            Initialize_StoreRelatedItem_X();
+            Initer_PrimeCompute_X();
+            Initer_ComputeStore_X();
+            Initer_InternalStoreList_X();
+            Initer_InternalStore_X();
+            Initer_StoreItem_X();
+            Initer_StoreItemItemList_X();
+            Initer_StoreRelationLinkList_X();
+            Initer_StoreChildRelationList_X();
+            Initer_StoreParentRelationList_X();
+            Initer_StoreItemItem_X();
+            Initer_StoreRelationLink_X();
+            Initer_StoreChildRelation_X();
+            Initer_StoreParentRelation_X();
+            Initer_StoreRelatedItem_X();
         }
         #endregion
 
@@ -772,7 +772,7 @@ namespace ModelGraphSTD
 
         #region 600 ParmDebugList_X  ==========================================
         internal ModelAction ParmDebugList_X;
-        void Initialize_ParmDebugList_X()
+        void Initer_ParmDebugList_X()
         {
             ParmDebugList_X = new ModelAction
             {
@@ -815,7 +815,7 @@ namespace ModelGraphSTD
 
         #region 601 S_601_X  ==================================================
         internal ModelAction S_601_X;
-        void Initialize_S_601_X()
+        void Initer_S_601_X()
         {
             S_601_X = new ModelAction
             {
@@ -846,7 +846,7 @@ namespace ModelGraphSTD
 
         #region 602 S_602_X  ==================================================
         internal ModelAction S_602_X;
-        void Initialize_S_602_X()
+        void Initer_S_602_X()
         {
             S_602_X = new ModelAction
             {
@@ -877,7 +877,7 @@ namespace ModelGraphSTD
 
         #region 603 S_603_X  ==================================================
         internal ModelAction S_603_X;
-        void Initialize_S_603_X()
+        void Initer_S_603_X()
         {
             S_603_X = new ModelAction
             {
@@ -908,7 +908,7 @@ namespace ModelGraphSTD
 
         #region 604 S_604_X  ==================================================
         internal ModelAction S_604_X;
-        void Initialize_S_604_X()
+        void Initer_S_604_X()
         {
             S_604_X = new ModelAction
             {
@@ -939,7 +939,7 @@ namespace ModelGraphSTD
 
         #region 605 S_605_X  ==================================================
         internal ModelAction S_605_X;
-        void Initialize_S_605_X()
+        void Initer_S_605_X()
         {
             S_605_X = new ModelAction
             {
@@ -970,7 +970,7 @@ namespace ModelGraphSTD
 
         #region 606 S_606_X  ==================================================
         internal ModelAction S_606_X;
-        void Initialize_S_606_X()
+        void Initer_S_606_X()
         {
             S_606_X = new ModelAction
             {
@@ -1001,7 +1001,7 @@ namespace ModelGraphSTD
 
         #region 607 S_607_X  ==================================================
         internal ModelAction S_607_X;
-        void Initialize_S_607_X()
+        void Initer_S_607_X()
         {
             S_607_X = new ModelAction
             {
@@ -1032,7 +1032,7 @@ namespace ModelGraphSTD
 
         #region 608 S_608_X  ==================================================
         internal ModelAction S_608_X;
-        void Initialize_S_608_X()
+        void Initer_S_608_X()
         {
             S_608_X = new ModelAction
             {
@@ -1063,7 +1063,7 @@ namespace ModelGraphSTD
 
         #region 609 S_609_X  ==================================================
         internal ModelAction S_609_X;
-        void Initialize_S_609_X()
+        void Initer_S_609_X()
         {
             S_609_X = new ModelAction
             {
@@ -1094,7 +1094,7 @@ namespace ModelGraphSTD
 
         #region 60A S_60A_X  ==================================================
         internal ModelAction S_60A_X;
-        void Initialize_S_60A_X()
+        void Initer_S_60A_X()
         {
             S_60A_X = new ModelAction
             {
@@ -1125,7 +1125,7 @@ namespace ModelGraphSTD
 
         #region 60B S_60B_X  ==================================================
         internal ModelAction S_60B_X;
-        void Initialize_S_60B_X()
+        void Initer_S_60B_X()
         {
             S_60B_X = new ModelAction
             {
@@ -1156,7 +1156,7 @@ namespace ModelGraphSTD
 
         #region 60C S_60C_X  ==================================================
         internal ModelAction S_60C_X;
-        void Initialize_S_60C_X()
+        void Initer_S_60C_X()
         {
             S_60C_X = new ModelAction
             {
@@ -1187,7 +1187,7 @@ namespace ModelGraphSTD
 
         #region 60D S_60D_X  ==================================================
         internal ModelAction S_60D_X;
-        void Initialize_S_60D_X()
+        void Initer_S_60D_X()
         {
             S_60D_X = new ModelAction
             {
@@ -1218,7 +1218,7 @@ namespace ModelGraphSTD
 
         #region 60E S_60E_X  ==================================================
         internal ModelAction S_60E_X;
-        void Initialize_S_60E_X()
+        void Initer_S_60E_X()
         {
             S_60E_X = new ModelAction
             {
@@ -1249,7 +1249,7 @@ namespace ModelGraphSTD
 
         #region 60F S_60F_X  ==================================================
         internal ModelAction S_60F_X;
-        void Initialize_S_60F_X()
+        void Initer_S_60F_X()
         {
             S_60F_X = new ModelAction
             {
@@ -1282,7 +1282,7 @@ namespace ModelGraphSTD
 
         #region 610 S_610_X  ==================================================
         internal ModelAction S_610_X;
-        void Initialize_S_610_X()
+        void Initer_S_610_X()
         {
             S_610_X = new ModelAction
             {
@@ -1313,7 +1313,7 @@ namespace ModelGraphSTD
 
         #region 611 RootChef_M  ===============================================
         internal ModelAction RootChef_X;
-        void Initialize_RootChef_X()
+        void Initer_RootChef_X()
         {
             RootChef_X = new ModelAction
             {
@@ -1364,7 +1364,7 @@ namespace ModelGraphSTD
 
         #region 613 DataChef_X  ===============================================
         internal ModelAction DataChef_X;
-        void Initialize_DataChef_X()
+        void Initer_DataChef_X()
         {
             DataChef_X = new ModelAction
             {
@@ -1470,7 +1470,7 @@ namespace ModelGraphSTD
 
         #region 614 TextColumn_X  =============================================
         ModelAction TextColumn_X;
-        void Initialize_TextColumn_X()
+        void Initer_TextColumn_X()
         {
             TextColumn_X = new ModelAction
             {
@@ -1506,7 +1506,7 @@ namespace ModelGraphSTD
 
         #region 615 CheckColumn_X  ============================================
         ModelAction CheckColumn_X;
-        void Initialize_CheckColumn_X()
+        void Initer_CheckColumn_X()
         {
             CheckColumn_X = new ModelAction
             {
@@ -1538,7 +1538,7 @@ namespace ModelGraphSTD
 
         #region 616 ComboColumn_X  ============================================
         ModelAction ComboColumn_X;
-        void Initialize_ComboColumn_X()
+        void Initer_ComboColumn_X()
         {
             ComboColumn_X = new ModelAction
             {
@@ -1619,7 +1619,7 @@ namespace ModelGraphSTD
 
         #region 617 TextProperty_X  ===========================================
         ModelAction TextProperty_X;
-        void Initialize_TextProperty_X()
+        void Initer_TextProperty_X()
         {
             TextProperty_X = new ModelAction
             {
@@ -1660,7 +1660,7 @@ namespace ModelGraphSTD
 
         #region 618 CheckProperty_X  ==========================================
         ModelAction CheckProperty_X;
-        void Initialize_CheckProperty_X()
+        void Initer_CheckProperty_X()
         {
             CheckProperty_X = new ModelAction
             {
@@ -1692,7 +1692,7 @@ namespace ModelGraphSTD
 
         #region 619 ComboProperty_X  ==========================================
         ModelAction ComboProperty_X;
-        void Initialize_ComboProperty_X()
+        void Initer_ComboProperty_X()
         {
             ComboProperty_X = new ModelAction
             {
@@ -1728,7 +1728,7 @@ namespace ModelGraphSTD
 
         #region 61A TextCompute_X  ============================================
         ModelAction TextCompute_X;
-        void Initialize_TextCompute_X()
+        void Initer_TextCompute_X()
         {
             TextCompute_X = new ModelAction
             {
@@ -1764,7 +1764,7 @@ namespace ModelGraphSTD
 
         #region 61B S_61B_X  ==================================================
         internal ModelAction S_61B_X;
-        void Initialize_S_61B_X()
+        void Initer_S_61B_X()
         {
             S_61B_X = new ModelAction
             {
@@ -1795,7 +1795,7 @@ namespace ModelGraphSTD
 
         #region 61C S_61C_X  ==================================================
         internal ModelAction S_61C_X;
-        void Initialize_S_61C_X()
+        void Initer_S_61C_X()
         {
             S_61C_X = new ModelAction
             {
@@ -1826,7 +1826,7 @@ namespace ModelGraphSTD
 
         #region 61D S_61D_X  ==================================================
         internal ModelAction S_61D_X;
-        void Initialize_S_61D_X()
+        void Initer_S_61D_X()
         {
             S_61D_X = new ModelAction
             {
@@ -1857,7 +1857,7 @@ namespace ModelGraphSTD
 
         #region 61E S_61E_X  ==================================================
         internal ModelAction S_61E_X;
-        void Initialize_S_61E_X()
+        void Initer_S_61E_X()
         {
             S_61E_X = new ModelAction
             {
@@ -1888,7 +1888,7 @@ namespace ModelGraphSTD
 
         #region 61F S_61F_X  ==================================================
         internal ModelAction S_61F_X;
-        void Initialize_S_61F_X()
+        void Initer_S_61F_X()
         {
             S_61F_X = new ModelAction
             {
@@ -1918,10 +1918,18 @@ namespace ModelGraphSTD
         #endregion
 
 
+        #region RemoveItemMenuCommand  ========================================
+        void RemoveItemMenuCommand(ItemModel m, List<ModelCommand> mc)
+        {
+            mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+        }
+        void RemoveItem(ItemModel m) => RemoveItem(m.Item);
+        #endregion
+
 
         #region 620 ParmRoot  =================================================
         ModelAction ParmRoot_X;
-        void Initialize_ParmRoot_X()
+        void Initer_ParmRoot_X()
         {
             ParmRoot_X = new ModelAction
             {
@@ -1964,7 +1972,7 @@ namespace ModelGraphSTD
 
         #region 621 ErrorRoot  ================================================
         ModelAction ErrorRoot_X;
-        void Initialize_ErrorRoot_X()
+        void Initer_ErrorRoot_X()
         {
             ErrorRoot_X = new ModelAction
             {
@@ -2014,7 +2022,7 @@ namespace ModelGraphSTD
 
         #region 622 ChangeRoot  ===============================================
         ModelAction ChangeRoot_X;
-        void Initialize_ChangeRoot_X()
+        void Initer_ChangeRoot_X()
         {
             ChangeRoot_X = new ModelAction
             {
@@ -2076,7 +2084,7 @@ namespace ModelGraphSTD
 
         #region 623 MetadataRoot  =============================================
         ModelAction MetadataRoot_X;
-        void Initialize_MetadataRoot_X()
+        void Initer_MetadataRoot_X()
         {
             MetadataRoot_X = new ModelAction
             {
@@ -2112,10 +2120,10 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.MetaViewViewList_M, _viewXStore, null, null, ViewXViewList_X);
-                    AddChildModel(prev, m, Trait.MetaEnumList_M, _enumZStore, null, null, EnumXList_X);
-                    AddChildModel(prev, m, Trait.MetaTableList_M, _tableXStore, null, null, TableXList_X);
-                    AddChildModel(prev, m, Trait.MetaGraphList_M, _graphXStore, null, null, GraphXList_X);
+                    AddChildModel(prev, m, Trait.MetaViewViewList_M, _viewXStore, null, null, MetaViewXViewList_X);
+                    AddChildModel(prev, m, Trait.MetaEnumList_M, _enumZStore, null, null, MetaEnumList_X);
+                    AddChildModel(prev, m, Trait.MetaTableList_M, _tableXStore, null, null, MetaTableList_X);
+                    AddChildModel(prev, m, Trait.MetaGraphList_M, _graphXStore, null, null, MetaGraphList_X);
                     AddChildModel(prev, m, Trait.InternalStoreList_M, this, null, null, InternalStoreList_X);
 
                     return (true, true);
@@ -2134,7 +2142,7 @@ namespace ModelGraphSTD
 
         #region 624 ModelingRoot  =============================================
         ModelAction ModelingRoot_X;
-        void Initialize_ModelingRoot_X()
+        void Initer_ModelingRoot_X()
         {
             ModelingRoot_X = new ModelAction
             {
@@ -2170,7 +2178,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.ViewViewList_M, m.Item, null, null, ViewXViewList_X);
+                    AddChildModel(prev, m, Trait.ViewViewList_M, m.Item, null, null, MetaViewXViewList_X);
                     AddChildModel(prev, m, Trait.TableList_M, m.Item, null, null, TableList_X);
                     AddChildModel(prev, m, Trait.GraphList_M, m.Item, null, null, GraphList_X);
                     AddChildModel(prev, m, Trait.PrimeCompute_M, m.Item, null, null, PrimeCompute_X);
@@ -2189,9 +2197,9 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 625 MetaRelationList  =========================================
+        #region 625 MetaRelationList_X  =======================================
         ModelAction MetaRelationList_X;
-        void Initialize_MetaRelationList_X()
+        void Initer_MetaRelationList_X()
         {
             MetaRelationList_X = new ModelAction
             {
@@ -2216,8 +2224,8 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.MetaNameColumnRelation_M, m.Item, TableX_NameProperty, null, NameColumnRelation_X);
-                    AddChildModel(prev, m, Trait.MetaSummaryColumnRelation_M, m.Item, TableX_SummaryProperty, null, SummaryColumnRelation_X);
+                    AddChildModel(prev, m, Trait.MetaNameColumnRelation_M, m.Item, TableX_NameProperty, null, MetaNameColumnRelation_X);
+                    AddChildModel(prev, m, Trait.MetaSummaryColumnRelation_M, m.Item, TableX_SummaryProperty, null, MetaSummaryColumnRelation_X);
 
                     return (true, true);
                 }
@@ -2231,7 +2239,7 @@ namespace ModelGraphSTD
 
         #region 626 ErrorType  ================================================
         ModelAction ErrorType_X;
-        void Initialize_ErrorType_X()
+        void Initer_ErrorType_X()
         {
             ErrorType_X = new ModelAction
             {
@@ -2279,7 +2287,7 @@ namespace ModelGraphSTD
 
         #region 627 ErrorText  ================================================
         ModelAction ErrorText_X;
-        void Initialize_ErrorText_X()
+        void Initer_ErrorText_X()
         {
             ErrorText_X = new ModelAction
             {
@@ -2310,7 +2318,7 @@ namespace ModelGraphSTD
 
         #region 628 ChangeSet  ================================================
         ModelAction ChangeSet_X;
-        void Initialize_ChangeSet_X()
+        void Initer_ChangeSet_X()
         {
             ChangeSet_X = new ModelAction
             {
@@ -2401,7 +2409,7 @@ namespace ModelGraphSTD
 
         #region 629 ItemChanged  ==============================================
         ModelAction ItemChanged_X;
-        void Initialize_ItemChange_X()
+        void Initer_ItemChange_X()
         {
             ItemChanged_X = new ModelAction
             {
@@ -2425,7 +2433,7 @@ namespace ModelGraphSTD
 
         #region 62A S_62A_X  ==================================================
         internal ModelAction S_62A_X;
-        void Initialize_S_62A_X()
+        void Initer_S_62A_X()
         {
             S_62A_X = new ModelAction
             {
@@ -2456,7 +2464,7 @@ namespace ModelGraphSTD
 
         #region 62B S_62B_X  ==================================================
         internal ModelAction S_62B_X;
-        void Initialize_S_62B_X()
+        void Initer_S_62B_X()
         {
             S_62B_X = new ModelAction
             {
@@ -2487,7 +2495,7 @@ namespace ModelGraphSTD
 
         #region 62C S_62C_X  ==================================================
         internal ModelAction S_62C_X;
-        void Initialize_S_62C_X()
+        void Initer_S_62C_X()
         {
             S_62C_X = new ModelAction
             {
@@ -2518,7 +2526,7 @@ namespace ModelGraphSTD
 
         #region 62D S_62D_X  ==================================================
         internal ModelAction S_62D_X;
-        void Initialize_S_62D_X()
+        void Initer_S_62D_X()
         {
             S_62D_X = new ModelAction
             {
@@ -2549,7 +2557,7 @@ namespace ModelGraphSTD
 
         #region 62E S_62E_X  ==================================================
         internal ModelAction S_62E_X;
-        void Initialize_S_62E_X()
+        void Initer_S_62E_X()
         {
             S_62E_X = new ModelAction
             {
@@ -2580,7 +2588,7 @@ namespace ModelGraphSTD
 
         #region 62F S_62F_X  ==================================================
         internal ModelAction S_62F_X;
-        void Initialize_S_62F_X()
+        void Initer_S_62F_X()
         {
             S_62F_X = new ModelAction
             {
@@ -2611,11 +2619,11 @@ namespace ModelGraphSTD
 
 
 
-        #region 631 ViewXViewList_X  ==========================================
-        ModelAction ViewXViewList_X;
-        void Initialize_ViewXView_X()
+        #region 631 MetaViewXViewList_X  ======================================
+        ModelAction MetaViewXViewList_X;
+        void Initer_MetaViewXViewList_X()
         {
-            ViewXViewList_X = new ModelAction
+            MetaViewXViewList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -2677,7 +2685,7 @@ namespace ModelGraphSTD
                     {
                         if ((ViewX_ViewX.HasNoParent(itm)))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.MetaViewView_M, itm, null, null, ViewXViewM_X);
+                            anyChange |= AddChildModel(prev, m, Trait.MetaViewView_M, itm, null, null, MetaViewView_X);
                         }
                     }
 
@@ -2698,11 +2706,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 632 ViewXView_M  ==============================================
-        ModelAction ViewXViewM_X;
-        void Initialize_ViewXViewM_X()
+        #region 632 MetaViewView_X  ===========================================
+        ModelAction MetaViewView_X;
+        void Initer_MetaViewView_X()
         {
-            ViewXViewM_X = new ModelAction
+            MetaViewView_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -2736,10 +2744,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2832,7 +2837,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var pc in pls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaViewProperty_M, pc, ViewX_Property, vx, ViewXProperty_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewProperty_M, pc, ViewX_Property, vx, MetaViewProperty_X);
                             }
                         }
 
@@ -2840,7 +2845,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in qls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaViewQuery_M, qc, ViewX_QueryX, vx, ViewXQuery_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewQuery_M, qc, ViewX_QueryX, vx, MetaViewQuery_X);
                             }
                         }
 
@@ -2848,7 +2853,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var vc in vls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaViewView_M, vc, ViewX_ViewX, vx, ViewXViewM_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewView_M, vc, ViewX_ViewX, vx, MetaViewView_X);
                             }
                         }
                     }
@@ -2877,11 +2882,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 633 ViewXQuery_M  =============================================
-        ModelAction ViewXQuery_X;
-        void Initialize_ViewXQuery_X()
+        #region 633 MetaViewQuery_X  ==========================================
+        ModelAction MetaViewQuery_X;
+        void Initer_MetaViewQuery_X()
         {
-            ViewXQuery_X = new ModelAction
+            MetaViewQuery_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -2916,10 +2921,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -2973,7 +2975,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var pc in pls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaViewProperty_M, pc, QueryX_Property, qx, ViewXProperty_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewProperty_M, pc, QueryX_Property, qx, MetaViewProperty_X);
                             }
                         }
 
@@ -2981,7 +2983,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in qls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaViewQuery_M, qc, QueryX_QueryX, qx, ViewXQuery_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewQuery_M, qc, QueryX_QueryX, qx, MetaViewQuery_X);
                             }
                         }
 
@@ -2989,7 +2991,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var vc in vls)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaViewView_M, vc, QueryX_ViewX, qx, ViewXViewM_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaViewView_M, vc, QueryX_ViewX, qx, MetaViewView_X);
                             }
                         }
                     }
@@ -3025,11 +3027,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 634 ViewXCommand  =============================================
-        ModelAction ViewXCommand_X;
-        void Initialize_ViewXCommand_X()
+        #region 634 MetaViewCommand_X  ========================================
+        ModelAction MetaViewCommand_X;
+        void Initer_MetaViewCommand_X()
         {
-            ViewXCommand_X = new ModelAction
+            MetaViewCommand_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3056,11 +3058,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 635 ViewXProperty_M  ==========================================
-        ModelAction ViewXProperty_X;
-        void Initialize_ViewXProperty_X()
+        #region 635 MetaViewProperty_X  =======================================
+        ModelAction MetaViewProperty_X;
+        void Initer_MetaViewProperty_X()
         {
-            ViewXProperty_X = new ModelAction
+            MetaViewProperty_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3082,7 +3084,7 @@ namespace ModelGraphSTD
 
         #region 63A ViewView_ZM  ==============================================
         ModelAction ViewView_X;
-        void Initialize_ViewView_X()
+        void Initer_ViewView_X()
         {
             ViewView_X = new ModelAction
             {
@@ -3138,7 +3140,7 @@ namespace ModelGraphSTD
 
         #region 63B ViewView_M  ===============================================
         ModelAction ViewViewM_X;
-        void Initialize_ViewViewM_X()
+        void Initer_ViewViewM_X()
         {
             ViewViewM_X = new ModelAction
             {
@@ -3226,7 +3228,7 @@ namespace ModelGraphSTD
 
         #region 63C ViewItem_M  ===============================================
         ModelAction ViewItem_X;
-        void Initialize_ViewItem_X()
+        void Initer_ViewItem_X()
         {
             ViewItem_X = new ModelAction
             {
@@ -3303,7 +3305,7 @@ namespace ModelGraphSTD
 
         #region 63D ViewQuery_M  ==============================================
         ModelAction ViewQuery_X;
-        void Initialize_ViewQuery_X()
+        void Initer_ViewQuery_X()
         {
             ViewQuery_X = new ModelAction
             {
@@ -3355,11 +3357,11 @@ namespace ModelGraphSTD
 
 
 
-        #region 642 EnumXList  ================================================
-        ModelAction EnumXList_X;
-        void Initialize_EnumXList_X()
+        #region 642 MetaEnumList_X  ===========================================
+        ModelAction MetaEnumList_X;
+        void Initer_MetaEnumList_X()
         {
-            EnumXList_X = new ModelAction
+            MetaEnumList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3400,7 +3402,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaEnum_M, itm, null, null, EnumX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaEnum_M, itm, null, null, MetaEnum_X);
                     }
                     return (true, anyChange);
                 }
@@ -3419,11 +3421,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 643 TableXList  ===============================================
-        ModelAction TableXList_X;
-        void Initialize_TableXList_X()
+        #region 643 MetaTableList_X  ==========================================
+        ModelAction MetaTableList_X;
+        void Initer_MetaTableList_X()
         {
-            TableXList_X = new ModelAction
+            MetaTableList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3468,7 +3470,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaTable_M, itm, null, null, TableX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaTable_M, itm, null, null, MetaTable_X);
                     }
                     return (true, anyChange);
                 }
@@ -3487,11 +3489,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 644 GraphXList  ===============================================
-        ModelAction GraphXList_X;
-        void Initialize_GraphXList_X()
+        #region 644 MetaGraphList_X  ==========================================
+        ModelAction MetaGraphList_X;
+        void Initer_MetaGraphList_X()
         {
-            GraphXList_X = new ModelAction
+            MetaGraphList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3556,11 +3558,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 645 SymbolXlList  =============================================
-        ModelAction SymbolXList_X;
-        void Initialize_SymbolXList_X()
+        #region 645 MetaSymbolList_X  =========================================
+        ModelAction MetaSymbolList_X;
+        void Initer_MetaSymbolList_X()
         {
-            SymbolXList_X = new ModelAction
+            MetaSymbolList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3622,7 +3624,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaSymbol_M, itm, GraphX_SymbolX, gx, SymbolX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaSymbol_M, itm, GraphX_SymbolX, gx, MetaSymbol_X);
                     }
                     return (true, anyChange);
                 }
@@ -3647,7 +3649,7 @@ namespace ModelGraphSTD
 
         #region 646 MetaGraphParmList_X  ======================================
         ModelAction MetaGraphParmList_X;
-        void Initialize_MetaGraphParmList_X()
+        void Initer_MetaGraphParmList_X()
         {
             MetaGraphParmList_X = new ModelAction
             {
@@ -3694,7 +3696,7 @@ namespace ModelGraphSTD
 
         #region 647 TableList  ================================================
         ModelAction TableList_X;
-        void Initialize_TableList_X()
+        void Initer_TableList_X()
         {
             TableList_X = new ModelAction
             {
@@ -3748,7 +3750,7 @@ namespace ModelGraphSTD
 
         #region 648 GraphList  ================================================
         ModelAction GraphList_X;
-        void Initialize_GraphList_X()
+        void Initer_GraphList_X()
         {
             GraphList_X = new ModelAction
             {
@@ -3802,11 +3804,11 @@ namespace ModelGraphSTD
 
 
 
-        #region 652 PairX  ====================================================
-        ModelAction PairX_X;
-        void Initialize_PairX_X()
+        #region 652 MetaPair_X  ===============================================
+        ModelAction MetaPair_X;
+        void Initer_MetaPair_X()
         {
-            PairX_X = new ModelAction
+            MetaPair_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3852,11 +3854,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 653 EnumX  ====================================================
-        ModelAction EnumX_X;
-        void Initialize_EnumX_X()
+        #region 653 MetaEnum_X  ===============================================
+        ModelAction MetaEnum_X;
+        void Initer_MetaEnum_X()
         {
-            EnumX_X = new ModelAction
+            MetaEnum_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3891,10 +3893,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, bc) =>
-                {
-                    bc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3912,8 +3911,8 @@ namespace ModelGraphSTD
 
                     if (m.IsExpandedLeft)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaEnumValueList_M, ex, null, null, PairXList_X);
-                        anyChange |= AddChildModel(prev, m, Trait.MetaEnumColumnList_M, ex, null, null, EnumColumnList_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaEnumPairList_M, ex, null, null, MetaEnumPairList_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaEnumColumnList_M, ex, null, null, MetaEnumColumnList_X);
                     }
 
                     return (true, anyChange);
@@ -3933,11 +3932,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 654 TableX  ===================================================
-        ModelAction TableX_X;
-        void Initialize_TableX_X()
+        #region 654 MetaTable_X  ==============================================
+        ModelAction MetaTable_X;
+        void Initer_MetaTable_X()
         {
-            TableX_X = new ModelAction
+            MetaTable_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -3964,10 +3963,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -3989,10 +3985,10 @@ namespace ModelGraphSTD
                     if (m.IsExpandedLeft)
                     {
                         var tx = m.TableX;
-                        AddChildModel(prev, m, Trait.MetaColumnList_M, tx, null, null, ColumnXList_X);
-                        AddChildModel(prev, m, Trait.MetaComputeList_M, tx, null, null, ComputeXList_X);
-                        AddChildModel(prev, m, Trait.MetaChildRelationList_M, tx, null, null, ChildRelationXList_X);
-                        AddChildModel(prev, m, Trait.MetaParentRelatationList_M, tx, null, null, ParentRelationXList_X);
+                        AddChildModel(prev, m, Trait.MetaColumnList_M, tx, null, null, MetaColumnList_X);
+                        AddChildModel(prev, m, Trait.MetaComputeList_M, tx, null, null, MetaComputeList_X);
+                        AddChildModel(prev, m, Trait.MetaChildRelationList_M, tx, null, null, MetaChildRelationList_X);
+                        AddChildModel(prev, m, Trait.MetaParentRelatationList_M, tx, null, null, MetaParentRelatationList_X);
                         AddChildModel(prev, m, Trait.MetaRelationList_M, tx, null, null, MetaRelationList_X);
                     }
                     return (true, true);
@@ -4007,7 +4003,7 @@ namespace ModelGraphSTD
 
         #region 655 MetaGraph_X  ==============================================
         ModelAction MetaGraph_X;
-        void Initialize_MetaGraph_X()
+        void Initer_MetaGraph_X()
         {
             MetaGraph_X = new ModelAction
             {
@@ -4036,10 +4032,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4061,10 +4054,10 @@ namespace ModelGraphSTD
                     if (m.IsExpandedLeft)
                     {
                         var gx = m.GraphX;
-                        AddChildModel(prev, m, Trait.MetaGraphColoring_M, gx, null, null, GraphXColoring_X);
-                        AddChildModel(prev, m, Trait.MetaGraphRootList_M, gx, null, null, GraphXRootList_X);
-                        AddChildModel(prev, m, Trait.MetaGraphNodeList_M, gx, null, null, GraphXNodeList_X);
-                        AddChildModel(prev, m, Trait.MetaSymbolList_M, gx, null, null, SymbolXList_X);
+                        AddChildModel(prev, m, Trait.MetaGraphColoring_M, gx, null, null, MetaGraphColoring_X);
+                        AddChildModel(prev, m, Trait.MetaGraphRootList_M, gx, null, null, MetaGraphRootList_X);
+                        AddChildModel(prev, m, Trait.MetaGraphNodeList_M, gx, null, null, MetaGraphNodeList_X);
+                        AddChildModel(prev, m, Trait.MetaSymbolList_M, gx, null, null, MetaSymbolList_X);
                         AddChildModel(prev, m, Trait.MetaGraphParmList_M, gx, null, null, MetaGraphParmList_X);
                     }
                     return (true, true);
@@ -4077,11 +4070,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 656 SymbolX  ==================================================
-        ModelAction SymbolX_X;
-        void Initialize_SymbolX_X()
+        #region 656 MetaSymbol_X  =============================================
+        ModelAction MetaSymbol_X;
+        void Initer_MetaSymbol_X()
         {
-            SymbolX_X = new ModelAction
+            MetaSymbol_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4107,10 +4100,8 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
+
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
                 ButtonCommands = (m, bc) =>
@@ -4144,15 +4135,15 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondarySymbolEdit(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.SymbolEditor, Trait.SymbolEditor_M, m.Item, SymbolXEditor_X);
+            void CreateSecondarySymbolEdit(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.SymbolEditor, Trait.SymbolEditor_M, m.Item, SymbolEditor_X);
         }
         #endregion
 
-        #region 657 ColumnX  ==================================================
-        ModelAction ColumnX_X;
-        void Initialize_ColumnX_X()
+        #region 657 MetaColumn_X  =============================================
+        ModelAction MetaColumn_X;
+        void Initer_MetaColumn_X()
         {
-            ColumnX_X = new ModelAction
+            MetaColumn_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4178,10 +4169,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4208,11 +4196,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 658 ComputeX_M  ===============================================
-        ModelAction ComputeX_X;
-        void Initialize_ComputeX_X()
+        #region 658 MetaCompute_X  ============================================
+        ModelAction MetaCompute_X;
+        void Initer_MetaCompute_X()
         {
-            ComputeX_X = new ModelAction
+            MetaCompute_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4241,10 +4229,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4345,11 +4330,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 659 SymbolXEditor  ============================================
-        ModelAction SymbolXEditor_X;
-        void Initialize_SymbolXEditor_X()
+        #region 659 SymbolEditor_X  ===========================================
+        ModelAction SymbolEditor_X;
+        void Initer_SymbolEditor_X()
         {
-            SymbolXEditor_X = new ModelAction
+            SymbolEditor_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4414,11 +4399,11 @@ namespace ModelGraphSTD
 
 
 
-        #region 661 ColumnXList  ==============================================
-        ModelAction ColumnXList_X;
-        void Initialize_ColumnXList_X()
+        #region 661 MetaColumnList_X  =========================================
+        ModelAction MetaColumnList_X;
+        void Initer_MetaColumnList_X()
         {
-            ColumnXList_X = new ModelAction
+            MetaColumnList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4463,7 +4448,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaColumn_M, itm, TableX_ColumnX, tx, ColumnX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaColumn_M, itm, TableX_ColumnX, tx, MetaColumn_X);
                     }
                     return (true, anyChange);
                 }
@@ -4483,12 +4468,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-
-        #region 662 ChildRelationXList  =======================================
-        ModelAction ChildRelationXList_X;
-        void Initialize_ChildRelationXList_X()
+        #region 662 MetaChildRelationList_X  ==================================
+        ModelAction MetaChildRelationList_X;
+        void Initer_MetaChildRelationList_X()
         {
-            ChildRelationXList_X = new ModelAction
+            MetaChildRelationList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4533,7 +4517,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var rel in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaChildRelation_M, rel, TableX_ChildRelationX, tx, ChildRelationX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaChildRelation_M, rel, TableX_ChildRelationX, tx, MetaChildRelation_X);
                     }
                     return (true, anyChange);
                 }
@@ -4553,11 +4537,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 663 ParentRelatationXList  ====================================
-        ModelAction ParentRelationXList_X;
-        void Initialize_ParentRelationXList_X()
+        #region 663 MetaParentRelatationList_X  ===============================
+        ModelAction MetaParentRelatationList_X;
+        void Initer_MetaParentRelatationList_X()
         {
-            ParentRelationXList_X = new ModelAction
+            MetaParentRelatationList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4601,7 +4585,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var rel in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaParentRelation_M, rel, TableX_ParentRelationX, tx, ParentRelationX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaParentRelation_M, rel, TableX_ParentRelationX, tx, MetaParentRelation_X);
                     }
                     return (true, anyChange);
                 }
@@ -4621,11 +4605,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 664 PairXList  ================================================
-        ModelAction PairXList_X;
-        void Initialize_PairXList_X()
+        #region 664 MetaEnumPairList_X  =======================================
+        ModelAction MetaEnumPairList_X;
+        void Initer_MetaEnumPairList_X()
         {
-            PairXList_X = new ModelAction
+            MetaEnumPairList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4673,7 +4657,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var px in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaPair_M, px, ex, null, PairX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaPair_M, px, ex, null, MetaPair_X);
                     }
                     return (true, anyChange);
                 }
@@ -4692,11 +4676,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 665 EnumColumnList  ===========================================
-        ModelAction EnumColumnList_X;
-        void Initialize_EnumColumnList_X()
+        #region 665 MetaEnumColumnList_X  =====================================
+        ModelAction MetaEnumColumnList_X;
+        void Initer_MetaEnumColumnList_X()
         {
-            EnumColumnList_X = new ModelAction
+            MetaEnumColumnList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4761,11 +4745,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 666 ComputeXList  =============================================
-        ModelAction ComputeXList_X;
-        void Initialize_ComputeXList_X()
+        #region 666 MetaComputeList_X  ========================================
+        ModelAction MetaComputeList_X;
+        void Initer_MetaComputeList_X()
         {
-            ComputeXList_X = new ModelAction
+            MetaComputeList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4809,7 +4793,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaCompute_M, itm, Store_ComputeX, st, ComputeX_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaCompute_M, itm, Store_ComputeX, st, MetaCompute_X);
                     }
                     return (true, anyChange);
                 }
@@ -4835,11 +4819,11 @@ namespace ModelGraphSTD
 
 
 
-        #region 671 ChildRelationX  ===========================================
-        ModelAction ChildRelationX_X;
-        void Initialize_ChildRelationX_X()
+        #region 671 MetaChildRelation_X  ======================================
+        ModelAction MetaChildRelation_X;
+        void Initer_MetaChildRelation_X()
         {
-            ChildRelationX_X = new ModelAction
+            MetaChildRelation_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4865,10 +4849,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4907,11 +4888,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 672 ParentRelationX  ==========================================
-        ModelAction ParentRelationX_X;
-        void Initialize_ParentRelationX_X()
+        #region 672 MetaParentRelation_X  =====================================
+        ModelAction MetaParentRelation_X;
+        void Initer_MetaParentRelation_X()
         {
-            ParentRelationX_X = new ModelAction
+            MetaParentRelation_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -4937,10 +4918,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -4979,11 +4957,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 673 NameColumnRelation  =======================================
-        ModelAction NameColumnRelation_X;
-        void Initialize_NameColumnRelation_X()
+        #region 673 MetaNameColumnRelation_X  =================================
+        ModelAction MetaNameColumnRelation_X;
+        void Initer_MetaNameColumnRelation_X()
         {
-            NameColumnRelation_X = new ModelAction
+            MetaNameColumnRelation_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5036,7 +5014,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.MetaNameColumn_M, pr, TableX_NameProperty, tx, NameColumn_X);
+                    AddChildModel(prev, m, Trait.MetaNameColumn_M, pr, TableX_NameProperty, tx, MetaNameColumn_X);
 
                     return (true, true);
                 }
@@ -5048,11 +5026,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 674 SummaryColumnRelation  ====================================
-        ModelAction SummaryColumnRelation_X;
-        void Initialize_SummaryColumnRelation_X()
+        #region 674 MetaSummaryColumnRelation_X  ==============================
+        ModelAction MetaSummaryColumnRelation_X;
+        void Initer_MetaSummaryColumnRelation_X()
         {
-            SummaryColumnRelation_X = new ModelAction
+            MetaSummaryColumnRelation_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5105,7 +5083,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.MetaSummaryColumn_M, pr, TableX_SummaryProperty, tx, SummaryColumn_X);
+                    AddChildModel(prev, m, Trait.MetaSummaryColumn_M, pr, TableX_SummaryProperty, tx, MetaSummaryColumn_X);
 
                     return (true, true);
                 }
@@ -5117,11 +5095,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 675 NameColumn  ===============================================
-        ModelAction NameColumn_X;
-        void Initialize_NameColumn_X()
+        #region 675 MetaNameColumn_X  =========================================
+        ModelAction MetaNameColumn_X;
+        void Initer_MetaNameColumn_X()
         {
-            NameColumn_X = new ModelAction
+            MetaNameColumn_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5162,11 +5140,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 676 SummaryColumn  ============================================
-        ModelAction SummaryColumn_X;
-        void Initialize_SummaryColumn_X()
+        #region 676 MetaSummaryColumn_X  ======================================
+        ModelAction MetaSummaryColumn_X;
+        void Initer_MetaSummaryColumn_X()
         {
-            SummaryColumn_X = new ModelAction
+            MetaSummaryColumn_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5209,11 +5187,11 @@ namespace ModelGraphSTD
 
 
 
-        #region 681 GraphXColoring  ===========================================
-        ModelAction GraphXColoring_X;
-        void Initialize_GraphXColoring_X()
+        #region 681 MetaGraphColoring_X  ======================================
+        ModelAction MetaGraphColoring_X;
+        void Initer_MetaGraphColoring_X()
         {
-            GraphXColoring_X = new ModelAction
+            MetaGraphColoring_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5261,7 +5239,7 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    var anyChange = AddChildModel(prev, m, Trait.MetaGraphColorColumn_M, cx, tx, null, GraphXColorColumn_X);
+                    var anyChange = AddChildModel(prev, m, Trait.MetaGraphColorColumn_M, cx, tx, null, MetaGraphColorColumn_X);
 
                     return (true, anyChange);
                 }
@@ -5273,11 +5251,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 682 GraphXRootList  ===========================================
-        ModelAction GraphXRootList_X;
-        void Initialize_GraphXRootList_X()
+        #region 682 MetaGraphRootList_X  ======================================
+        ModelAction MetaGraphRootList_X;
+        void Initer_MetaGraphRootList_X()
         {
-            GraphXRootList_X = new ModelAction
+            MetaGraphRootList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5328,7 +5306,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphRoot_M, itm, gx, null, QueryXRoot_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphRoot_M, itm, gx, null, MetaGraphRoot_X);
                     }
                     return (true, anyChange);
                 }
@@ -5354,11 +5332,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 683 GraphXNodeList  ===========================================
-        ModelAction GraphXNodeList_X;
-        void Initialize_GraphXNodeList_X()
+        #region 683 MetaGraphNodeList_X  ======================================
+        ModelAction MetaGraphNodeList_X;
+        void Initer_MetaGraphNodeList_X()
         {
-            GraphXNodeList_X = new ModelAction
+            MetaGraphNodeList_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5387,7 +5365,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != owners.Count;
                     foreach (var sto in owners)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphNode_M, sto, gx, null, GraphXNode_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphNode_M, sto, gx, null, MetaGraphNode_X);
                     }
                     return (true, anyChange);
                 }
@@ -5399,11 +5377,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 684 GraphXNode  ===============================================
-        ModelAction GraphXNode_X;
-        void Initialize_GraphXNode_X()
+        #region 684 MetaGraphNode_X  ==========================================
+        ModelAction MetaGraphNode_X;
+        void Initer_MetaGraphNode_X()
         {
-            GraphXNode_X = new ModelAction
+            MetaGraphNode_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5450,7 +5428,7 @@ namespace ModelGraphSTD
                     var anyChange = prev.Count != querys.Count;
                     foreach (var qx in querys)
                     {
-                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphNodeSymbol_M, qx, GraphX_SymbolQueryX, gx, GraphXNodeSymbol_X);
+                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphNodeSymbol_M, qx, GraphX_SymbolQueryX, gx, MetaGraphNodeSymbol_X);
                     }
                     return (true, anyChange);
                 }
@@ -5462,11 +5440,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 685 GraphXColorColumn  ========================================
-        ModelAction GraphXColorColumn_X;
-        void Initialize_GraphXColorColumn_X()
+        #region 685 MetaGraphColorColumn_X  ===================================
+        ModelAction MetaGraphColorColumn_X;
+        void Initer_MetaGraphColorColumn_X()
         {
-            GraphXColorColumn_X = new ModelAction
+            MetaGraphColorColumn_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5487,12 +5465,50 @@ namespace ModelGraphSTD
         #endregion
 
 
-
-        #region 691 QueryXRoot  ===============================================
-        ModelAction QueryXRoot_X;
-        void Initialize_QueryXRoot_X()
+        #region MetaGraphMenuCommands  ========================================
+        void MetaGraphMenuCommands(ItemModel m, List<ModelCommand> mc)
         {
-            QueryXRoot_X = new ModelAction
+            mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
+            mc.Add(new ModelCommand(this, m, Trait.MakePathHeadCommand, MakePathtHead));
+            mc.Add(new ModelCommand(this, m, Trait.MakeGroupHeadCommand, MakeGroupHead));
+            mc.Add(new ModelCommand(this, m, Trait.MakeEgressHeadCommand, MakeEgressHead));
+
+            void MakePathtHead(ItemModel mt) => TryConvert(mt, QueryType.Path);
+            void MakeGroupHead(ItemModel mt) => TryConvert(mt, QueryType.Group);
+            void MakeEgressHead(ItemModel mt) => TryConvert(mt, QueryType.Egress);
+
+            void TryConvert(ItemModel mt, QueryType kind)
+            {
+                var qx = mt.QueryX;
+                var N = QueryX_QueryX.ChildCount(qx);
+                var list = new List<QueryX>() { qx };
+                while (N == 1)
+                {
+                    if (!QueryX_QueryX.TryGetChild(qx, out qx)) return; // can not convert 
+                    list.Add(qx);
+                    N = QueryX_QueryX.ChildCount(qx);
+                }
+                if (N > 1) return; // can not convert 
+
+                N = list.Count;
+                var M = N - 1;
+
+                for (int i = 0; i < N; i++)
+                {
+                    list[i].QueryKind = kind;
+                    list[i].IsHead = (i == 0);
+                    list[i].IsTail = (i == M);
+                }
+            }
+        }
+        #endregion
+
+
+        #region 691 MetaGraphRoot_X  ==========================================
+        ModelAction MetaGraphRoot_X;
+        void Initer_MetaGraphRoot_X()
+        {
+            MetaGraphRoot_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5516,10 +5532,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5550,27 +5563,27 @@ namespace ModelGraphSTD
                         if (qc.IsPath)
                         {
                             if (qc.IsHead)
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathHead_M, qc, null, null, QueryXPathHead_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathHead_M, qc, null, null, MetaGraphPathHead_X);
                             else
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, QueryXPathLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, MetaGraphPathLink_X);
                         }
                         else if (qc.IsGroup)
                         {
                             if (qc.IsHead)
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupHead_M, qc, null, null, QueryXGroupHead_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupHead_M, qc, null, null, MetaGraphGroupHead_X);
                             else
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, MetaGraphGroupLink_X);
                         }
                         else if (qc.IsSegue)
                         {
                             if (qc.IsHead)
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressHead_M, qc, null, null, QueryXEgressHead_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressHead_M, qc, null, null, MetaGraphEgressHead_X);
                             else
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, MetaGraphEgressLink_X);
                         }
                         else
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.MetaGraphLink_M, qc, null, null, QueryXLink_X);
+                            anyChange |= AddChildModel(prev, m, Trait.MetaGraphLink_M, qc, null, null, MetaGraphLink_X);
                         }
                     }
                     return(true, anyChange);
@@ -5587,11 +5600,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 692 QueryXLink  ===============================================
-        ModelAction QueryXLink_X;
-        void Initialize_QueryXLink_X()
+        #region 692 MetaGraphLink_X  ==========================================
+        ModelAction MetaGraphLink_X;
+        void Initer_MetaGraphLink_X()
         {
-            QueryXLink_X = new ModelAction
+            MetaGraphLink_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5615,13 +5628,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                    mc.Add(new ModelCommand(this, m, Trait.MakePathHeadCommand, MakePathtHead));
-                    mc.Add(new ModelCommand(this, m, Trait.MakeGroupHeadCommand, MakeGroupHead));
-                    mc.Add(new ModelCommand(this, m, Trait.MakeEgressHeadCommand, MakeBridgeHead));
-                },
+                MenuCommands = MetaGraphMenuCommands,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5653,7 +5660,7 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var qx = m.Item as QueryX;
-                    if (!m.IsExpandedRight && m.IsExpandedLeft && QueryX_QueryX.ChildCount(qx) == 0) return (false, false);
+                    if (!m.IsExpandedLeft && m.IsExpandedRight && m.ChildModelCount == 3) return (true, false);
 
                     m.InitChildModels(prev);
 
@@ -5674,28 +5681,27 @@ namespace ModelGraphSTD
                                 if (qc.IsPath)
                                 {
                                     if (qc.IsHead)
-                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathHead_M, qc, null, null, QueryXPathHead_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathHead_M, qc, null, null, MetaGraphPathHead_X);
                                     else
-                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, QueryXPathLink_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, MetaGraphPathLink_X);
                                 }
                                 else if (qc.IsGroup)
                                 {
                                     if (qc.IsHead)
-                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupHead_M, qc, null, null, QueryXGroupHead_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupHead_M, qc, null, null, MetaGraphGroupHead_X);
                                     else
-                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, QueryXGroupLink_X);
-                                    break;
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, MetaGraphGroupLink_X);
                                 }
                                 else if (qc.IsSegue)
                                 {
                                     if (qc.IsHead)
-                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressHead_M, qc, null, null, QueryXEgressHead_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressHead_M, qc, null, null, MetaGraphEgressHead_X);
                                     else
-                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, MetaGraphEgressLink_X);
                                 }
                                 else
                                 {
-                                    anyChange |= AddChildModel(prev, m, Trait.MetaGraphLink_M, qc, null, null, QueryXLink_X);
+                                    anyChange |= AddChildModel(prev, m, Trait.MetaGraphLink_M, qc, null, null, MetaGraphLink_X);
                                 }
                             }
                         }
@@ -5710,11 +5716,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 693 QueryXPathHead  ===========================================
-        ModelAction QueryXPathHead_X;
-        void Initialize_QueryXPathHead_X()
+        #region 693 MetaGraphPathHead_X  ======================================
+        ModelAction MetaGraphPathHead_X;
+        void Initer_MetaGraphPathHead_X()
         {
-            QueryXPathHead_X = new ModelAction
+            MetaGraphPathHead_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5742,13 +5748,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                    mc.Add(new ModelCommand(this, m, Trait.MakeRootLinkCommand, MakeRootLink));
-                    mc.Add(new ModelCommand(this, m, Trait.MakeGroupHeadCommand, MakeGroupHead));
-                    mc.Add(new ModelCommand(this, m, Trait.MakeEgressHeadCommand, MakeBridgeHead));
-                },
+                MenuCommands = MetaGraphMenuCommands,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5793,7 +5793,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, QueryXPathLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, MetaGraphPathLink_X);
                             }
                         }
                     }
@@ -5807,11 +5807,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 694 QueryXPathLink  ===========================================
-        ModelAction QueryXPathLink_X;
-        void Initialize_QueryXPathLink_X()
+        #region 694 MetaGraphPathLink_X  ======================================
+        ModelAction MetaGraphPathLink_X;
+        void Initer_MetaGraphPathLink_X()
         {
-            QueryXPathLink_X = new ModelAction
+            MetaGraphPathLink_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5835,10 +5835,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5879,7 +5876,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, QueryXPathLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, MetaGraphPathLink_X);
                             }
                         }
                     }
@@ -5893,11 +5890,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 695 QueryXGroupHead  ==========================================
-        ModelAction QueryXGroupHead_X;
-        void Initialize_QueryXGroupHead_X()
+        #region 695 MetaGraphGroupHead_X  =====================================
+        ModelAction MetaGraphGroupHead_X;
+        void Initer_MetaGraphGroupHead_X()
         {
-            QueryXGroupHead_X = new ModelAction
+            MetaGraphGroupHead_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -5917,13 +5914,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                    mc.Add(new ModelCommand(this, m, Trait.MakeRootLinkCommand, MakeRootLink));
-                    mc.Add(new ModelCommand(this, m, Trait.MakePathHeadCommand, MakePathtHead));
-                    mc.Add(new ModelCommand(this, m, Trait.MakeEgressHeadCommand, MakeBridgeHead));
-                },
+                MenuCommands = MetaGraphMenuCommands,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -5963,7 +5954,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, MetaGraphGroupLink_X);
                             }
                         }
                     }
@@ -5977,11 +5968,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 696 QueryXGroupLink  ==========================================
-        ModelAction QueryXGroupLink_X;
-        void Initialize_QueryXGroupLink_X()
+        #region 696 MetaGraphGroupLink_X  =====================================
+        ModelAction MetaGraphGroupLink_X;
+        void Initer_MetaGraphGroupLink_X()
         {
-            QueryXGroupLink_X = new ModelAction
+            MetaGraphGroupLink_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -6005,10 +5996,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6048,7 +6036,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, QueryXGroupLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, MetaGraphGroupLink_X);
                             }
                         }
                     }
@@ -6062,11 +6050,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 697 QueryXEgressHead  =========================================
-        ModelAction QueryXEgressHead_X;
-        void Initialize_QueryXEgressHead_X()
+        #region 697 MetaGraphEgressHead_X  ====================================
+        ModelAction MetaGraphEgressHead_X;
+        void Initer_MetaGraphEgressHead_X()
         {
-            QueryXEgressHead_X = new ModelAction
+            MetaGraphEgressHead_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -6090,13 +6078,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                    mc.Add(new ModelCommand(this, m, Trait.MakeRootLinkCommand, MakeRootLink));
-                    mc.Add(new ModelCommand(this, m, Trait.MakePathHeadCommand, MakePathtHead));
-                    mc.Add(new ModelCommand(this, m, Trait.MakeGroupHeadCommand, MakeGroupHead));
-                },
+                MenuCommands = MetaGraphMenuCommands,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6108,7 +6090,7 @@ namespace ModelGraphSTD
 
                     if (doDrop)
                     {
-                        CreateQueryX(qx, re, QueryType.Segue);
+                        CreateQueryX(qx, re, QueryType.Egress);
                     }
                     return DropAction.Link;
                 },
@@ -6136,7 +6118,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, MetaGraphEgressLink_X);
                             }
                         }
                     }
@@ -6150,11 +6132,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 698 QueryXEgressLink  =========================================
-        ModelAction QueryXEgressLink_X;
-        void Initialize_QueryXEgressLink_X()
+        #region 698 MetaGraphEgressLink_X  ====================================
+        ModelAction MetaGraphEgressLink_X;
+        void Initer_MetaGraphEgressLink_X()
         {
-            QueryXEgressLink_X = new ModelAction
+            MetaGraphEgressLink_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -6178,10 +6160,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6193,7 +6172,7 @@ namespace ModelGraphSTD
 
                     if (doDrop)
                     {
-                        CreateQueryX(qx, re, QueryType.Segue);
+                        CreateQueryX(qx, re, QueryType.Egress);
                     }
                     return DropAction.Link;
                 },
@@ -6221,7 +6200,7 @@ namespace ModelGraphSTD
                         {
                             foreach (var qc in list)
                             {
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, QueryXEgressLink_X);
+                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, MetaGraphEgressLink_X);
                             }
                         }
                     }
@@ -6235,11 +6214,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 699 GraphXNodeSymbol  =========================================
-        ModelAction GraphXNodeSymbol_X;
-        void Initialize_GraphXNodeSymbol_X()
+        #region 699 MetaGraphNodeSymbol_X  ====================================
+        ModelAction MetaGraphNodeSymbol_X;
+        void Initer_MetaGraphNodeSymbol_X()
         {
-            GraphXNodeSymbol_X = new ModelAction
+            MetaGraphNodeSymbol_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
@@ -6265,10 +6244,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6294,7 +6270,7 @@ namespace ModelGraphSTD
 
         #region 69E ValueXHead  ===============================================
         ModelAction ValueHead_X;
-        void Initialize_ValueHead_X()
+        void Initer_ValueHead_X()
         {
             ValueHead_X = new ModelAction
             {
@@ -6320,10 +6296,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6394,7 +6367,7 @@ namespace ModelGraphSTD
 
         #region 69F ValueXLink  ===============================================
         ModelAction ValueLink_X;
-        void Initialize_ValueLink_X()
+        void Initer_ValueLink_X()
         {
             ValueLink_X = new ModelAction
             {
@@ -6420,10 +6393,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6511,7 +6481,7 @@ namespace ModelGraphSTD
 
         #region 6A1 RowX  =====================================================
         ModelAction RowX_X;
-        void Initialize_Row_X()
+        void Initer_Row_X()
         {
             RowX_X = new ModelAction
             {
@@ -6541,10 +6511,7 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-                MenuCommands = (m, mc) =>
-                {
-                    mc.Add(new ModelCommand(this, m, Trait.RemoveCommand, RemoveItem));
-                },
+                MenuCommands = RemoveItemMenuCommand,
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -6603,7 +6570,7 @@ namespace ModelGraphSTD
 
         #region 6A3 View  =====================================================
         ModelAction View_X;
-        void Initialize_View_X()
+        void Initer_View_X()
         {
             View_X = new ModelAction
             {
@@ -6631,7 +6598,7 @@ namespace ModelGraphSTD
 
         #region 6A4 TableX  ===================================================
         ModelAction Table_X;
-        void Initialize_Table_X()
+        void Initer_Table_X()
         {
             Table_X = new ModelAction
             {
@@ -6702,7 +6669,7 @@ namespace ModelGraphSTD
 
         #region 6A5 Graph  ====================================================
         ModelAction Graph_X;
-        void Initialize_Graph_X()
+        void Initer_Graph_X()
         {
             Graph_X = new ModelAction
             {
@@ -6761,7 +6728,7 @@ namespace ModelGraphSTD
 
         #region 6A6 GraphRef  =================================================
         ModelAction GraphRef_X;
-        void Initialize_GraphRef_X()
+        void Initer_GraphRef_X()
         {
             GraphRef_X = new ModelAction
             {
@@ -6789,7 +6756,7 @@ namespace ModelGraphSTD
 
         #region 6A7 RowChildRelation  =========================================
         ModelAction RowChildRelation_X;
-        void Initialize_RowChildRelation_X()
+        void Initer_RowChildRelation_X()
         {
             RowChildRelation_X = new ModelAction
             {
@@ -6861,7 +6828,7 @@ namespace ModelGraphSTD
 
         #region 6A8 RowParentRelation  ========================================
         ModelAction RowParentRelation_X;
-        void Initialize_RowParentRelation_X()
+        void Initer_RowParentRelation_X()
         {
             RowParentRelation_X = new ModelAction
             {
@@ -6933,7 +6900,7 @@ namespace ModelGraphSTD
 
         #region 6A9 RowRelatedChild  ==========================================
         ModelAction RowRelatedChild_X;
-        void Initialize_RowRelatedChild_X()
+        void Initer_RowRelatedChild_X()
         {
             RowRelatedChild_X = new ModelAction
             {
@@ -7008,7 +6975,7 @@ namespace ModelGraphSTD
 
         #region 6AA RowRelatedParent  =========================================
         ModelAction RowRelatedParent_X;
-        void Initialize_RowRelatedParent_X()
+        void Initer_RowRelatedParent_X()
         {
             RowRelatedParent_X = new ModelAction
             {
@@ -7080,7 +7047,7 @@ namespace ModelGraphSTD
 
         #region 6AB EnumRelatedColumn  ========================================
         ModelAction EnumRelatedColumn_X;
-        void Initialize_EnumRelatedColumn_X()
+        void Initer_EnumRelatedColumn_X()
         {
             EnumRelatedColumn_X = new ModelAction
             {
@@ -7123,7 +7090,7 @@ namespace ModelGraphSTD
 
         #region 6B1 RowPropertyList  ==========================================
         ModelAction RowPropertyList_X;
-        void Initialize_RowPropertyList_X()
+        void Initer_RowPropertyList_X()
         {
             RowPropertyList_X = new ModelAction
             {
@@ -7171,7 +7138,7 @@ namespace ModelGraphSTD
 
         #region 6B2 RowChildRelationList  =====================================
         ModelAction RowChildRelationList_X;
-        void Initialize_RowChildRelationList_X()
+        void Initer_RowChildRelationList_X()
         {
             RowChildRelationList_X = new ModelAction
             {
@@ -7222,7 +7189,7 @@ namespace ModelGraphSTD
 
         #region 6B3 RowParentRelationList  ====================================
         ModelAction RowParentRelationList_X;
-        void Initialize_RowParentRelationList_X()
+        void Initer_RowParentRelationList_X()
         {
             RowParentRelationList_X = new ModelAction
             {
@@ -7273,7 +7240,7 @@ namespace ModelGraphSTD
 
         #region 6B7 RowComputeList  ===========================================
         ModelAction RowComputeList_X;
-        void Initialize_RowComputeList_X()
+        void Initer_RowComputeList_X()
         {
             RowComputeList_X = new ModelAction
             {
@@ -7321,7 +7288,7 @@ namespace ModelGraphSTD
 
         #region 6C1 QueryRootLink  ============================================
         ModelAction QueryRootLink_X;
-        void Initialize_QueryRootLink_X()
+        void Initer_QueryRootLink_X()
         {
             QueryRootLink_X = new ModelAction
             {
@@ -7371,7 +7338,7 @@ namespace ModelGraphSTD
 
         #region 6C2 QueryPathHead  ============================================
         ModelAction QueryPathHead_X;
-        void Initialize_QueryPathHead_X()
+        void Initer_QueryPathHead_X()
         {
             QueryPathHead_X = new ModelAction
             {
@@ -7402,7 +7369,7 @@ namespace ModelGraphSTD
 
         #region 6C3 QueryPathLink  ============================================
         ModelAction QueryPathLink_X;
-        void Initialize_QueryPathLink_X()
+        void Initer_QueryPathLink_X()
         {
             QueryPathLink_X = new ModelAction
             {
@@ -7454,7 +7421,7 @@ namespace ModelGraphSTD
 
         #region 6C4 QueryGroupHead  ===========================================
         ModelAction QueryGroupHead_X;
-        void Initialize_QueryGroupHead_X()
+        void Initer_QueryGroupHead_X()
         {
             QueryGroupHead_X = new ModelAction
             {
@@ -7485,7 +7452,7 @@ namespace ModelGraphSTD
 
         #region 6C5 QueryGroupLink  ===========================================
         ModelAction QueryGroupLink_X;
-        void Initialize_QueryGroupLink_X()
+        void Initer_QueryGroupLink_X()
         {
             QueryGroupLink_X = new ModelAction
             {
@@ -7537,7 +7504,7 @@ namespace ModelGraphSTD
 
         #region 6C6 QueryEgressHead  ==========================================
         ModelAction QueryEgressHead_X;
-        void Initialize_QueryEgressHead_X()
+        void Initer_QueryEgressHead_X()
         {
             QueryEgressHead_X = new ModelAction
             {
@@ -7568,7 +7535,7 @@ namespace ModelGraphSTD
 
         #region 6C7 QueryEgressLink  ==========================================
         ModelAction QueryEgressLink_X;
-        void Initialize_QueryEgressLink_X()
+        void Initer_QueryEgressLink_X()
         {
             QueryEgressLink_X = new ModelAction
             {
@@ -7622,7 +7589,7 @@ namespace ModelGraphSTD
 
         #region 6D1 QueryRootItem  ============================================
         ModelAction QueryRootItem_X;
-        void Initialize_QueryRootItem_X()
+        void Initer_QueryRootItem_X()
         {
             QueryRootItem_X = new ModelAction
             {
@@ -7675,7 +7642,7 @@ namespace ModelGraphSTD
 
         #region 6D2 QueryPathStep  ============================================
         ModelAction QueryPathStep_X;
-        void Initialize_QueryPathStep_X()
+        void Initer_QueryPathStep_X()
         {
             QueryPathStep_X = new ModelAction
             {
@@ -7719,7 +7686,7 @@ namespace ModelGraphSTD
 
         #region 6D3 QueryPathTail  ============================================
         ModelAction QueryPathTail_X;
-        void Initialize_QueryPathTail_X()
+        void Initer_QueryPathTail_X()
         {
             QueryPathTail_X = new ModelAction
             {
@@ -7746,7 +7713,7 @@ namespace ModelGraphSTD
 
         #region 6D4 QueryGroupStep  ===========================================
         ModelAction QueryGroupStep_X;
-        void Initialize_QueryGroupStep_X()
+        void Initer_QueryGroupStep_X()
         {
             QueryGroupStep_X = new ModelAction
             {
@@ -7790,7 +7757,7 @@ namespace ModelGraphSTD
 
         #region 6D5 QueryGroupTail  ===========================================
         ModelAction QueryGroupTail_X;
-        void Initialize_QueryGroupTail_X()
+        void Initer_QueryGroupTail_X()
         {
             QueryGroupTail_X = new ModelAction
             {
@@ -7817,7 +7784,7 @@ namespace ModelGraphSTD
 
         #region 6D6 QueryEgressStep  ==========================================
         ModelAction QueryEgressStep_X;
-        void Initialize_QueryEgressStep_X()
+        void Initer_QueryEgressStep_X()
         {
             QueryEgressStep_X = new ModelAction
             {
@@ -7861,7 +7828,7 @@ namespace ModelGraphSTD
 
         #region 6D7 QueryEgressTail  ==========================================
         ModelAction QueryEgressTail_X;
-        void Initialize_QueryEgressTail_X()
+        void Initer_QueryEgressTail_X()
         {
             QueryEgressTail_X = new ModelAction
             {
@@ -7890,7 +7857,7 @@ namespace ModelGraphSTD
 
         #region 6E1 GraphXRef  ================================================
         ModelAction GraphXRef_X;
-        void Initialize_GraphXRef_X()
+        void Initer_GraphXRef_X()
         {
             GraphXRef_X = new ModelAction
             {
@@ -7993,7 +7960,7 @@ namespace ModelGraphSTD
 
         #region 6E2 GraphNodeList  ============================================
         ModelAction GraphNodeList_X;
-        void Initialize_GraphNodeList_X()
+        void Initer_GraphNodeList_X()
         {
             GraphNodeList_X = new ModelAction
             {
@@ -8044,7 +8011,7 @@ namespace ModelGraphSTD
 
         #region 6E3 GraphEdgeList  ============================================
         ModelAction GraphEdgeList_X;
-        void Initialize_GraphEdgeList_X()
+        void Initer_GraphEdgeList_X()
         {
             GraphEdgeList_X = new ModelAction
             {
@@ -8095,7 +8062,7 @@ namespace ModelGraphSTD
 
         #region 6E4 GraphRootList  ============================================
         ModelAction GraphRootList_X;
-        void Initialize_GraphRootList_X()
+        void Initer_GraphRootList_X()
         {
             GraphRootList_X = new ModelAction
             {
@@ -8146,7 +8113,7 @@ namespace ModelGraphSTD
 
         #region 6E5 GraphLevelList  ===========================================
         ModelAction GraphLevelList_X;
-        void Initialize_GraphLevelList_X()
+        void Initer_GraphLevelList_X()
         {
             GraphLevelList_X = new ModelAction
             {
@@ -8196,7 +8163,7 @@ namespace ModelGraphSTD
 
         #region 6E6 GraphLevel  ===============================================
         ModelAction GraphLevel_X;
-        void Initialize_GraphLevel_X()
+        void Initer_GraphLevel_X()
         {
             GraphLevel_X = new ModelAction
             {
@@ -8242,7 +8209,7 @@ namespace ModelGraphSTD
 
         #region 6E7 GraphPath  ================================================
         ModelAction GraphPath_X;
-        void Initialize_GraphPath_X()
+        void Initer_GraphPath_X()
         {
             GraphPath_X = new ModelAction
             {
@@ -8313,7 +8280,7 @@ namespace ModelGraphSTD
 
         #region 6E8 GraphRoot  ================================================
         ModelAction GraphRoot_X;
-        void Initialize_GraphRoot_X()
+        void Initer_GraphRoot_X()
         {
             GraphRoot_X = new ModelAction
             {
@@ -8359,7 +8326,7 @@ namespace ModelGraphSTD
 
         #region 6E9 GraphNode  ================================================
         ModelAction GraphNode_X;
-        void Initialize_GraphNode_X()
+        void Initer_GraphNode_X()
         {
             GraphNode_X = new ModelAction
             {
@@ -8420,7 +8387,7 @@ namespace ModelGraphSTD
 
         #region 6EA GraphEdge  ================================================
         ModelAction GraphEdge_X;
-        void Initialize_GraphEdge_X()
+        void Initer_GraphEdge_X()
         {
             GraphEdge_X = new ModelAction
             {
@@ -8464,7 +8431,7 @@ namespace ModelGraphSTD
 
         #region 6EB GraphOpenList  ============================================
         ModelAction GraphOpenList_X;
-        void Initialize_GraphOpenList_X()
+        void Initer_GraphOpenList_X()
         {
             GraphOpenList_X = new ModelAction
             {
@@ -8513,7 +8480,7 @@ namespace ModelGraphSTD
 
         #region 6EC GraphOpen  ================================================
         ModelAction GraphOpen_X;
-        void Initialize_GraphOpen_X()
+        void Initer_GraphOpen_X()
         {
             GraphOpen_X = new ModelAction
             {
@@ -8544,7 +8511,7 @@ namespace ModelGraphSTD
 
         #region 7D0 PrimeCompute  =============================================
         ModelAction PrimeCompute_X;
-        void Initialize_PrimeCompute_X()
+        void Initer_PrimeCompute_X()
         {
             PrimeCompute_X = new ModelAction
             {
@@ -8599,7 +8566,7 @@ namespace ModelGraphSTD
 
         #region 7D1 ComputeStore  =============================================
         ModelAction ComputeStore_X;
-        void Initialize_ComputeStore_X()
+        void Initer_ComputeStore_X()
         {
             ComputeStore_X = new ModelAction
             {
@@ -8652,7 +8619,7 @@ namespace ModelGraphSTD
 
         #region 7F0 InternlStoreList  =========================================
         ModelAction InternalStoreList_X;
-        void Initialize_InternalStoreList_X()
+        void Initer_InternalStoreList_X()
         {
             InternalStoreList_X = new ModelAction
             {
@@ -8710,7 +8677,7 @@ namespace ModelGraphSTD
 
         #region 7F1 InternalStore  ============================================
         ModelAction InternalStore_X;
-        void Initialize_InternalStore_X()
+        void Initer_InternalStore_X()
         {
             InternalStore_X = new ModelAction
             {
@@ -8764,7 +8731,7 @@ namespace ModelGraphSTD
 
         #region 7F2 StoreItem  ================================================
         ModelAction StoreItem_X;
-        void Initialize_StoreItem_X()
+        void Initer_StoreItem_X()
         {
             StoreItem_X = new ModelAction
             {
@@ -8848,7 +8815,7 @@ namespace ModelGraphSTD
 
         #region 7F4 StoreItemItemList  ========================================
         ModelAction StoreItemItemList_X;
-        void Initialize_StoreItemItemList_X()
+        void Initer_StoreItemItemList_X()
         {
             StoreItemItemList_X = new ModelAction
             {
@@ -8900,7 +8867,7 @@ namespace ModelGraphSTD
 
         #region 7F5 StoreRelationLinkList  ====================================
         ModelAction StoreRelationLinkList_X;
-        void Initialize_StoreRelationLinkList_X()
+        void Initer_StoreRelationLinkList_X()
         {
             StoreRelationLinkList_X = new ModelAction
             {
@@ -8953,7 +8920,7 @@ namespace ModelGraphSTD
 
         #region 7F6 StoreChildRelationList  ===================================
         ModelAction StoreChildRelationList_X;
-        void Initialize_StoreChildRelationList_X()
+        void Initer_StoreChildRelationList_X()
         {
             StoreChildRelationList_X = new ModelAction
             {
@@ -8993,7 +8960,7 @@ namespace ModelGraphSTD
 
         #region 7F7 StoreParentRelationList  ==================================
         ModelAction StoreParentRelationList_X;
-        void Initialize_StoreParentRelationList_X()
+        void Initer_StoreParentRelationList_X()
         {
             StoreParentRelationList_X = new ModelAction
             {
@@ -9033,7 +9000,7 @@ namespace ModelGraphSTD
 
         #region 7F8 StoreItemItem  ============================================
         ModelAction StoreItemItem_X;
-        void Initialize_StoreItemItem_X()
+        void Initer_StoreItemItem_X()
         {
             StoreItemItem_X = new ModelAction
             {
@@ -9061,7 +9028,7 @@ namespace ModelGraphSTD
 
         #region 7F9 StoreRelationLink  ========================================
         ModelAction StoreRelationLink_X;
-        void Initialize_StoreRelationLink_X()
+        void Initer_StoreRelationLink_X()
         {
             StoreRelationLink_X = new ModelAction
             {
@@ -9089,7 +9056,7 @@ namespace ModelGraphSTD
 
         #region 7FA StoreChildRelation  =======================================
         ModelAction StoreChildRelation_X;
-        void Initialize_StoreChildRelation_X()
+        void Initer_StoreChildRelation_X()
         {
             StoreChildRelation_X = new ModelAction
             {
@@ -9139,7 +9106,7 @@ namespace ModelGraphSTD
 
         #region 7FA StoreParentRelation  ======================================
         ModelAction StoreParentRelation_X;
-        void Initialize_StoreParentRelation_X()
+        void Initer_StoreParentRelation_X()
         {
             StoreParentRelation_X = new ModelAction
             {
@@ -9188,7 +9155,7 @@ namespace ModelGraphSTD
 
         #region 7FC StoreRelatedItem  =========================================
         ModelAction StoreRelatedItem_X;
-        void Initialize_StoreRelatedItem_X()
+        void Initer_StoreRelatedItem_X()
         {
             StoreRelatedItem_X = new ModelAction
             {

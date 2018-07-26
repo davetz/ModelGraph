@@ -113,47 +113,6 @@ namespace ModelGraphSTD
         #endregion
 
         #region ConvertQueryType  =============================================
-        private void MakeRootLink(ItemModel model)
-        {
-            var qx = model.Item as QueryX;
-            if (TryGetQueryXList(qx, out List<QueryX> list))
-            {
-                foreach (var qxi in list) { qxi.QueryKind = QueryType.Graph; qxi.IsHead = false; qxi.IsTail = false; }
-            }
-        }
-        private void MakePathtHead(ItemModel model)
-        {
-            var qx = model.Item as QueryX;
-            if (TryGetQueryXList(qx, out List<QueryX> list))
-            {
-                foreach (var qxi in list) { qxi.QueryKind = QueryType.Path; }
-                var tail = list.Count - 1;
-                list[0].IsHead = true;
-                list[tail].IsTail = true;
-            }
-        }
-        private void MakeGroupHead(ItemModel model)
-        {
-            var qx = model.Item as QueryX;
-            if (TryGetQueryXList(qx, out List<QueryX> list))
-            {
-                foreach (var qxi in list) {qxi.QueryKind = QueryType.Group; }
-                var tail = list.Count - 1;
-                list[0].IsHead = true;
-                list[tail].IsTail = true;
-            }
-        }
-        private void MakeBridgeHead(ItemModel model)
-        {
-            var qx = model.Item as QueryX;
-            if (TryGetQueryXList(qx, out List<QueryX> list))
-            {
-                foreach (var qxi in list) { qxi.QueryKind = QueryType.Segue; }
-                var tail = list.Count - 1;
-                list[0].IsHead = true;
-                list[tail].IsTail = true;
-            }
-        }
 
         internal bool CanConvertQueryType(ItemModel model)
         {
@@ -169,17 +128,6 @@ namespace ModelGraphSTD
             return true;
         }
 
-        private bool TryGetQueryXList(QueryX qx, out List<QueryX> list)
-        {
-            list = new List<QueryX>() { qx };
-            while (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> children))
-            {
-                if (children.Count != 1) return false;
-                qx = children[0];
-                list.Add(qx);
-            }
-            return true;
-        }
         #endregion
 
         #region CanDropQueryXRelation  ========================================

@@ -342,7 +342,7 @@ namespace RepositoryUWP
                 qx.IsRoot = (n == 1 || n == 12 || n == 15);
                 if (n == 3 || n == 4) qx.QueryKind = QueryType.Path;
                 if (n == 5 || n == 6) qx.QueryKind = QueryType.Group;
-                if (n == 7 || n == 8) qx.QueryKind = QueryType.Segue;
+                if (n == 7 || n == 8) qx.QueryKind = QueryType.Egress;
                 if (n == 12 || n == 13 || n == 14) qx.QueryKind = QueryType.Value;
                 if (n == 15) qx.QueryKind = QueryType.Symbol;
 

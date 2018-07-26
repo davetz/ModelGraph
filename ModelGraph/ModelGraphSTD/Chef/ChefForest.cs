@@ -189,7 +189,7 @@ namespace ModelGraphSTD
                     case QueryType.Group:
                         g.GroupQuerys.Add((q1, q2));
                         break;
-                    case QueryType.Segue:
+                    case QueryType.Egress:
                         g.SegueQuerys.Add((q1, q2));
                         break;
                 }
