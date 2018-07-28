@@ -264,7 +264,7 @@ namespace ModelGraphSTD
             if (_children2 == null) return;
             _children2.Move(key, item, index);
 
-            ItemListDelta++;
+            ChildDelta++;
         }
         internal override void MoveParent(Item keyRef, Item itemRef, int index)
         {
@@ -278,7 +278,7 @@ namespace ModelGraphSTD
             if (_parents2 == null) return;
             _parents2.Move(key, item, index);
 
-            ItemListDelta++;
+            ChildDelta++;
         }
         override internal void InsertLink(Item parentItem, Item childItem, int parentIndex, int childIndex)
         {
@@ -323,9 +323,9 @@ namespace ModelGraphSTD
                     break;
             }
 
-            ItemListDelta++;
-            parent.RelationDelta++;
-            child.RelationDelta++;
+            ChildDelta++;
+            parent.ModelDelta++;
+            child.ModelDelta++;
         }
         override internal (int ParentIndex, int ChildIndex) AppendLink(Item parentItem, Item childItem)
         {
@@ -369,9 +369,9 @@ namespace ModelGraphSTD
                     break;
             }
 
-            ItemListDelta++;
-            parent.RelationDelta++;
-            child.RelationDelta++;
+            ChildDelta++;
+            parent.ModelDelta++;
+            child.ModelDelta++;
             return GetIndex(parent, child);
         }
 
@@ -446,9 +446,9 @@ namespace ModelGraphSTD
             if (_children2 != null) _children2.RemoveLink(parent, child);
             else if (_children1 != null) _children1.RemoveLink(parent, child);
 
-            ItemListDelta++;
-            parent.RelationDelta++;
-            child.RelationDelta++;
+            ChildDelta++;
+            parent.ModelDelta++;
+            child.ModelDelta++;
         }
         #endregion
 

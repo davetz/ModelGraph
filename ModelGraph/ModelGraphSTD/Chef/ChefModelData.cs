@@ -187,7 +187,7 @@ namespace ModelGraphSTD
         internal bool AddChildModel(List<ItemModel> prev, ItemModel m, Trait trait, Item item, Item aux1, Item aux2, ModelAction get)
         {/*
             I am construction a new list of itemModels but if posible I want to reuse an existing model from the previous itemModel list.
-            The existing models are compared with the parameters of the candidate model to see if it matches. A new model will be created if I necessary.
+            The existing models are compared with the parameters of the candidate model to see if it matches. A new model will be created if necessary.
             In lists of 20,000 itemModels it is important to be strategic. The new list will be very much, if not exactly, like the previous one.
             It is not posible to know what changed or why, however I have the previous list and am being feed parameters for candidates one at a time,
          */
@@ -516,12 +516,12 @@ namespace ModelGraphSTD
                 {
                     case ChangeType.ToggleLeft:
                         m.IsExpandedLeft = !m.IsExpandedLeft;
-                        m.ResetItemListDelta();
+                        m.ResetChildDelta();
                         break;
 
                     case ChangeType.ExpandLeft:
                         m.IsExpandedLeft = true;
-                        m.ResetItemListDelta();
+                        m.ResetChildDelta();
                         break;
 
                     case ChangeType.CollapseLeft:
@@ -529,22 +529,22 @@ namespace ModelGraphSTD
                         m.IsExpandedRight = false;
                         m.IsFilterVisible = false;
                         m.ViewFilter = null;
-                        m.ResetItemListDelta();
+                        m.ResetChildDelta();
                         break;
 
                     case ChangeType.ToggleRight:
                         m.IsExpandedRight = !m.IsExpandedRight;
-                        m.ResetItemListDelta();
+                        m.ResetChildDelta();
                         break;
 
                     case ChangeType.ExpandRight:
                         m.IsExpandedRight = true;
-                        m.ResetItemListDelta();
+                        m.ResetChildDelta();
                         break;
 
                     case ChangeType.CollapseRight:
                         m.IsExpandedRight = false;
-                        m.ResetItemListDelta();
+                        m.ResetChildDelta();
                         break;
 
                     case ChangeType.ToggleFilter:
@@ -1999,7 +1999,7 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     if (_errorStore.Count == 0) return (false, false);
-                    if (_errorStore.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (_errorStore.ChildDelta == m.ChildDelta) return (true, false);
 
                     m.InitChildModels(prev, _errorStore.Count);
 
@@ -2061,7 +2061,7 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     if (_changeRoot.Count == 0) return (false, false);
-                    if (_changeRoot.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (_changeRoot.ChildDelta == m.ChildDelta) return (true, false);
 
                     var anyChange = false;
                     var items = _changeRoot.Items;
@@ -2355,7 +2355,7 @@ namespace ModelGraphSTD
                 {
                     var cs = m.ChangeSet;
                     if (cs.Count == 0) return (false, false);
-                    if (cs.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (cs.ChildDelta == m.ChildDelta) return (true, false);
 
                     var anyChange = false;
                     var items = cs.Items;
@@ -2674,8 +2674,8 @@ namespace ModelGraphSTD
                 {
                     if (_viewXStore.Count == 0) return (false, false);
 
-                    if (_viewXStore.ItemListDelta == m.ItemListDelta) return (true, false);
-                    m.ItemListDelta = _viewXStore.ItemListDelta;
+                    if (_viewXStore.ChildDelta == m.ChildDelta) return (true, false);
+                    m.ChildDelta = _viewXStore.ChildDelta;
 
                     var items = _viewXStore.Items;
                     m.InitChildModels(prev, items.Count);
@@ -3116,8 +3116,8 @@ namespace ModelGraphSTD
                 {
                     if (_viewXStore.Count == 0) return (false, false);
 
-                    if (_viewXStore.ItemListDelta == m.ItemListDelta) return (true, false);
-                    m.ItemListDelta = _viewXStore.ItemListDelta;
+                    if (_viewXStore.ChildDelta == m.ChildDelta) return (true, false);
+                    m.ChildDelta = _viewXStore.ChildDelta;
 
                     m.InitChildModels(prev);
                     var items = _viewXStore.Items;
@@ -3392,9 +3392,9 @@ namespace ModelGraphSTD
                 {
                     var store = _enumXStore;
                     if (store.Count == 0) return (false, false);
-                    if (store.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (store.ChildDelta == m.ChildDelta) return (true, false);
 
-                    m.ItemListDelta = store.ItemListDelta;
+                    m.ChildDelta = store.ChildDelta;
                     m.InitChildModels(prev, store.Count);
 
                     var items = store.Items;
@@ -3460,9 +3460,9 @@ namespace ModelGraphSTD
                 {
                     var store = _tableXStore;
                     if (store.Count == 0) return (false, false);
-                    if (store.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (store.ChildDelta == m.ChildDelta) return (true, false);
 
-                    m.ItemListDelta = store.ItemListDelta;
+                    m.ChildDelta = store.ChildDelta;
                     m.InitChildModels(prev, store.Count);
 
                     var items = store.Items;
@@ -3528,9 +3528,9 @@ namespace ModelGraphSTD
                 {
                     var store = _graphXStore;
                     if (store.Count == 0) return (false, false);
-                    if (store.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (store.ChildDelta == m.ChildDelta) return (true, false);
 
-                    m.ItemListDelta = store.ItemListDelta;
+                    m.ChildDelta = store.ChildDelta;
                     m.InitChildModels(prev, store.Count);
 
                     var items = store.Items;
@@ -3726,9 +3726,9 @@ namespace ModelGraphSTD
                 {
                     var store = _tableXStore;
                     if (store.Count == 0) return (false, false);
-                    if (store.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (store.ChildDelta == m.ChildDelta) return (true, false);
 
-                    m.ItemListDelta = store.ItemListDelta;
+                    m.ChildDelta = store.ChildDelta;
                     m.InitChildModels(prev, store.Count);
 
                     var items = store.Items;
@@ -3780,9 +3780,9 @@ namespace ModelGraphSTD
                 {
                     var store = _graphXStore;
                     if (store.Count == 0) return (false, false);
-                    if (store.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (store.ChildDelta == m.ChildDelta) return (true, false);
 
-                    m.ItemListDelta = store.ItemListDelta;
+                    m.ChildDelta = store.ChildDelta;
                     m.InitChildModels(prev, store.Count);
 
                     var items = store.Items;
@@ -4648,9 +4648,9 @@ namespace ModelGraphSTD
                 {
                     var ex = m.EnumX;
                     if (ex.Count == 0) return (false, false);
-                    if (ex.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (ex.ChildDelta == m.ChildDelta) return (true, false);
 
-                    m.ItemListDelta = ex.ItemListDelta;
+                    m.ChildDelta = ex.ChildDelta;
                     m.InitChildModels(prev);
 
                     var list = ex.Items;
@@ -6639,9 +6639,9 @@ namespace ModelGraphSTD
                 {
                     var tx = m.TableX;
                     if (tx.Count == 0) return (false, false);
-                    if (tx.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (tx.ChildDelta == m.ChildDelta) return (true, false);
 
-                    m.ItemListDelta = tx.ItemListDelta;
+                    m.ChildDelta = tx.ChildDelta;
                     m.InitChildModels(prev, tx.Count);
 
                     var items = tx.Items;
@@ -7927,9 +7927,9 @@ namespace ModelGraphSTD
                 {
                     var gx = m.GraphX;
                     if (gx.Count == 0) return (false, false);
-                    if (gx.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (gx.ChildDelta == m.ChildDelta) return (true, false);
 
-                    m.ItemListDelta = gx.ItemListDelta;
+                    m.ChildDelta = gx.ChildDelta;
                     m.InitChildModels(prev);
 
                     var list = gx.Items;
@@ -8708,9 +8708,9 @@ namespace ModelGraphSTD
                 {
                     var st = m.Store;
                     if (st.Count == 0) return (false, false);
-                    if (st.ItemListDelta == m.ItemListDelta) return (true, false);
+                    if (st.ChildDelta == m.ChildDelta) return (true, false);
 
-                    m.ItemListDelta = st.ItemListDelta;
+                    m.ChildDelta = st.ChildDelta;
                     m.InitChildModels(prev);
 
                     var list = st.GetItems();

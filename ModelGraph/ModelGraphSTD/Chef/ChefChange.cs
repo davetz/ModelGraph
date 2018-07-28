@@ -227,10 +227,10 @@ namespace ModelGraphSTD
             }
             else
             {
+                m.Item.ModelDelta++;
                 var oldValue = m.Property.Value.GetString(m.Item);
                 if (IsNotSameValue(oldValue, newValue))
                 {
-                    m.Item.PropertyDelta++;
                     var name = $"{GetIdentity(m.Item, IdentityStyle.ChangeLog)}    {GetIdentity(m.Property, IdentityStyle.Single)}:  old<{oldValue}>  new<{newValue}>";
                     if (m.Property.Value.SetString(m.Item, newValue))
                     {
@@ -243,7 +243,7 @@ namespace ModelGraphSTD
         {
             if (chng.Item.IsValid && chng.CanUndo && chng.Property.Value.SetString(chng.Item, chng.OldValue))
             {
-                chng.Item.PropertyDelta++;
+                chng.Item.ModelDelta++;
                 chng.IsUndone = true;
             }
         }
@@ -252,7 +252,7 @@ namespace ModelGraphSTD
         {
             if (chng.Item.IsValid && chng.CanRedo && chng.Property.Value.SetString(chng.Item, chng.NewValue))
             {
-                chng.Item.PropertyDelta++;
+                chng.Item.ModelDelta++;
                 chng.IsUndone = false;
             }
         }

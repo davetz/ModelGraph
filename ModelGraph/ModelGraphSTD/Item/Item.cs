@@ -10,9 +10,8 @@ namespace ModelGraphSTD
         private State _state;       //bit flags specific to each item type
 
         private byte _flags;         //IsNew, IsDeleted, AutoExpandLeft, AutoExpandRight,..
-        internal byte PropertyDelta; //incremented whenever a property value has changed
-        internal byte RelationDelta; //incremented whenever a relation reference has changed
-        internal byte ItemListDelta; //incremented whenever the list of child items has changed (if any) 
+        internal byte ModelDelta; //incremented when a property or relation is changed
+        internal byte ChildDelta; //incremented when list of child items is changed 
 
         #region Trait  ========================================================
         internal bool IsExternal => (Trait & Trait.IsExternal) != 0;
@@ -119,9 +118,14 @@ namespace ModelGraphSTD
 
         #region Property/Methods ==============================================
         internal int Index => (Owner is Store st) ? st.IndexOf(this) : -1;
-
         internal bool IsInvalid => Owner == null || IsDeleted;
         internal bool IsValid => !IsInvalid;
+        internal void ResetChildDelta()
+        {
+            ModelDelta -= 3; // need to update the ui elements
+            ChildDelta -= 3; // need to update child item list
+        }
+
         internal Store Store => Owner as Store;
         /// <summary>
         /// Walk up item tree hierachy to find the parent DataChef

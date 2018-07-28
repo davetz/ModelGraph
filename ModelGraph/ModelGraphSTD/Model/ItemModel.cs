@@ -20,8 +20,7 @@ namespace ModelGraphSTD
         internal Trait Trait;
         private State _state;
 
-        public byte ModelDelta;         // version of model property values
-        internal byte ItemListDelta;         // version of child model list
+        internal byte ChildDelta;  // version of child model list
         private Flags _flags;
         public byte Depth;
         
@@ -337,12 +336,14 @@ namespace ModelGraphSTD
         public bool IsModified { get { return false; } }
         public string ModelIdentity => GetModelIdentity();
 
-        public void ResetItemListDelta() => ItemListDelta -= 3;
+        public void ResetChildDelta() => Item.ResetChildDelta();
+        public byte ModelDelta => IsComboProperty ? (byte)(Aux2.ChildDelta + Item.ModelDelta) : Item.ModelDelta;
+
         internal void SetIsSelected() => GetRootModel().SelectModel = this;
 
         internal void ClearChildren()
         {
-            ResetItemListDelta();
+            ResetChildDelta();
             ChildModels = null;
             ViewModels = null;
         }

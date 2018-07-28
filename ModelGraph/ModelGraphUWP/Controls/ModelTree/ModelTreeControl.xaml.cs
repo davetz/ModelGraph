@@ -124,6 +124,9 @@ namespace ModelGraphUWP
         string _filterCountTip;
         string _rightExpandTip;
         string _filterExpandTip;
+
+        // position all unused cache elements offScreen
+        const int notVisible = 32767;
         #endregion
 
         #region Close  ========================================================
@@ -206,25 +209,10 @@ namespace ModelGraphUWP
         }
         #endregion
 
-        #region Button_Click  =================================================
-        void ItemButton_Click(object sender, RoutedEventArgs e)
-        {
-            var obj = sender as Button;
-            var cmd = obj.DataContext as ModelCommand;
-            cmd.Execute();
-        }
-        void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var obj = sender as MenuFlyoutItem;
-            var cmd = obj.DataContext as ModelCommand;
-            cmd.Execute();
-        }
-        #endregion
-
-        #region HeadButton  ===================================================
+        #region KeyButton  ====================================================
         bool _isCtrlDown;
         bool _isShiftDown;
-        void HeadButton_LostFocus(object sender, RoutedEventArgs e)
+        void KeyButton_LostFocus(object sender, RoutedEventArgs e)
         {
             // there is a rouge scrollViewer in the visual tree
             // that takes the keyboard focus on pointerRelease events
@@ -236,7 +224,7 @@ namespace ModelGraphUWP
         }
 
 
-        void HeadButton_KeyUp(object sender, KeyRoutedEventArgs e)
+        void KeyButton_KeyUp(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Shift)
             {
@@ -248,9 +236,9 @@ namespace ModelGraphUWP
             }
         }
 
-        void HeadButton_KeyDown(object sender, KeyRoutedEventArgs e)
+        void KeyButton_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (!(HeadButton.DataContext is ItemModel mdl))
+            if (!(KeyButton.DataContext is ItemModel mdl))
             {
                 return;
             }
@@ -456,6 +444,21 @@ namespace ModelGraphUWP
         }
         #endregion
 
+        #region Button_Click  =================================================
+        void ItemButton_Click(object sender, RoutedEventArgs e)
+        {
+            var obj = sender as Button;
+            var cmd = obj.DataContext as ModelCommand;
+            cmd.Execute();
+        }
+        void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var obj = sender as MenuFlyoutItem;
+            var cmd = obj.DataContext as ModelCommand;
+            cmd.Execute();
+        }
+        #endregion
+
         #region PointerWheelChanged  ==========================================
         bool _pointWheelEnabled;
         void TreeCanvas_PointerWheelChanged(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -507,7 +510,7 @@ namespace ModelGraphUWP
         void TreeGrid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             _pointerPressModel = PointerModel(e);
-            HeadButton.Focus(FocusState.Keyboard);
+            KeyButton.Focus(FocusState.Keyboard);
             RefreshSelectionGrid();
         }
         ItemModel PointerModel(Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -530,7 +533,7 @@ namespace ModelGraphUWP
         {
             if (_focusElement == null)
             {
-                HeadButton.Focus(FocusState.Keyboard);
+                KeyButton.Focus(FocusState.Keyboard);
             }
             else
             {
@@ -553,14 +556,14 @@ namespace ModelGraphUWP
                 }
                 else
                 {
-                    HeadButton.Focus(FocusState.Keyboard);
+                    KeyButton.Focus(FocusState.Keyboard);
                 }
             }
 
             _focusElement = FocusManager.GetFocusedElement();
             if (_focusElement == null)
             {
-                HeadButton.Focus(FocusState.Keyboard);
+                KeyButton.Focus(FocusState.Keyboard);
             }
         }
         #endregion
@@ -626,12 +629,12 @@ namespace ModelGraphUWP
                     return;
                 }
 
-                if (_stackPanelCache[i] == null)
+                if (_stackPanelCache[_cacheIndex[i]] == null)
                 {
                     return;
                 }
 
-                if (_stackPanelCache[i].DataContext == _select)
+                if (_stackPanelCache[_cacheIndex[i]].DataContext == _select)
                 {
                     index = i;
                     break;
@@ -645,24 +648,26 @@ namespace ModelGraphUWP
             SelectionGrid.Width = ActualWidth;
             Canvas.SetTop(SelectionGrid, (index * _elementHieght));
 
-            HeadButton.DataContext = _select;
+            KeyButton.DataContext = _select;
 
-            if (_sortModeCache[index] != null && _sortModeCache[index].DataContext != null)
+            var cacheIndex = _cacheIndex[index];
+
+            if (_sortModeCache[cacheIndex] != null && _sortModeCache[cacheIndex].DataContext != null)
             {
-                _sortControl = _sortModeCache[index];
+                _sortControl = _sortModeCache[cacheIndex];
             }
 
-            if (_usageModeCache[index] != null && _usageModeCache[index].DataContext != null)
+            if (_usageModeCache[cacheIndex] != null && _usageModeCache[cacheIndex].DataContext != null)
             {
-                _usageControl = _usageModeCache[index];
+                _usageControl = _usageModeCache[cacheIndex];
             }
 
-            if (_filterModeCache[index] != null && _filterModeCache[index].DataContext != null)
+            if (_filterModeCache[cacheIndex] != null && _filterModeCache[cacheIndex].DataContext != null)
             {
-                _filterControl = _filterModeCache[index];
+                _filterControl = _filterModeCache[cacheIndex];
             }
 
-            if (_select.IsFilterFocus) { _select.IsFilterFocus = false; _focusElement = _filterTextCache[index]; }
+            if (_select.IsFilterFocus) { _select.IsFilterFocus = false; _focusElement = _filterTextCache[cacheIndex]; }
 
             if (_select.ModelDescription != null)
             {
@@ -934,7 +939,7 @@ namespace ModelGraphUWP
             }
             else if (mdl.IsSortDescending)
             {
-                mdl.ResetItemListDelta();
+                mdl.ResetChildDelta();
                 mdl.IsSortAscending = false;
                 mdl.IsSortDescending = false;
                 obj.Text = _sortNone;
@@ -1030,7 +1035,7 @@ namespace ModelGraphUWP
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
-                mdl.ResetItemListDelta();
+                mdl.ResetChildDelta();
                 mdl.ViewFilter = null;
                 mdl.IsFilterVisible = false;
 
@@ -1143,21 +1148,21 @@ namespace ModelGraphUWP
             {
                 if (_viewList[i].IsTextProperty)
                 {
-                   _textPropertyCache[i].Focus(FocusState.Keyboard);
+                   _textPropertyCache[_cacheIndex[i]].Focus(FocusState.Keyboard);
                     return;
                 }
                 else if (_viewList[i].IsCheckProperty)
                 {
-                    _checkPropertyCache[i].Focus(FocusState.Keyboard);
+                    _checkPropertyCache[_cacheIndex[i]].Focus(FocusState.Keyboard);
                     return;
                 }
                 else if (_viewList[i].IsComboProperty)
                 {
-                    _comboPropertyCache[i].Focus(FocusState.Keyboard);
+                    _comboPropertyCache[_cacheIndex[i]].Focus(FocusState.Keyboard);
                     return;
                 }
             }
-            HeadButton.Focus(FocusState.Keyboard);
+            KeyButton.Focus(FocusState.Keyboard);
         }
         #endregion
     }

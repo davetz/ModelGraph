@@ -566,7 +566,7 @@
 
     <Canvas x:Name="TreeCanvas" Style="{StaticResource TreeCanvasStyle}" Loaded="TreeCanvas_Loaded" PointerPressed="TreeGrid_PointerPressed" PointerWheelChanged="TreeCanvas_PointerWheelChanged">
         <Grid x:Name="SelectionGrid" Width="{Binding ElementName=TreeCanvas, Path=ActualWidth}" Height="{StaticResource ElementHieght}" Background="#CCFFF29D" >
-            <Button x:Name="HeadButton" Background="#CCFFF29D" Width="2" Height="20" KeyDown="HeadButton_KeyDown" KeyUp="HeadButton_KeyUp" LostFocus="HeadButton_LostFocus" HorizontalAlignment="Left"/>
+            <Button x:Name="KeyButton" Background="#CCFFF29D" Width="2" Height="20" KeyDown="KeyButton_KeyDown" KeyUp="KeyButton_KeyUp" LostFocus="KeyButton_LostFocus" HorizontalAlignment="Left"/>
             <StackPanel x:Name="ButtonStack" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="HelpButton" x:Uid="HelpButton" Style="{StaticResource HelpButtonStyle}" >
                     <Button.Flyout>

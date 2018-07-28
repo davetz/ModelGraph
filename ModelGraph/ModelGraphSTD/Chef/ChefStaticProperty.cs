@@ -148,13 +148,13 @@ namespace ModelGraphSTD
             {
                 var p = _pairXTextProperty = new PropertyOf<PairX, string>(_propertyZStore, Trait.EnumText_P);
                 p.GetValFunc = (item) => p.Cast(item).DisplayValue;
-                p.SetValFunc = (item, value) => { p.Cast(item).DisplayValue = value; return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).DisplayValue = value; p.Owner.ChildDelta++; return true; };
                 p.Value = new StringValue(p);
             }
             {
                 var p = _pairXValueProperty = new PropertyOf<PairX, string>(_propertyZStore, Trait.EnumValue_P);
                 p.GetValFunc = (item) => p.Cast(item).ActualValue;
-                p.SetValFunc = (item, value) => { p.Cast(item).ActualValue = value; return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).ActualValue = value; p.Owner.ChildDelta++; return true; };
                 p.Value = new StringValue(p);
             }
             #endregion

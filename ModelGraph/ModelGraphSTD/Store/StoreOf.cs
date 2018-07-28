@@ -42,7 +42,7 @@ namespace ModelGraphSTD
         // Add  =============================================================
         internal void Add(T item)
         {
-            ItemListDelta++;
+            ChildDelta++;
             _items.Add(item);
         }
         internal override void Add(Item item) => Add(Cast(item));
@@ -50,7 +50,7 @@ namespace ModelGraphSTD
         // Remove  ==========================================================
         internal void Remove(T item)
         {
-            ItemListDelta++;
+            ChildDelta++;
             _items.Remove(item);
         }
         public override void Remove(Item item) => Remove(Cast(item));
@@ -60,7 +60,7 @@ namespace ModelGraphSTD
         {
             var i = (index < 0) ? 0 : index;
 
-            ItemListDelta++;
+            ChildDelta++;
             if (i < _items.Count)
                 _items.Insert(i, item);
             else
@@ -77,7 +77,7 @@ namespace ModelGraphSTD
         {
             if (_items.Remove(item))
             {
-                ItemListDelta++;
+                ChildDelta++;
                 if (index < 0)
                     _items.Insert(0, item);
                 else if (index < _items.Count)
