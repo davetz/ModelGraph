@@ -33,6 +33,7 @@ namespace ModelGraphSTD
         private void CongealChanges()
         {
             _changeRoot.CongealChanges();
+            _changeRoot.ChildDelta++;
         }
         #endregion
 

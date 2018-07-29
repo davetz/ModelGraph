@@ -20,6 +20,7 @@
             Index2 = index2;
 
             owner.Add(this);
+            UpdateDelta();
         }
         #endregion
     }

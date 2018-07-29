@@ -22,6 +22,7 @@
             NewValue = newValue;
 
             owner.Add(this);
+            UpdateDelta();
         }
         #endregion
     }

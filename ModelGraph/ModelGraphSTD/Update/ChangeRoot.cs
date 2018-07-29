@@ -67,6 +67,13 @@
             foreach (var item in items) { chg.Add(item); }
             chg2.RemoveAll();
 
+            ModelDelta++;
+            ChildDelta++;
+            foreach (var cs in Items)
+            {
+                cs.ChildDelta++;
+                cs.ModelDelta++;
+            }
             return true;
         }
 
@@ -74,9 +81,12 @@
         {
             if (Count > 0)
             {
+                ModelDelta++;
+                ChildDelta++;
                 ChangeSet save = null;
                 foreach (var chg in Items)
                 {
+                    chg.ModelDelta++;
                     if (chg.IsCongealed) continue;
                     if (chg.IsUndone)
                     {

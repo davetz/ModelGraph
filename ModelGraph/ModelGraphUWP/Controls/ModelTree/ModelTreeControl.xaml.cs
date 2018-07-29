@@ -939,7 +939,7 @@ namespace ModelGraphUWP
             }
             else if (mdl.IsSortDescending)
             {
-                mdl.ResetChildDelta();
+                mdl.ResetDelta();
                 mdl.IsSortAscending = false;
                 mdl.IsSortDescending = false;
                 obj.Text = _sortNone;
@@ -1035,7 +1035,7 @@ namespace ModelGraphUWP
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
-                mdl.ResetChildDelta();
+                mdl.ResetDelta();
                 mdl.ViewFilter = null;
                 mdl.IsFilterVisible = false;
 

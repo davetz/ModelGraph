@@ -512,11 +512,12 @@ namespace ModelGraphSTD
         {
             if (m != null)
             {
-                m.ResetChildDelta();
+                m.ResetDelta();
                 switch (change)
                 {
                     case ChangeType.ToggleLeft:
                         m.IsExpandedLeft = !m.IsExpandedLeft;
+                        if (!m.IsExpandedLeft) CollapseLeft();
                         break;
 
                     case ChangeType.ExpandLeft:
@@ -524,10 +525,7 @@ namespace ModelGraphSTD
                         break;
 
                     case ChangeType.CollapseLeft:
-                        m.IsExpandedLeft = false;
-                        m.IsExpandedRight = false;
-                        m.IsFilterVisible = false;
-                        m.ViewFilter = null;
+                        CollapseLeft();
                         break;
 
                     case ChangeType.ToggleRight:
@@ -559,6 +557,14 @@ namespace ModelGraphSTD
                         m.IsFilterVisible = false;
                         m.ViewFilter = null;
                         break;
+                }
+
+                void CollapseLeft()
+                {
+                    m.IsExpandedLeft = false;
+                    m.IsExpandedRight = false;
+                    m.IsFilterVisible = false;
+                    m.ViewFilter = null;
                 }
             }
         }

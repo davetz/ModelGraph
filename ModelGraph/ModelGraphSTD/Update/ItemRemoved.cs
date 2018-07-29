@@ -25,6 +25,7 @@ namespace ModelGraphSTD
             Values = values;
 
             owner.Add(this);
+            UpdateDelta();
         }
         #endregion
     }

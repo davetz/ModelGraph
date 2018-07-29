@@ -24,6 +24,7 @@
             ParentIndex = parentIndex;
 
             owner.Add(this);
+            UpdateDelta();
         }
         #endregion
     }
