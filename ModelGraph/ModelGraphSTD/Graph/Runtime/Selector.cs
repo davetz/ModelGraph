@@ -330,29 +330,29 @@ namespace ModelGraphSTD
         {
             _enableSnapShot = false;
 
-            var nodeCopy = new List<NodeCopy>(Nodes.Count);
-            var edgeCopy = new List<EdgeCopy>(Edges.Count + Chops.Count);
+            var nodeCopy = new List<NodeParm>(Nodes.Count);
+            var edgeCopy = new List<EdgeParm>(Edges.Count + Chops.Count);
 
             if (HitEdge != null)
             {
-                edgeCopy.Add(new EdgeCopy(HitEdge));
+                edgeCopy.Add(new EdgeParm(HitEdge));
             }
             else if (HitNode != null)
             {
-                nodeCopy.Add(new NodeCopy(HitNode));
+                nodeCopy.Add(new NodeParm(HitNode));
                 if (HitNodeEdgeCuts != null)
                 {
                     foreach (var cut in HitNodeEdgeCuts)
                     {
-                        edgeCopy.Add(new EdgeCopy(cut.Edge));
+                        edgeCopy.Add(new EdgeParm(cut.Edge));
                     }
                 }
             }
             else
             {
-                foreach (var node in Nodes) { nodeCopy.Add(new NodeCopy(node)); }
-                foreach (var edge in Edges) { edgeCopy.Add(new EdgeCopy(edge)); }
-                foreach (var edge in Chops) { edgeCopy.Add(new EdgeCopy(edge)); }
+                foreach (var node in Nodes) { nodeCopy.Add(new NodeParm(node)); }
+                foreach (var edge in Edges) { edgeCopy.Add(new EdgeParm(edge)); }
+                foreach (var edge in Chops) { edgeCopy.Add(new EdgeParm(edge)); }
             }
             Graph.PushSnapShot(new ParmCopy(nodeCopy, edgeCopy));
         }

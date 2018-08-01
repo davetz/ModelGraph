@@ -85,6 +85,9 @@ namespace ModelGraphSTD
             itemIndex.Add(Dummy, j);
             guids[j++] = Dummy.Guid;
 
+            itemIndex.Add(QueryXNode, j);
+            guids[j++] = QueryXNode.Guid;
+
             itemIndex.Add(ViewXStore, j);
             guids[j++] = ViewXStore.Guid;
             foreach (var itm in ViewXStore.Items)

@@ -29,12 +29,13 @@ namespace ModelGraphSTD
         public Attach Attatch1;
         public Attach Attatch2;
 
-        internal ( (int X, int Y)[] Bends, Face Face1,Face Face2,FacetOf Facet1,FacetOf Facet2,Attach Attatch1,Attach Attatch2)
+        internal ((int X, int Y)[] Points, (int X, int Y)[] Bends, Face Face1,Face Face2,FacetOf Facet1,FacetOf Facet2,Attach Attatch1,Attach Attatch2)
             Parms
         {
-            get { return (Bends, Face1, Face2, Facet1, Facet2, Attatch1, Attatch2); }
+            get { return (Points, Bends, Face1, Face2, Facet1, Facet2, Attatch1, Attatch2); }
             set
             {
+                Points = value.Points;
                 Bends = value.Bends;
                 Face1 = value.Face1;
                 Face2 = value.Face2;

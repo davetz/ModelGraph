@@ -3,31 +3,24 @@
 namespace ModelGraphSTD
 {/*
  */
-    public class ParmCopy
+    public struct ParmCopy
     {
-        internal List<NodeCopy> NodeCopies;
-        internal List<EdgeCopy> EdgeCopies;
+        internal List<NodeParm> NodeParms;
+        internal List<EdgeParm> EdgeParms;
 
-        internal ParmCopy(List<NodeCopy> nodeCopies, List<EdgeCopy> edgeCopies)
+        internal ParmCopy(List<NodeParm> nodeParms, List<EdgeParm> edgeParms)
         {
-            NodeCopies = nodeCopies;
-            EdgeCopies = edgeCopies;
+            NodeParms = nodeParms;
+            EdgeParms = edgeParms;
         }
 
         internal void Restore()
         {
-            foreach (var copy in NodeCopies) { copy.Restore(); }
-            foreach (var copy in EdgeCopies) { copy.Restore(); }
+            foreach (var copy in NodeParms) { copy.Restore(); }
+            foreach (var copy in EdgeParms) { copy.Restore(); }
         }
 
         // we need to copy the current values before we restore the saved ones
-        internal ParmCopy GetCurrent()
-        {
-            var nodeCopies = new List<NodeCopy>(NodeCopies.Count);
-            var edgeCopies = new List<EdgeCopy>(EdgeCopies.Count);
-            foreach (var copy in NodeCopies) { nodeCopies.Add(copy); }
-            foreach (var copy in EdgeCopies) { edgeCopies.Add(copy); }
-            return new ParmCopy(nodeCopies, edgeCopies);
-        }
+        internal ParmCopy GetCurrent() => new ParmCopy(new List<NodeParm>(NodeParms), new List<EdgeParm>(EdgeParms));
     }
 }

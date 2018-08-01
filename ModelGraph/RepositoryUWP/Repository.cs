@@ -33,6 +33,7 @@ namespace RepositoryUWP
         static Guid _fileFormat_3 = new Guid("069890CE-A832-4BDD-9D7A-54000F88C5C3");
         static Guid _fileFormat_4 = new Guid("7C0620F4-C2E4-4E78-AEFA-5CDC50EDE114");
         static Guid _fileFormat_5 = new Guid("8B9C3519-02FF-4416-9FD9-ED2699AF176E");
+        static Guid _fileFormat_6 = new Guid("41489943-94FC-426F-899A-B53A3FF0126A");
         #endregion
 
         #region Mark  =========================================================
@@ -48,7 +49,7 @@ namespace RepositoryUWP
             ComputeXBegin = 8,
             CommandXBegin = 9,
             RelationXBegin = 10,
-            GraphParamBegin = 11,
+            GraphParmBegin = 11,
             RelationLinkBegin = 12,
 
             ViewXEnding = 61,
@@ -61,7 +62,7 @@ namespace RepositoryUWP
             ComputeXEnding = 68,
             CommandXEnding = 69,
             RelationXEnding = 70,
-            GraphParamEnding = 71,
+            GraphParmEnding = 71,
             RelationLinkEnding = 72,
 
             StorageFileEnding = 99,

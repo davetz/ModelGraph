@@ -857,7 +857,7 @@ namespace RepositoryUWP
                 }
                 #endregion
 
-                var Ni_Nd = new Dictionary<Item, Node>();
+                var Item_Node = new Dictionary<Item, Node>();
 
                 for (int j = 0; j < rtLen; j++)
                 {
@@ -868,12 +868,13 @@ namespace RepositoryUWP
                     if (npLen < 0) throw new Exception($"Invalid count {npLen}");
 
                     var qx = items[qxIndex] as QueryX;
-                    if (qx == null)
-                    {
-                        var guid = guids[qxIndex];
-                        if (!guidItems.TryGetValue(guid, out Item itm)) throw new Exception($"Could not find QueryX for guid {guid}");
-                        items[qxIndex] = itm;
-                    }
+                    if (qx == null) qx = chef.QueryXNode;
+                    //if (qx == null)
+                    //{
+                    //    var guid = guids[qxIndex];
+                    //    if (!guidItems.TryGetValue(guid, out Item itm)) throw new Exception($"Could not find QueryX for guid {guid}");
+                    //    items[qxIndex] = itm;
+                    //}
 
                     #region FindCreate  NE ====================================
                     if (!Qx_NE.TryGetValue(qx, out NE))
@@ -890,17 +891,17 @@ namespace RepositoryUWP
                             #region ReadNodeParms  ============================
                             for (int k = 0; k < npLen; k++)
                             {
-                                var niIndex = r.ReadInt32();
-                                if (niIndex < 0 || niIndex >= items.Length) throw new Exception($"Invalid index {niIndex}");
+                                var itmIndex = r.ReadInt32();
+                                if (itmIndex < 0 || itmIndex >= items.Length) throw new Exception($"Invalid index {itmIndex}");
 
-                                var ni = items[niIndex];
-                                if (ni == null) throw new Exception($"Expected node item object, got null {niIndex}");
+                                var itm = items[itmIndex];
+                                if (itm == null) throw new Exception($"Expected node item object, got null {itmIndex}");
 
-                                if (!Ni_Nd.TryGetValue(qx, out Node node))
+                                if (!Item_Node.TryGetValue(itm, out Node node))
                                 {
-                                    node = new Node() { Item = ni };
+                                    node = new Node() { Item = itm };
 
-                                    Ni_Nd.Add(ni, node);
+                                    Item_Node.Add(itm, node);
                                     NE.Add(node);
                                 }
 
@@ -922,20 +923,20 @@ namespace RepositoryUWP
                             #region ReadEdgeParms  ============================
                             for (int k = 0; k < npLen; k++)
                             {
-                                var nd1Index = r.ReadInt32();
-                                if (nd1Index < 0 || nd1Index >= items.Length) throw new Exception($"Invalid index {nd1Index}");
+                                var itm1Index = r.ReadInt32();
+                                if (itm1Index < 0 || itm1Index >= items.Length) throw new Exception($"Invalid index {itm1Index}");
 
-                                var nd1 = items[nd1Index];
-                                if (nd1 == null) throw new Exception($"Expected node object, got null {nd1Index}");
+                                var itm1 = items[itm1Index];
+                                if (itm1 == null) throw new Exception($"Expected node object, got null {itm1Index}");
 
-                                var nd2Index = r.ReadInt32();
-                                if (nd2Index < 0 || nd2Index >= items.Length) throw new Exception($"Invalid index {nd2Index}");
+                                var itm2Index = r.ReadInt32();
+                                if (itm2Index < 0 || itm2Index >= items.Length) throw new Exception($"Invalid index {itm2Index}");
 
-                                var nd2 = items[nd2Index];
-                                if (nd2 == null) throw new Exception($"Expected node object, got null {nd2Index}");
+                                var itm2 = items[itm2Index];
+                                if (itm2 == null) throw new Exception($"Expected node object, got null {itm2Index}");
 
-                                if (!Ni_Nd.TryGetValue(nd1, out Node node1)) throw new Exception("Could not Finde NodeParm1");
-                                if (!Ni_Nd.TryGetValue(nd2, out Node node2)) throw new Exception("Could not Finde NodeParm2");
+                                if (!Item_Node.TryGetValue(itm1, out Node node1)) throw new Exception("Could not Finde Item1Node");
+                                if (!Item_Node.TryGetValue(itm2, out Node node2)) throw new Exception("Could not Finde Item2Node");
 
                                 var edge = new Edge(qx);
                                 NE.Add(edge);
@@ -969,7 +970,7 @@ namespace RepositoryUWP
                 }
             }
             var mark = (Mark)r.ReadByte();
-            if (mark != Mark.GraphParamEnding) throw new Exception($"Expected GraphParamEnding marker, instead got {mark}");
+            if (mark != Mark.GraphParmEnding) throw new Exception($"Expected GraphParamEnding marker, instead got {mark}");
         }
         #endregion
 

@@ -474,16 +474,16 @@ namespace RepositoryUWP
             #endregion
 
             // now write the remaining valid graph params to the storage file
-            foreach (var e1 in graphParms)//GD
+            foreach (var e1 in graphParms)//GraphX
             {
                 if (e1.Value.Count == 0) continue;
 
-                w.WriteByte((byte)Mark.GraphParamBegin); // type index
+                w.WriteByte((byte)Mark.GraphParmBegin); // type index
 
                 w.WriteInt32(itemIndex[e1.Key]);
                 w.WriteInt32(e1.Value.Count);
 
-                foreach (var e2 in e1.Value)//RT
+                foreach (var e2 in e1.Value)//RootItem
                 {
                     w.WriteInt32(itemIndex[e2.Key]);
                     w.WriteInt32(e2.Value.Count);
@@ -493,7 +493,7 @@ namespace RepositoryUWP
                         #region WriteRoots  ===================================
                         var (x0, y0) = GetCenter(chef, e2.Value); // used to center the drawing arround point(0,0)
 
-                        foreach (var e3 in e2.Value)//SG
+                        foreach (var e3 in e2.Value)//QueryX
                         {
                             w.WriteInt32(itemIndex[e3.Key]);
                             w.WriteInt32(e3.Value.Count);
@@ -504,9 +504,9 @@ namespace RepositoryUWP
                                 if (e3.Key == chef.QueryXNode)
                                 {
                                     #region WriteNodes  =======================
-                                    foreach (var ge in e3.Value)//GP
+                                    foreach (var en in e3.Value)//NodeEdge
                                     {
-                                        var nd = ge as Node;
+                                        var nd = en as Node;
                                         w.WriteInt32(itemIndex[nd.Item]);
 
                                         w.WriteInt32(nd.X - x0);
@@ -525,9 +525,9 @@ namespace RepositoryUWP
                                 else
                                 {
                                     #region WriteEdges  =======================
-                                    foreach (var ge in e3.Value)//GP
+                                    foreach (var ne in e3.Value)//NodeEdge
                                     {
-                                        var eg = ge as Edge;
+                                        var eg = ne as Edge;
                                         w.WriteInt32(itemIndex[eg.Node1.Item]);
                                         w.WriteInt32(itemIndex[eg.Node2.Item]);
 
@@ -564,7 +564,7 @@ namespace RepositoryUWP
                         #endregion
                     }
                 }
-                w.WriteByte((byte)Mark.GraphParamEnding);
+                w.WriteByte((byte)Mark.GraphParmEnding);
             }
         }
         #region TryGetOffset  =================================================
