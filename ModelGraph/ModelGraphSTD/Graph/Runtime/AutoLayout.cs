@@ -12,7 +12,7 @@ namespace ModelGraphSTD
             var cp = 0;
             foreach (var node in Nodes)
             {
-                if (node.Core.TryInitialize(cp)) cp += 8;
+                if (node.TryInitialize(cp)) cp += 8;
             }
             AdjustGraph();
         }

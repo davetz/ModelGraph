@@ -83,7 +83,7 @@ namespace ModelGraphSTD
             var slope = new float[Count];  //slope of connecting line's radial vecotor
             var pref = new int[Count];	   //ordering preference (for parallel lines)
 
-            ext.Point1 = Node.Core.Center;
+            ext.Point1 = Node.Center;
             for (int i = 0; i < Count; i++)
             {
                 //	ordering preferance ensures parallel lines don't cross

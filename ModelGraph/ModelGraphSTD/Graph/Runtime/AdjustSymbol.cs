@@ -206,7 +206,7 @@ namespace ModelGraphSTD
             #region Fields  ===================================================
             if (!Node_Edges.TryGetValue(node, out List<Edge> edges)) return;
 
-            var isym = node.Core.Symbol - 2;
+            var isym = node.Symbol - 2;
             var symbol = Symbols[isym];
             var sr = new SymbolRotator(symbol);
 
@@ -308,9 +308,9 @@ namespace ModelGraphSTD
                     if (Cost < bestCost)
                     {
                         bestCost = Cost;
-                        node.Core.DX = sr.DX;
-                        node.Core.DY = sr.DY;
-                        node.Core.FlipRotate = (FlipRotate)flipRotate;
+                        node.DX = sr.DX;
+                        node.DY = sr.DY;
+                        node.FlipRotate = (FlipRotate)flipRotate;
 
                         #region AssignEdgeConnectors  =========================
                         for (var f = 0; f < 4; f++)

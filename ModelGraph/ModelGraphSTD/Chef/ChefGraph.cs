@@ -8,11 +8,12 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        private Dictionary<GraphX, Dictionary<Item, Dictionary<Item, List<Item>>>> _graphParms =
-            new Dictionary<GraphX, Dictionary<Item, Dictionary<Item, List<Item>>>>();
+        private Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>> _graphParms =
+            new Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>>();
+        
         private void InitializeGraphParams() { _graphParms.Clear(); }
 
-        internal Dictionary<GraphX, Dictionary<Item, Dictionary<Item, List<Item>>>> T_GraphParms
+        internal Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>> T_GraphParms
         {
             get { return _graphParms; }
             set { _graphParms = value; }
@@ -29,15 +30,15 @@ namespace ModelGraphSTD
             #region Build validPathPairs dictionary  ==========================
 
             List<(Item, Item)> validItemPair = null;
-            var validPathPairs = new Dictionary<Item, List<(Item, Item)>>();
+            var validPathPairs = new Dictionary<QueryX, List<(Item, Item)>>();
 
             foreach (var (q1, q2) in g.PathQuerys)
             {
-                var sd = q1.QueryX;
-                if (!validPathPairs.TryGetValue(sd, out validItemPair))
+                var qx = q1.QueryX;
+                if (!validPathPairs.TryGetValue(qx, out validItemPair))
                 {
                     validItemPair = new List<(Item, Item)>(g.PathQuerys.Count);
-                    validPathPairs.Add(sd, validItemPair);
+                    validPathPairs.Add(qx, validItemPair);
                 }
 
                 g.NodeItems.Add(q1.Item);
@@ -54,26 +55,26 @@ namespace ModelGraphSTD
             if (g.NodeItems.Count > 0)
             {
 
-                if (!_graphParms.TryGetValue(gx, out Dictionary<Item, Dictionary<Item, List<Item>>> rtSdParams))
+                if (!_graphParms.TryGetValue(gx, out Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>> rtQxParams))
                 {
-                    rtSdParams = new Dictionary<Item, Dictionary<Item, List<Item>>>();
-                    _graphParms.Add(gx, rtSdParams);
+                    rtQxParams = new Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>();
+                    _graphParms.Add(gx, rtQxParams);
                 }
-                if (!rtSdParams.TryGetValue(rt, out Dictionary<Item, List<Item>> sdParams))
+                if (!rtQxParams.TryGetValue(rt, out Dictionary<QueryX, List<NodeEdge>> qxParams))
                 {
-                    sdParams = new Dictionary<Item, List<Item>>();
-                    rtSdParams.Add(rt, sdParams);
+                    qxParams = new Dictionary<QueryX, List<NodeEdge>>();
+                    rtQxParams.Add(rt, qxParams);
                 }
 
-                #region Remove invalid SdParams  ==============================
+                #region Remove invalid QxParams  ==============================
 
-                var invalidSd = new HashSet<Item>();
-                var invalidSdParam = new Dictionary<Item, List<Item>>();
+                var invalidQx = new HashSet<QueryX>();
+                var invalidQxParam = new Dictionary<QueryX, List<NodeEdge>>();
 
-                foreach (var e1 in sdParams)
+                foreach (var e1 in qxParams)
                 {
-                    List<Item> invalidParams = null;
-                    if (e1.Key == _dummy)
+                    List<NodeEdge> invalidParams = null;
+                    if (e1.Key == _queryXNode)
                     {
 
                         foreach (var pm in e1.Value)
@@ -83,8 +84,8 @@ namespace ModelGraphSTD
                             {
                                 if (invalidParams == null)
                                 {
-                                    invalidParams = new List<Item>();
-                                    invalidSdParam.Add(e1.Key, invalidParams);
+                                    invalidParams = new List<NodeEdge>();
+                                    invalidQxParam.Add(e1.Key, invalidParams);
                                 }
                                 invalidParams.Add(pm);
                             }
@@ -101,8 +102,8 @@ namespace ModelGraphSTD
                             {
                                 if (invalidParams == null)
                                 {
-                                    invalidParams = new List<Item>();
-                                    invalidSdParam.Add(e1.Key, invalidParams);
+                                    invalidParams = new List<NodeEdge>();
+                                    invalidQxParam.Add(e1.Key, invalidParams);
                                 }
                                 invalidParams.Add(pm);
                             }
@@ -122,15 +123,15 @@ namespace ModelGraphSTD
                                     {
                                         if (invalidParams == null)
                                         {
-                                            invalidParams = new List<Item>();
-                                            invalidSdParam.Add(e1.Key, invalidParams);
+                                            invalidParams = new List<NodeEdge>();
+                                            invalidQxParam.Add(e1.Key, invalidParams);
                                         }
                                         invalidParams.Add(pm);
                                     }
                                 }
                                 else
                                 {
-                                    invalidSd.Add(e1.Key);
+                                    invalidQx.Add(e1.Key);
                                 }
                             }
                         }
@@ -138,29 +139,26 @@ namespace ModelGraphSTD
                 }
 
                 // remove the invalid graphic params 
-                foreach (var sd in invalidSd) { sdParams.Remove(sd); }
-                foreach (var e1 in invalidSdParam)
+                foreach (var qx in invalidQx) { qxParams.Remove(qx); }
+                foreach (var e1 in invalidQxParam)
                 {
                     foreach (var pm in e1.Value)
                     {
-                        sdParams[e1.Key].Remove(pm);
+                        qxParams[e1.Key].Remove(pm);
                     }
-                    if (sdParams[e1.Key].Count == 0) sdParams.Remove(e1.Key);
+                    if (qxParams[e1.Key].Count == 0) qxParams.Remove(e1.Key);
                 }
-
-                #endregion
-                #region Add new SdParams  =====================================
                 #endregion
 
-                #region Add new SdParams  =====================================
+                #region Add new QxParams  =====================================
 
-                if (!sdParams.TryGetValue(_dummy, out List<Item> parmList))
+                if (!qxParams.TryGetValue(_queryXNode, out List<NodeEdge> parmList))
                 {
                     // there weren't any existing node parms,
                     // so create all new ones
                     anyChange = true;
-                    parmList = new List<Item>(g.NodeItems.Count);
-                    sdParams.Add(_dummy, parmList);
+                    parmList = new List<NodeEdge>(g.NodeItems.Count);
+                    qxParams.Add(_queryXNode, parmList);
                     foreach (var item in g.NodeItems)
                     {
                         Node node1 = new Node
@@ -205,14 +203,14 @@ namespace ModelGraphSTD
                 foreach (var e1 in validPathPairs)
                 {
                     // skip over the nodes, they are already done
-                    if (e1.Key == _dummy) continue;
+                    if (e1.Key == _queryXNode) continue;
 
-                    if (!sdParams.TryGetValue(e1.Key, out List<Item> paramList))
+                    if (!qxParams.TryGetValue(e1.Key, out List<NodeEdge> paramList))
                     {
                         // there weren't any existing edge parms,
                         // so create all new ones
-                        paramList = new List<Item>(e1.Value.Count);
-                        sdParams.Add(e1.Key, paramList);
+                        paramList = new List<NodeEdge>(e1.Value.Count);
+                        qxParams.Add(e1.Key, paramList);
                         anyChange = true;
 
                         foreach (var pair in e1.Value)
@@ -263,8 +261,6 @@ namespace ModelGraphSTD
                     }
                 }
 
-                #endregion
-                #region populate g.Node_Edges  ================================
                 #endregion
 
                 #region populate g.Node_Edges  ================================
@@ -328,7 +324,7 @@ namespace ModelGraphSTD
 
                 foreach (var node in g.Nodes)
                 {
-                    node.Core.Symbol = 0;
+                    node.Symbol = 0;
                     var row = node.Item;
                     var sto = row.Store;
                     if (storeNonSymbols.Contains(sto)) continue;
@@ -350,17 +346,17 @@ namespace ModelGraphSTD
                     }
                     if (i == symbols.Count) continue;
 
-                    node.Core.Symbol = (byte)(i + 2);
-                    node.Core.Orientation = Orientation.Central;
-                    if ((node.Core.FlipRotate & FlipRotate.RotateClockWise) == 0)
+                    node.Symbol = (byte)(i + 2);
+                    node.Orientation = Orientation.Central;
+                    if ((node.FlipRotate & FlipRotate.RotateClockWise) == 0)
                     {
-                        node.Core.DX = (byte)(sx.Width / 2);
-                        node.Core.DY = (byte)(sx.Height / 2);
+                        node.DX = (byte)(sx.Width / 2);
+                        node.DY = (byte)(sx.Height / 2);
                     }
                     else
                     {
-                        node.Core.DY = (byte)(sx.Width / 2);
-                        node.Core.DX = (byte)(sx.Height / 2);
+                        node.DY = (byte)(sx.Width / 2);
+                        node.DX = (byte)(sx.Height / 2);
                     }
                 }
             }
@@ -433,13 +429,13 @@ namespace ModelGraphSTD
 
                 foreach (var node in g.Nodes)
                 {
-                    node.Core.Color = item_GroupIndex.TryGetValue(node.Item, out byte ix) ? ix : (byte)0;
+                    node.Color = item_GroupIndex.TryGetValue(node.Item, out byte ix) ? ix : (byte)0;
                 }
             }
             else
             {
                 g.GroupColor.Add(GetARGB("#FF800080")); // default when there is no color criteria
-                foreach (var node in g.Nodes) { node.Core.Color = 0; }
+                foreach (var node in g.Nodes) { node.Color = 0; }
             }
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =

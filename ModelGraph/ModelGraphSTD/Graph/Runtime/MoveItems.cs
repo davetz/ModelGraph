@@ -20,7 +20,7 @@ namespace ModelGraphSTD
         {
             foreach (var node in regions.Nodes)
             {
-                node.Core.AlignVertical(x);
+                node.AlignVertical(x);
             }
         }
 
@@ -28,7 +28,7 @@ namespace ModelGraphSTD
         {
             foreach (var node in regions.Nodes)
             {
-                node.Core.AlignHorizontal(y);
+                node.AlignHorizontal(y);
             }
         }
         #endregion

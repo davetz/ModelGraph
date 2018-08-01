@@ -24,8 +24,8 @@ namespace ModelGraphSTD
             var nsect = order.NSect;
 
             //int x, y, w, h;
-            //node.Core.GetValues(out x, out y, out w, out h);
-            (int x, int y, int w, int h) = node.Core.Values();
+            //node.GetValues(out x, out y, out w, out h);
+            (int x, int y, int w, int h) = node.Values();
 
             //  Assign line end terminal points  
             //	based on the just determined order of connections
@@ -37,7 +37,7 @@ namespace ModelGraphSTD
             var North = Side.North;
             var South = Side.South;
 
-            if (node.Core.IsVertical)
+            if (node.IsVertical)
             {
                 Idy = spL;
                 Pdy = 0;
@@ -46,7 +46,7 @@ namespace ModelGraphSTD
                 Ncnt = nquad[2] + nquad[3]; //the left side  connection count
                 Tcnt = (Pcnt > Ncnt) ? (Pcnt) : (Ncnt); //determines stretch bar length
 
-                node.Core.SetSize(w, (Tcnt * Idy) / 2);
+                node.SetSize(w, (Tcnt * Idy) / 2);
 
                 for (int i = 0; i < count; i++)
                 {
@@ -67,7 +67,7 @@ namespace ModelGraphSTD
                     Ndy += 1;
                 }
             }
-            else if (node.Core.IsHorizontal)
+            else if (node.IsHorizontal)
             {
                 Pdx = 0;
                 Ndx = 0;
@@ -76,7 +76,7 @@ namespace ModelGraphSTD
                 Ncnt = nquad[3] + nquad[4];
                 Tcnt = (Pcnt > Ncnt) ? (Pcnt) : (Ncnt);
 
-                node.Core.SetSize((Tcnt * Idx) / 2, h);
+                node.SetSize((Tcnt * Idx) / 2, h);
 
                 for (int i = 0; i < count; i++)
                 {
@@ -130,7 +130,7 @@ namespace ModelGraphSTD
             var nquad = order.NQuad;
             var nsect = order.NSect;
 
-            (int x, int y, int w, int h) = node.Core.Values();
+            (int x, int y, int w, int h) = node.Values();
 
             var xL = x - w;
             var xR = x + w;

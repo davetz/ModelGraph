@@ -174,9 +174,9 @@ namespace ModelGraphSTD
                 }
                 return true;
             }
-            else if (edge.Core.HasBends)
+            else if (edge.HasBends)
             {
-                var bends = edge.Core.Bends;
+                var bends = edge.Bends;
                 for (int i = 0, j = (edge.Tm1 + 1), k = (edge.Tm1 + 2); i < bends.Length; i++)
                 {
                     if (HitTest(bends[i]))

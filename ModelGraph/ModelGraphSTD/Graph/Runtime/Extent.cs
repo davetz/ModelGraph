@@ -206,7 +206,7 @@ namespace ModelGraphSTD
             X2 = Y2 = int.MinValue;
             foreach (var node in nodeList)
             {
-                var e = node.Core.Extent;
+                var e = node.Extent;
                 if (e.X1 < X1) X1 = e.X1;
                 if (e.Y1 < Y1) Y1 = e.Y1;
 

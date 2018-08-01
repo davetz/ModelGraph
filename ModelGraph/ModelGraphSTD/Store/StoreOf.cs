@@ -26,11 +26,12 @@ namespace ModelGraphSTD
         internal IList<T> Items => _items.AsReadOnly(); // protected from accidental corruption
         internal override int Count => (_items == null) ? 0 : _items.Count;
         internal override List<Item> GetItems() => new List<Item>(_items);
-        internal override void RemoveAll() { _items.Clear(); }
+        internal override void RemoveAll() { _items.Clear(); UpdateDelta(); }
         #endregion
 
         #region Methods  ======================================================
         private T Cast(Item item) => (item is T child) ? child : throw new InvalidCastException("StoreOf");
+        private void UpdateDelta() { ModelDelta++; ChildDelta++; }
 
         internal void SetCapacity(int exactCount)
         {
@@ -42,7 +43,7 @@ namespace ModelGraphSTD
         // Add  =============================================================
         internal void Add(T item)
         {
-            ChildDelta++;
+            UpdateDelta();
             _items.Add(item);
         }
         internal override void Add(Item item) => Add(Cast(item));
@@ -50,7 +51,7 @@ namespace ModelGraphSTD
         // Remove  ==========================================================
         internal void Remove(T item)
         {
-            ChildDelta++;
+            UpdateDelta();
             _items.Remove(item);
         }
         public override void Remove(Item item) => Remove(Cast(item));
@@ -60,7 +61,7 @@ namespace ModelGraphSTD
         {
             var i = (index < 0) ? 0 : index;
 
-            ChildDelta++;
+            UpdateDelta();
             if (i < _items.Count)
                 _items.Insert(i, item);
             else
@@ -77,7 +78,7 @@ namespace ModelGraphSTD
         {
             if (_items.Remove(item))
             {
-                ChildDelta++;
+                UpdateDelta();
                 if (index < 0)
                     _items.Insert(0, item);
                 else if (index < _items.Count)

@@ -8,14 +8,19 @@ namespace ModelGraphSTD
         internal WhereSelect Where;
         internal WhereSelect Select;
         internal Connect Connect1;
-        internal ConnectStyle ConnectStyle1;
+        internal Attach Attach1;
         internal Connect Connect2;
-        internal ConnectStyle ConnectStyle2;
+        internal Attach Attatch2;
         internal byte ExclusiveKey;
         private PFlag _flags;
 
         #region Constructor  ==================================================
-        internal QueryX() { } // parameterless constructor required for ValueX
+        internal QueryX(Chef owner) //referenced in _graphParams for nodes
+        {
+            Owner = owner;
+            Trait = Trait.NodeParm;
+            Guid = new Guid("96E6DDD7-4BBA-4DFF-A233-3CEDBD18C5D7");
+        }
         internal QueryX(StoreOf<QueryX> owner, QueryType kind, bool isRoot = false, bool isHead = false)
         {
             Owner = owner;

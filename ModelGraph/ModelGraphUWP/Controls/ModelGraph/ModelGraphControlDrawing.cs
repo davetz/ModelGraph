@@ -68,8 +68,8 @@ namespace ModelGraphUWP
                 var len = (points == null) ? 0 : points.Length;
                 if (len > 1)
                 {
-                    var ix1 = _graph.Edges[i].Node1.Core.Color;
-                    var ix2 = _graph.Edges[i].Node2.Core.Color;
+                    var ix1 = _graph.Edges[i].Node1.Color;
+                    var ix2 = _graph.Edges[i].Node2.Color;
                     var ix = (ix1 > ix2) ? ix1 : ix2;
                     pen.Color = _groupColor[ix];
                     pen.Initialize();
@@ -87,24 +87,24 @@ namespace ModelGraphUWP
                 var node = _graph.Nodes[i];
                 pen.Color = Colors.Magenta;
 
-                var k = node.Core.Symbol - 2;
+                var k = node.Symbol - 2;
                 if (k < 0 || k >= _graph.SymbolCount || _graph.Symbols[k].Data == null)
                 {
-                    pen.Color = _groupColor[node.Core.Color];
+                    pen.Color = _groupColor[node.Color];
                     pen.Initialize();
-                    if (node.Core.IsPointNode)
+                    if (node.IsPointNode)
                     {
-                        pen.DrawPoint(node.Core);
+                        pen.DrawPoint(node);
                     }
                     else
                     {
-                        pen.DrawBusBar(node.Core.X, node.Core.Y, node.Core.DX, node.Core.DY);
+                        pen.DrawBusBar(node.X, node.Y, node.DX, node.DY);
                     }
                 }
                 else
                 {
                     var sym = _graph.Symbols[k];
-                    _drawSymbol[(int)node.Core.FlipRotate & 7](node, sym, pen);
+                    _drawSymbol[(int)node.FlipRotate & 7](node, sym, pen);
                 }
             }
             #endregion
@@ -243,10 +243,10 @@ namespace ModelGraphUWP
                 _session.DrawRectangle(rect, Color, Width);
             }
 
-            internal void DrawPoint(NodeX core)
+            internal void DrawPoint(Node nd)
             {
-                var center = new Vector2(core.X, core.Y);
-                var radius = core.Radius;
+                var center = new Vector2(nd.X, nd.Y);
+                var radius = nd.Radius;
                 Vector2 p = center * _zoom + _offset;
                 _session.DrawLine(p, p, Color, (radius * 2 * _zoom), Style);
             }
@@ -307,7 +307,7 @@ namespace ModelGraphUWP
                 {
                     var dx = (sbyte)data[d++];
                     var dy = (sbyte)data[d++];
-                    slave.DrawLine(new Vector2(node.Core.X + dx, node.Core.Y + dy));
+                    slave.DrawLine(new Vector2(node.X + dx, node.Y + dy));
                 }
             }
         }
@@ -338,7 +338,7 @@ namespace ModelGraphUWP
                 {
                     var dx = (sbyte)data[d++];
                     var dy = (sbyte)data[d++];
-                    slave.DrawLine(new Vector2(node.Core.X + dx, node.Core.Y - dy));
+                    slave.DrawLine(new Vector2(node.X + dx, node.Y - dy));
                 }
             }
         }
@@ -369,7 +369,7 @@ namespace ModelGraphUWP
                 {
                     var dx = (sbyte)data[d++];
                     var dy = (sbyte)data[d++];
-                    slave.DrawLine(new Vector2(node.Core.X - dx, node.Core.Y + dy));
+                    slave.DrawLine(new Vector2(node.X - dx, node.Y + dy));
                 }
             }
         }
@@ -400,7 +400,7 @@ namespace ModelGraphUWP
                 {
                     var dx = (sbyte)data[d++];
                     var dy = (sbyte)data[d++];
-                    slave.DrawLine(new Vector2(node.Core.X - dx, node.Core.Y - dy));
+                    slave.DrawLine(new Vector2(node.X - dx, node.Y - dy));
                 }
             }
         }
@@ -431,7 +431,7 @@ namespace ModelGraphUWP
                 {
                     var dx = (sbyte)data[d++];
                     var dy = (sbyte)data[d++];
-                    slave.DrawLine(new Vector2(node.Core.X - dy, node.Core.Y + dx));
+                    slave.DrawLine(new Vector2(node.X - dy, node.Y + dx));
                 }
             }
         }
@@ -462,7 +462,7 @@ namespace ModelGraphUWP
                 {
                     var dx = (sbyte)data[d++];
                     var dy = (sbyte)data[d++];
-                    slave.DrawLine(new Vector2(node.Core.X - dy, node.Core.Y - dx));
+                    slave.DrawLine(new Vector2(node.X - dy, node.Y - dx));
                 }
             }
         }
@@ -493,7 +493,7 @@ namespace ModelGraphUWP
                 {
                     var dx = (sbyte)data[d++];
                     var dy = (sbyte)data[d++];
-                    slave.DrawLine(new Vector2(node.Core.X + dy, node.Core.Y + dx));
+                    slave.DrawLine(new Vector2(node.X + dy, node.Y + dx));
                 }
             }
         }
@@ -524,7 +524,7 @@ namespace ModelGraphUWP
                 {
                     var dx = (sbyte)data[d++];
                     var dy = (sbyte)data[d++];
-                    slave.DrawLine(new Vector2(node.Core.X + dy, node.Core.Y - dx));
+                    slave.DrawLine(new Vector2(node.X + dy, node.Y - dx));
                 }
             }
         }
@@ -554,7 +554,7 @@ namespace ModelGraphUWP
                 {
                     for (int i = 0; i < _graph.NodeCount; i++)
                     {
-                        _graph.Nodes[i].Core.Minimize(e);
+                        _graph.Nodes[i].Minimize(e);
                     }
                 }
                 p = e.Point2;

@@ -218,8 +218,8 @@ namespace RepositoryUWP
                 {
                     if (qx.Connect1 != Connect.Any) b |= B5;
                     if (qx.Connect2 != Connect.Any) b |= B6;
-                    if (qx.ConnectStyle1 != ConnectStyle.Default) b |= B7;
-                    if (qx.ConnectStyle2 != ConnectStyle.Default) b |= B8;
+                    if (qx.Attach1 != Attach.Default) b |= B7;
+                    if (qx.Attatch2 != Attach.Default) b |= B8;
                 }
 
                 w.WriteByte(b);
@@ -229,8 +229,8 @@ namespace RepositoryUWP
                 if ((b & B4) != 0) w.WriteByte(qx.ExclusiveKey);
                 if ((b & B5) != 0) w.WriteByte((byte)qx.Connect1);
                 if ((b & B6) != 0) w.WriteByte((byte)qx.Connect2);
-                if ((b & B7) != 0) w.WriteByte((byte)qx.ConnectStyle1);
-                if ((b & B8) != 0) w.WriteByte((byte)qx.ConnectStyle2);
+                if ((b & B7) != 0) w.WriteByte((byte)qx.Attach1);
+                if ((b & B8) != 0) w.WriteByte((byte)qx.Attatch2);
             }
             w.WriteByte((byte)Mark.QueryXEnding); // itegrity marker
         }
@@ -256,7 +256,7 @@ namespace RepositoryUWP
                 if (sx.LeftContact != Contact.Any) b |= S7;
                 if (sx.RightContact != Contact.Any) b |= S8;
                 if (sx.BottomContact != Contact.Any) b |= S9;
-                if (sx.ConnectStyle != ConnectStyle.Default) b |= S10;
+                if (sx.Attach != Attach.Default) b |= S10;
 
                 w.WriteUInt16(b);
                 if ((b & S1) != 0) w.WriteUInt16(sx.GetState());
@@ -268,7 +268,7 @@ namespace RepositoryUWP
                 if ((b & S7) != 0) w.WriteByte((byte)sx.LeftContact);
                 if ((b & S8) != 0) w.WriteByte((byte)sx.RightContact);
                 if ((b & S9) != 0) w.WriteByte((byte)sx.BottomContact);
-                if ((b & S10) != 0) w.WriteByte((byte)sx.ConnectStyle);
+                if ((b & S10) != 0) w.WriteByte((byte)sx.Attach);
             }
             w.WriteByte((byte)Mark.SymbolXEnding); // itegrity marker
         }
@@ -384,101 +384,92 @@ namespace RepositoryUWP
             #region RemoveInvalidItems  =======================================
             // hit list of items that no longer exists
             var gxList = new List<GraphX>();
-            var gxrtList = new List<Tuple<GraphX, Item>>();
-            var gxrtsgList = new List<Tuple<GraphX, Item, Item>>();
-            var gxrtsgpmList = new List<Tuple<GraphX, Item, Item, Item>>();
+            var gxrtList = new List<(GraphX gx, Item ri)>();
+            var gxrtsgList = new List<(GraphX gx, Item ri, QueryX qx)>();
+            var gxrtsgpmList = new List<(GraphX gx, Item ri, QueryX qx, NodeEdge ge)>();
             var graphParms = chef.T_GraphParms;
 
             // find items that are referenced in the graph parms, but no longer exist
             foreach (var e1 in chef.T_GraphParms)//GD
             {
-                var gd = e1.Key;
-                if (itemIndex.ContainsKey(gd))
+                var gx = e1.Key;
+                if (itemIndex.ContainsKey(gx))
                 {
-                    foreach (var e2 in e1.Value)//RT
+                    foreach (var e2 in e1.Value)
                     {
-                        var rt = e2.Key;
-                        if (itemIndex.ContainsKey(rt))
+                        var ri = e2.Key;
+                        if (itemIndex.ContainsKey(ri))
                         {
-                            foreach (var e3 in e2.Value)//SG
+                            foreach (var e3 in e2.Value)
                             {
-                                var sg = e3.Key;
-                                if (itemIndex.ContainsKey(sg))
+                                var qx = e3.Key;
+                                if (itemIndex.ContainsKey(qx))
                                 {
-                                    if (sg == chef.T_Dummy)
+                                    if (qx == chef.QueryXNode)
                                     {
-                                        foreach (var pm in e3.Value)//PM
+                                        foreach (var ge in e3.Value)
                                         {
-                                            var nd = pm as Node;
+                                            var nd = ge as Node;
                                             if (itemIndex.ContainsKey(nd.Item)) continue;
-                                            gxrtsgpmList.Add(new Tuple<GraphX, Item, Item, Item>(gd, rt, sg, pm));
+                                            gxrtsgpmList.Add((gx, ri, qx, ge));
                                         }
                                     }
                                     else
                                     {
-                                        foreach (var pm in e3.Value)//GP
+                                        foreach (var ge in e3.Value)//GP
                                         {
-                                            var eg = pm as Edge;
+                                            var eg = ge as Edge;
                                             if (itemIndex.ContainsKey(eg.Node1.Item) && itemIndex.ContainsKey(eg.Node2.Item)) continue;
-                                            gxrtsgpmList.Add(new Tuple<GraphX, Item, Item, Item>(gd, rt, sg, pm));
+                                            gxrtsgpmList.Add((gx, ri, qx, ge));
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    gxrtsgList.Add(new Tuple<GraphX, Item, Item>(gd, rt, sg));
+                                    gxrtsgList.Add((gx, ri, qx));
                                 }
                             }
                         }
                         else
                         {
-                            gxrtList.Add(new Tuple<GraphX, Item>(gd, rt));
+                            gxrtList.Add((gx, ri));
                         }
                     }
                 }
                 else
                 {
-                    gxList.Add(gd);
+                    gxList.Add(gx);
                 }
             }
 
             // remove params for items which no longer exists
-            foreach (var gd in gxList)
+            foreach (var gx in gxList)
             {
-                graphParms.Remove(gd);
+                graphParms.Remove(gx);
             }
-            foreach (var gdrt in gxrtList)
+            foreach (var (gx, ri) in gxrtList)
             {
-                var gd = gdrt.Item1;
-                var rt = gdrt.Item2;
-                graphParms[gd].Remove(rt);
-                if (graphParms[gd].Count == 0)
-                    graphParms.Remove(gd);
+                graphParms[gx].Remove(ri);
+                if (graphParms[gx].Count == 0)
+                    graphParms.Remove(gx);
             }
-            foreach (var gdrtsg in gxrtsgList)
+            foreach (var (gx, ri, qx) in gxrtsgList)
             {
-                var gd = gdrtsg.Item1;
-                var rt = gdrtsg.Item2;
-                var sg = gdrtsg.Item3;
-                graphParms[gd][rt].Remove(sg);
-                if (graphParms[gd][rt].Count == 0)
-                    graphParms[gd].Remove(rt);
-                if (graphParms[gd].Count == 0)
-                    graphParms.Remove(gd);
+                graphParms[gx][ri].Remove(qx);
+                if (graphParms[gx][ri].Count == 0)
+                    graphParms[gx].Remove(ri);
+                if (graphParms[gx].Count == 0)
+                    graphParms.Remove(gx);
             }
-            foreach (var gdrtsgpm in gxrtsgpmList)
+            foreach (var (gx, ri, qx, ge) in gxrtsgpmList)
             {
-                var gd = gdrtsgpm.Item1;
-                var rt = gdrtsgpm.Item2;
-                var sg = gdrtsgpm.Item3;
-                var pm = gdrtsgpm.Item4;
-                graphParms[gd][rt][sg].Remove(pm);
-                if (graphParms[gd][rt][sg].Count == 0)
-                    graphParms[gd][rt].Remove(sg);
-                if (graphParms[gd][rt].Count == 0)
-                    graphParms[gd].Remove(rt);
-                if (graphParms[gd].Count == 0)
-                    graphParms.Remove(gd);
+                graphParms[gx][ri][qx].Remove(ge);
+                if (graphParms[gx][ri][qx].Count == 0)
+                    graphParms[gx][ri].Remove(qx);
+                if (graphParms[gx][ri].Count == 0)
+                    graphParms[gx].Remove(ri);
+                if (graphParms[gx].Count == 0)
+                    graphParms.Remove(gx);
             }
             #endregion
 
@@ -510,54 +501,54 @@ namespace RepositoryUWP
                             if (e3.Value.Count > 0)
                             {
                                 #region WriteQuerys  ==========================
-                                if (e3.Key == chef.T_Dummy)
+                                if (e3.Key == chef.QueryXNode)
                                 {
                                     #region WriteNodes  =======================
-                                    foreach (var gp in e3.Value)//GP
+                                    foreach (var ge in e3.Value)//GP
                                     {
-                                        var nd = gp as Node;
+                                        var nd = ge as Node;
                                         w.WriteInt32(itemIndex[nd.Item]);
 
-                                        w.WriteInt32(nd.Core.X - x0);
-                                        w.WriteInt32(nd.Core.Y - y0);
-                                        w.WriteByte(nd.Core.DX);
-                                        w.WriteByte(nd.Core.DY);
-                                        w.WriteByte(nd.Core.Symbol);
-                                        w.WriteByte((byte)nd.Core.Orientation);
-                                        w.WriteByte((byte)nd.Core.FlipRotate);
-                                        w.WriteByte((byte)nd.Core.Labeling);
-                                        w.WriteByte((byte)nd.Core.Resizing);
-                                        w.WriteByte((byte)nd.Core.BarWidth);
+                                        w.WriteInt32(nd.X - x0);
+                                        w.WriteInt32(nd.Y - y0);
+                                        w.WriteByte(nd.DX);
+                                        w.WriteByte(nd.DY);
+                                        w.WriteByte(nd.Symbol);
+                                        w.WriteByte((byte)nd.Orientation);
+                                        w.WriteByte((byte)nd.FlipRotate);
+                                        w.WriteByte((byte)nd.Labeling);
+                                        w.WriteByte((byte)nd.Resizing);
+                                        w.WriteByte((byte)nd.BarWidth);
                                     }
                                     #endregion
                                 }
                                 else
                                 {
                                     #region WriteEdges  =======================
-                                    foreach (var gp in e3.Value)//GP
+                                    foreach (var ge in e3.Value)//GP
                                     {
-                                        var eg = gp as Edge;
+                                        var eg = ge as Edge;
                                         w.WriteInt32(itemIndex[eg.Node1.Item]);
                                         w.WriteInt32(itemIndex[eg.Node2.Item]);
 
-                                        w.WriteByte((byte)eg.Core.Face1.Side);
-                                        w.WriteByte((byte)eg.Core.Face1.Index);
-                                        w.WriteByte((byte)eg.Core.Face1.Count);
-                                        w.WriteByte((byte)eg.Core.Face2.Side);
-                                        w.WriteByte((byte)eg.Core.Face2.Index);
-                                        w.WriteByte((byte)eg.Core.Face2.Count);
-                                        w.WriteByte((byte)eg.Core.Facet1);
-                                        w.WriteByte((byte)eg.Core.Facet2);
+                                        w.WriteByte((byte)eg.Face1.Side);
+                                        w.WriteByte((byte)eg.Face1.Index);
+                                        w.WriteByte((byte)eg.Face1.Count);
+                                        w.WriteByte((byte)eg.Face2.Side);
+                                        w.WriteByte((byte)eg.Face2.Index);
+                                        w.WriteByte((byte)eg.Face2.Count);
+                                        w.WriteByte((byte)eg.Facet1);
+                                        w.WriteByte((byte)eg.Facet2);
 
-                                        var len = (eg.Core.Bends == null) ? 0 : eg.Core.Bends.Length;
+                                        var len = (eg.Bends == null) ? 0 : eg.Bends.Length;
                                         if (len > 0)
                                         {
 
                                             w.WriteUInt16((ushort)len);
                                             for (int i = 0; i < len; i++)
                                             {
-                                                w.WriteInt32(eg.Core.Bends[i].X - x0);
-                                                w.WriteInt32(eg.Core.Bends[i].Y - y0);
+                                                w.WriteInt32(eg.Bends[i].X - x0);
+                                                w.WriteInt32(eg.Bends[i].Y - y0);
                                             }
                                         }
                                         else
@@ -577,19 +568,19 @@ namespace RepositoryUWP
             }
         }
         #region TryGetOffset  =================================================
-        private (int X0, int Y0) GetCenter(Chef chef, Dictionary<Item, List<Item>> sgParams)
+        private (int X0, int Y0) GetCenter(Chef chef, Dictionary<QueryX, List<NodeEdge>> qxParams)
         {
             int x1, y1, x2, y2;
             x1 = y1 = int.MaxValue;
             x2 = y2 = int.MinValue;
-            foreach (var e3 in sgParams)//SG
+            foreach (var e3 in qxParams)
             {
-                if (e3.Key == chef.T_Dummy)
+                if (e3.Key == chef.QueryXNode)
                 {
                     foreach (var gp in e3.Value)//GP
                     {
                         var nd = gp as Node;
-                        var (x, y) = nd.Core.GetCenter();
+                        var (x, y) = nd.GetCenter();
                         {
                             if (x < x1) x1 = x;
                             if (y < y1) y1 = y;

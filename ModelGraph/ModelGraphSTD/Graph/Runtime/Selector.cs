@@ -15,7 +15,7 @@ namespace ModelGraphSTD
 
         public Node HitNode;
         public Edge HitEdge;
-        public int HitBend;  // index of bend point (relative to edge.Core.bends)
+        public int HitBend;  // index of bend point (relative to edge.bends)
         public int HitIndex; // index of start of the hit segment (relative to edge.point)
         public (int x, int y) HitPoint; // the refined hit point location
         public Region HitRegion; // hit this specific region
@@ -69,7 +69,7 @@ namespace ModelGraphSTD
                 region.Nodes.Clear();
                 foreach (var node in Graph.Nodes)
                 {
-                    if (region.HitTest(node.Core.Center))
+                    if (region.HitTest(node.Center))
                     {
                         Nodes.Add(node);
                         region.Nodes.Add(node);
@@ -190,9 +190,9 @@ namespace ModelGraphSTD
             }
 
             // test prev node
-            if (PrevNode != null && PrevNode.Core.HitTest(p))
+            if (PrevNode != null && PrevNode.HitTest(p))
             {
-                var (hit, pnt) = PrevNode.Core.RefinedHit(p);
+                var (hit, pnt) = PrevNode.RefinedHit(p);
                 HitLocation |= hit;
                 HitPoint = pnt;
 
@@ -217,11 +217,11 @@ namespace ModelGraphSTD
             foreach (var node in Graph.Nodes)
             {
                 // eliminate unqualified nodes
-                if (!node.Core.HitTest(p)) continue;
+                if (!node.HitTest(p)) continue;
 
                 // now refine the hit test results
                 // node.RefineHitTest(p, ref HitLocation, ref HitPoint);
-                var (hit, pnt) = node.Core.RefinedHit(p);
+                var (hit, pnt) = node.RefinedHit(p);
                 HitLocation |= hit;
                 HitPoint = pnt;
 
@@ -303,11 +303,11 @@ namespace ModelGraphSTD
         {
             if (HitNode != null)
             {
-                var x = HitNode.Core.X;
+                var x = HitNode.X;
                 TakeSnapShot();
                 foreach (var node in Nodes)
                 {
-                    node.Core.AlignVertical(x);
+                    node.AlignVertical(x);
                 }
             }
         }
@@ -315,11 +315,11 @@ namespace ModelGraphSTD
         {
             if (HitNode != null)
             {
-                var y = HitNode.Core.Y;
+                var y = HitNode.Y;
                 TakeSnapShot();
                 foreach (var node in Nodes)
                 {
-                    node.Core.AlignHorizontal(y);
+                    node.AlignHorizontal(y);
                 }
             }
         }
@@ -331,7 +331,7 @@ namespace ModelGraphSTD
             _enableSnapShot = false;
 
             var nodeCopy = new List<NodeCopy>(Nodes.Count);
-            var edgeCopy = new List<EdgeCopy>(Edges.Count);
+            var edgeCopy = new List<EdgeCopy>(Edges.Count + Chops.Count);
 
             if (HitEdge != null)
             {
@@ -350,20 +350,11 @@ namespace ModelGraphSTD
             }
             else
             {
-                foreach (var node in Nodes)
-                {
-                    nodeCopy.Add(new NodeCopy(node));
-                }
-                foreach (var edge in Edges)
-                {
-                    edgeCopy.Add(new EdgeCopy(edge));
-                }
-                foreach (var edge in Chops)
-                {
-                    edgeCopy.Add(new EdgeCopy(edge));
-                }
+                foreach (var node in Nodes) { nodeCopy.Add(new NodeCopy(node)); }
+                foreach (var edge in Edges) { edgeCopy.Add(new EdgeCopy(edge)); }
+                foreach (var edge in Chops) { edgeCopy.Add(new EdgeCopy(edge)); }
             }
-            Graph.PushSnapShot(new ParmCopy(nodeCopy.ToArray(), edgeCopy.ToArray()));
+            Graph.PushSnapShot(new ParmCopy(nodeCopy, edgeCopy));
         }
         #endregion
     }

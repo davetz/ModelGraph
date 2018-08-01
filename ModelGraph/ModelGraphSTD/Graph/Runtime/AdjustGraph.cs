@@ -44,14 +44,14 @@ namespace ModelGraphSTD
         }
         private void AdjustNode(Node node)
         {
-            if (node.Core.IsNode)
+            if (node.IsNode)
             {
-                if (node.Core.IsManualSizing || node.Core.IsFixedSizing)
+                if (node.IsManualSizing || node.IsFixedSizing)
                     AdjustFixedNode(node);
                 else
                     AdjustAutoNode(node, GraphX.TerminalSpacing);
             }
-            else if (node.Core.IsSymbol)
+            else if (node.IsSymbol)
                 AdjustSymbol(node);
         }
 

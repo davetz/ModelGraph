@@ -12,7 +12,7 @@ namespace ModelGraphUWP
         int _cacheSize = initialSize;
 
         int[] _cacheIndex = new int[initialSize]; //indirect index into cache arrays for efficient scrolling
-        Dictionary<ItemModel, int> _itemModelIndex = new Dictionary<ItemModel, int>(initialSize); //find first index of reused cache
+        Dictionary<ItemModel, int> _modelCacheIndex = new Dictionary<ItemModel, int>(initialSize); //find first index of reused cache
 
         byte[] _modelDeltaCache = new byte[initialSize];
         TextBlock[] _itemKindCache = new TextBlock[initialSize];
@@ -45,13 +45,13 @@ namespace ModelGraphUWP
 
             var N = _stackPanelCache.Length;
 
-            _itemModelIndex.Clear();
+            _modelCacheIndex.Clear();
             for (int i = 0; i < N; i++)
             {
                 var sp = _stackPanelCache[i];
                 if (sp == null) break;         // end of cache
 
-                if (sp.DataContext is ItemModel m) _itemModelIndex[m] = i; //index of cached ui elements for the itemModel
+                if (sp.DataContext is ItemModel m) _modelCacheIndex[m] = i; //index of cached ui elements for the itemModel
 
                 if (i < M) continue;       // visible element
 
@@ -70,7 +70,7 @@ namespace ModelGraphUWP
                 for (int i = 0; i < M; i++)
                 {
                     var m = _viewList[i];
-                    if (_itemModelIndex.TryGetValue(m, out int j)) return (true, i, j);
+                    if (_modelCacheIndex.TryGetValue(m, out int j)) return (true, i, j);
                 }
                 return (false, -1, -1);
             }
@@ -165,6 +165,15 @@ namespace ModelGraphUWP
 
         #endregion
 
+        #region ResetCacheDelta  ==============================================
+        void ResetCacheDelta(ItemModel m)
+        {
+            if (_modelCacheIndex.TryGetValue(m, out int i))
+            {
+                _modelDeltaCache[i] -= 3;
+            }
+        }
+        #endregion
 
         #region AddItemKind  ==================================================
         void AddItemKind(int index, string kind, ItemModel model)
@@ -589,7 +598,7 @@ namespace ModelGraphUWP
             Canvas.SetTop(sp, viewIndex * _elementHieght);
 
             if (sp.DataContext == m && _modelDeltaCache[index] == m.ModelDelta) return; //reusing previouslly cached ui elements
-            //Debug.WriteLine($"cache miss: view[{viewIndex}] cache[{index}]");
+            _modelCacheIndex[m] = index;
 
             sp.Children.Clear();
             sp.DataContext = m;

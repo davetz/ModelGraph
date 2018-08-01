@@ -336,17 +336,10 @@ namespace ModelGraphSTD
         public bool IsModified { get { return false; } }
         public string ModelIdentity => GetModelIdentity();
 
-        public void ResetDelta() { ChildDelta -= 3; Item.ModelDelta++; Item.ChildDelta++; }
         public byte ModelDelta => IsComboProperty ? (byte)(Aux2.ChildDelta + Item.ModelDelta) : Item.ModelDelta;
 
         internal void SetIsSelected() => GetRootModel().SelectModel = this;
 
-        internal void ClearChildren()
-        {
-            ResetDelta();
-            ChildModels = null;
-            ViewModels = null;
-        }
         public bool IsInvalid => (Item == null || Item.IsInvalid);
 
         public int GetChildlIndex(ItemModel child)

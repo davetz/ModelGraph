@@ -8,6 +8,7 @@ namespace ModelGraphSTD
     public partial class Chef
     {
         private Dummy _dummy;
+        private QueryX _queryXNode;
         private ChangeSet _changeSet;
         private ChangeRoot _changeRoot;
         private int _changeSequence;
@@ -40,8 +41,9 @@ namespace ModelGraphSTD
             ModelGraphUnitTest : TestData reference
             ModelGraphStorageFile : Repository read/write access
         */
-        internal Dummy T_Dummy => _dummy;
-        internal ChangeSet T_ChangeSet => _changeSet;
+        internal Dummy Dummy => _dummy;
+        internal QueryX QueryXNode => _queryXNode;
+        internal ChangeSet ChangeSet => _changeSet;
         internal ChangeRoot T_ChangeRoot => _changeRoot;
         internal int T_ChangeSequence => _changeSequence;
 
@@ -68,6 +70,7 @@ namespace ModelGraphSTD
         private void InitializeStores()
         {
             _dummy = new Dummy(this);
+            _queryXNode = new QueryX(this);
             _changeRoot = new ChangeRoot(this);
             _changeSequence = 1;
             _changeSet = new ChangeSet(_changeRoot, _changeSequence);

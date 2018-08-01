@@ -52,13 +52,13 @@ namespace ModelGraphSTD
         private PropertyOf<SymbolX, string> _symbolXLeftContacttProperty;
         private PropertyOf<SymbolX, string> _symbolXRightContactProperty;
         private PropertyOf<SymbolX, string> _symbolXBottomContactProperty;
-        private PropertyOf<SymbolX, string> _symbolXConnectStyleProperty;
+        private PropertyOf<SymbolX, string> _symbolXAttatchProperty;
 
         private PropertyOf<QueryX, string> _queryXRootWhereProperty;
         private PropertyOf<QueryX, string> _queryXConnect1Property;
-        private PropertyOf<QueryX, string> _queryXConnectStyle1Property;
+        private PropertyOf<QueryX, string> _queryXAttach1Property;
         private PropertyOf<QueryX, string> _queryXConnect2Property;
-        private PropertyOf<QueryX, string> _queryXConnectStyle2Property;
+        private PropertyOf<QueryX, string> _queryXAttatch2Property;
         private PropertyOf<QueryX, string> _queryXRelationProperty;
         private PropertyOf<QueryX, bool> _queryXIsReversedProperty;
         private PropertyOf<QueryX, bool> _queryXIsPersistentProperty;
@@ -419,9 +419,9 @@ namespace ModelGraphSTD
                 props.Add(p);
             }
             {
-                var p = _symbolXConnectStyleProperty = new PropertyOf<SymbolX, string>(_propertyStore, Trait.SymbolXConnectStyle_P, _connectStyleEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).ConnectStyle);
-                p.SetValFunc = (item, value) => { p.Cast(item).ConnectStyle = (ConnectStyle)GetEnumZKey(p.EnumZ, value); return true; };
+                var p = _symbolXAttatchProperty = new PropertyOf<SymbolX, string>(_propertyStore, Trait.SymbolXAttatch_P, _AttatchEnum);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Attach);
+                p.SetValFunc = (item, value) => { p.Cast(item).Attach = (Attach)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
@@ -446,9 +446,9 @@ namespace ModelGraphSTD
                 props.Add(p);
             }
             {
-                var p = _queryXConnectStyle1Property = new PropertyOf<QueryX, string>(_propertyStore, Trait.QueryXConnectStyle1_P, _connectStyleEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).ConnectStyle1);
-                p.SetValFunc = (item, value) => { p.Cast(item).ConnectStyle1 = (ConnectStyle)GetEnumZKey(p.EnumZ, value); return true; };
+                var p = _queryXAttach1Property = new PropertyOf<QueryX, string>(_propertyStore, Trait.QueryXAttatch1_P, _AttatchEnum);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Attach1);
+                p.SetValFunc = (item, value) => { p.Cast(item).Attach1 = (Attach)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
@@ -460,9 +460,9 @@ namespace ModelGraphSTD
                 props.Add(p);
             }
             {
-                var p = _queryXConnectStyle2Property = new PropertyOf<QueryX, string>(_propertyStore, Trait.QueryXConnectStyle2_P, _connectStyleEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).ConnectStyle2);
-                p.SetValFunc = (item, value) => { p.Cast(item).ConnectStyle2 = (ConnectStyle)GetEnumZKey(p.EnumZ, value); return true; };
+                var p = _queryXAttatch2Property = new PropertyOf<QueryX, string>(_propertyStore, Trait.QueryXAttatch2_P, _AttatchEnum);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Attatch2);
+                p.SetValFunc = (item, value) => { p.Cast(item).Attatch2 = (Attach)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
@@ -529,44 +529,44 @@ namespace ModelGraphSTD
             #region Node  =====================================================
             {
                 var p = _nodeCenterXYProperty = new PropertyOf<Node, int[]>(_propertyZStore, Trait.NodeCenterXY_P);
-                p.GetValFunc = (item) => p.Cast(item).Core.CenterXY;
-                p.SetValFunc = (item, value) => { p.Cast(item).Core.CenterXY = value; return true; };
+                p.GetValFunc = (item) => p.Cast(item).CenterXY;
+                p.SetValFunc = (item, value) => { p.Cast(item).CenterXY = value; return true; };
                 p.Value = new Int32ArrayValue(p);
             }
             {
                 var p = _nodeSizeWHProperty = new PropertyOf<Node, int[]>(_propertyZStore, Trait.NodeSizeWH_P);
-                p.GetValFunc = (item) => p.Cast(item).Core.SizeWH;
-                p.SetValFunc = (item, value) => { p.Cast(item).Core.SizeWH = value; return true; };
+                p.GetValFunc = (item) => p.Cast(item).SizeWH;
+                p.SetValFunc = (item, value) => { p.Cast(item).SizeWH = value; return true; };
                 p.Value = new Int32ArrayValue(p);
             }
             {
                 var p = _nodeOrientationProperty = new PropertyOf<Node, string>(_propertyZStore, Trait.NodeOrientation_P, _orientationEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Core.Orientation);
-                p.SetValFunc = (item, value) => { p.Cast(item).Core.Orientation = (Orientation)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Orientation);
+                p.SetValFunc = (item, value) => { p.Cast(item).Orientation = (Orientation)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
                 var p = _nodeFlipRotateProperty = new PropertyOf<Node, string>(_propertyZStore, Trait.NodeFlipRotate_P, _flipRotateEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Core.FlipRotate);
-                p.SetValFunc = (item, value) => { p.Cast(item).Core.FlipRotate = (FlipRotate)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).FlipRotate);
+                p.SetValFunc = (item, value) => { p.Cast(item).FlipRotate = (FlipRotate)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
                 var p = _nodeLabelingProperty = new PropertyOf<Node, string>(_propertyZStore, Trait.NodeLabeling_P, _labelingEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Core.Labeling);
-               p.SetValFunc = (item, value) => { p.Cast(item).Core.Labeling = (Labeling)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Labeling);
+               p.SetValFunc = (item, value) => { p.Cast(item).Labeling = (Labeling)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
                 var p = _nodeResizingProperty = new PropertyOf<Node, string>(_propertyZStore, Trait.NodeResizing_P, _resizingEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Core.Resizing);
-                p.SetValFunc = (item, value) => { p.Cast(item).Core.Resizing = (Resizing)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Resizing);
+                p.SetValFunc = (item, value) => { p.Cast(item).Resizing = (Resizing)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
                 var p = _nodeBarWidthProperty = new PropertyOf<Node, string>(_propertyZStore, Trait.NodeBarWidth_P, _barWidthEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Core.BarWidth);
-                p.SetValFunc = (item, value) => { p.Cast(item).Core.BarWidth = (BarWidth)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).BarWidth);
+                p.SetValFunc = (item, value) => { p.Cast(item).BarWidth = (BarWidth)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             #endregion
@@ -574,26 +574,26 @@ namespace ModelGraphSTD
             #region Edge  =====================================================
             {
                 var p = _edgeFace1Property = new PropertyOf<Edge, string>(_propertyZStore, Trait.EdgeFace1_P, _sideEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Core.Face1.Side);
-                p.SetValFunc = (item, value) => { p.Cast(item).Core.Face1.Side = (Side)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Face1.Side);
+                p.SetValFunc = (item, value) => { p.Cast(item).Face1.Side = (Side)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
                 var p = _edgeFace2Property = new PropertyOf<Edge, string>(_propertyZStore, Trait.EdgeFace2_P, _sideEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Core.Face2.Side);
-                p.SetValFunc = (item, value) => { p.Cast(item).Core.Face2.Side = (Side)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Face2.Side);
+                p.SetValFunc = (item, value) => { p.Cast(item).Face2.Side = (Side)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
                 var p =  _edgeGnarl1Property = new PropertyOf<Edge, string>(_propertyZStore, Trait.EdgeGnarl1_P, _facetEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Core.Facet1);
-                p.SetValFunc = (item, value) => { p.Cast(item).Core.Facet1 = (FacetOf)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Facet1);
+                p.SetValFunc = (item, value) => { p.Cast(item).Facet1 = (FacetOf)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
                 var p = _edgeGnarl2Property = new PropertyOf<Edge, string>(_propertyZStore, Trait.EdgeGnarl1_P, _facetEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Core.Facet2);
-                p.SetValFunc = (item, value) => { p.Cast(item).Core.Facet2 = (FacetOf)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Facet2);
+                p.SetValFunc = (item, value) => { p.Cast(item).Facet2 = (FacetOf)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {

@@ -15,7 +15,7 @@ namespace ModelGraphSTD
         public Contact LeftContact;
         public Contact RightContact;
         public Contact BottomContact;
-        internal ConnectStyle ConnectStyle;
+        internal Attach Attach;
 
         #region Constructors  =================================================
         public SymbolX(Store owner)

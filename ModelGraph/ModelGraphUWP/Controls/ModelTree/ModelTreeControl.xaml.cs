@@ -209,6 +209,14 @@ namespace ModelGraphUWP
         }
         #endregion
 
+        #region PostRefreshViewList  ==========================================
+         void PostRefreshViewList(ItemModel m, int s = 0, ChangeType c = ChangeType.NoChange)
+        {
+            ResetCacheDelta(m);
+            _root.PostRefreshViewList(m, s, c);
+        }
+        #endregion
+
         #region KeyButton  ====================================================
         bool _isCtrlDown;
         bool _isShiftDown;
@@ -238,12 +246,12 @@ namespace ModelGraphUWP
 
         void KeyButton_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (!(KeyButton.DataContext is ItemModel mdl))
+            if (!(KeyButton.DataContext is ItemModel m))
             {
                 return;
             }
 
-            _select = mdl;
+            _select = m;            
 
             if (e.Key == Windows.System.VirtualKey.Shift)
             {
@@ -256,12 +264,12 @@ namespace ModelGraphUWP
             else if (e.Key == Windows.System.VirtualKey.End)
             {
                 e.Handled = true;
-                _root.PostRefreshViewList(_select, 0, ChangeType.GoToEnd);
+                PostRefreshViewList(_select, 0, ChangeType.GoToEnd);
             }
             else if (e.Key == Windows.System.VirtualKey.Home)
             {
                 e.Handled = true;
-                _root.PostRefreshViewList(_select, 0, ChangeType.GoToHome);
+                PostRefreshViewList(_select, 0, ChangeType.GoToHome);
             }
             else if (e.Key == Windows.System.VirtualKey.PageDown)
             {
@@ -285,21 +293,16 @@ namespace ModelGraphUWP
             }
             else if (e.Key == Windows.System.VirtualKey.Left)
             {
-                if (_isCtrlDown && mdl.ParentModel != null && mdl.ParentModel != _root)
+                if (m.CanExpandLeft)
                 {
-                    mdl = _select = mdl.ParentModel;
-                }
-
-                if (mdl.CanExpandLeft)
-                {
-                    _root.PostRefreshViewList(_select, 0, ChangeType.ToggleLeft);
+                    PostRefreshViewList(_select, 0, ChangeType.ToggleLeft);
                 }
             }
             else if (e.Key == Windows.System.VirtualKey.Right)
             {
-                if (mdl.CanExpandRight)
+                if (m.CanExpandRight)
                 {
-                    _root.PostRefreshViewList(_select, 0, ChangeType.ToggleRight);
+                    PostRefreshViewList(_select, 0, ChangeType.ToggleRight);
                 }
             }
             else if (e.Key == Windows.System.VirtualKey.Insert)
@@ -352,16 +355,16 @@ namespace ModelGraphUWP
             }
             else if (e.Key == Windows.System.VirtualKey.C)
             {
-                if (mdl.CanDrag)
+                if (m.CanDrag)
                 {
-                    mdl.DragStart();
+                    m.DragStart();
                 }
             }
             else if (e.Key == Windows.System.VirtualKey.P)
             {
-                if (mdl.DragEnter() != DropAction.None)
+                if (m.DragEnter() != DropAction.None)
                 {
-                    mdl.DragDrop();
+                    m.DragDrop();
                 }
             }
             else if (e.Key == Windows.System.VirtualKey.I || e.Key == Windows.System.VirtualKey.A)
@@ -473,7 +476,7 @@ namespace ModelGraphUWP
         }
         void ChangeScroll(int delta)
         {
-            _root.PostRefreshViewList(_select, delta);
+            PostRefreshViewList(_select, delta);
         }
         #endregion
 
@@ -614,43 +617,14 @@ namespace ModelGraphUWP
                 return;
             }
 
-            //find stackPanel index of selected model
-            var index = -1;
-            var N = _root.ViewCapacity + 1;
-            if (N >= _cacheSize)
-            {
-                N = _cacheSize;
-            }
-
-            for (int i = 0; i < N; i++)
-            {
-                if (i >= _cacheSize)
-                {
-                    return;
-                }
-
-                if (_stackPanelCache[_cacheIndex[i]] == null)
-                {
-                    return;
-                }
-
-                if (_stackPanelCache[_cacheIndex[i]].DataContext == _select)
-                {
-                    index = i;
-                    break;
-                }
-            }
-            if (index < 0)
-            {
-                return;
-            }
+            var viewIndex = _viewList.IndexOf(_select);
+            if (viewIndex < 0) return;
+            var cacheIndex = _cacheIndex[viewIndex];
 
             SelectionGrid.Width = ActualWidth;
-            Canvas.SetTop(SelectionGrid, (index * _elementHieght));
+            Canvas.SetTop(SelectionGrid, (viewIndex * _elementHieght));
 
             KeyButton.DataContext = _select;
-
-            var cacheIndex = _cacheIndex[index];
 
             if (_sortModeCache[cacheIndex] != null && _sortModeCache[cacheIndex].DataContext != null)
             {
@@ -887,7 +861,7 @@ namespace ModelGraphUWP
             {
                 var obj = sender as TextBlock;
                 _select = obj.DataContext as ItemModel;
-                _root.PostRefreshViewList(_select, 0, ChangeType.ToggleLeft);
+                PostRefreshViewList(_select, 0, ChangeType.ToggleLeft);
             }
         }
         #endregion
@@ -899,7 +873,7 @@ namespace ModelGraphUWP
             {
                 var obj = sender as TextBlock;
                 _select = obj.DataContext as ItemModel;
-                _root.PostRefreshViewList(_select, 0, ChangeType.ToggleRight);
+                PostRefreshViewList(_select, 0, ChangeType.ToggleRight);
             }
         }
         #endregion
@@ -939,7 +913,6 @@ namespace ModelGraphUWP
             }
             else if (mdl.IsSortDescending)
             {
-                mdl.ResetDelta();
                 mdl.IsSortAscending = false;
                 mdl.IsSortDescending = false;
                 obj.Text = _sortNone;
@@ -950,7 +923,7 @@ namespace ModelGraphUWP
                 obj.Text = _sortAscending;
             }
 
-            _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
+            PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
         }
         #endregion
 
@@ -989,7 +962,7 @@ namespace ModelGraphUWP
                 mdl.IsUsedFilter = true;
                 obj.Text = _usageIsUsed;
             }
-            _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
+            PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
         }
         #endregion
 
@@ -1009,7 +982,7 @@ namespace ModelGraphUWP
 
             var mdl = obj.DataContext as ItemModel;
 
-            _root.PostRefreshViewList(_select, 0, ChangeType.ToggleFilter);
+            PostRefreshViewList(_select, 0, ChangeType.ToggleFilter);
         }
         #endregion
 
@@ -1031,16 +1004,15 @@ namespace ModelGraphUWP
                 e.Handled = true;
 
                 FindNextItemModel(mdl);
-                _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
+                PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
-                mdl.ResetDelta();
                 mdl.ViewFilter = null;
                 mdl.IsFilterVisible = false;
 
                 FindNextItemModel(mdl);
-                _root.PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
+                PostRefreshViewList(_select, 0, ChangeType.FilterSortChanged);
             }
         }
         #endregion
@@ -1077,7 +1049,7 @@ namespace ModelGraphUWP
                     obj.Text = mdl.TextValue ?? string.Empty;
                 }
                 _select = mdl.ParentModel;
-                mdl.PostRefreshViewList(_select);
+                PostRefreshViewList(_select);
             }
         }
         #endregion

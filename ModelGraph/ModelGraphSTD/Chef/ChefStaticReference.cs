@@ -36,12 +36,12 @@ namespace ModelGraphSTD
                 { _symbolXLeftContacttProperty, _contactEnum },
                 { _symbolXRightContactProperty, _contactEnum },
                 { _symbolXBottomContactProperty, _contactEnum },
-                { _symbolXConnectStyleProperty, _connectStyleEnum },
+                { _symbolXAttatchProperty, _AttatchEnum },
 
                 { _queryXConnect1Property, _connectEnum },
                 { _queryXConnect2Property, _connectEnum },
-                { _queryXConnectStyle1Property, _connectStyleEnum },
-                { _queryXConnectStyle2Property, _connectStyleEnum },
+                { _queryXAttach1Property, _AttatchEnum },
+                { _queryXAttatch2Property, _AttatchEnum },
 
                 { _computeXCompuTypeProperty, _computeTypeEnum },
                 { _computeXNumericSetProperty, _numericSetEnum },

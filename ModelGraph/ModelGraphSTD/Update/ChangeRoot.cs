@@ -47,32 +47,32 @@
             return false;
         }
 
-        private bool TryMerge(ChangeSet chg, bool onlyTestMerge = false)
+        private bool TryMerge(ChangeSet cs, bool testIfCanMerge = false)
         {
-            if (chg.IsCongealed) return false;
+            if (cs.IsCongealed) return false;
 
-            var index = IndexOf(chg);
+            var index = IndexOf(cs);
             if (index < 0) return false;
             var prev = index - 1;
             if (prev < 0) return false;
 
-            var chg2 = Items[prev] as ChangeSet;
-            if (chg2.IsCongealed) return false;
-            if (chg2.IsUndone != chg.IsUndone) return false;
+            var cs2 = Items[prev];
+            if (cs2.IsCongealed) return false;
+            if (cs2.IsUndone != cs.IsUndone) return false;
 
-            if (onlyTestMerge) return true;
+            if (testIfCanMerge) return true;
 
-            Remove(chg2);
-            var items = chg2.Items;
-            foreach (var item in items) { chg.Add(item); }
-            chg2.RemoveAll();
+            cs.Owner.ModelDelta++;
 
-            ModelDelta++;
-            ChildDelta++;
-            foreach (var cs in Items)
+            Remove(cs2);
+            var items = cs2.Items;
+            foreach (var item in items) { cs.Add(item); }
+            cs2.RemoveAll();
+
+            foreach (var cs3 in Items)
             {
-                cs.ChildDelta++;
-                cs.ModelDelta++;
+                cs3.ChildDelta++;
+                cs3.ModelDelta++;
             }
             return true;
         }
@@ -84,16 +84,15 @@
                 ModelDelta++;
                 ChildDelta++;
                 ChangeSet save = null;
-                foreach (var chg in Items)
+                var last = Count - 1;
+                for (int i = last; i >= 0; i--)
                 {
-                    chg.ModelDelta++;
-                    if (chg.IsCongealed) continue;
-                    if (chg.IsUndone)
-                    {
-                        Remove(chg);
-                    }
-                    else
-                        save = chg;
+                    var cs = Items[i];
+                    if (cs.IsCongealed) continue;
+                    if (cs.IsUndone)
+                        Remove(cs);
+                    else if (save == null)
+                        save = cs;
                 }
                 if (save != null)
                 {

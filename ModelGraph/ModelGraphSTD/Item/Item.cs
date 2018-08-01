@@ -120,11 +120,6 @@ namespace ModelGraphSTD
         internal int Index => (Owner is Store st) ? st.IndexOf(this) : -1;
         internal bool IsInvalid => Owner == null || IsDeleted;
         internal bool IsValid => !IsInvalid;
-        internal void ResetChildDelta()
-        {
-            ModelDelta -= 3; // need to update the ui elements
-            ChildDelta -= 3; // need to update child item list
-        }
 
         internal Store Store => Owner as Store;
         /// <summary>

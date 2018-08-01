@@ -512,7 +512,7 @@ namespace ModelGraphSTD
         {
             if (m != null)
             {
-                m.ResetDelta();
+                m.ChildDelta -= 3;
                 switch (change)
                 {
                     case ChangeType.ToggleLeft:
@@ -4124,7 +4124,7 @@ namespace ModelGraphSTD
                     AddProperyModel(prev, m, _symbolXLeftContacttProperty);
                     AddProperyModel(prev, m, _symbolXRightContactProperty);
                     AddProperyModel(prev, m, _symbolXBottomContactProperty);
-                    AddProperyModel(prev, m, _symbolXConnectStyleProperty);
+                    AddProperyModel(prev, m, _symbolXAttatchProperty);
 
                     return (true, true);
                 }
@@ -5783,8 +5783,8 @@ namespace ModelGraphSTD
                         anyChange |= AddProperyModel(prev, m, _queryXIsBreakPointProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect2Property);
-                        anyChange |= AddProperyModel(prev, m, _queryXConnectStyle1Property);
-                        anyChange |= AddProperyModel(prev, m, _queryXConnectStyle2Property);
+                        anyChange |= AddProperyModel(prev, m, _queryXAttach1Property);
+                        anyChange |= AddProperyModel(prev, m, _queryXAttatch2Property);
                         anyChange |= AddProperyModel(prev, m, _queryXRootWhereProperty);
                     }
 

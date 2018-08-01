@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ModelGraphSTD
 {
-    public class Edge : Item
+    public class Edge : NodeEdge
     {
 
-        private Item _key;
+        private readonly QueryX _queryX;
         public Node Node1;
         public Node Node2;
 
@@ -20,22 +20,47 @@ namespace ModelGraphSTD
         public short Bp2; // index of closes bend point after Tm2 (to the left)
         public short Tm2; // index of terminal point 2
 
-        public EdgeX Core = new EdgeX();
+        #region Parms  ========================================================
+        public (int X, int Y)[] Bends;
+        public Face Face1;
+        public Face Face2;
+        public FacetOf Facet1;
+        public FacetOf Facet2;
+        public Attach Attatch1;
+        public Attach Attatch2;
 
+        internal ( (int X, int Y)[] Bends, Face Face1,Face Face2,FacetOf Facet1,FacetOf Facet2,Attach Attatch1,Attach Attatch2)
+            Parms
+        {
+            get { return (Bends, Face1, Face2, Facet1, Facet2, Attatch1, Attatch2); }
+            set
+            {
+                Bends = value.Bends;
+                Face1 = value.Face1;
+                Face2 = value.Face2;
+                Facet1 = value.Facet1;
+                Facet2 = value.Facet2;
+                Attatch1 = value.Attatch1;
+                Attatch2 = value.Attatch2;
+            }
+        }
+        #endregion
+
+        public bool HasBends => (Bends != null && Bends.Length > 0);
 
         #region Constructors  =================================================
-        internal Edge(Item key)
+        internal Edge(QueryX queryX)
         {
             Owner = null;
             Trait = Trait.Edge;
-            _key = key;
+            _queryX = queryX;
         }
         #endregion
 
         #region Properties/Methods  ===========================================
         internal Graph Graph { get { return Owner as Graph; } }
         internal GraphX GraphX { get { return (Owner == null) ? null : Owner.Owner as GraphX; } }
-        internal QueryX QueryX { get { return _key as QueryX; } }
+        internal QueryX QueryX { get { return _queryX as QueryX; } }
 
         internal Connect Connect1 { get { return QueryX.Connect1; } }
         internal Connect Connect2 { get { return QueryX.Connect2; } }
@@ -45,12 +70,12 @@ namespace ModelGraphSTD
         #region Move  =========================================================
         internal void Move((int X, int Y) delta)
         {
-            if (Core.HasBends)
+            if (HasBends)
             {
-                for (int i = 0; i < Core.Bends.Length; i++)
+                for (int i = 0; i < Bends.Length; i++)
                 {
-                    Core.Bends[i].X = Core.Bends[i].X + delta.X;
-                    Core.Bends[i].Y = Core.Bends[i].Y + delta.Y;
+                    Bends[i].X = Bends[i].X + delta.X;
+                    Bends[i].Y = Bends[i].Y + delta.Y;
                 }
             }
             for (int i = 0; i < Points.Length; i++)
@@ -61,15 +86,15 @@ namespace ModelGraphSTD
         }
         internal void Move((int X, int Y) delta, int index1, int index2)
         {
-            if (Core.HasBends)
+            if (HasBends)
             {
                 for (int i = index1; i < index2; i++)
                 {
                     var j = i - Tm1 - 1;
-                    if (j >= 0 && j < Core.Bends.Length)
+                    if (j >= 0 && j < Bends.Length)
                     {
-                        Core.Bends[j].X = Core.Bends[j].X + delta.X;
-                        Core.Bends[j].Y = Core.Bends[j].Y + delta.Y;
+                        Bends[j].X = Bends[j].X + delta.X;
+                        Bends[j].Y = Bends[j].Y + delta.Y;
                     }
                 }
             }
@@ -90,10 +115,10 @@ namespace ModelGraphSTD
                 Points[i] = XYPoint.Rotate(Points[i], (x, y));
             }
 
-            len = (Core.Bends == null) ? 0 : Core.Bends.Length;
+            len = (Bends == null) ? 0 : Bends.Length;
             for (int i = 0; i < len;)
             {
-                Core.Bends[i] = XYPoint.Rotate(Core.Bends[i], (x, y));
+                Bends[i] = XYPoint.Rotate(Bends[i], (x, y));
             }
         }
 
@@ -105,10 +130,10 @@ namespace ModelGraphSTD
                 Points[i] = XYPoint.VerticalFlip(Points[i], y);
             }
 
-            len = (Core.Bends == null) ? 0 : Core.Bends.Length;
+            len = (Bends == null) ? 0 : Bends.Length;
             for (int i = 0; i < len;)
             {
-                Core.Bends[i] = XYPoint.VerticalFlip(Core.Bends[i], y);
+                Bends[i] = XYPoint.VerticalFlip(Bends[i], y);
             }
         }
 
@@ -120,10 +145,10 @@ namespace ModelGraphSTD
                 Points[i] = XYPoint.HorizontalFlip(Points[i], x);
             }
 
-            len = (Core.Bends == null) ? 0 : Core.Bends.Length;
+            len = (Bends == null) ? 0 : Bends.Length;
             for (int i = 0; i < len;)
             {
-                Core.Bends[i] = XYPoint.HorizontalFlip(Core.Bends[i], x);
+                Bends[i] = XYPoint.HorizontalFlip(Bends[i], x);
             }
         }
         #endregion
@@ -140,13 +165,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region GetConnect  ===================================================
-        internal Connect GetConnect(Node node)
-        {
-            if (node == Node1)
-                return Connect1;
-            else
-                return Connect2;
-        }
+        internal Connect GetConnect(Node node) => (node == Node1) ? Connect1 :  Connect2;
         #endregion
 
         #region HitTest  ======================================================
@@ -298,33 +317,33 @@ namespace ModelGraphSTD
         #endregion
 
         #region Options  ======================================================
-        internal Node OtherNode(Node node) { return (node == Node1) ? Node2 : Node1; }
+        internal Node OtherNode(Node node) => (node == Node1) ? Node2 : Node1;
 
         internal void SetFace(Node node, Side direction)
         {
             if (node == Node1)
-                Core.Face1.Assign(direction);
+                Face1.Assign(direction);
             else
-                Core.Face2.Assign(direction);
+                Face2.Assign(direction);
         }
         internal void SetFace(Node node, Side direction, int index, int count)
         {
             if (node == Node1)
-                Core.Face1.Assign(direction, index, count);
+                Face1.Assign(direction, index, count);
             else
-                Core.Face2.Assign(direction, index, count);
+                Face2.Assign(direction, index, count);
         }
         #endregion
 
         #region Facets  =======================================================
-        static Facet[] Facets =
+        static readonly Facet[] Facets =
         {
             new Facet(new int[0]),
             new Facet(new int[] { 0, 2,    3, 2,    6,0,   3,-2,   0,-2,    0, 0,    6, 0 }),
             new Facet(new int[] { 3, 0,    7,-4,   11,0,   7, 4,   3, 0,    7,-4,   11, 0 }),
             new Facet(new int[] { 2, 0,   12,-3,    8,0,  12, 3,   2, 0,   12, 0 })
         };
-        static Facet NoFacet = new Facet(new int[0]);
+        static readonly Facet NoFacet = new Facet(new int[0]);
         #endregion
 
         #region Refresh  ======================================================
@@ -338,8 +357,8 @@ namespace ModelGraphSTD
         /// </remarks>
         internal void Refresh()
         {
-            var facet1 = Node1.Core.IsPointNode ? NoFacet : Facets[(int)Core.Facet1];
-            var facet2 = Node2.Core.IsPointNode ? NoFacet : Facets[(int)Core.Facet2];
+            var facet1 = Node1.IsPointNode ? NoFacet : Facets[(int)Facet1];
+            var facet2 = Node2.IsPointNode ? NoFacet : Facets[(int)Facet2];
 
             var tmLen = GraphParm.TerminalLength;
             var tmSpc = GraphParm.TerminalSpacing / 2;
@@ -350,10 +369,9 @@ namespace ModelGraphSTD
                 var gx = GraphX;
                 tmLen = gx.TerminalLength;
                 tmSpc = gx.TerminalSpacing / 2;
-                tmSkf = gx.TerminalAngleSkew;
             }
 
-            var bendCount = (Core.Bends == null) ? 0 : Core.Bends.Length;
+            var bendCount = (Bends == null) ? 0 : Bends.Length;
 
             var len1 = facet1.Length / 2;
             var len2 = facet2.Length / 2;
@@ -375,8 +393,8 @@ namespace ModelGraphSTD
 
             Points = points;
 
-            (int cx1, int cy1, int w1, int h1) = Node1.Core.Values();
-            (int cx2, int cy2, int w2, int h2) = Node2.Core.Values();
+            (int cx1, int cy1, int w1, int h1) = Node1.Values();
+            (int cx2, int cy2, int w2, int h2) = Node2.Values();
 
             var y1T = cy1 - h1;     // node 1 top Y
             var x1L = cx1 - w1;     // node 1 left X
@@ -393,13 +411,13 @@ namespace ModelGraphSTD
             {
                 for (int i = 0, j = (tm1 + 1); i < bendCount; i++, j++)
                 {
-                    points[j] = Core.Bends[i];
+                    points[j] = Bends[i];
                 }
             }
             else
             {
                 #region FallBack Values  ======================================
-                switch (Core.Face1.Side)
+                switch (Face1.Side)
                 {
                     case Side.East:
                         points[bp1].X = x2R;
@@ -421,7 +439,7 @@ namespace ModelGraphSTD
                         points[bp1].Y = y2T;
                         break;
                 }
-                switch (Core.Face2.Side)
+                switch (Face2.Side)
                 {
                     case Side.East:
                         points[bp2].X = x1R;
@@ -447,22 +465,22 @@ namespace ModelGraphSTD
             }
             #endregion
 
-            if (Node1.Core.IsPointNode)
+            if (Node1.IsPointNode)
             {
                 #region PointNode  ============================================
-                if (Core.Face1.Side == Side.East)
+                if (Face1.Side == Side.East)
                 {
                     points[sp1].X = cx1;
                     points[tm1].X = x1R;
                     points[sp1].Y = points[tm1].Y = cy1;
                 }
-                else if (Core.Face1.Side == Side.West)
+                else if (Face1.Side == Side.West)
                 {
                     points[sp1].X = cx1;
                     points[tm1].X = x1L;
                     points[sp1].Y = points[tm1].Y = cy1;
                 }
-                else if (Core.Face1.Side == Side.South)
+                else if (Face1.Side == Side.South)
                 {
                     points[sp1].Y = cy1;
                     points[tm1].Y = y1B;
@@ -476,22 +494,22 @@ namespace ModelGraphSTD
                 }
                 #endregion
             }
-            if (Node2.Core.IsPointNode)
+            if (Node2.IsPointNode)
             {
                 #region PointNode  ============================================
-                if (Core.Face2.Side == Side.East)
+                if (Face2.Side == Side.East)
                 {
                     points[sp2].X = cx2;
                     points[tm2].X = x2R;
                     points[sp2].Y = points[tm2].Y = cy2;
                 }
-                else if (Core.Face2.Side == Side.West)
+                else if (Face2.Side == Side.West)
                 {
                     points[sp2].X = cx2;
                     points[tm2].X = x2L;
                     points[sp2].Y = points[tm2].Y = cy2;
                 }
-                else if (Core.Face2.Side == Side.South)
+                else if (Face2.Side == Side.South)
                 {
                     points[sp2].Y = cy2;
                     points[tm2].Y = y2B;
@@ -506,14 +524,14 @@ namespace ModelGraphSTD
                 #endregion
             }
 
-            if (Node1.Core.IsAutoSizing)
+            if (Node1.IsAutoSizing)
             {
                 #region AutoSpacing  ==========================================
-                if (Core.Face1.Side == Side.East)
+                if (Face1.Side == Side.East)
                 {
                     var x = points[sp1].X = x1R;
                     points[tm1].X = x1R + tmLen;
-                    var y = points[sp1].Y = points[tm1].Y = cy1 + Core.Face1.Offset * tmSpc;
+                    var y = points[sp1].Y = points[tm1].Y = cy1 + Face1.Offset * tmSpc;
 
                     for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
                     {
@@ -524,11 +542,11 @@ namespace ModelGraphSTD
                         points[j].Y = y + dy;
                     }
                 }
-                else if (Core.Face1.Side == Side.West)
+                else if (Face1.Side == Side.West)
                 {
                     var x = points[sp1].X = x1L;
                     points[tm1].X = cx1 - (w1 + tmLen);
-                    var y = points[sp1].Y = points[tm1].Y = cy1 + Core.Face1.Offset * tmSpc;
+                    var y = points[sp1].Y = points[tm1].Y = cy1 + Face1.Offset * tmSpc;
 
                     for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
                     {
@@ -539,11 +557,11 @@ namespace ModelGraphSTD
                         points[j].Y = y - dy;
                     }
                 }
-                else if (Core.Face1.Side == Side.South)
+                else if (Face1.Side == Side.South)
                 {
                     var y = points[sp1].Y = y1B;
                     points[tm1].Y = y1B + tmLen;
-                    var x = points[sp1].X = points[tm1].X = cx1 + Core.Face1.Offset * tmSpc;
+                    var x = points[sp1].X = points[tm1].X = cx1 + Face1.Offset * tmSpc;
 
                     for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
                     {
@@ -558,7 +576,7 @@ namespace ModelGraphSTD
                 {
                     var y = points[sp1].Y = y1T;
                     points[tm1].Y = y1T - tmLen;
-                    var x = points[sp1].X = points[tm1].X = cx1 + Core.Face1.Offset * tmSpc;
+                    var x = points[sp1].X = points[tm1].X = cx1 + Face1.Offset * tmSpc;
 
                     for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
                     {
@@ -571,14 +589,14 @@ namespace ModelGraphSTD
                 }
                 #endregion
             }
-            if (Node2.Core.IsAutoSizing)
+            if (Node2.IsAutoSizing)
             {
                 #region AutoSpacing  ==========================================
-                if (Core.Face2.Side == Side.East)
+                if (Face2.Side == Side.East)
                 {
                     var x = points[sp2].X = x2R;
                     points[tm2].X = x2R + tmLen;
-                    var y = points[sp2].Y = points[tm2].Y = cy2 + Core.Face2.Offset * tmSpc;
+                    var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
 
                     for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
                     {
@@ -589,11 +607,11 @@ namespace ModelGraphSTD
                         points[j].Y = y + dy;
                     }
                 }
-                else if (Core.Face2.Side == Side.West)
+                else if (Face2.Side == Side.West)
                 {
                     var x = points[sp2].X = x2L;
                     points[tm2].X = x2L - tmLen;
-                    var y = points[sp2].Y = points[tm2].Y = cy2 + Core.Face2.Offset * tmSpc;
+                    var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
 
                     for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
                     {
@@ -604,11 +622,11 @@ namespace ModelGraphSTD
                         points[j].Y = y - dy;
                     }
                 }
-                else if (Core.Face2.Side == Side.South)
+                else if (Face2.Side == Side.South)
                 {
                     var y = points[sp2].Y = y2B;
                     points[tm2].Y = y2B + tmLen;
-                    var x = points[sp2].X = points[tm2].X = cx2 + Core.Face2.Offset * tmSpc;
+                    var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
 
                     for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
                     {
@@ -623,7 +641,7 @@ namespace ModelGraphSTD
                 {
                     var y = points[sp2].Y = y2T;
                     points[tm2].Y = y2T - tmLen;
-                    var x = points[sp2].X = points[tm2].X = cx2 + Core.Face2.Offset * tmSpc;
+                    var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
 
                     for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
                     {
@@ -637,7 +655,7 @@ namespace ModelGraphSTD
                 #endregion
             }
 
-            if (Node1.Core.IsManualSizing)
+            if (Node1.IsManualSizing)
             {
                 #region ManualSpacing  ========================================
                 var x = points[bp1].X;
@@ -645,7 +663,7 @@ namespace ModelGraphSTD
 
                 var f1W = facet1.Width();
 
-                if (Node1.Core.IsVertical)
+                if (Node1.IsVertical)
                 {
                     if (y < (y1T + f1W))
                     {
@@ -653,7 +671,7 @@ namespace ModelGraphSTD
                         x = points[sp1].X = points[tm1].X = cx1;
                         points[tm1].Y = y - tmLen;
 
-                        Core.Face1.Side = Side.North;
+                        Face1.Side = Side.North;
                     }
                     else if (y > (y1B - f1W))
                     {
@@ -661,7 +679,7 @@ namespace ModelGraphSTD
                         x = points[sp1].X = points[tm1].X = cx1;
                         points[tm1].Y = y + tmLen;
 
-                        Core.Face1.Side = Side.South;
+                        Face1.Side = Side.South;
                     }
                     else
                     {
@@ -670,17 +688,17 @@ namespace ModelGraphSTD
                         {
                             x = points[sp1].X = x1L;
                             points[tm1].X = x - tmLen;
-                            Core.Face1.Side = Side.West;
+                            Face1.Side = Side.West;
                         }
                         else
                         {
                             x = points[sp1].X = x1R;
                             points[tm1].X = x + tmLen;
-                            Core.Face1.Side = Side.East;
+                            Face1.Side = Side.East;
                         }
                     }
                 }
-                else if (Node1.Core.IsHorizontal)
+                else if (Node1.IsHorizontal)
                 {
                     if (x < (x1L + f1W))
                     {
@@ -688,7 +706,7 @@ namespace ModelGraphSTD
                         y = points[sp1].Y = points[tm1].Y = cy1;
                         points[tm1].X = x - tmLen;
 
-                        Core.Face1.Side = Side.West;
+                        Face1.Side = Side.West;
                     }
                     else if (x > (x1R - f1W))
                     {
@@ -696,7 +714,7 @@ namespace ModelGraphSTD
                         y = points[sp1].Y = points[tm1].Y = cy1;
                         points[tm1].X = x + tmLen;
 
-                        Core.Face1.Side = Side.East;
+                        Face1.Side = Side.East;
                     }
                     else
                     {
@@ -705,18 +723,18 @@ namespace ModelGraphSTD
                         {
                             y = points[sp1].Y = y1T;
                             points[tm1].Y = y - tmLen;
-                            Core.Face1.Side = Side.North;
+                            Face1.Side = Side.North;
                         }
                         else
                         {
                             y = points[sp1].Y = y1B;
                             points[tm1].Y = y + tmLen;
-                            Core.Face1.Side = Side.South;
+                            Face1.Side = Side.South;
                         }
                     }
                 }
 
-                if (Core.Face1.Side == Side.East)
+                if (Face1.Side == Side.East)
                 {
                     for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
                     {
@@ -727,7 +745,7 @@ namespace ModelGraphSTD
                         points[j].Y = y + dy;
                     }
                 }
-                else if (Core.Face1.Side == Side.West)
+                else if (Face1.Side == Side.West)
                 {
                     for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
                     {
@@ -738,7 +756,7 @@ namespace ModelGraphSTD
                         points[j].Y = y + dy;
                     }
                 }
-                else if (Core.Face1.Side == Side.South)
+                else if (Face1.Side == Side.South)
                 {
                     for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
                     {
@@ -762,7 +780,7 @@ namespace ModelGraphSTD
                 }
                 #endregion
             }
-            if (Node2.Core.IsManualSizing)
+            if (Node2.IsManualSizing)
             {
                 #region ManualSpacing  ========================================
                 var x = points[bp2].X;
@@ -770,7 +788,7 @@ namespace ModelGraphSTD
 
                 var f2W = facet2.Width();
 
-                if (Node2.Core.IsVertical)
+                if (Node2.IsVertical)
                 {
                     if (y < (y2T + f2W))
                     {
@@ -778,7 +796,7 @@ namespace ModelGraphSTD
                         x = points[sp2].X = points[tm2].X = cx2;
                         points[tm2].Y = y - tmLen;
 
-                        Core.Face2.Side = Side.North;
+                        Face2.Side = Side.North;
                     }
                     else if (y > (y2B - f2W))
                     {
@@ -786,7 +804,7 @@ namespace ModelGraphSTD
                         x = points[sp2].X = points[tm2].X = cx2;
                         points[tm2].Y = y + tmLen;
 
-                        Core.Face2.Side = Side.South;
+                        Face2.Side = Side.South;
                     }
                     else
                     {
@@ -795,17 +813,17 @@ namespace ModelGraphSTD
                         {
                             x = points[sp2].X = x2L;
                             points[tm2].X = x - tmLen;
-                            Core.Face2.Side = Side.West;
+                            Face2.Side = Side.West;
                         }
                         else
                         {
                             x = points[sp2].X = x2R;
                             points[tm2].X = x + tmLen;
-                            Core.Face2.Side = Side.East;
+                            Face2.Side = Side.East;
                         }
                     }
                 }
-                else if (Node2.Core.IsHorizontal)
+                else if (Node2.IsHorizontal)
                 {
                     if (x < (x2L + f2W))
                     {
@@ -813,7 +831,7 @@ namespace ModelGraphSTD
                         y = points[sp2].Y = points[tm2].Y = cy2;
                         points[tm2].X = x - tmLen;
 
-                        Core.Face2.Side = Side.West;
+                        Face2.Side = Side.West;
                     }
                     else if (x > (x2R - f2W))
                     {
@@ -821,7 +839,7 @@ namespace ModelGraphSTD
                         y = points[sp2].Y = points[tm2].Y = cy2;
                         points[tm2].X = x + tmLen;
 
-                        Core.Face2.Side = Side.East;
+                        Face2.Side = Side.East;
                     }
                     else
                     {
@@ -830,18 +848,18 @@ namespace ModelGraphSTD
                         {
                             y = points[sp2].Y = y2T;
                             points[tm2].Y = y - tmLen;
-                            Core.Face2.Side = Side.North;
+                            Face2.Side = Side.North;
                         }
                         else
                         {
                             y = points[sp2].Y = y2B;
                             points[tm2].Y = y + tmLen;
-                            Core.Face2.Side = Side.South;
+                            Face2.Side = Side.South;
                         }
                     }
                 }
 
-                if (Core.Face2.Side == Side.East)
+                if (Face2.Side == Side.East)
                 {
                     for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
                     {
@@ -852,7 +870,7 @@ namespace ModelGraphSTD
                         points[j].Y = x + dx;
                     }
                 }
-                else if (Core.Face2.Side == Side.West)
+                else if (Face2.Side == Side.West)
                 {
                     for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
                     {
@@ -863,7 +881,7 @@ namespace ModelGraphSTD
                         points[j].Y = x - dx;
                     }
                 }
-                else if (Core.Face2.Side == Side.South)
+                else if (Face2.Side == Side.South)
                 {
                     for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
                     {
@@ -888,7 +906,7 @@ namespace ModelGraphSTD
                 #endregion
             }
 
-            if (Node1.Core.IsSymbol && Node2.Core.IsNode)
+            if (Node1.IsSymbol && Node2.IsNode)
             {
                 #region SkewFactor  ===========================================
                 //                 tm o--------------------------------o| Node1
@@ -903,7 +921,7 @@ namespace ModelGraphSTD
                 var dx = points[tm1].X - bx;
                 var dy = points[tm1].Y - by;
 
-                switch (Core.Face1.Side)
+                switch (Face1.Side)
                 {
                     case Side.East:
                         if (dx < 0) points[tm1].X = bx - tmSkf;
@@ -921,7 +939,7 @@ namespace ModelGraphSTD
                 #endregion
             }
 
-            if (Node1.Core.IsSymbol && Node2.Core.IsNode)
+            if (Node1.IsSymbol && Node2.IsNode)
             {
                 #region SkewFactor  ===========================================
                 //                 tm o--------------------------------o| Node2
@@ -936,7 +954,7 @@ namespace ModelGraphSTD
                 var dx = points[tm2].X - bx;
                 var dy = points[tm2].Y - by;
 
-                switch (Core.Face1.Side)
+                switch (Face1.Side)
                 {
                     case Side.East:
                         if (dx < 0) points[tm1].X = bx - tmSkf;

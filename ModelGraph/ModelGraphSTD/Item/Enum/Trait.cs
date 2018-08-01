@@ -103,7 +103,9 @@ namespace ModelGraphSTD
         #region Item  ================================================(100-2FF)
 
         //=========================================
-        Dummy = 0x110,
+        Dummy = 0x100,
+        NodeParm = 0x101,
+
         RootChef = 0x111,
         DataChef = 0x112,
 
@@ -291,8 +293,8 @@ namespace ModelGraphSTD
         QueryXWhere_P = 0x461 | CanMultiline,
         QueryXConnect1_P = 0x462,
         QueryXConnect2_P = 0x463,
-        QueryXConnectStyle1_P = 0x464,
-        QueryXConnectStyle2_P = 0x465,
+        QueryXAttatch1_P = 0x464,
+        QueryXAttatch2_P = 0x465,
         QueryXRelation_P = 0x466,
         QueryXIsReversed_P = 0x467,
         QueryXIsImmediate_P = 0x468,
@@ -316,7 +318,7 @@ namespace ModelGraphSTD
         SymbolXLeftContactt_P = 0x483,
         SymbolXRightContact_P = 0x484,
         SymbolXBottomContact_P = 0x485,
-        SymbolXConnectStyle_P = 0x486,
+        SymbolXAttatch_P = 0x486,
 
         //=========================================
         NodeCenterXY_P = 0x491 | IsCovert,
@@ -754,12 +756,12 @@ namespace ModelGraphSTD
         TakeSet_Both = 0xD02,
         TakeSetEnum = 0xD3F,
 
-        ConnectStyle_Default = 0xD40,
-        ConnectStyle_Radial = 0xD41,
-        ConnectStyle_Normal = 0xD42,
-        ConnectStyle_RightAngle = 0xD43,
-        ConnectStyle_SkewedAngle = 0xD44,
-        ConnectStyleEnum = 0xD7F,
+        Attatch_Default = 0xD40,
+        Attatch_Radial = 0xD41,
+        Attatch_Normal = 0xD42,
+        Attatch_RightAngle = 0xD43,
+        Attatch_SkewedAngle = 0xD44,
+        AttatchEnum = 0xD7F,
 
         StaticPairD80 = 0xD80,
         StaticEnumDBF = 0xDBF,
