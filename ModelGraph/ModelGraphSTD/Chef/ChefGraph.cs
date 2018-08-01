@@ -8,23 +8,16 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        private Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>> _graphParms =
-            new Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>>();
-        
-        private void InitializeGraphParams() { _graphParms.Clear(); }
+        private void InitializeGraphParams() { T_GraphParms.Clear(); }
 
-        internal Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>> T_GraphParms
-        {
-            get { return _graphParms; }
-            set { _graphParms = value; }
-        }
-        
+        internal Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>> T_GraphParms { get; set; } = new Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>>();
+
         #region ValidateGraphParms  ===========================================
         // Ensure all edges and nodes have parameters.
         bool ValidateGraphParms(Graph g)
         {
             var gx = g.GraphX;
-            var rt = (g.SeedItem == null) ? _dummy : (Item)g.SeedItem;
+            var rt = (g.SeedItem == null) ? Dummy : (Item)g.SeedItem;
             var anyChange = false;
 
             #region Build validPathPairs dictionary  ==========================
@@ -55,10 +48,10 @@ namespace ModelGraphSTD
             if (g.NodeItems.Count > 0)
             {
 
-                if (!_graphParms.TryGetValue(gx, out Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>> rtQxParams))
+                if (!T_GraphParms.TryGetValue(gx, out Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>> rtQxParams))
                 {
                     rtQxParams = new Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>();
-                    _graphParms.Add(gx, rtQxParams);
+                    T_GraphParms.Add(gx, rtQxParams);
                 }
                 if (!rtQxParams.TryGetValue(rt, out Dictionary<QueryX, List<NodeEdge>> qxParams))
                 {
@@ -74,7 +67,7 @@ namespace ModelGraphSTD
                 foreach (var e1 in qxParams)
                 {
                     List<NodeEdge> invalidParams = null;
-                    if (e1.Key == _queryXNode)
+                    if (e1.Key == QueryXNode)
                     {
 
                         foreach (var pm in e1.Value)
@@ -152,13 +145,13 @@ namespace ModelGraphSTD
 
                 #region Add new QxParams  =====================================
 
-                if (!qxParams.TryGetValue(_queryXNode, out List<NodeEdge> parmList))
+                if (!qxParams.TryGetValue(QueryXNode, out List<NodeEdge> parmList))
                 {
                     // there weren't any existing node parms,
                     // so create all new ones
                     anyChange = true;
                     parmList = new List<NodeEdge>(g.NodeItems.Count);
-                    qxParams.Add(_queryXNode, parmList);
+                    qxParams.Add(QueryXNode, parmList);
                     foreach (var item in g.NodeItems)
                     {
                         Node node1 = new Node
@@ -203,7 +196,7 @@ namespace ModelGraphSTD
                 foreach (var e1 in validPathPairs)
                 {
                     // skip over the nodes, they are already done
-                    if (e1.Key == _queryXNode) continue;
+                    if (e1.Key == QueryXNode) continue;
 
                     if (!qxParams.TryGetValue(e1.Key, out List<NodeEdge> paramList))
                     {
@@ -285,8 +278,8 @@ namespace ModelGraphSTD
             }
             else
             {
-                if (rt == _dummy) _graphParms.Remove(gx);
-                else if (_graphParms.ContainsKey(gx)) _graphParms[gx].Remove(rt);
+                if (rt == Dummy) T_GraphParms.Remove(gx);
+                else if (T_GraphParms.ContainsKey(gx)) T_GraphParms[gx].Remove(rt);
             }
 
             #region OpenPathIndex  ============================================
@@ -382,7 +375,7 @@ namespace ModelGraphSTD
 
         private void RefreshAllGraphs()
         {
-            foreach (var gx in _graphXStore.Items)
+            foreach (var gx in GraphXStore.Items)
             {
                 if (gx.Count > 0) { foreach (var g in gx.Items) { RefreshGraph(g); } }
             }

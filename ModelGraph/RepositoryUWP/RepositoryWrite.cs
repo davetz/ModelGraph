@@ -43,15 +43,15 @@ namespace RepositoryUWP
 
             WriteGuids(w, guids);
 
-            if (chef.T_ViewXStore.Count > 0) WriteViewX(chef, w, itemIndex);
-            if (chef.T_EnumXStore.Count > 0) WriteEnumX(chef, w, itemIndex);
-            if (chef.T_TableXStore.Count > 0) WriteTableX(chef, w, itemIndex);
-            if (chef.T_GraphXStore.Count > 0) WriteGraphX(chef, w, itemIndex);
-            if (chef.T_QueryXStore.Count > 0) WriteQueryX(chef, w, itemIndex);
-            if (chef.T_SymbolStore.Count > 0) WriteSymbolX(chef, w, itemIndex);
-            if (chef.T_ColumnXStore.Count > 0) WriteColumnX(chef, w, itemIndex);
-            if (chef.T_ComputeXStore.Count > 0) WriteComputeX(chef, w, itemIndex);
-            if (chef.T_RelationXStore.Count > 0) WriteRelationX(chef, w, itemIndex);
+            if (chef.ViewXStore.Count > 0) WriteViewX(chef, w, itemIndex);
+            if (chef.EnumXStore.Count > 0) WriteEnumX(chef, w, itemIndex);
+            if (chef.TableXStore.Count > 0) WriteTableX(chef, w, itemIndex);
+            if (chef.GraphXStore.Count > 0) WriteGraphX(chef, w, itemIndex);
+            if (chef.QueryXStore.Count > 0) WriteQueryX(chef, w, itemIndex);
+            if (chef.SymbolStore.Count > 0) WriteSymbolX(chef, w, itemIndex);
+            if (chef.ColumnXStore.Count > 0) WriteColumnX(chef, w, itemIndex);
+            if (chef.ComputeXStore.Count > 0) WriteComputeX(chef, w, itemIndex);
+            if (chef.RelationXStore.Count > 0) WriteRelationX(chef, w, itemIndex);
 
             if (chef.T_GraphParms.Count > 0) WriteGraphParm(chef, w, itemIndex);
             if (relationList.Count > 0) WriteRelationLink(chef, w, relationList, itemIndex);
@@ -76,9 +76,9 @@ namespace RepositoryUWP
         private void WriteViewX(Chef chef, DataWriter w, Dictionary<Item, int> itemIndex)
         {
             w.WriteByte((byte)Mark.ViewXBegin); // type index
-            w.WriteInt32(chef.T_ViewXStore.Count);
+            w.WriteInt32(chef.ViewXStore.Count);
 
-            foreach (var view in chef.T_ViewXStore.Items)
+            foreach (var view in chef.ViewXStore.Items)
             {
                 w.WriteInt32(itemIndex[view]);
 
@@ -101,9 +101,9 @@ namespace RepositoryUWP
         private void WriteEnumX(Chef chef, DataWriter w, Dictionary<Item, int> itemIndex)
         {
             w.WriteByte((byte)Mark.EnumXBegin); // type vector index
-            w.WriteInt32(chef.T_EnumXStore.Count);
+            w.WriteInt32(chef.EnumXStore.Count);
 
-            foreach (var ex in chef.T_EnumXStore.Items)
+            foreach (var ex in chef.EnumXStore.Items)
             {
                 w.WriteInt32(itemIndex[ex]);
 
@@ -142,9 +142,9 @@ namespace RepositoryUWP
         private void WriteTableX(Chef chef, DataWriter w, Dictionary<Item, int> itemIndex)
         {
             w.WriteByte((byte)Mark.TableXBegin); // type index
-            w.WriteInt32(chef.T_TableXStore.Count);
+            w.WriteInt32(chef.TableXStore.Count);
 
-            foreach (var tx in chef.T_TableXStore.Items)
+            foreach (var tx in chef.TableXStore.Items)
             {
                 w.WriteInt32(itemIndex[tx]);
 
@@ -179,9 +179,9 @@ namespace RepositoryUWP
         private void WriteGraphX(Chef chef, DataWriter w, Dictionary<Item, int> itemIndex)
         {
             w.WriteByte((byte)Mark.GraphXBegin); // type index
-            w.WriteInt32(chef.T_GraphXStore.Count);
+            w.WriteInt32(chef.GraphXStore.Count);
 
-            foreach (var gx in chef.T_GraphXStore.Items)
+            foreach (var gx in chef.GraphXStore.Items)
             {
                 w.WriteInt32(itemIndex[gx]);
 
@@ -203,9 +203,9 @@ namespace RepositoryUWP
         private void WriteQueryX(Chef chef, DataWriter w, Dictionary<Item, int> itemIndex)
         {
             w.WriteByte((byte)Mark.QueryXBegin); // type vector
-            w.WriteInt32(chef.T_QueryXStore.Count);
+            w.WriteInt32(chef.QueryXStore.Count);
 
-            foreach (var qx in chef.T_QueryXStore.Items)
+            foreach (var qx in chef.QueryXStore.Items)
             {
                 w.WriteInt32(itemIndex[qx]);
 
@@ -240,9 +240,9 @@ namespace RepositoryUWP
         private void WriteSymbolX(Chef chef, DataWriter w, Dictionary<Item, int> itemIndex)
         {
             w.WriteByte((byte)Mark.SymbolXBegin); // type index
-            w.WriteInt32(chef.T_SymbolStore.Count);
+            w.WriteInt32(chef.SymbolStore.Count);
 
-            foreach (var sx in chef.T_SymbolStore.Items)
+            foreach (var sx in chef.SymbolStore.Items)
             {
                 w.WriteInt32(itemIndex[sx]);
 
@@ -278,9 +278,9 @@ namespace RepositoryUWP
         private void WriteColumnX(Chef chef, DataWriter w, Dictionary<Item, int> itemIndex)
         {
             w.WriteByte((byte)Mark.ColumnXBegin); // type index
-            w.WriteInt32(chef.T_ColumnXStore.Count);
+            w.WriteInt32(chef.ColumnXStore.Count);
 
-            foreach (var cx in chef.T_ColumnXStore.Items)
+            foreach (var cx in chef.ColumnXStore.Items)
             {
                 w.WriteInt32(itemIndex[cx]);
 
@@ -308,9 +308,9 @@ namespace RepositoryUWP
         private void WriteComputeX(Chef chef, DataWriter w, Dictionary<Item, int> itemIndex)
         {
             w.WriteByte((byte)Mark.ComputeXBegin); // type vector
-            w.WriteInt32(chef.T_ComputeXStore.Count);
+            w.WriteInt32(chef.ComputeXStore.Count);
 
-            foreach (var cx in chef.T_ComputeXStore.Items)
+            foreach (var cx in chef.ComputeXStore.Items)
             {
                 w.WriteInt32(itemIndex[cx]);
 
@@ -348,9 +348,9 @@ namespace RepositoryUWP
         private void WriteRelationX(Chef chef, DataWriter w, Dictionary<Item, int> itemIndex)
         {
             w.WriteByte((byte)Mark.RelationXBegin); // type index
-            w.WriteInt32(chef.T_RelationXStore.Count);
+            w.WriteInt32(chef.RelationXStore.Count);
 
-            foreach (var rx in chef.T_RelationXStore.Items)
+            foreach (var rx in chef.RelationXStore.Items)
             {
                 w.WriteInt32(itemIndex[rx]);
 

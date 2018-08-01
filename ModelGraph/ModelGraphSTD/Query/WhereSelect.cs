@@ -8,22 +8,21 @@ namespace ModelGraphSTD
     {
         private Item _item;
         private ComputeStep _root; // root of the expression tree
-        private bool _isValid;
 
         #region Constructor  ==================================================
         internal WhereSelect(string text)
         {
             _root = Parser.CreateExpressionTree(text);
-            _isValid = _root.IsValid;
+            IsValid = _root.IsValid;
         }
         #endregion
 
         #region Property  =====================================================
-        internal bool IsValid => _isValid;
+        internal bool IsValid { get; private set; }
 
         internal bool AnyChange => _root != null && _root.AnyChange;
         internal string InputString => GetText();
-        internal ValType ValueType => (_isValid) ? _root.ValueType : ValType.IsInvalid;
+        internal ValType ValueType => (IsValid) ? _root.ValueType : ValType.IsInvalid;
 
         private string GetText()
         {
@@ -48,8 +47,8 @@ namespace ModelGraphSTD
         internal bool TryValidate(Store sto)
         {
             _root.TryValidate(sto, () => _item);
-            _isValid = _root.IsValid;
-            return _isValid;
+            IsValid = _root.IsValid;
+            return IsValid;
         }
         #endregion
 
@@ -60,7 +59,7 @@ namespace ModelGraphSTD
         const int maxResolveLoopCount = 100; // avoid infinite loops
         internal bool TryResolve()
         {
-            if (!_isValid) return false;
+            if (!IsValid) return false;
 
             var failedToResolve = true;
             var anyChange = false;
@@ -91,7 +90,7 @@ namespace ModelGraphSTD
 
         internal bool GetValue(Item item, out bool value)
         {
-            var isValid = (_root != null && _isValid);
+            var isValid = (_root != null && IsValid);
 
             _item = item;
             value = (isValid) ? _root.Evaluate.AsBool() : false;
@@ -99,7 +98,7 @@ namespace ModelGraphSTD
         }
         internal bool GetValue(Item item, out Int64 value)
         {
-            var isValid = (_root != null && _isValid);
+            var isValid = (_root != null && IsValid);
 
             _item = item;
             value = (isValid) ? _root.Evaluate.AsInt64() : 0;
@@ -107,7 +106,7 @@ namespace ModelGraphSTD
         }
         internal bool GetValue(Item item, out double value)
         {
-            var isValid = (_root != null && _isValid);
+            var isValid = (_root != null && IsValid);
 
             _item = item;
             value = (isValid) ? _root.Evaluate.AsDouble() : 0;
@@ -115,7 +114,7 @@ namespace ModelGraphSTD
         }
         internal bool GetValue(Item item, out string value)
         {
-            var isValid = (_root != null && _isValid);
+            var isValid = (_root != null && IsValid);
 
             _item = item;
             value = (isValid) ? _root.Evaluate.AsString() : string.Empty;
@@ -123,7 +122,7 @@ namespace ModelGraphSTD
         }
         internal bool GetValue(Item item, out DateTime value)
         {
-            var isValid = (_root != null && _isValid);
+            var isValid = (_root != null && IsValid);
 
             _item = item;
             value = (isValid) ? _root.Evaluate.AsDateTime() : default(DateTime);

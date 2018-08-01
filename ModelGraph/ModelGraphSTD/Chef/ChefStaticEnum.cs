@@ -27,7 +27,7 @@
 
         private void InitializeEnums()
         {
-            _valueTypeEnum = new EnumZ(_enumZStore,Trait.ValueTypeEnum);
+            _valueTypeEnum = new EnumZ(EnumZStore,Trait.ValueTypeEnum);
             new PairZ(_valueTypeEnum, Trait.ValueType_Bool);
             new PairZ(_valueTypeEnum, Trait.ValueType_Char);
             new PairZ(_valueTypeEnum, Trait.ValueType_SByte);
@@ -58,18 +58,18 @@
             new PairZ(_valueTypeEnum, Trait.ValueType_UInt32Array);
             new PairZ(_valueTypeEnum, Trait.ValueType_UInt64Array);
 
-            _pairingEnum = new EnumZ(_enumZStore, Trait.PairingEnum);
+            _pairingEnum = new EnumZ(EnumZStore, Trait.PairingEnum);
             new PairZ(_pairingEnum, Trait.Pairing_OneToOne);
             new PairZ(_pairingEnum, Trait.Pairing_OneToMany);
             new PairZ(_pairingEnum, Trait.Pairing_ManyToMany);
 
-            _orientationEnum = new EnumZ(_enumZStore, Trait.OrientationEnum);
+            _orientationEnum = new EnumZ(EnumZStore, Trait.OrientationEnum);
             new PairZ(_orientationEnum, Trait.Orientation_Point);
             new PairZ(_orientationEnum, Trait.Orientation_Central);
             new PairZ(_orientationEnum, Trait.Orientation_Vertical);
             new PairZ(_orientationEnum, Trait.Orientation_Horizontal);
 
-            _labelingEnum = new EnumZ(_enumZStore, Trait.LabelingEnum);
+            _labelingEnum = new EnumZ(EnumZStore, Trait.LabelingEnum);
             new PairZ(_labelingEnum, Trait.Labeling_None);
             new PairZ(_labelingEnum, Trait.Labeling_Top);
             new PairZ(_labelingEnum, Trait.Labeling_Left);
@@ -89,12 +89,12 @@
             new PairZ(_labelingEnum, Trait.Labeling_BottomLeftCorner);
             new PairZ(_labelingEnum, Trait.Labeling_BottomRightCorner);
 
-            _resizingEnum = new EnumZ(_enumZStore, Trait.ResizingEnum);
+            _resizingEnum = new EnumZ(EnumZStore, Trait.ResizingEnum);
             new PairZ(_resizingEnum, Trait.Resizing_Auto);
             new PairZ(_resizingEnum, Trait.Resizing_Fixed);
             new PairZ(_resizingEnum, Trait.Resizing_Manual);
 
-            _flipRotateEnum = new EnumZ(_enumZStore, Trait.FlipRotateEnum);
+            _flipRotateEnum = new EnumZ(EnumZStore, Trait.FlipRotateEnum);
             new PairZ(_flipRotateEnum, Trait.FlipRotate_None);
             new PairZ(_flipRotateEnum, Trait.FlipRotate_FlipVertical);
             new PairZ(_flipRotateEnum, Trait.FlipRotate_FlipHorizontal);
@@ -104,30 +104,30 @@
             new PairZ(_flipRotateEnum, Trait.FlipRotate_RotateFlipHorizontal);
             new PairZ(_flipRotateEnum, Trait.FlipRotate_RotateFlipBothWays);
 
-            _barWidthEnum = new EnumZ(_enumZStore, Trait.BarWidthEnum);
+            _barWidthEnum = new EnumZ(EnumZStore, Trait.BarWidthEnum);
             new PairZ(_barWidthEnum, Trait.BarWidth_Normal);
             new PairZ(_barWidthEnum, Trait.BarWidth_Thin);
             new PairZ(_barWidthEnum, Trait.BarWidth_Wide);
 
-            _sideEnum = new EnumZ(_enumZStore, Trait.SideEnum);
+            _sideEnum = new EnumZ(EnumZStore, Trait.SideEnum);
             new PairZ(_sideEnum, Trait.Side_Any);
             new PairZ(_sideEnum, Trait.Side_East);
             new PairZ(_sideEnum, Trait.Side_West);
             new PairZ(_sideEnum, Trait.Side_North);
             new PairZ(_sideEnum, Trait.Side_South);
 
-            _facetEnum = new EnumZ(_enumZStore, Trait.Facet_None);
+            _facetEnum = new EnumZ(EnumZStore, Trait.Facet_None);
             new PairZ(_facetEnum, Trait.Facet_None);
             new PairZ(_facetEnum, Trait.Facet_Nubby);
             new PairZ(_facetEnum, Trait.Facet_Diamond);
             new PairZ(_facetEnum, Trait.Facet_InArrow);
 
-            _contactEnum = new EnumZ(_enumZStore, Trait.ContactEnum);
+            _contactEnum = new EnumZ(EnumZStore, Trait.ContactEnum);
             new PairZ(_contactEnum, Trait.Contact_Any);
             new PairZ(_contactEnum, Trait.Contact_One);
             new PairZ(_contactEnum, Trait.Contact_None);
 
-            _connectEnum = new EnumZ(_enumZStore, Trait.ConnectEnum);
+            _connectEnum = new EnumZ(EnumZStore, Trait.ConnectEnum);
             new PairZ(_connectEnum, Trait.Connect_Any);
             new PairZ(_connectEnum, Trait.Connect_East);
             new PairZ(_connectEnum, Trait.Connect_West);
@@ -144,21 +144,21 @@
             new PairZ(_connectEnum, Trait.Connect_South_West);
             new PairZ(_connectEnum, Trait.Connect_South_East_West);
 
-            _AttatchEnum = new EnumZ(_enumZStore, Trait.AttatchEnum);
+            _AttatchEnum = new EnumZ(EnumZStore, Trait.AttatchEnum);
             new PairZ(_AttatchEnum, Trait.Attatch_Default);
             new PairZ(_AttatchEnum, Trait.Attatch_Radial);
             new PairZ(_AttatchEnum, Trait.Attatch_Normal);
             new PairZ(_AttatchEnum, Trait.Attatch_RightAngle);
             new PairZ(_AttatchEnum, Trait.Attatch_SkewedAngle);
 
-            _numericSetEnum = new EnumZ(_enumZStore, Trait.NumericSetEnum);
+            _numericSetEnum = new EnumZ(EnumZStore, Trait.NumericSetEnum);
             new PairZ(_numericSetEnum, Trait.NumericSet_Count);
             new PairZ(_numericSetEnum, Trait.NumericSet_Count_Min_Max);
             new PairZ(_numericSetEnum, Trait.NumericSet_Count_Min_Max_Sum);
             new PairZ(_numericSetEnum, Trait.NumericSet_Count_Min_Max_Sum_Ave);
             new PairZ(_numericSetEnum, Trait.NumericSet_Count_Min_Max_Sum_Ave_Std);
 
-            _numericTermEnum = new EnumZ(_enumZStore, Trait.NumericTermEnum);
+            _numericTermEnum = new EnumZ(EnumZStore, Trait.NumericTermEnum);
             new PairZ(_numericTermEnum, Trait.NumericTerm_Count);
             new PairZ(_numericTermEnum, Trait.NumericTerm_Min);
             new PairZ(_numericTermEnum, Trait.NumericTerm_Max);
@@ -166,24 +166,24 @@
             new PairZ(_numericTermEnum, Trait.NumericTerm_Ave);
             new PairZ(_numericTermEnum, Trait.NumericTerm_Std);
 
-            _computeTypeEnum = new EnumZ(_enumZStore, Trait.CompuTypeEnum);
+            _computeTypeEnum = new EnumZ(EnumZStore, Trait.CompuTypeEnum);
             new PairZ(_computeTypeEnum, Trait.CompuType_RowValue);
             new PairZ(_computeTypeEnum, Trait.CompuType_RelatedValue);
             new PairZ(_computeTypeEnum, Trait.CompuType_NumericValueSet);
             new PairZ(_computeTypeEnum, Trait.CompuType_CompositeString);
             new PairZ(_computeTypeEnum, Trait.CompuType_CompositeReversed);
 
-            _computeResultsEnum = new EnumZ(_enumZStore, Trait.ResultsEnum);
+            _computeResultsEnum = new EnumZ(EnumZStore, Trait.ResultsEnum);
             new PairZ(_computeResultsEnum, Trait.Results_OneValue);
             new PairZ(_computeResultsEnum, Trait.Results_AllValues);
             new PairZ(_computeResultsEnum, Trait.Results_LimitedSet);
 
-            _computeSortingEnum = new EnumZ(_enumZStore, Trait.SortingEnum);
+            _computeSortingEnum = new EnumZ(EnumZStore, Trait.SortingEnum);
             new PairZ(_computeSortingEnum, Trait.Sorting_Unsorted);
             new PairZ(_computeSortingEnum, Trait.Sorting_Ascending);
             new PairZ(_computeSortingEnum, Trait.Sorting_Descending);
 
-            _computeTakeSetEnum = new EnumZ(_enumZStore, Trait.TakeSetEnum);
+            _computeTakeSetEnum = new EnumZ(EnumZStore, Trait.TakeSetEnum);
             new PairZ(_computeTakeSetEnum, Trait.TakeSet_First);
             new PairZ(_computeTakeSetEnum, Trait.TakeSet_Last);
             new PairZ(_computeTakeSetEnum, Trait.TakeSet_Both);

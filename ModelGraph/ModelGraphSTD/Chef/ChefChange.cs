@@ -32,16 +32,16 @@ namespace ModelGraphSTD
         // can not be undone, also remove any change items wich have been undon. 
         private void CongealChanges()
         {
-            _changeRoot.CongealChanges();
-            _changeRoot.ChildDelta++;
+            ChangeRoot.CongealChanges();
+            ChangeRoot.ChildDelta++;
         }
         #endregion
 
         #region Expand All  ===================================================
         private void ExpandAllChangeSets(ItemModel model)
         {
-            if (_changeRoot == null) return;
-            _changeRoot.AutoExpandChanges();
+            if (ChangeRoot == null) return;
+            ChangeRoot.AutoExpandChanges();
             model.IsExpandedLeft = true;
         }
         #endregion
@@ -49,9 +49,9 @@ namespace ModelGraphSTD
         #region ChangeSet  ====================================================
         internal void CheckChanges()
         {
-            if (_changeSet.Count > 0)
+            if (ChangeSet.Count > 0)
             {
-                var item = _changeSet.Items[_changeSet.Count - 1];
+                var item = ChangeSet.Items[ChangeSet.Count - 1];
                 var changeText = $"{_localize(item.KindKey)}  {item.Name}";
                 if (_changeRootInfoItem != null && item.Trait == _changeRootInfoItem.Trait)
                     _changeRootInfoCount += 1;
@@ -65,9 +65,9 @@ namespace ModelGraphSTD
                 else
                     _changeRootInfoText = $"{GetName(item.Trait)}  {changeText}";
 
-                _changeRoot.Add(_changeSet);
-                _changeSequence += 1;
-                _changeSet = new ChangeSet(_changeRoot, _changeSequence);
+                ChangeRoot.Add(ChangeSet);
+                ChangeSequence += 1;
+                ChangeSet = new ChangeSet(ChangeRoot, ChangeSequence);
                 ResetCacheValues();
                 RefreshAllGraphs();
             }
@@ -89,7 +89,7 @@ namespace ModelGraphSTD
         }
         internal void Delete(ChangeSet chng)
         {
-            _changeRoot.Remove(chng);
+            ChangeRoot.Remove(chng);
         }
         internal void Undo(ChangeSet chng)
         {
@@ -130,7 +130,7 @@ namespace ModelGraphSTD
             var n1 = index1 + 1;
             var n2 = index2 + 1;
             var name = $"{GetIdentity(item, IdentityStyle.Double)}     {n1.ToString()}->{n2.ToString()}";
-            var chg = new ItemMoved(_changeSet, item, index1, index2, name);
+            var chg = new ItemMoved(ChangeSet, item, index1, index2, name);
             Redo(chg);
         }
         internal void Undo(ItemMoved chng)
@@ -166,11 +166,11 @@ namespace ModelGraphSTD
                     {
                         vals.Add(col.Value.GetString(row));
                     }
-                    new ItemCreated(_changeSet, item, store.IndexOf(item), name, cols, vals);
+                    new ItemCreated(ChangeSet, item, store.IndexOf(item), name, cols, vals);
                     return;
                 }
             }
-            new ItemCreated(_changeSet, item, store.IndexOf(item), name);
+            new ItemCreated(ChangeSet, item, store.IndexOf(item), name);
         }
         internal void Undo(ItemCreated chng)
         {
@@ -235,7 +235,7 @@ namespace ModelGraphSTD
                     var name = $"{GetIdentity(m.Item, IdentityStyle.ChangeLog)}    {GetIdentity(m.Property, IdentityStyle.Single)}:  old<{oldValue}>  new<{newValue}>";
                     if (m.Property.Value.SetString(m.Item, newValue))
                     {
-                        new ItemUpdated(_changeSet, m.Item, m.Property, oldValue, newValue, name);
+                        new ItemUpdated(ChangeSet, m.Item, m.Property, oldValue, newValue, name);
                     }
                 }
             }
@@ -274,10 +274,10 @@ namespace ModelGraphSTD
                 {
                     vals.Add(col.Value.GetString(item));
                 }
-                new ItemRemoved(_changeSet, item, inx, name, cols, vals);
+                new ItemRemoved(ChangeSet, item, inx, name, cols, vals);
             }
             else
-                new ItemRemoved(_changeSet, item, inx, name);
+                new ItemRemoved(ChangeSet, item, inx, name);
         }
         internal void Redo(ItemRemoved cg)
         {
@@ -314,7 +314,7 @@ namespace ModelGraphSTD
 
             var name = $" [{rnam}]   ({nam1}) --> ({nam2})";
             (int parentIndex, int chilldIndex) = rel.AppendLink(item1, item2);
-            var chg = new ItemLinked(_changeSet, rel, item1, item2, parentIndex, chilldIndex, name);
+            var chg = new ItemLinked(ChangeSet, rel, item1, item2, parentIndex, chilldIndex, name);
         }
         internal void Undo(ItemLinked chng)
         {
@@ -339,7 +339,7 @@ namespace ModelGraphSTD
             var rnam = GetIdentity(rel, IdentityStyle.Single);
 
             var name = $" [{rnam}]   ({nam1}) --> ({nam2})";
-            var chg = new ItemUnLinked(_changeSet, rel, item1, item2, parentIndex, childIndex, name);
+            var chg = new ItemUnLinked(ChangeSet, rel, item1, item2, parentIndex, childIndex, name);
         }
 
         internal void Redo(ItemUnLinked cg)
@@ -361,7 +361,7 @@ namespace ModelGraphSTD
             var n1 = index1 + 1;
             var n2 = index2 + 1;
             var name = $" [{GetIdentity(relation, IdentityStyle.Single)}]     {GetIdentity(item, IdentityStyle.Double)}     {n1.ToString()}->{n2.ToString()}";
-            var chg = new ItemChildMoved(_changeSet, relation, key, item, index1, index2, name);
+            var chg = new ItemChildMoved(ChangeSet, relation, key, item, index1, index2, name);
             Redo(chg);
         }
         internal void Undo(ItemChildMoved chng)
@@ -381,7 +381,7 @@ namespace ModelGraphSTD
             var n1 = index1 + 1;
             var n2 = index2 + 1;
             var name = $" [{GetIdentity(relation, IdentityStyle.Single)}]     {GetIdentity(item, IdentityStyle.Double)}     {n1.ToString()}->{n2.ToString()}";
-            var chg = new ItemParentMoved(_changeSet, relation, key, item, index1, index2, name);
+            var chg = new ItemParentMoved(ChangeSet, relation, key, item, index1, index2, name);
             Redo(chg);
         }
         internal void Undo(ItemParentMoved chng)
@@ -432,7 +432,7 @@ namespace ModelGraphSTD
             }
 
             foreach (var item in hitList) { MarkItemRemoved(item); }
-            Redo(_changeSet);
+            Redo(ChangeSet);
 
             #region PrivateMethods  ===========================================
 

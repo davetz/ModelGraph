@@ -30,14 +30,14 @@ namespace ModelGraphSTD
             while (anyChange)
             {
                 anyChange = false;
-                foreach (var qx in _queryXStore.Items)
+                foreach (var qx in QueryXStore.Items)
                 {
                     var sto = GetQueryXTarget(qx);
                     if (qx.Select != null && qx.Select.TryValidate(sto)) anyChange |= qx.Select.TryResolve();
                     if (qx.Where != null && qx.Where.TryValidate(sto)) anyChange |= qx.Where.TryResolve();
                     qx.IsTail = (QueryX_QueryX.HasNoChildren(qx));
                 }
-                foreach (var cx in _computeXStore.Items)
+                foreach (var cx in ComputeXStore.Items)
                 {
                     if (ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
                     {
@@ -58,7 +58,7 @@ namespace ModelGraphSTD
 
             void ResetAllComputeValues()
             {
-                foreach (var cx in _computeXStore.Items)
+                foreach (var cx in ComputeXStore.Items)
                 {
                     cx.Value.Clear();
                     cx.Value = ValuesUnknown;
@@ -219,7 +219,7 @@ namespace ModelGraphSTD
         #region CreateQueryX  =================================================
         private QueryX CreateQueryX(ViewX vx, Store st)
         {
-            var qxNew = new QueryX(_queryXStore, QueryType.View, true);
+            var qxNew = new QueryX(QueryXStore, QueryType.View, true);
             ItemCreated(qxNew);
             AppendLink(ViewX_QueryX, vx, qxNew);
             AppendLink(Store_QueryX, st, qxNew);
@@ -227,7 +227,7 @@ namespace ModelGraphSTD
         }
         private QueryX CreateQueryX(GraphX gx, Store st)
         {
-            var qxNew = new QueryX(_queryXStore, QueryType.Graph, true);
+            var qxNew = new QueryX(QueryXStore, QueryType.Graph, true);
             ItemCreated(qxNew);
             AppendLink(GraphX_QueryX, gx, qxNew);
             AppendLink(Store_QueryX, st, qxNew);
@@ -235,7 +235,7 @@ namespace ModelGraphSTD
         }
         private QueryX CreateQueryX(ComputeX cx, Store st)
         {
-            var qxNew = new QueryX(_queryXStore, QueryType.Value, true);
+            var qxNew = new QueryX(QueryXStore, QueryType.Value, true);
             ItemCreated(qxNew);
             AppendLink(ComputeX_QueryX, cx, qxNew);
             AppendLink(Store_QueryX, st, qxNew);
@@ -244,7 +244,7 @@ namespace ModelGraphSTD
 
         private QueryX CreateQueryX(GraphX gx, SymbolX sx, Store st)
         {
-            var qxNew = new QueryX(_queryXStore, QueryType.Symbol, true);
+            var qxNew = new QueryX(QueryXStore, QueryType.Symbol, true);
             ItemCreated(qxNew);
             AppendLink(GraphX_SymbolQueryX, gx, qxNew);
             AppendLink(SymbolX_QueryX, sx, qxNew);
@@ -254,7 +254,7 @@ namespace ModelGraphSTD
 
         private QueryX CreateQueryX(ViewX vx, Relation re)
         {
-            var qxNew = new QueryX(_queryXStore, QueryType.View);
+            var qxNew = new QueryX(QueryXStore, QueryType.View);
             ItemCreated(qxNew);
             AppendLink(ViewX_QueryX, vx, qxNew);
             AppendLink(Relation_QueryX, re, qxNew);
@@ -264,7 +264,7 @@ namespace ModelGraphSTD
         private QueryX CreateQueryX(QueryX qx, Relation re, QueryType kind)
         {
             qx.IsTail = false;
-            var qxNew = new QueryX(_queryXStore, kind);
+            var qxNew = new QueryX(QueryXStore, kind);
             ItemCreated(qx);
             AppendLink(QueryX_QueryX, qx, qxNew);
             AppendLink(Relation_QueryX, re, qxNew);

@@ -1420,9 +1420,9 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.ParmRoot_M, _errorStore, null, null, ParmRoot_X);
-                    AddChildModel(prev, m, Trait.ErrorRoot_M, _errorStore, null, null, ErrorRoot_X);
-                    AddChildModel(prev, m, Trait.ChangeRoot_M, _changeRoot, null, null, ChangeRoot_X);
+                    AddChildModel(prev, m, Trait.ParmRoot_M, ErrorStore, null, null, ParmRoot_X);
+                    AddChildModel(prev, m, Trait.ErrorRoot_M, ErrorStore, null, null, ErrorRoot_X);
+                    AddChildModel(prev, m, Trait.ChangeRoot_M, ChangeRoot, null, null, ChangeRoot_X);
                     AddChildModel(prev, m, Trait.MetadataRoot_M, m.Item, null, null, MetadataRoot_X);
                     AddChildModel(prev, m, Trait.ModelingRoot_M, m.Item, null, null, ModelingRoot_X);
 
@@ -1979,7 +1979,7 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var count = _errorStore.Count;
+                    var count = ErrorStore.Count;
                     var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
@@ -1999,12 +1999,12 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    if (_errorStore.Count == 0) return (false, false);
-                    if (_errorStore.ChildDelta == m.ChildDelta) return (true, false);
+                    if (ErrorStore.Count == 0) return (false, false);
+                    if (ErrorStore.ChildDelta == m.ChildDelta) return (true, false);
 
-                    m.InitChildModels(prev, _errorStore.Count);
+                    m.InitChildModels(prev, ErrorStore.Count);
 
-                    var list = _errorStore.Items;
+                    var list = ErrorStore.Items;
                     var anyChange = prev.Count != list.Count;
                     foreach (var itm in list)
                     {
@@ -2029,7 +2029,7 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var count = _changeRoot.Count;
+                    var count = ChangeRoot.Count;
                     var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = count > 0;
@@ -2053,7 +2053,7 @@ namespace ModelGraphSTD
 
                 ButtonCommands = (m, list) =>
                 {
-                    if (_changeRoot.Count > 0 && m.IsExpandedLeft == false)
+                    if (ChangeRoot.Count > 0 && m.IsExpandedLeft == false)
                         list.Add(new ModelCommand(this, m, Trait.ExpandAllCommand, ExpandAllChangeSets));
                 },
 
@@ -2061,11 +2061,11 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    if (_changeRoot.Count == 0) return (false, false);
-                    if (_changeRoot.ChildDelta == m.ChildDelta) return (true, false);
+                    if (ChangeRoot.Count == 0) return (false, false);
+                    if (ChangeRoot.ChildDelta == m.ChildDelta) return (true, false);
 
                     var anyChange = false;
-                    var items = _changeRoot.Items;
+                    var items = ChangeRoot.Items;
                     m.InitChildModels(prev, items.Count);
                     for (int i = (items.Count - 1); i >= 0; i--)
                     {
@@ -2121,10 +2121,10 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.MetaViewViewList_M, _viewXStore, null, null, MetaViewXViewList_X);
-                    AddChildModel(prev, m, Trait.MetaEnumList_M, _enumZStore, null, null, MetaEnumList_X);
-                    AddChildModel(prev, m, Trait.MetaTableList_M, _tableXStore, null, null, MetaTableList_X);
-                    AddChildModel(prev, m, Trait.MetaGraphList_M, _graphXStore, null, null, MetaGraphList_X);
+                    AddChildModel(prev, m, Trait.MetaViewViewList_M, ViewXStore, null, null, MetaViewXViewList_X);
+                    AddChildModel(prev, m, Trait.MetaEnumList_M, EnumZStore, null, null, MetaEnumList_X);
+                    AddChildModel(prev, m, Trait.MetaTableList_M, TableXStore, null, null, MetaTableList_X);
+                    AddChildModel(prev, m, Trait.MetaGraphList_M, GraphXStore, null, null, MetaGraphList_X);
                     AddChildModel(prev, m, Trait.InternalStoreList_M, this, null, null, InternalStoreList_X);
 
                     return (true, true);
@@ -2628,7 +2628,7 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var views = _viewXStore.Items;
+                    var views = ViewXStore.Items;
                     var (kind, name) = GetKindName(m);
                     var count = 0;
                     foreach (var vx in views) { if (ViewX_ViewX.HasNoParent(vx)) count++; }
@@ -2654,14 +2654,14 @@ namespace ModelGraphSTD
                 ModelDrop = (m, d, doDrop) =>
                 {
                     var vxDrop = d.ViewX;
-                    if (vxDrop != null && vxDrop.Owner == _viewXStore)
+                    if (vxDrop != null && vxDrop.Owner == ViewXStore)
                     {
                         if (doDrop)
                         {
                             if (ViewX_ViewX.TryGetParent(vxDrop, out ViewX vxDropParent))
                                 RemoveLink(ViewX_ViewX, vxDropParent, vxDrop);
 
-                            var prevIndex = _viewXStore.IndexOf(vxDrop);
+                            var prevIndex = ViewXStore.IndexOf(vxDrop);
                             ItemMoved(vxDrop, prevIndex, 0);
                         }
                         return DropAction.Move;
@@ -2673,12 +2673,12 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    if (_viewXStore.Count == 0) return (false, false);
+                    if (ViewXStore.Count == 0) return (false, false);
 
-                    if (_viewXStore.ChildDelta == m.ChildDelta) return (true, false);
-                    m.ChildDelta = _viewXStore.ChildDelta;
+                    if (ViewXStore.ChildDelta == m.ChildDelta) return (true, false);
+                    m.ChildDelta = ViewXStore.ChildDelta;
 
-                    var items = _viewXStore.Items;
+                    var items = ViewXStore.Items;
                     m.InitChildModels(prev, items.Count);
 
                     var anyChange = prev.Count != items.Count;
@@ -2702,7 +2702,7 @@ namespace ModelGraphSTD
 
             void Insert(ItemModel model)
             {
-                ItemCreated(new ViewX(_viewXStore));
+                ItemCreated(new ViewX(ViewXStore));
             }
         }
         #endregion
@@ -2760,7 +2760,7 @@ namespace ModelGraphSTD
                     {
                         if (d.Item is ViewX vx)
                         {
-                            if (vx.Owner == _viewXStore)
+                            if (vx.Owner == ViewXStore)
                             {
                                 if (ViewX_QueryX.HasNoChildren(view) && ViewX_Property.HasNoChildren(view))
                                 {
@@ -2871,7 +2871,7 @@ namespace ModelGraphSTD
 
             void Insert(ItemModel model)
             {
-                var vx = new ViewX(_viewXStore);
+                var vx = new ViewX(ViewXStore);
                 ItemCreated(vx);
                 AppendLink(ViewX_ViewX, model.Item, vx);
             }
@@ -3021,7 +3021,7 @@ namespace ModelGraphSTD
 
             void Insert(ItemModel model)
             {
-                var vx = new ViewX(_viewXStore);
+                var vx = new ViewX(ViewXStore);
                 ItemCreated(vx);
                 AppendLink(QueryX_ViewX, model.Item, vx);
             }
@@ -3091,7 +3091,7 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var views = _viewXStore.Items;
+                    var views = ViewXStore.Items;
                     var (kind, name) = GetKindName(m);
                     var count = 0;
                     foreach (var vx in views) { if (ViewX_ViewX.HasNoParent(vx)) count++; }
@@ -3115,13 +3115,13 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    if (_viewXStore.Count == 0) return (false, false);
+                    if (ViewXStore.Count == 0) return (false, false);
 
-                    if (_viewXStore.ChildDelta == m.ChildDelta) return (true, false);
-                    m.ChildDelta = _viewXStore.ChildDelta;
+                    if (ViewXStore.ChildDelta == m.ChildDelta) return (true, false);
+                    m.ChildDelta = ViewXStore.ChildDelta;
 
                     m.InitChildModels(prev);
-                    var items = _viewXStore.Items;
+                    var items = ViewXStore.Items;
 
                     var anyChange = prev.Count != items.Count;
                     foreach (var itm in items)
@@ -3367,7 +3367,7 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var (kind, name) = GetKindName(m);
-                    var count = _enumXStore.Count;
+                    var count = EnumXStore.Count;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
@@ -3391,7 +3391,7 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    var store = _enumXStore;
+                    var store = EnumXStore;
                     if (store.Count == 0) return (false, false);
                     if (store.ChildDelta == m.ChildDelta) return (true, false);
 
@@ -3417,7 +3417,7 @@ namespace ModelGraphSTD
 
             void Insert(ItemModel model)
             {
-                ItemCreated(new EnumX(_enumXStore));
+                ItemCreated(new EnumX(EnumXStore));
             }
         }
         #endregion
@@ -3430,7 +3430,7 @@ namespace ModelGraphSTD
             {
                 ModelParms = (m) =>
                 {
-                    var count = _tableXStore.Count;
+                    var count = TableXStore.Count;
                     var (kind, name) = GetKindName(m);
 
                     m.CanExpandLeft = (count > 0);
@@ -3459,7 +3459,7 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    var store = _tableXStore;
+                    var store = TableXStore;
                     if (store.Count == 0) return (false, false);
                     if (store.ChildDelta == m.ChildDelta) return (true, false);
 
@@ -3485,7 +3485,7 @@ namespace ModelGraphSTD
 
             void Insert(ItemModel model)
             {
-                ItemCreated(new TableX(_tableXStore));
+                ItemCreated(new TableX(TableXStore));
             }
         }
         #endregion
@@ -3499,7 +3499,7 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var (kind, name) = GetKindName(m);
-                    var count = _graphXStore.Count;
+                    var count = GraphXStore.Count;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
@@ -3527,7 +3527,7 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    var store = _graphXStore;
+                    var store = GraphXStore;
                     if (store.Count == 0) return (false, false);
                     if (store.ChildDelta == m.ChildDelta) return (true, false);
 
@@ -3553,7 +3553,7 @@ namespace ModelGraphSTD
 
             void Insert(ItemModel model)
             {
-                ItemCreated(new GraphX(_graphXStore));
+                ItemCreated(new GraphX(GraphXStore));
                 model.IsExpandedLeft = true;
             }
         }
@@ -3602,7 +3602,7 @@ namespace ModelGraphSTD
                     if (doDrop)
                     {
                         var gd = m.Item as GraphX;
-                        var sym = new SymbolX(_symbolXStore);
+                        var sym = new SymbolX(SymbolStore);
                         ItemCreated(sym);
                         AppendLink(GraphX_SymbolX, gd, sym);
                         m.IsExpandedLeft = true;
@@ -3640,7 +3640,7 @@ namespace ModelGraphSTD
             void Insert(ItemModel model)
             {
                 var gd = model.Item as GraphX;
-                var sym = new SymbolX(_symbolXStore);
+                var sym = new SymbolX(SymbolStore);
                 ItemCreated(sym);
                 AppendLink(GraphX_SymbolX, gd, sym);
                 model.IsExpandedLeft = true;
@@ -3704,7 +3704,7 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var (kind, name) = GetKindName(m);
-                    var count = _tableXStore.Count;
+                    var count = TableXStore.Count;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
@@ -3725,7 +3725,7 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    var store = _tableXStore;
+                    var store = TableXStore;
                     if (store.Count == 0) return (false, false);
                     if (store.ChildDelta == m.ChildDelta) return (true, false);
 
@@ -3758,7 +3758,7 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var (kind, name) = GetKindName(m);
-                    var count = _graphXStore.Count;
+                    var count = GraphXStore.Count;
 
                     m.CanExpandLeft = (count > 0);
                     m.CanFilter = (count > 2);
@@ -3779,7 +3779,7 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    var store = _graphXStore;
+                    var store = GraphXStore;
                     if (store.Count == 0) return (false, false);
                     if (store.ChildDelta == m.ChildDelta) return (true, false);
 
@@ -4463,7 +4463,7 @@ namespace ModelGraphSTD
 
             void Insert(ItemModel model)
             {
-                var col = new ColumnX(_columnXStore);
+                var col = new ColumnX(ColumnXStore);
                 ItemCreated(col); AppendLink(TableX_ColumnX, model.Item, col);
             }
         }
@@ -4532,7 +4532,7 @@ namespace ModelGraphSTD
 
             void Insert(ItemModel model)
             {
-                var rel = new RelationX(_relationXStore);
+                var rel = new RelationX(RelationXStore);
                 ItemCreated(rel); AppendLink(TableX_ChildRelationX, model.Item, rel);
             }
         }
@@ -4600,7 +4600,7 @@ namespace ModelGraphSTD
 
             void Insert(ItemModel model)
             {
-                var rel = new RelationX(_relationXStore); ItemCreated(rel);
+                var rel = new RelationX(RelationXStore); ItemCreated(rel);
                 AppendLink(TableX_ParentRelationX, model.Item, rel);
             }
         }
@@ -4809,7 +4809,7 @@ namespace ModelGraphSTD
             void Insert(ItemModel model)
             {
                 var st = model.Item as Store;
-                var cx = new ComputeX(_computeXStore);
+                var cx = new ComputeX(ComputeXStore);
                 ItemCreated(cx);
                 AppendLink(Store_ComputeX, st, cx);
 
@@ -8520,7 +8520,7 @@ namespace ModelGraphSTD
                 {
                     var (kind, name) = GetKindName(m);
                     var count = 0;
-                    foreach (var sto in _primeStores) { if (Store_ComputeX.HasChildLink(sto)) count += 1; }
+                    foreach (var sto in PrimeStores) { if (Store_ComputeX.HasChildLink(sto)) count += 1; }
 
                     m.CanExpandLeft = count > 0;
                     m.CanFilter = count > 2;
@@ -8548,7 +8548,7 @@ namespace ModelGraphSTD
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var st in _primeStores)
+                    foreach (var st in PrimeStores)
                     {
                         if (Store_ComputeX.HasChildLink(st))
                         {
@@ -8654,17 +8654,17 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddChildModel(prev, m, Trait.InternalStore_M, _viewXStore, null, null, InternalStore_X);
-                    AddChildModel(prev, m, Trait.InternalStore_M, _enumXStore, null, null, InternalStore_X);
-                    AddChildModel(prev, m,  Trait.InternalStore_M, _tableXStore, null, null, InternalStore_X);
-                    AddChildModel(prev, m, Trait.InternalStore_M, _graphXStore, null, null, InternalStore_X);
-                    AddChildModel(prev, m, Trait.InternalStore_M, _queryXStore, null, null, InternalStore_X);
-                    AddChildModel(prev, m, Trait.InternalStore_M, _symbolXStore, null, null, InternalStore_X);
-                    AddChildModel(prev, m,  Trait.InternalStore_M, _columnXStore, null, null, InternalStore_X);
-                    AddChildModel(prev, m, Trait.InternalStore_M, _relationXStore, null, null, InternalStore_X);
-                    AddChildModel(prev, m, Trait.InternalStore_M, _computeXStore, null, null, InternalStore_X);
-                    AddChildModel(prev, m, Trait.InternalStore_M, _relationStore, null, null, InternalStore_X);
-                    AddChildModel(prev, m, Trait.InternalStore_M, _propertyStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m, Trait.InternalStore_M, ViewXStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m, Trait.InternalStore_M, EnumXStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m,  Trait.InternalStore_M, TableXStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m, Trait.InternalStore_M, GraphXStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m, Trait.InternalStore_M, QueryXStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m, Trait.InternalStore_M, SymbolStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m,  Trait.InternalStore_M, ColumnXStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m, Trait.InternalStore_M, RelationXStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m, Trait.InternalStore_M, ComputeXStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m, Trait.InternalStore_M, RelationStore, null, null, InternalStore_X);
+                    AddChildModel(prev, m, Trait.InternalStore_M, PropertyStore, null, null, InternalStore_X);
                     
                     return (true, true);
                 }

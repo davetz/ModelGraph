@@ -197,7 +197,7 @@ namespace RepositoryUWP
         #region ReadViewX_1  ==================================================
         private void ReadViewX_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_ViewXStore;
+            var store = chef.ViewXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -222,7 +222,7 @@ namespace RepositoryUWP
         #region ReadEnumX_1  ==================================================
         private void ReadEnumX_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_EnumXStore;
+            var store = chef.EnumXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -262,7 +262,7 @@ namespace RepositoryUWP
         #region ReadTableX_1  =================================================
         private void ReadTableX_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_TableXStore;
+            var store = chef.TableXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -299,7 +299,7 @@ namespace RepositoryUWP
         #region ReadGraphX_1  =================================================
         private void ReadGraphX_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_GraphXStore;
+            var store = chef.GraphXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -324,7 +324,7 @@ namespace RepositoryUWP
         #region ReadQueryX_1  =================================================
         private void ReadQueryX_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_QueryXStore;
+            var store = chef.QueryXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -365,7 +365,7 @@ namespace RepositoryUWP
         #region ReadQueryX_2  =================================================
         private void ReadQueryX_2(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_QueryXStore;
+            var store = chef.QueryXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -393,7 +393,7 @@ namespace RepositoryUWP
         #region ReadQueryX_3  =================================================
         private void ReadQueryX_3(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_QueryXStore;
+            var store = chef.QueryXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -423,7 +423,7 @@ namespace RepositoryUWP
         #region ReadSymbolX_1  ================================================
         private void ReadSymbolX_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_SymbolStore;
+            var store = chef.SymbolStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -453,7 +453,7 @@ namespace RepositoryUWP
         #region ReadSymbolX_2  ================================================
         private void ReadSymbolX_2(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_SymbolStore;
+            var store = chef.SymbolStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -485,7 +485,7 @@ namespace RepositoryUWP
         #region ReadColumnX_1  ================================================
         private void ReadColumnX_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_ColumnXStore;
+            var store = chef.ColumnXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -535,7 +535,7 @@ namespace RepositoryUWP
         #region ReadColumnX_2  ================================================
         private void ReadColumnX_2(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_ColumnXStore;
+            var store = chef.ColumnXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -590,7 +590,7 @@ namespace RepositoryUWP
         #region ReadColumnX_3  ================================================
         private void ReadColumnX_3(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_ColumnXStore;
+            var store = chef.ColumnXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -620,7 +620,7 @@ namespace RepositoryUWP
         #region ReadColumnX_4  ================================================
         private void ReadColumnX_4(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_ColumnXStore;
+            var store = chef.ColumnXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -650,7 +650,7 @@ namespace RepositoryUWP
         #region ReadComputeX_1  ===============================================
         private void ReadComputeX_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_ComputeXStore;
+            var store = chef.ComputeXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -688,7 +688,7 @@ namespace RepositoryUWP
         #region ReadComputeX_2  ===============================================
         private void ReadComputeX_2(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_ComputeXStore;
+            var store = chef.ComputeXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -716,7 +716,7 @@ namespace RepositoryUWP
         #region ReadComputeX_3  ===============================================
         private void ReadComputeX_3(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_ComputeXStore;
+            var store = chef.ComputeXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -749,7 +749,7 @@ namespace RepositoryUWP
         #region ReadRelationX_1  ==============================================
         private void ReadRelationX_1(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_RelationXStore;
+            var store = chef.RelationXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 
@@ -783,7 +783,7 @@ namespace RepositoryUWP
         #region ReadRelationX_2  ==============================================
         private void ReadRelationX_2(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
         {
-            var store = chef.T_RelationXStore;
+            var store = chef.RelationXStore;
             var count = r.ReadInt32();
             if (count < 0) throw new Exception($"Invalid count {count}");
 

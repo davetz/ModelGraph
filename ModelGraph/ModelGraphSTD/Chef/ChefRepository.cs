@@ -52,26 +52,26 @@ namespace ModelGraphSTD
             //=============================================
             int count = 23; // allow for static store guids
 
-            foreach (var item in _enumXStore.Items)
+            foreach (var item in EnumXStore.Items)
             {
                 count += (item as EnumX).Count; // PairX count
             }
 
-            foreach (var item in _tableXStore.Items)
+            foreach (var item in TableXStore.Items)
             {
                 count += (item as TableX).Count; // RowX count
             }
 
-            count += _viewXStore.Count;
-            count += _enumXStore.Count;
-            count += _tableXStore.Count;
-            count += _graphXStore.Count;
-            count += _queryXStore.Count;
-            count += _symbolXStore.Count;
-            count += _columnXStore.Count;
-            count += _computeXStore.Count;
-            count += _relationXStore.Count;
-            count += _relationStore.Count;
+            count += ViewXStore.Count;
+            count += EnumXStore.Count;
+            count += TableXStore.Count;
+            count += GraphXStore.Count;
+            count += QueryXStore.Count;
+            count += SymbolStore.Count;
+            count += ColumnXStore.Count;
+            count += ComputeXStore.Count;
+            count += RelationXStore.Count;
+            count += RelationStore.Count;
 
             // allocate memory
             //=============================================
@@ -82,95 +82,95 @@ namespace ModelGraphSTD
             // populate the item and guid arrays
             //=============================================
             int j = 0;
-            itemIndex.Add(_dummy, j);
-            guids[j++] = _dummy.Guid;
+            itemIndex.Add(Dummy, j);
+            guids[j++] = Dummy.Guid;
 
-            itemIndex.Add(_viewXStore, j);
-            guids[j++] = _viewXStore.Guid;
-            foreach (var itm in _viewXStore.Items)
+            itemIndex.Add(ViewXStore, j);
+            guids[j++] = ViewXStore.Guid;
+            foreach (var itm in ViewXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
             }
 
-            itemIndex.Add(_enumXStore, j);
-            guids[j++] = _enumXStore.Guid;
-            foreach (var itm in _enumXStore.Items)
+            itemIndex.Add(EnumXStore, j);
+            guids[j++] = EnumXStore.Guid;
+            foreach (var itm in EnumXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
             }
 
-            itemIndex.Add(_tableXStore, j);
-            guids[j++] = _tableXStore.Guid;
-            foreach (var itm in _tableXStore.Items)
+            itemIndex.Add(TableXStore, j);
+            guids[j++] = TableXStore.Guid;
+            foreach (var itm in TableXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
             }
 
-            itemIndex.Add(_graphXStore, j);
-            guids[j++] = _graphXStore.Guid;
-            foreach (var itm in _graphXStore.Items)
+            itemIndex.Add(GraphXStore, j);
+            guids[j++] = GraphXStore.Guid;
+            foreach (var itm in GraphXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
             }
 
-            itemIndex.Add(_queryXStore, j);
-            guids[j++] = _queryXStore.Guid;
-            foreach (var itm in _queryXStore.Items)
+            itemIndex.Add(QueryXStore, j);
+            guids[j++] = QueryXStore.Guid;
+            foreach (var itm in QueryXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
             }
 
-            itemIndex.Add(_symbolXStore, j);
-            guids[j++] = _symbolXStore.Guid;
-            foreach (var itm in _symbolXStore.Items)
+            itemIndex.Add(SymbolStore, j);
+            guids[j++] = SymbolStore.Guid;
+            foreach (var itm in SymbolStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
             }
 
-            itemIndex.Add(_columnXStore, j);
-            guids[j++] = _columnXStore.Guid;
-            foreach (var itm in _columnXStore.Items)
+            itemIndex.Add(ColumnXStore, j);
+            guids[j++] = ColumnXStore.Guid;
+            foreach (var itm in ColumnXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
             }
 
-            itemIndex.Add(_computeXStore, j);
-            guids[j++] = _computeXStore.Guid;
-            foreach (var itm in _computeXStore.Items)
+            itemIndex.Add(ComputeXStore, j);
+            guids[j++] = ComputeXStore.Guid;
+            foreach (var itm in ComputeXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
             }
 
-            itemIndex.Add(_relationXStore, j);
-            guids[j++] = _relationXStore.Guid;
-            foreach (var itm in _relationXStore.Items)
+            itemIndex.Add(RelationXStore, j);
+            guids[j++] = RelationXStore.Guid;
+            foreach (var itm in RelationXStore.Items)
             {
                 itemIndex.Add(itm, j);
                 guids[j++] = itm.Guid;
             }
 
-            itemIndex.Add(_relationStore, j);
-            guids[j++] = _relationStore.Guid;
-            foreach (var rel in _relationStore.Items)
+            itemIndex.Add(RelationStore, j);
+            guids[j++] = RelationStore.Guid;
+            foreach (var rel in RelationStore.Items)
             {
                 itemIndex.Add(rel, j);
                 guids[j++] = rel.Guid;
             }
 
-            itemIndex.Add(_propertyStore, j); //for posible compute reference
-            guids[j++] = _propertyStore.Guid;
+            itemIndex.Add(PropertyStore, j); //for posible compute reference
+            guids[j++] = PropertyStore.Guid;
 
             // put grandchild items at the end
             //=============================================
-            foreach (var parent in _enumXStore.Items)
+            foreach (var parent in EnumXStore.Items)
             {
                 foreach (var child in parent.Items)
                 {
@@ -178,7 +178,7 @@ namespace ModelGraphSTD
                     guids[j++] = child.Guid;
                 }
             }
-            foreach (var parent in _tableXStore.Items)
+            foreach (var parent in TableXStore.Items)
             {
                 foreach (var itm in parent.Items)
                 {
@@ -195,9 +195,9 @@ namespace ModelGraphSTD
         // Get list of relations that reference at least one serialized item
         internal List<Relation> GetRelationList()
         {
-            var relationList = new List<Relation>(_relationStore.Count + _relationXStore.Count);
+            var relationList = new List<Relation>(RelationStore.Count + RelationXStore.Count);
 
-            foreach (var rel in _relationStore.Items)
+            foreach (var rel in RelationStore.Items)
             {
                 var len = rel.GetLinks(out List<Item> parents, out List<Item> children);
                 for (int i = 0; i < len; i++)
@@ -210,7 +210,7 @@ namespace ModelGraphSTD
                 }
             }
 
-            foreach (var item in _relationXStore.Items)
+            foreach (var item in RelationXStore.Items)
             {
                 var rel = item as RelationX;
                 if (rel.HasLinks) relationList.Add(rel);

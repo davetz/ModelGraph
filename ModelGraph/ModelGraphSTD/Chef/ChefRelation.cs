@@ -71,7 +71,7 @@ namespace ModelGraphSTD
         internal void RemoveLink(Relation rel, Item parent, Item child)
         {
             MarkItemUnlinked(rel, parent, child);
-            Redo(_changeSet);
+            Redo(ChangeSet);
         }
 
         internal void AppendLink(Relation rel, Item parent, Item child)
