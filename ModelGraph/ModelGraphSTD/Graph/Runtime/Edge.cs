@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace ModelGraphSTD
 {
     public class Edge : NodeEdge
     {
-
         private readonly QueryX _queryX;
         public Node Node1;
         public Node Node2;
 
         public (int X, int Y)[] Points;
-        public Extent Extent = new Extent(); // all points are withing this extent
+        public Extent Extent = new Extent(); // all points are withing this extent+
         public short Tm1; // index of terminal point 1
         public short Bp1; // index of closes bend point after Tm1 (to the right) 
         public short Bp2; // index of closes bend point after Tm2 (to the left)

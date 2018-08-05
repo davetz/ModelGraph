@@ -17,7 +17,7 @@ namespace ModelGraphSTD
         bool ValidateGraphParms(Graph g)
         {
             var gx = g.GraphX;
-            var rt = (g.SeedItem == null) ? Dummy : (Item)g.SeedItem;
+            var rt = (g.SeedItem == null) ? Dummy : g.SeedItem;
             var anyChange = false;
 
             #region Build validPathPairs dictionary  ==========================

@@ -2,6 +2,10 @@
 {
     public struct Face
     {
+        internal Side Side;
+        internal byte Index;
+        internal byte Count;
+
         internal Face(Side side)
         {
             Side = side;
@@ -14,10 +18,6 @@
             Index = (byte)((index > byte.MaxValue) ? byte.MaxValue : index);
             Count = (byte)((count > byte.MaxValue) ? byte.MaxValue : count);
         }
-
-        internal Side Side;
-        internal byte Index;
-        internal byte Count;
 
         internal int Offset { get { return 2 * Index - (Count - 1); } }
 

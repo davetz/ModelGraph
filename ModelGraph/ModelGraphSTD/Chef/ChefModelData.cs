@@ -8352,9 +8352,6 @@ namespace ModelGraphSTD
 
                 Validate = (m,prev) =>
                 {
-                    List<Edge> edges = null;
-                    if (!m.IsExpandedRight && (m.IsExpandedLeft && !m.Node.Graph.Node_Edges.TryGetValue(m.Node, out edges))) return (false, false);
-
                     m.InitChildModels(prev);
 
                     var anyChange = false;
@@ -8371,9 +8368,12 @@ namespace ModelGraphSTD
                     
                     if (m.IsExpandedLeft)
                     {
-                        foreach (var e in edges)
+                        if (m.Node.Graph.Node_Edges.TryGetValue(m.Node, out List<Edge> edges))
                         {
-                            anyChange |= AddChildModel(prev, m, Trait.GraphEdge_M, e, null, null, GraphEdge_X);
+                            foreach (var e in edges)
+                            {
+                                anyChange |= AddChildModel(prev, m, Trait.GraphEdge_M, e, null, null, GraphEdge_X);
+                            }
                         }
                     }
                     return (true, anyChange);

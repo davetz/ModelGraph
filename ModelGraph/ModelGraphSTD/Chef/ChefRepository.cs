@@ -50,7 +50,7 @@ namespace ModelGraphSTD
         {
             // count all items that have guids
             //=============================================
-            int count = 23; // allow for static store guids
+            int count = 31; // allow for static store guids
 
             foreach (var item in EnumXStore.Items)
             {

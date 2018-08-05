@@ -1,10 +1,10 @@
-﻿
-using System;
+﻿using System;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
+    /// <summary>
+    /// Allowed directional connections to a symbol 
+    /// </summary>
     [Flags]
     public enum Connect : byte
     {
