@@ -15,7 +15,6 @@ namespace ModelGraphSTD
         public Contact LeftContact;
         public Contact RightContact;
         public Contact BottomContact;
-        internal Attach Attach;
 
         #region Constructors  =================================================
         public SymbolX(Store owner)
@@ -38,8 +37,8 @@ namespace ModelGraphSTD
         #endregion
 
         #region Properties/Methods  ===========================================
-        private static int minData = 15; //{ w, h, A, R, G, B, SC, EC, DC, DS, PC, x1, y1, x2, y2,..}
-        private static byte minSize = 10; // nominal size when there is no symbol data
+        private static readonly int minData = 15; //{ w, h, A, R, G, B, SC, EC, DC, DS, PC, x1, y1, x2, y2,..}
+        private static readonly byte minSize = 10; // nominal size when there is no symbol data
 
         public bool NoData { get { return (Data == null || Data.Length < minData); } }
         public byte Width { get { return NoData ? minSize : Data[0]; } }

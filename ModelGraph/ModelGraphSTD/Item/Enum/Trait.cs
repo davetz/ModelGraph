@@ -289,7 +289,7 @@ namespace ModelGraphSTD
         GraphTerminalStretch_P = 0x455,
 
         //=========================================
-        QueryXFilter_P = 0x460 | CanMultiline,
+        QueryXSelect_P = 0x460 | CanMultiline,
         QueryXWhere_P = 0x461 | CanMultiline,
         QueryXConnect1_P = 0x462,
         QueryXConnect2_P = 0x463,
@@ -304,8 +304,8 @@ namespace ModelGraphSTD
         QueryXAllowSelfLoop_P = 0x46C,
         QueryXIsPathReversed_P = 0x46D,
         QueryXIsFullTableRead_P = 0x46E,
-
-        //=========================================
+        QueryXFacet1_P = 0x46F,
+        QueryXFacet2_P = 0x470,
         ValueXWhere_P = 0x471 | CanMultiline,
         ValueXSelect_P = 0x472 | CanMultiline,
         ValueXIsReversed_P = 0x473,
@@ -318,7 +318,6 @@ namespace ModelGraphSTD
         SymbolXLeftContactt_P = 0x483,
         SymbolXRightContact_P = 0x484,
         SymbolXBottomContact_P = 0x485,
-        SymbolXAttatch_P = 0x486,
 
         //=========================================
         NodeCenterXY_P = 0x491 | IsCovert,

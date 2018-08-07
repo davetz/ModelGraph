@@ -20,7 +20,7 @@
         EnumZ _numericSetEnum;
         EnumZ _numericTermEnum;
         EnumZ _computeTypeEnum;
-        EnumZ _AttatchEnum;
+        EnumZ _attatchEnum;
         EnumZ _computeResultsEnum;
         EnumZ _computeSortingEnum;
         EnumZ _computeTakeSetEnum;
@@ -144,12 +144,12 @@
             new PairZ(_connectEnum, Trait.Connect_South_West);
             new PairZ(_connectEnum, Trait.Connect_South_East_West);
 
-            _AttatchEnum = new EnumZ(EnumZStore, Trait.AttatchEnum);
-            new PairZ(_AttatchEnum, Trait.Attatch_Default);
-            new PairZ(_AttatchEnum, Trait.Attatch_Radial);
-            new PairZ(_AttatchEnum, Trait.Attatch_Normal);
-            new PairZ(_AttatchEnum, Trait.Attatch_RightAngle);
-            new PairZ(_AttatchEnum, Trait.Attatch_SkewedAngle);
+            _attatchEnum = new EnumZ(EnumZStore, Trait.AttatchEnum);
+            new PairZ(_attatchEnum, Trait.Attatch_Default);
+            new PairZ(_attatchEnum, Trait.Attatch_Radial);
+            new PairZ(_attatchEnum, Trait.Attatch_Normal);
+            new PairZ(_attatchEnum, Trait.Attatch_RightAngle);
+            new PairZ(_attatchEnum, Trait.Attatch_SkewedAngle);
 
             _numericSetEnum = new EnumZ(EnumZStore, Trait.NumericSetEnum);
             new PairZ(_numericSetEnum, Trait.NumericSet_Count);

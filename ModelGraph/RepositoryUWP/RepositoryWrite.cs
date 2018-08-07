@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_6;
+            var fileFormat = _fileFormat_7;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -209,28 +209,35 @@ namespace RepositoryUWP
             {
                 w.WriteInt32(itemIndex[qx]);
 
-                var b = BZ;
-                if (qx.HasState()) b |= B1;
-                if (!string.IsNullOrWhiteSpace(qx.WhereString)) b |= B2;
-                if (!string.IsNullOrWhiteSpace(qx.SelectString)) b |= B3;
-                if (qx.IsExclusive) b |= B4;
+                var b = SZ;
+                if (qx.HasState()) b |= S1;
+                if (!string.IsNullOrWhiteSpace(qx.WhereString)) b |= S2;
+                if (!string.IsNullOrWhiteSpace(qx.SelectString)) b |= S3;
+                if (qx.IsExclusive) b |= S4;
                 if (qx.QueryKind == QueryType.Path && qx.IsHead == true)
                 {
-                    if (qx.Connect1 != Connect.Any) b |= B5;
-                    if (qx.Connect2 != Connect.Any) b |= B6;
-                    if (qx.Attach1 != Attach.Default) b |= B7;
-                    if (qx.Attatch2 != Attach.Default) b |= B8;
+                    if (qx.Head.Facet != Facet.None) b |= S5;
+                    if (qx.Head.Attach != Attach.Default) b |= S6;
+                    if (qx.Head.Connect != Connect.Any) b |= S7;
+
+                    if (qx.Tail.Facet != Facet.None) b |= S8;
+                    if (qx.Tail.Attach != Attach.Default) b |= S9;
+                    if (qx.Tail.Connect != Connect.Any) b |= S10;
                 }
 
-                w.WriteByte(b);
-                if ((b & B1) != 0) w.WriteUInt16(qx.GetState());
-                if ((b & B2) != 0) WriteString(w, qx.WhereString);
-                if ((b & B3) != 0) WriteString(w, qx.SelectString);
-                if ((b & B4) != 0) w.WriteByte(qx.ExclusiveKey);
-                if ((b & B5) != 0) w.WriteByte((byte)qx.Connect1);
-                if ((b & B6) != 0) w.WriteByte((byte)qx.Connect2);
-                if ((b & B7) != 0) w.WriteByte((byte)qx.Attach1);
-                if ((b & B8) != 0) w.WriteByte((byte)qx.Attatch2);
+                w.WriteUInt16(b);
+                if ((b & S1) != 0) w.WriteUInt16(qx.GetState());
+                if ((b & S2) != 0) WriteString(w, qx.WhereString);
+                if ((b & S3) != 0) WriteString(w, qx.SelectString);
+                if ((b & S4) != 0) w.WriteByte(qx.ExclusiveKey);
+
+                if ((b & S5) != 0) w.WriteByte((byte)qx.Head.Facet);
+                if ((b & S6) != 0) w.WriteByte((byte)qx.Head.Attach);
+                if ((b & S7) != 0) w.WriteByte((byte)qx.Head.Connect);
+
+                if ((b & S8) != 0) w.WriteByte((byte)qx.Tail.Facet);
+                if ((b & S9) != 0) w.WriteByte((byte)qx.Tail.Attach);
+                if ((b & S10) != 0) w.WriteByte((byte)qx.Tail.Connect);
             }
             w.WriteByte((byte)Mark.QueryXEnding); // itegrity marker
         }
@@ -256,7 +263,6 @@ namespace RepositoryUWP
                 if (sx.LeftContact != Contact.Any) b |= S7;
                 if (sx.RightContact != Contact.Any) b |= S8;
                 if (sx.BottomContact != Contact.Any) b |= S9;
-                if (sx.Attach != Attach.Default) b |= S10;
 
                 w.WriteUInt16(b);
                 if ((b & S1) != 0) w.WriteUInt16(sx.GetState());
@@ -268,7 +274,6 @@ namespace RepositoryUWP
                 if ((b & S7) != 0) w.WriteByte((byte)sx.LeftContact);
                 if ((b & S8) != 0) w.WriteByte((byte)sx.RightContact);
                 if ((b & S9) != 0) w.WriteByte((byte)sx.BottomContact);
-                if ((b & S10) != 0) w.WriteByte((byte)sx.Attach);
             }
             w.WriteByte((byte)Mark.SymbolXEnding); // itegrity marker
         }
@@ -534,12 +539,13 @@ namespace RepositoryUWP
                                         w.WriteByte((byte)eg.Face1.Side);
                                         w.WriteByte((byte)eg.Face1.Index);
                                         w.WriteByte((byte)eg.Face1.Count);
+                                        w.WriteByte((byte)eg.Face1.Facet);
+                                        w.WriteByte((byte)eg.Face1.Attach);
+
                                         w.WriteByte((byte)eg.Face2.Side);
                                         w.WriteByte((byte)eg.Face2.Index);
                                         w.WriteByte((byte)eg.Face2.Count);
-                                        w.WriteByte((byte)eg.Face1.Facet);
                                         w.WriteByte((byte)eg.Face2.Facet);
-                                        w.WriteByte((byte)eg.Face1.Attach);
                                         w.WriteByte((byte)eg.Face2.Attach);
 
                                         var len = (eg.Bends == null) ? 0 : eg.Bends.Length;

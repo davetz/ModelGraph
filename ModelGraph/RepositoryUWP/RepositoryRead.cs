@@ -50,7 +50,26 @@ namespace RepositoryUWP
 
             if (header == 0)
             {
-                if (fileFormat == _fileFormat_6)
+                if (fileFormat == _fileFormat_7)
+                {
+                    vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
+                    {
+                        null,               // 0
+                        ReadViewX_1,        // 1 ViewX
+                        ReadEnumX_1,        // 2 EnumX
+                        ReadTableX_1,       // 3 TableX
+                        ReadGraphX_1,       // 4 GraphX
+                        ReadQueryX_4,       // 5 QueryX
+                        ReadSymbolX_2,      // 6 SymbolX
+                        ReadColumnX_4,      // 7 ColumnX
+                        ReadComputeX_3,     // 8 ComputeX 
+                        null,               // 9 CommandX
+                        ReadRelationX_2,    // 10 RelationX
+                        ReadGraphParm_2,    // 11 GraphParam
+                        ReadRelationLink_1, // 12 RelationLink
+                    };
+                }
+                else if (fileFormat == _fileFormat_6)
                 {
                     vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
                     {
@@ -373,8 +392,8 @@ namespace RepositoryUWP
                 if ((b & B1) != 0) qx.WhereString = ReadString(r);
                 if ((b & B2) != 0) qx.SelectString = ReadString(r);
                 if ((b & B3) != 0) qx.ExclusiveKey = r.ReadByte();
-                if ((b & B4) != 0) qx.Connect1 = (Connect)r.ReadByte();
-                if ((b & B5) != 0) qx.Connect2 = (Connect)r.ReadByte();
+                if ((b & B4) != 0) qx.Head.Connect = (Connect)r.ReadByte();
+                if ((b & B5) != 0) qx.Tail.Connect = (Connect)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
@@ -401,8 +420,8 @@ namespace RepositoryUWP
                 if ((b & B2) != 0) qx.WhereString = ReadString(r);
                 if ((b & B3) != 0) qx.SelectString = ReadString(r);
                 if ((b & B4) != 0) qx.ExclusiveKey = r.ReadByte();
-                if ((b & B5) != 0) qx.Connect1 = (Connect)r.ReadByte();
-                if ((b & B6) != 0) qx.Connect2 = (Connect)r.ReadByte();
+                if ((b & B5) != 0) qx.Head.Connect = (Connect)r.ReadByte();
+                if ((b & B6) != 0) qx.Tail.Connect = (Connect)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
@@ -429,10 +448,44 @@ namespace RepositoryUWP
                 if ((b & B2) != 0) qx.WhereString = ReadString(r);
                 if ((b & B3) != 0) qx.SelectString = ReadString(r);
                 if ((b & B4) != 0) qx.ExclusiveKey = r.ReadByte();
-                if ((b & B5) != 0) qx.Connect1 = (Connect)r.ReadByte();
-                if ((b & B6) != 0) qx.Connect2 = (Connect)r.ReadByte();
-                if ((b & B7) != 0) qx.Attach1 = (Attach)r.ReadByte();
-                if ((b & B8) != 0) qx.Attatch2 = (Attach)r.ReadByte();
+                if ((b & B5) != 0) qx.Head.Connect = (Connect)r.ReadByte();
+                if ((b & B6) != 0) qx.Tail.Connect = (Connect)r.ReadByte();
+                if ((b & B7) != 0) qx.Head.Attach = (Attach)r.ReadByte();
+                if ((b & B8) != 0) qx.Tail.Attach = (Attach)r.ReadByte();
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
+        }
+        #endregion
+
+        #region ReadQueryX_4  =================================================
+        private void ReadQueryX_4(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            var store = chef.QueryXStore;
+            var count = r.ReadInt32();
+            if (count < 0) throw new Exception($"Invalid count {count}");
+
+            for (int i = 0; i < count; i++)
+            {
+                var index = r.ReadInt32();
+                if (index < 0 || index >= items.Length) throw new Exception($"Invalid index {index}");
+
+                var qx = new QueryX(store, guids[index]);
+                items[index] = qx;
+
+                var b = r.ReadUInt16();
+                if ((b & S1) != 0) qx.SetState(r.ReadUInt16());
+                if ((b & S2) != 0) qx.WhereString = ReadString(r);
+                if ((b & S3) != 0) qx.SelectString = ReadString(r);
+                if ((b & S4) != 0) qx.ExclusiveKey = r.ReadByte();
+
+                if ((b & S5) != 0) qx.Head.Facet = (Facet)r.ReadByte();
+                if ((b & S6) != 0) qx.Head.Attach = (Attach)r.ReadByte();
+                if ((b & S7) != 0) qx.Head.Connect = (Connect)r.ReadByte();
+
+                if ((b & S8) != 0) qx.Tail.Facet = (Facet)r.ReadByte();
+                if ((b & S9) != 0) qx.Tail.Attach = (Attach)r.ReadByte();
+                if ((b & S10) != 0) qx.Tail.Connect = (Connect)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
@@ -494,7 +547,6 @@ namespace RepositoryUWP
                 if ((b & S7) != 0) sx.LeftContact = (Contact)r.ReadByte();
                 if ((b & S8) != 0) sx.RightContact = (Contact)r.ReadByte();
                 if ((b & S9) != 0) sx.BottomContact = (Contact)r.ReadByte();
-                if ((b & S10) != 0) sx.Attach = (Attach)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.SymbolXEnding) throw new Exception($"Expected SymbolXEnding marker, instead got {mark}");
@@ -1128,12 +1180,13 @@ namespace RepositoryUWP
                                 edge.Face1.Side = (Side)r.ReadByte();
                                 edge.Face1.Index = r.ReadByte();
                                 edge.Face1.Count = r.ReadByte();
+                                edge.Face1.Facet = (Facet)r.ReadByte();
+                                edge.Face1.Attach = (Attach)r.ReadByte(); //new parameter
+
                                 edge.Face2.Side = (Side)r.ReadByte();
                                 edge.Face2.Index = r.ReadByte();
                                 edge.Face2.Count = r.ReadByte();
-                                edge.Face1.Facet = (Facet)r.ReadByte();
                                 edge.Face2.Facet = (Facet)r.ReadByte();
-                                edge.Face1.Attach = (Attach)r.ReadByte(); //new parameter
                                 edge.Face2.Attach = (Attach)r.ReadByte(); //new parameter
 
                                 var pnCount = r.ReadUInt16();

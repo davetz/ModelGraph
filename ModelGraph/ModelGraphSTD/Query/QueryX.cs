@@ -7,15 +7,13 @@ namespace ModelGraphSTD
         internal Guid Guid;
         internal WhereSelect Where;
         internal WhereSelect Select;
-        internal Connect Connect1;
-        internal Attach Attach1;
-        internal Connect Connect2;
-        internal Attach Attatch2;
+        internal PathEnd Head;
+        internal PathEnd Tail;
         internal byte ExclusiveKey;
         private PFlag _flags;
 
         #region Constructor  ==================================================
-        internal QueryX(Chef owner) //referenced in _graphParams for nodes
+        internal QueryX(Chef owner) //QueryXNode, referenced in GraphParms
         {
             Owner = owner;
             Trait = Trait.NodeParm;

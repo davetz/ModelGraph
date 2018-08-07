@@ -49,8 +49,8 @@ namespace ModelGraphSTD
         internal GraphX GraphX { get { return (Owner == null) ? null : Owner.Owner as GraphX; } }
         internal QueryX QueryX { get { return _queryX as QueryX; } }
 
-        internal Connect Connect1 { get { return QueryX.Connect1; } }
-        internal Connect Connect2 { get { return QueryX.Connect2; } }
+        internal Connect Connect1 { get { return QueryX.Head.Connect; } }
+        internal Connect Connect2 { get { return QueryX.Tail.Connect; } }
         #endregion
 
 
@@ -299,19 +299,27 @@ namespace ModelGraphSTD
         #region Options  ======================================================
         internal Node OtherNode(Node node) => (node == Node1) ? Node2 : Node1;
 
-        internal void SetFace(Node node, Side direction)
+        internal void SetFace(Node node, Side side)
         {
             if (node == Node1)
-                Face1.Assign(direction);
+                Face1.Side = side;
             else
-                Face2.Assign(direction);
+                Face2.Side = side;
         }
-        internal void SetFace(Node node, Side direction, int index, int count)
+        internal void SetFace(Node node, Side side, int index, int count)
         {
             if (node == Node1)
-                Face1.Assign(direction, index, count);
+            {
+                Face1.Side = side;
+                Face1.Index = (byte)((index > byte.MaxValue) ? byte.MaxValue : index);
+                Face1.Count = (byte)((count > byte.MaxValue) ? byte.MaxValue : count);
+            }
             else
-                Face2.Assign(direction, index, count);
+            {
+                Face2.Side = side;
+                Face2.Index = (byte)((index > byte.MaxValue) ? byte.MaxValue : index);
+                Face2.Count = (byte)((count > byte.MaxValue) ? byte.MaxValue : count);
+            }
         }
         #endregion
 
@@ -888,11 +896,11 @@ namespace ModelGraphSTD
 
             if (Node1.IsSymbol && Node2.IsNode)
             {
-                #region SkewFactor  ===========================================
+                #region SkewOffset  ===========================================
                 //                 tm o--------------------------------o| Node1
-                //                   /
-                //                  /--skew angle
-                //          Face2  /
+                //                   /|
+                //                  / |
+                //          Face2  /  | skew offset
                 //  Node2 |o------o bp
                 //
                 var bx = points[bp1].X;

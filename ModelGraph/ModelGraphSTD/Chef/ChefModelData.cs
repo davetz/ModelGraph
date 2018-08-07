@@ -4124,7 +4124,6 @@ namespace ModelGraphSTD
                     AddProperyModel(prev, m, _symbolXLeftContacttProperty);
                     AddProperyModel(prev, m, _symbolXRightContactProperty);
                     AddProperyModel(prev, m, _symbolXBottomContactProperty);
-                    AddProperyModel(prev, m, _symbolXAttatchProperty);
 
                     return (true, true);
                 }
@@ -5781,10 +5780,12 @@ namespace ModelGraphSTD
                         anyChange |= AddProperyModel(prev, m, _queryXRelationProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXIsReversedProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXIsBreakPointProperty);
-                        anyChange |= AddProperyModel(prev, m, _queryXConnect1Property);
-                        anyChange |= AddProperyModel(prev, m, _queryXConnect2Property);
+                        anyChange |= AddProperyModel(prev, m, _queryXFacet1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXAttach1Property);
+                        anyChange |= AddProperyModel(prev, m, _queryXConnect1Property);
+                        anyChange |= AddProperyModel(prev, m, _queryXFacet2Property);
                         anyChange |= AddProperyModel(prev, m, _queryXAttatch2Property);
+                        anyChange |= AddProperyModel(prev, m, _queryXConnect2Property);
                         anyChange |= AddProperyModel(prev, m, _queryXRootWhereProperty);
                     }
 
@@ -8415,8 +8416,8 @@ namespace ModelGraphSTD
 
                     AddProperyModel(prev, m, _edgeFace1Property);
                     AddProperyModel(prev, m, _edgeFace2Property);
-                    AddProperyModel(prev, m, _edgeGnarl1Property);
-                    AddProperyModel(prev, m, _edgeGnarl2Property);
+                    AddProperyModel(prev, m, _edgeFacet1Property);
+                    AddProperyModel(prev, m, _edgeFacet2Property);
                     AddProperyModel(prev, m, _edgeConnect1Property);
                     AddProperyModel(prev, m, _edgeConnect2Property);
 

@@ -34,6 +34,7 @@ namespace RepositoryUWP
         static Guid _fileFormat_4 = new Guid("7C0620F4-C2E4-4E78-AEFA-5CDC50EDE114");
         static Guid _fileFormat_5 = new Guid("8B9C3519-02FF-4416-9FD9-ED2699AF176E");
         static Guid _fileFormat_6 = new Guid("41489943-94FC-426F-899A-B53A3FF0126A");
+        static Guid _fileFormat_7 = new Guid("E660208C-287E-4901-AB45-6BBD71E95359");
         #endregion
 
         #region Mark  =========================================================

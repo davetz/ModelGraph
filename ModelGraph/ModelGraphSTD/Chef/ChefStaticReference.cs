@@ -27,8 +27,8 @@ namespace ModelGraphSTD
 
                 { _edgeFace1Property, _sideEnum },
                 { _edgeFace2Property, _sideEnum },
-                { _edgeGnarl1Property, _facetEnum },
-                { _edgeGnarl2Property, _facetEnum },
+                { _edgeFacet1Property, _facetEnum },
+                { _edgeFacet2Property, _facetEnum },
                 { _edgeConnect1Property, _connectEnum },
                 { _edgeConnect2Property, _connectEnum },
 
@@ -36,12 +36,13 @@ namespace ModelGraphSTD
                 { _symbolXLeftContacttProperty, _contactEnum },
                 { _symbolXRightContactProperty, _contactEnum },
                 { _symbolXBottomContactProperty, _contactEnum },
-                { _symbolXAttatchProperty, _AttatchEnum },
 
+                { _queryXFacet1Property, _facetEnum },
+                { _queryXFacet2Property, _facetEnum },
+                { _queryXAttach1Property, _attatchEnum },
+                { _queryXAttatch2Property, _attatchEnum },
                 { _queryXConnect1Property, _connectEnum },
                 { _queryXConnect2Property, _connectEnum },
-                { _queryXAttach1Property, _AttatchEnum },
-                { _queryXAttatch2Property, _AttatchEnum },
 
                 { _computeXCompuTypeProperty, _computeTypeEnum },
                 { _computeXNumericSetProperty, _numericSetEnum },
