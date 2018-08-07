@@ -377,7 +377,7 @@ namespace ModelGraphUWP
 
         Windows.ApplicationModel.Resources.ResourceLoader _resourceLoader;
 
-        private static int _ds = GraphParm.HitMargin;
+        private static int _ds = GraphDefault.HitMargin;
         #endregion
 
         #region Initialize  ===================================================

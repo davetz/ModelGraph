@@ -586,14 +586,14 @@ namespace ModelGraphSTD
             }
             {
                 var p =  _edgeGnarl1Property = new PropertyOf<Edge, string>(PropertyZStore, Trait.EdgeGnarl1_P, _facetEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Facet1);
-                p.SetValFunc = (item, value) => { p.Cast(item).Facet1 = (FacetOf)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Face1.Facet);
+                p.SetValFunc = (item, value) => { p.Cast(item).Face1.Facet = (Facet)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
                 var p = _edgeGnarl2Property = new PropertyOf<Edge, string>(PropertyZStore, Trait.EdgeGnarl1_P, _facetEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Facet2);
-                p.SetValFunc = (item, value) => { p.Cast(item).Facet2 = (FacetOf)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Face2.Facet);
+                p.SetValFunc = (item, value) => { p.Cast(item).Face2.Facet = (Facet)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {

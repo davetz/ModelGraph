@@ -5,7 +5,7 @@ using System.Windows;
 namespace ModelGraphSTD
 {/*
  */
-    public static class GraphParm
+    public static class GraphDefault
     {
         public static int HitMargin = 1;
         public static int MinNodeSize = 2;

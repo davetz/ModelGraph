@@ -4,8 +4,8 @@ namespace ModelGraphSTD
 {
     public static class XYPoint
     {
-        static readonly int _ds = GraphParm.HitMargin;
-        static readonly int _ds2 = GraphParm.HitMarginSquared;
+        static readonly int _ds = GraphDefault.HitMargin;
+        static readonly int _ds2 = GraphDefault.HitMarginSquared;
 
         public static (int X, int Y) Move((int x, int y) p, (int dx, int dy) b) => ((p.x + b.dx), (p.y + b.dy));
         public static (int X, int Y) Rotate((int x, int y) p, (int x, int y) b) => ((b.x - (p.y - b.y)), (b.y + (p.x - b.x)));

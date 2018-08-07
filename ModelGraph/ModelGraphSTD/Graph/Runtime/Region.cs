@@ -24,7 +24,7 @@ namespace ModelGraphSTD
         #region Constructor  ==================================================
         public Region((int X, int Y) p, int minSpacing = -1)
         {
-            _ds = (minSpacing < 0) ? GraphParm.PolygonPointSpacing : minSpacing;
+            _ds = (minSpacing < 0) ? GraphDefault.PolygonPointSpacing : minSpacing;
 
             Delta = new Extent(p);
             Extent = new Extent(p);

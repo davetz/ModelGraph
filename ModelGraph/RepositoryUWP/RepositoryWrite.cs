@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_5;
+            var fileFormat = _fileFormat_6;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -53,7 +53,7 @@ namespace RepositoryUWP
             if (chef.ComputeXStore.Count > 0) WriteComputeX(chef, w, itemIndex);
             if (chef.RelationXStore.Count > 0) WriteRelationX(chef, w, itemIndex);
 
-            if (chef.T_GraphParms.Count > 0) WriteGraphParm(chef, w, itemIndex);
+            if (chef.GraphParms.Count > 0) WriteGraphParm(chef, w, itemIndex);
             if (relationList.Count > 0) WriteRelationLink(chef, w, relationList, itemIndex);
 
             w.WriteByte((byte)Mark.StorageFileEnding);
@@ -387,10 +387,10 @@ namespace RepositoryUWP
             var gxrtList = new List<(GraphX gx, Item ri)>();
             var gxrtsgList = new List<(GraphX gx, Item ri, QueryX qx)>();
             var gxrtsgpmList = new List<(GraphX gx, Item ri, QueryX qx, NodeEdge ge)>();
-            var graphParms = chef.T_GraphParms;
+            var graphParms = chef.GraphParms;
 
             // find items that are referenced in the graph parms, but no longer exist
-            foreach (var e1 in chef.T_GraphParms)//GD
+            foreach (var e1 in chef.GraphParms)//GD
             {
                 var gx = e1.Key;
                 if (itemIndex.ContainsKey(gx))
@@ -537,8 +537,10 @@ namespace RepositoryUWP
                                         w.WriteByte((byte)eg.Face2.Side);
                                         w.WriteByte((byte)eg.Face2.Index);
                                         w.WriteByte((byte)eg.Face2.Count);
-                                        w.WriteByte((byte)eg.Facet1);
-                                        w.WriteByte((byte)eg.Facet2);
+                                        w.WriteByte((byte)eg.Face1.Facet);
+                                        w.WriteByte((byte)eg.Face2.Facet);
+                                        w.WriteByte((byte)eg.Face1.Attach);
+                                        w.WriteByte((byte)eg.Face2.Attach);
 
                                         var len = (eg.Bends == null) ? 0 : eg.Bends.Length;
                                         if (len > 0)

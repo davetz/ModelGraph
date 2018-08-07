@@ -4,7 +4,6 @@ namespace ModelGraphSTD
 {
     public class EdgeRotator
     {
-        #region Fields  ===================================================
         private byte n;
         private byte s;
         private byte w;
@@ -14,7 +13,6 @@ namespace ModelGraphSTD
         private byte S;
         private byte W;
         private byte E;
-        #endregion
 
         #region Constructors  =============================================
         internal EdgeRotator(Connect connect)

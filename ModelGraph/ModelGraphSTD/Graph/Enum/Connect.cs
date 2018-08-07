@@ -8,11 +8,11 @@ namespace ModelGraphSTD
     [Flags]
     public enum Connect : byte
     {
-        Any = 0,
-        East = 1,
-        West = 2,
-        North = 4,
-        South = 8,
+        Any = 0,    // Side.Any
+        East = 1,   // Side.East
+        West = 2,   // Side.West
+        North = 4,  // Side.North
+        South = 8,  // Side.South
         East_West = (East | West),
         North_South = (North | South),
         North_East = (North | East),

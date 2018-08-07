@@ -8,9 +8,9 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        private void InitializeGraphParams() { T_GraphParms.Clear(); }
+        private void InitializeGraphParams() { GraphParms.Clear(); }
 
-        internal Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>> T_GraphParms { get; set; } = new Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>>();
+        internal Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>> GraphParms { get; set; } = new Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>>();
 
         #region ValidateGraphParms  ===========================================
         // Ensure all edges and nodes have parameters.
@@ -48,10 +48,10 @@ namespace ModelGraphSTD
             if (g.NodeItems.Count > 0)
             {
 
-                if (!T_GraphParms.TryGetValue(gx, out Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>> rtQxParams))
+                if (!GraphParms.TryGetValue(gx, out Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>> rtQxParams))
                 {
                     rtQxParams = new Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>();
-                    T_GraphParms.Add(gx, rtQxParams);
+                    GraphParms.Add(gx, rtQxParams);
                 }
                 if (!rtQxParams.TryGetValue(rt, out Dictionary<QueryX, List<NodeEdge>> qxParams))
                 {
@@ -278,8 +278,8 @@ namespace ModelGraphSTD
             }
             else
             {
-                if (rt == Dummy) T_GraphParms.Remove(gx);
-                else if (T_GraphParms.ContainsKey(gx)) T_GraphParms[gx].Remove(rt);
+                if (rt == Dummy) GraphParms.Remove(gx);
+                else if (GraphParms.ContainsKey(gx)) GraphParms[gx].Remove(rt);
             }
 
             #region OpenPathIndex  ============================================

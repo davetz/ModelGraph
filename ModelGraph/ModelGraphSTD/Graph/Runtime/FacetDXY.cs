@@ -1,8 +1,8 @@
 ﻿namespace ModelGraphSTD
 {
-    public class Facet
+    public class FacetDXY
     {
-        internal Facet(int[] dxy)
+        internal FacetDXY(int[] dxy)
         {
             var len = (dxy == null) ? 0 : dxy.Length;
 

@@ -5,18 +5,24 @@
         internal Side Side;
         internal byte Index;
         internal byte Count;
+        internal Facet Facet;
+        internal Attach Attach;
 
         internal Face(Side side)
         {
             Side = side;
             Index = 1;
             Count = 1;
+            Facet = Facet.None;
+            Attach = Attach.Default;
         }
         internal Face(Side side, int index, int count)
         {
             Side = side;
             Index = (byte)((index > byte.MaxValue) ? byte.MaxValue : index);
             Count = (byte)((count > byte.MaxValue) ? byte.MaxValue : count);
+            Facet = Facet.None;
+            Attach = Attach.Default;
         }
 
         internal int Offset { get { return 2 * Index - (Count - 1); } }
@@ -39,6 +45,10 @@
         internal void Assign(Side side)
         {
             Side = side;
+        }
+        internal void Assign(Attach attach)
+        {
+            Attach = attach;
         }
     }
 }

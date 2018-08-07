@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {/*
@@ -20,7 +16,7 @@ namespace ModelGraphSTD
         ~~~+~~~        ~+~         W + E
         4/3|2\1        2|1           S
  */
-    public struct LineOrder
+    public class LineOrder
     {
         internal Node Node;         // the given node
         internal int Count;         // the number of closed lines

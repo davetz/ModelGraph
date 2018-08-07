@@ -18,25 +18,17 @@ namespace ModelGraphSTD
         public (int X, int Y)[] Bends;
         public Face Face1;
         public Face Face2;
-        public FacetOf Facet1;
-        public FacetOf Facet2;
-        public Attach Attatch1;
-        public Attach Attatch2;
 
-        internal ((int X, int Y)[] Points, (int X, int Y)[] Bends, Face Face1,Face Face2,FacetOf Facet1,FacetOf Facet2,Attach Attatch1,Attach Attatch2)
+        internal ((int X, int Y)[] Points, (int X, int Y)[] Bends, Face Face1, Face Face2)
             Parms
         {
-            get { return (Points, Bends, Face1, Face2, Facet1, Facet2, Attatch1, Attatch2); }
+            get { return (Points, Bends, Face1, Face2); }
             set
             {
                 Points = value.Points;
                 Bends = value.Bends;
                 Face1 = value.Face1;
                 Face2 = value.Face2;
-                Facet1 = value.Facet1;
-                Facet2 = value.Facet2;
-                Attatch1 = value.Attatch1;
-                Attatch2 = value.Attatch2;
             }
         }
         #endregion
@@ -152,10 +144,7 @@ namespace ModelGraphSTD
         internal (int X, int Y) GetClosestBend(Node node)
         {
             if (Points == null) Refresh();
-            if (node == Node1)
-                return Points[Bp1];
-            else
-                return Points[Bp2];
+            return (node == Node1) ? Points[Bp1] : Points[Bp2];
         }
         #endregion
 
@@ -166,8 +155,7 @@ namespace ModelGraphSTD
         #region HitTest  ======================================================
         // [node1]o----o-----o---edge----o-----o----o[node2] 
         //            Tm1   Bp1         Bp2   Tm2
-        static int _ds = GraphParm.HitMargin;
-        static int _ds2 = GraphParm.HitMarginSquared;
+        static readonly int _ds = GraphDefault.HitMargin;
 
         internal void SetExtent((int X, int Y)[] points, int margin)
         {
@@ -183,8 +171,8 @@ namespace ModelGraphSTD
 
         internal bool HitTest((int X, int Y) p, ref HitLocation hit, ref int hitBend, ref int hitIndex, ref (int X, int Y) hitPoint)
         {
-            (int X, int Y) p1 = (0, 0);    // used for testing line segments
-            (int X, int Y) p2 = (0, 0);    // used for testing line segments
+            (int X, int Y) p1 = (0, 0); // used for testing line segments
+            (int X, int Y) p2 = (0, 0); // used for testing line segments
             var E = new Extent(p, _ds); // extent of hit point sensitivity
 
             var gotHit = false;
@@ -300,10 +288,7 @@ namespace ModelGraphSTD
                 var e1 = new Extent(Points[Tm1], hitPoint);
                 var e2 = new Extent(Points[Tm2], hitPoint);
 
-                if (e1.IsLessThan(e2))
-                    hit |= (HitLocation.Edge | HitLocation.End1);
-                else
-                    hit |= (HitLocation.Edge | HitLocation.End2);
+                hit |=  (e1.IsLessThan(e2)) ? (HitLocation.Edge | HitLocation.End1) : (HitLocation.Edge | HitLocation.End2);
 
                 return true;
             }
@@ -331,14 +316,14 @@ namespace ModelGraphSTD
         #endregion
 
         #region Facets  =======================================================
-        static readonly Facet[] Facets =
+        static readonly FacetDXY[] Facets =
         {
-            new Facet(new int[0]),
-            new Facet(new int[] { 0, 2,    3, 2,    6,0,   3,-2,   0,-2,    0, 0,    6, 0 }),
-            new Facet(new int[] { 3, 0,    7,-4,   11,0,   7, 4,   3, 0,    7,-4,   11, 0 }),
-            new Facet(new int[] { 2, 0,   12,-3,    8,0,  12, 3,   2, 0,   12, 0 })
+            new FacetDXY(new int[0]),
+            new FacetDXY(new int[] { 0, 2,    3, 2,    6,0,   3,-2,   0,-2,    0, 0,    6, 0 }),
+            new FacetDXY(new int[] { 3, 0,    7,-4,   11,0,   7, 4,   3, 0,    7,-4,   11, 0 }),
+            new FacetDXY(new int[] { 2, 0,   12,-3,    8,0,  12, 3,   2, 0,   12, 0 })
         };
-        static readonly Facet NoFacet = new Facet(new int[0]);
+        static readonly FacetDXY NoFacet = new FacetDXY(new int[0]);
         #endregion
 
         #region Refresh  ======================================================
@@ -352,12 +337,12 @@ namespace ModelGraphSTD
         /// </remarks>
         internal void Refresh()
         {
-            var facet1 = Node1.IsPointNode ? NoFacet : Facets[(int)Facet1];
-            var facet2 = Node2.IsPointNode ? NoFacet : Facets[(int)Facet2];
+            var facet1 = Node1.IsPointNode ? NoFacet : Facets[(int)Face1.Facet];
+            var facet2 = Node2.IsPointNode ? NoFacet : Facets[(int)Face2.Facet];
 
-            var tmLen = GraphParm.TerminalLength;
-            var tmSpc = GraphParm.TerminalSpacing / 2;
-            var tmSkf = GraphParm.TerminalAngleSkew;
+            var tmLen = GraphDefault.TerminalLength;
+            var tmSpc = GraphDefault.TerminalSpacing / 2;
+            var tmSkf = GraphDefault.TerminalAngleSkew;
 
             if (Owner != null && Owner.IsGraph)
             {
@@ -967,7 +952,7 @@ namespace ModelGraphSTD
                 #endregion
             }
 
-            SetExtent(points, GraphParm.HitMargin);
+            SetExtent(points, GraphDefault.HitMargin);
         }
         #endregion
     }

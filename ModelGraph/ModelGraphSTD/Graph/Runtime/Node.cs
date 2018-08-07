@@ -45,7 +45,7 @@ namespace ModelGraphSTD
         {
             Owner = null;
             Trait = Trait.Node;
-            DX = DY = (byte)GraphParm.MinNodeSize;
+            DX = DY = (byte)GraphDefault.MinNodeSize;
         }
         #endregion
 
@@ -73,7 +73,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Tryinitialize  ================================================
-        static byte _min = (byte)GraphParm.MinNodeSize;
+        static byte _min = (byte)GraphDefault.MinNodeSize;
         static byte _max = byte.MaxValue;
 
         internal bool TryInitialize(int cp)
@@ -244,7 +244,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Minimize, HitTest  ============================================
-        static readonly int _ds = GraphParm.HitMargin;
+        static readonly int _ds = GraphDefault.HitMargin;
 
         public void Minimize(Extent e)
         {

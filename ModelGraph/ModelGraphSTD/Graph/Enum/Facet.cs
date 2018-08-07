@@ -1,8 +1,6 @@
 ﻿namespace ModelGraphSTD
-{/*
-
- */
-    public enum FacetOf : byte
+{
+    public enum Facet : byte
     {
         None = 0,
         Nubby = 1,
