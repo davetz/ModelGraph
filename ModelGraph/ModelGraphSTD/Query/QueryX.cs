@@ -7,8 +7,7 @@ namespace ModelGraphSTD
         internal Guid Guid;
         internal WhereSelect Where;
         internal WhereSelect Select;
-        internal PathEnd Head;
-        internal PathEnd Tail;
+        internal PathParm PathParm;
         internal byte ExclusiveKey;
         private PFlag _flags;
 
@@ -29,6 +28,8 @@ namespace ModelGraphSTD
             IsHead = isHead;
             IsTail = true;
             AutoExpandRight = true;
+
+            if (QueryKind == QueryType.Path && IsHead) PathParm = new PathParm();
 
             owner.Add(this);
         }

@@ -211,8 +211,8 @@ namespace ModelGraphSTD
                             var eg = new Edge(e1.Key)
                             {
                                 Owner = g,
-                                Face1 = new Face(e1.Key.Head),
-                                Face2 = new Face(e1.Key.Tail),
+                                Face1 = new Face(e1.Key.PathParm.Head),
+                                Face2 = new Face(e1.Key.PathParm.Tail),
                             };
                             g.Edges.Add(eg);
                             paramList.Add(eg);
@@ -229,8 +229,8 @@ namespace ModelGraphSTD
                         {
                             var eg = pm as Edge;
                             eg.Owner = g;
-                            eg.Face1 = new Face(eg.Face1, e1.Key.Head);
-                            eg.Face2 = new Face(eg.Face2, e1.Key.Tail);
+                            eg.Face1 = new Face(eg.Face1, e1.Key.PathParm.Head);
+                            eg.Face2 = new Face(eg.Face2, e1.Key.PathParm.Tail);
                             g.Edges.Add(eg);
 
                             if (!item_items.TryGetValue(eg.Node1.Item, out items))
@@ -249,8 +249,8 @@ namespace ModelGraphSTD
                             var eg = new Edge(e1.Key)
                             {
                                 Owner = g,
-                                Face1 = new Face(e1.Key.Head),
-                                Face2 = new Face(e1.Key.Tail),
+                                Face1 = new Face(e1.Key.PathParm.Head),
+                                Face2 = new Face(e1.Key.PathParm.Tail),
                             };
                             g.Edges.Add(eg);
                             paramList.Add(eg);

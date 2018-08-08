@@ -387,13 +387,15 @@ namespace RepositoryUWP
                 var f = (r.ReadByte());
                 if ((f & B1) != 0) qx.IsReversed = true;
 
-
                 var b = r.ReadByte();
                 if ((b & B1) != 0) qx.WhereString = ReadString(r);
                 if ((b & B2) != 0) qx.SelectString = ReadString(r);
                 if ((b & B3) != 0) qx.ExclusiveKey = r.ReadByte();
-                if ((b & B4) != 0) qx.Head.Connect = (Connect)r.ReadByte();
-                if ((b & B5) != 0) qx.Tail.Connect = (Connect)r.ReadByte();
+
+                if (qx.QueryKind == QueryType.Path && qx.IsHead) qx.PathParm = new PathParm();
+
+                if ((b & B4) != 0) qx.PathParm.Head.Connect = (Connect)r.ReadByte();
+                if ((b & B5) != 0) qx.PathParm.Tail.Connect = (Connect)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
@@ -420,8 +422,11 @@ namespace RepositoryUWP
                 if ((b & B2) != 0) qx.WhereString = ReadString(r);
                 if ((b & B3) != 0) qx.SelectString = ReadString(r);
                 if ((b & B4) != 0) qx.ExclusiveKey = r.ReadByte();
-                if ((b & B5) != 0) qx.Head.Connect = (Connect)r.ReadByte();
-                if ((b & B6) != 0) qx.Tail.Connect = (Connect)r.ReadByte();
+
+                if (qx.QueryKind == QueryType.Path && qx.IsHead) qx.PathParm = new PathParm();
+
+                if ((b & B5) != 0) qx.PathParm.Head.Connect = (Connect)r.ReadByte();
+                if ((b & B6) != 0) qx.PathParm.Tail.Connect = (Connect)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
@@ -448,10 +453,13 @@ namespace RepositoryUWP
                 if ((b & B2) != 0) qx.WhereString = ReadString(r);
                 if ((b & B3) != 0) qx.SelectString = ReadString(r);
                 if ((b & B4) != 0) qx.ExclusiveKey = r.ReadByte();
-                if ((b & B5) != 0) qx.Head.Connect = (Connect)r.ReadByte();
-                if ((b & B6) != 0) qx.Tail.Connect = (Connect)r.ReadByte();
-                if ((b & B7) != 0) qx.Head.Attach = (Attach)r.ReadByte();
-                if ((b & B8) != 0) qx.Tail.Attach = (Attach)r.ReadByte();
+
+                if (qx.QueryKind == QueryType.Path && qx.IsHead) qx.PathParm = new PathParm();
+
+                if ((b & B5) != 0) qx.PathParm.Head.Connect = (Connect)r.ReadByte();
+                if ((b & B6) != 0) qx.PathParm.Tail.Connect = (Connect)r.ReadByte();
+                if ((b & B7) != 0) qx.PathParm.Head.Attach = (Attach)r.ReadByte();
+                if ((b & B8) != 0) qx.PathParm.Tail.Attach = (Attach)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
@@ -473,19 +481,22 @@ namespace RepositoryUWP
                 var qx = new QueryX(store, guids[index]);
                 items[index] = qx;
 
+
                 var b = r.ReadUInt16();
                 if ((b & S1) != 0) qx.SetState(r.ReadUInt16());
                 if ((b & S2) != 0) qx.WhereString = ReadString(r);
                 if ((b & S3) != 0) qx.SelectString = ReadString(r);
                 if ((b & S4) != 0) qx.ExclusiveKey = r.ReadByte();
 
-                if ((b & S5) != 0) qx.Head.Facet = (Facet)r.ReadByte();
-                if ((b & S6) != 0) qx.Head.Attach = (Attach)r.ReadByte();
-                if ((b & S7) != 0) qx.Head.Connect = (Connect)r.ReadByte();
+                if (qx.QueryKind == QueryType.Path && qx.IsHead) qx.PathParm = new PathParm();
 
-                if ((b & S8) != 0) qx.Tail.Facet = (Facet)r.ReadByte();
-                if ((b & S9) != 0) qx.Tail.Attach = (Attach)r.ReadByte();
-                if ((b & S10) != 0) qx.Tail.Connect = (Connect)r.ReadByte();
+                if ((b & S5) != 0) qx.PathParm.Head.Facet = (Facet)r.ReadByte();
+                if ((b & S6) != 0) qx.PathParm.Head.Attach = (Attach)r.ReadByte();
+                if ((b & S7) != 0) qx.PathParm.Head.Connect = (Connect)r.ReadByte();
+
+                if ((b & S8) != 0) qx.PathParm.Tail.Facet = (Facet)r.ReadByte();
+                if ((b & S9) != 0) qx.PathParm.Tail.Attach = (Attach)r.ReadByte();
+                if ((b & S10) != 0) qx.PathParm.Tail.Connect = (Connect)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");

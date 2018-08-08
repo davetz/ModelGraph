@@ -5493,6 +5493,8 @@ namespace ModelGraphSTD
                 N = list.Count;
                 var M = N - 1;
 
+                list[0].PathParm = (kind == QueryType.Path) ? new PathParm() : null;
+
                 for (int i = 0; i < N; i++)
                 {
                     list[i].QueryKind = kind;
@@ -5780,13 +5782,16 @@ namespace ModelGraphSTD
                         anyChange |= AddProperyModel(prev, m, _queryXRelationProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXIsReversedProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXIsBreakPointProperty);
+                        anyChange |= AddProperyModel(prev, m, _queryXRootWhereProperty);
+                        anyChange |= AddProperyModel(prev, m, _queryXLineStyleProperty);
+                        anyChange |= AddProperyModel(prev, m, _queryXDashStyleProperty);
+                        anyChange |= AddProperyModel(prev, m, _queryXLineColorProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXFacet1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXAttach1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXFacet2Property);
                         anyChange |= AddProperyModel(prev, m, _queryXAttatch2Property);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect2Property);
-                        anyChange |= AddProperyModel(prev, m, _queryXRootWhereProperty);
                     }
 
                     if (m.IsExpandedLeft)

@@ -21,6 +21,8 @@
         EnumZ _numericTermEnum;
         EnumZ _computeTypeEnum;
         EnumZ _attatchEnum;
+        EnumZ _lineStyleEnum;
+        EnumZ _dashStyleEnum;
         EnumZ _computeResultsEnum;
         EnumZ _computeSortingEnum;
         EnumZ _computeTakeSetEnum;
@@ -145,11 +147,22 @@
             new PairZ(_connectEnum, Trait.Connect_South_East_West);
 
             _attatchEnum = new EnumZ(EnumZStore, Trait.AttatchEnum);
-            new PairZ(_attatchEnum, Trait.Attatch_Default);
-            new PairZ(_attatchEnum, Trait.Attatch_Radial);
             new PairZ(_attatchEnum, Trait.Attatch_Normal);
+            new PairZ(_attatchEnum, Trait.Attatch_Radial);
             new PairZ(_attatchEnum, Trait.Attatch_RightAngle);
             new PairZ(_attatchEnum, Trait.Attatch_SkewedAngle);
+
+            _lineStyleEnum = new EnumZ(EnumZStore, Trait.LineStyleEnum);
+            new PairZ(_lineStyleEnum, Trait.LineStyle_PointToPoint);
+            new PairZ(_lineStyleEnum, Trait.LineStyle_SimpleSpline);
+            new PairZ(_lineStyleEnum, Trait.LineStyle_DoubleSpline);
+
+            _dashStyleEnum = new EnumZ(EnumZStore, Trait.DashStyleEnum);
+            new PairZ(_dashStyleEnum, Trait.DashStyle_Solid);
+            new PairZ(_dashStyleEnum, Trait.DashStyle_Dashed);
+            new PairZ(_dashStyleEnum, Trait.DashStyle_Dotted);
+            new PairZ(_dashStyleEnum, Trait.DashStyle_DashDot);
+            new PairZ(_dashStyleEnum, Trait.DashStyle_DashDotDot);
 
             _numericSetEnum = new EnumZ(EnumZStore, Trait.NumericSetEnum);
             new PairZ(_numericSetEnum, Trait.NumericSet_Count);

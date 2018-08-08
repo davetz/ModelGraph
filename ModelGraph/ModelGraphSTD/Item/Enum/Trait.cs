@@ -310,6 +310,9 @@ namespace ModelGraphSTD
         ValueXSelect_P = 0x472 | CanMultiline,
         ValueXIsReversed_P = 0x473,
         ValueXValueType_P = 0x474 | IsReadOnly,
+        QueryXLineStyle_P = 0x475,
+        QueryXDashStyle_P = 0x476,
+        QueryXLineColor_P = 0x477,
 
 
         //=========================================
@@ -755,18 +758,23 @@ namespace ModelGraphSTD
         TakeSet_Both = 0xD02,
         TakeSetEnum = 0xD3F,
 
-        Attatch_Default = 0xD40,
+        Attatch_Normal = 0xD40,
         Attatch_Radial = 0xD41,
-        Attatch_Normal = 0xD42,
-        Attatch_RightAngle = 0xD43,
-        Attatch_SkewedAngle = 0xD44,
+        Attatch_RightAngle = 0xD42,
+        Attatch_SkewedAngle = 0xD43,
         AttatchEnum = 0xD7F,
 
-        StaticPairD80 = 0xD80,
-        StaticEnumDBF = 0xDBF,
+        LineStyle_PointToPoint = 0xD80,
+        LineStyle_SimpleSpline = 0xD81,
+        LineStyle_DoubleSpline = 0xD82,
+        LineStyleEnum = 0xDBF,
 
-        StaticPairDC0 = 0xDC0,
-        StaticEnumDFF = 0xDFF,
+        DashStyle_Solid = 0xDC0,
+        DashStyle_Dashed = 0xDC1,
+        DashStyle_Dotted = 0xDC2,
+        DashStyle_DashDot = 0xDC3,
+        DashStyle_DashDotDot = 0xDC4,
+        DashStyleEnum = 0xDFF,
 
         StaticPairE00 = 0xE00,
         StaticEnumE3F = 0xE3F,

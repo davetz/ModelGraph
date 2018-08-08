@@ -7,6 +7,7 @@
         internal byte Count;
         internal Facet Facet;
         internal Attach Attach;
+        internal Termianl Terminal;
 
         internal Face(PathEnd pathEnd)
         {
@@ -15,6 +16,7 @@
             Count = 1;
             Facet = pathEnd.Facet;
             Attach = pathEnd.Attach;
+            Terminal = Termianl.Radial;
         }
         internal Face(Face face, PathEnd pathEnd)
         {
@@ -23,6 +25,7 @@
             Count = face.Count;
             Facet = pathEnd.Facet;
             Attach = pathEnd.Attach;
+            Terminal = face.Terminal;
         }
         //=====================================================================
         // The index is 0 based, the totalCount is 1's based 

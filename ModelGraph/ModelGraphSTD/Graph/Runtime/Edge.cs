@@ -10,8 +10,8 @@ namespace ModelGraphSTD
         public (int X, int Y)[] Points;
         public Extent Extent = new Extent(); // all points are withing this extent+
         public short Tm1; // index of terminal point 1
-        public short Bp1; // index of closes bend point after Tm1 (to the right) 
-        public short Bp2; // index of closes bend point after Tm2 (to the left)
+        public short Bp1; // index of closest bend point after Tm1 (to the right) 
+        public short Bp2; // index of closest bend point after Tm2 (to the left)
         public short Tm2; // index of terminal point 2
 
         #region Parms  ========================================================
@@ -33,7 +33,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        public bool HasBends => (Bends != null && Bends.Length > 0);
+        internal bool HasBends => (Bends != null && Bends.Length > 0);
 
         #region Constructors  =================================================
         internal Edge(QueryX queryX)
@@ -49,8 +49,8 @@ namespace ModelGraphSTD
         internal GraphX GraphX { get { return (Owner == null) ? null : Owner.Owner as GraphX; } }
         internal QueryX QueryX { get { return _queryX as QueryX; } }
 
-        internal Connect Connect1 { get { return QueryX.Head.Connect; } }
-        internal Connect Connect2 { get { return QueryX.Tail.Connect; } }
+        internal Connect Connect1 { get { return QueryX.PathParm.Head.Connect; } }
+        internal Connect Connect2 { get { return QueryX.PathParm.Tail.Connect; } }
         #endregion
 
 

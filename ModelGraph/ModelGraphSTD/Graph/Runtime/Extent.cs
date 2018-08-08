@@ -232,8 +232,8 @@ namespace ModelGraphSTD
 
         public Extent SetExtent((int X, int Y)[] points, int margin)
         {
-            var len = (points == null) ? 0 : points.Length;
-            if (len == 0)
+            var N = (points == null) ? 0 : points.Length;
+            if (N == 0)
             {
                 X1 = Y1 = X2 = Y2 = 0;
             }
@@ -241,7 +241,7 @@ namespace ModelGraphSTD
             {
                 X1 = Y1 = int.MaxValue;
                 X2 = Y2 = int.MinValue;
-                for (int i = 0; i < len; i++)
+                for (int i = 0; i < N; i++)
                 {
                     if (points[i].X < X1) X1 = points[i].X;
                     if (points[i].Y < Y1) Y1 = points[i].Y;

@@ -44,6 +44,9 @@ namespace ModelGraphSTD
                 { _queryXConnect1Property, _connectEnum },
                 { _queryXConnect2Property, _connectEnum },
 
+                { _queryXLineStyleProperty, _lineStyleEnum },
+                { _queryXDashStyleProperty, _dashStyleEnum },
+
                 { _computeXCompuTypeProperty, _computeTypeEnum },
                 { _computeXNumericSetProperty, _numericSetEnum },
                 { _computeXResultsProperty, _computeResultsEnum },

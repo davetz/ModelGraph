@@ -216,13 +216,13 @@ namespace RepositoryUWP
                 if (qx.IsExclusive) b |= S4;
                 if (qx.QueryKind == QueryType.Path && qx.IsHead == true)
                 {
-                    if (qx.Head.Facet != Facet.None) b |= S5;
-                    if (qx.Head.Attach != Attach.Default) b |= S6;
-                    if (qx.Head.Connect != Connect.Any) b |= S7;
+                    if (qx.PathParm.Head.Facet != Facet.None) b |= S5;
+                    if (qx.PathParm.Head.Attach != Attach.Normal) b |= S6;
+                    if (qx.PathParm.Head.Connect != Connect.Any) b |= S7;
 
-                    if (qx.Tail.Facet != Facet.None) b |= S8;
-                    if (qx.Tail.Attach != Attach.Default) b |= S9;
-                    if (qx.Tail.Connect != Connect.Any) b |= S10;
+                    if (qx.PathParm.Tail.Facet != Facet.None) b |= S8;
+                    if (qx.PathParm.Tail.Attach != Attach.Normal) b |= S9;
+                    if (qx.PathParm.Tail.Connect != Connect.Any) b |= S10;
                 }
 
                 w.WriteUInt16(b);
@@ -231,13 +231,13 @@ namespace RepositoryUWP
                 if ((b & S3) != 0) WriteString(w, qx.SelectString);
                 if ((b & S4) != 0) w.WriteByte(qx.ExclusiveKey);
 
-                if ((b & S5) != 0) w.WriteByte((byte)qx.Head.Facet);
-                if ((b & S6) != 0) w.WriteByte((byte)qx.Head.Attach);
-                if ((b & S7) != 0) w.WriteByte((byte)qx.Head.Connect);
+                if ((b & S5) != 0) w.WriteByte((byte)qx.PathParm.Head.Facet);
+                if ((b & S6) != 0) w.WriteByte((byte)qx.PathParm.Head.Attach);
+                if ((b & S7) != 0) w.WriteByte((byte)qx.PathParm.Head.Connect);
 
-                if ((b & S8) != 0) w.WriteByte((byte)qx.Tail.Facet);
-                if ((b & S9) != 0) w.WriteByte((byte)qx.Tail.Attach);
-                if ((b & S10) != 0) w.WriteByte((byte)qx.Tail.Connect);
+                if ((b & S8) != 0) w.WriteByte((byte)qx.PathParm.Tail.Facet);
+                if ((b & S9) != 0) w.WriteByte((byte)qx.PathParm.Tail.Attach);
+                if ((b & S10) != 0) w.WriteByte((byte)qx.PathParm.Tail.Connect);
             }
             w.WriteByte((byte)Mark.QueryXEnding); // itegrity marker
         }

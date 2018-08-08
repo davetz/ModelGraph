@@ -112,24 +112,6 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region ConvertQueryType  =============================================
-
-        internal bool CanConvertQueryType(ItemModel model)
-        {
-            var qx = model.Item as QueryX;
-            if (!QueryX_QueryX.TryGetParent(qx, out QueryX prev)) return false;
-            if (!prev.IsQueryGraphLink && !prev.IsQueryGraphRoot) return false;
-
-            while (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> items))
-            {
-                if (items.Count > 1) return false;
-                qx = items[0];
-            }
-            return true;
-        }
-
-        #endregion
-
         #region CanDropQueryXRelation  ========================================
         private bool CanDropQueryXRelation(QueryX sx, Relation re)
         {

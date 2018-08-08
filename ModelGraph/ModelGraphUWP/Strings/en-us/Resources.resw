@@ -2160,18 +2160,15 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Specify allowed conntions on tail end</value>
   </data>
   <data name="D40N" xml:space="preserve">
-    <value>Default</value>
+    <value>Normal</value>
   </data>
   <data name="D41N" xml:space="preserve">
     <value>Radial</value>
   </data>
   <data name="D42N" xml:space="preserve">
-    <value>Normal</value>
-  </data>
-  <data name="D43N" xml:space="preserve">
     <value>Right Angle</value>
   </data>
-  <data name="D44N" xml:space="preserve">
+  <data name="D43N" xml:space="preserve">
     <value>Skewed Angle</value>
   </data>
   <data name="D7FN" xml:space="preserve">
@@ -2191,5 +2188,53 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
   </data>
   <data name="470S" xml:space="preserve">
     <value>Path tail end facet</value>
+  </data>
+  <data name="D80N" xml:space="preserve">
+    <value>PointToPoint</value>
+  </data>
+  <data name="D81N" xml:space="preserve">
+    <value>SimpleSpline</value>
+  </data>
+  <data name="D82N" xml:space="preserve">
+    <value>DoubleSpline</value>
+  </data>
+  <data name="DBFN" xml:space="preserve">
+    <value>Line Style</value>
+  </data>
+  <data name="DC0N" xml:space="preserve">
+    <value>Solid</value>
+  </data>
+  <data name="DC1N" xml:space="preserve">
+    <value>Dashed</value>
+  </data>
+  <data name="DC2N" xml:space="preserve">
+    <value>Dotted</value>
+  </data>
+  <data name="DC3N" xml:space="preserve">
+    <value>DashDot</value>
+  </data>
+  <data name="DC4N" xml:space="preserve">
+    <value>DashDotDot</value>
+  </data>
+  <data name="DFFN" xml:space="preserve">
+    <value>Dash Style</value>
+  </data>
+  <data name="475N" xml:space="preserve">
+    <value>Line Style</value>
+  </data>
+  <data name="475S" xml:space="preserve">
+    <value>Specify the line's style</value>
+  </data>
+  <data name="476N" xml:space="preserve">
+    <value>Dash Style</value>
+  </data>
+  <data name="476S" xml:space="preserve">
+    <value>Specify the line's dash style</value>
+  </data>
+  <data name="477N" xml:space="preserve">
+    <value>Line Color</value>
+  </data>
+  <data name="477S" xml:space="preserve">
+    <value>Optionaly specify the line's hardcoded ARGB color code           for example:  #FF008000</value>
   </data>
 </root>
