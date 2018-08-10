@@ -923,7 +923,7 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Filter the rows for specific property values</value>
   </data>
   <data name="472N" xml:space="preserve">
-    <value>Row Value Select</value>
+    <value>Row Select</value>
   </data>
   <data name="472S" xml:space="preserve">
     <value>Select expresion string</value>
@@ -2235,6 +2235,18 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Line Color</value>
   </data>
   <data name="477S" xml:space="preserve">
-    <value>Optionaly specify the line's hardcoded ARGB color code           for example:  #FF008000</value>
+    <value>Forced line color (ARGB code, e.g.  #FF008000)</value>
+  </data>
+  <data name="B20N" xml:space="preserve">
+    <value>Force_None</value>
+  </data>
+  <data name="B21N" xml:space="preserve">
+    <value>Force_Nubby</value>
+  </data>
+  <data name="B22N" xml:space="preserve">
+    <value>Force_Diamond</value>
+  </data>
+  <data name="B23N" xml:space="preserve">
+    <value>Force_InArrow</value>
   </data>
 </root>

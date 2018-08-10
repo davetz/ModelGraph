@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_7;
+            var fileFormat = _fileFormat_8;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -214,15 +214,19 @@ namespace RepositoryUWP
                 if (!string.IsNullOrWhiteSpace(qx.WhereString)) b |= S2;
                 if (!string.IsNullOrWhiteSpace(qx.SelectString)) b |= S3;
                 if (qx.IsExclusive) b |= S4;
-                if (qx.QueryKind == QueryType.Path && qx.IsHead == true)
+                if (qx.QueryKind == QueryType.Path && qx.IsHead == true && qx.PathParm != null)
                 {
-                    if (qx.PathParm.Head.Facet != Facet.None) b |= S5;
-                    if (qx.PathParm.Head.Attach != Attach.Normal) b |= S6;
-                    if (qx.PathParm.Head.Connect != Connect.Any) b |= S7;
+                    if (qx.PathParm.Facet1 != Facet.None) b |= S5;
+                    if (qx.PathParm.Attach1 != Attach.Normal) b |= S6;
+                    if (qx.PathParm.Connect1 != Connect.Any) b |= S7;
 
-                    if (qx.PathParm.Tail.Facet != Facet.None) b |= S8;
-                    if (qx.PathParm.Tail.Attach != Attach.Normal) b |= S9;
-                    if (qx.PathParm.Tail.Connect != Connect.Any) b |= S10;
+                    if (qx.PathParm.Facet2 != Facet.None) b |= S8;
+                    if (qx.PathParm.Attach2 != Attach.Normal) b |= S9;
+                    if (qx.PathParm.Connect2 != Connect.Any) b |= S10;
+
+                    if (qx.PathParm.DashStyle != DashStyle.Solid) b |= S11;
+                    if (qx.PathParm.LineStyle != LineStyle.PointToPoint) b |= S12;
+                    if (!string.IsNullOrWhiteSpace(qx.PathParm.LineColor)) b |= S13;
                 }
 
                 w.WriteUInt16(b);
@@ -231,13 +235,17 @@ namespace RepositoryUWP
                 if ((b & S3) != 0) WriteString(w, qx.SelectString);
                 if ((b & S4) != 0) w.WriteByte(qx.ExclusiveKey);
 
-                if ((b & S5) != 0) w.WriteByte((byte)qx.PathParm.Head.Facet);
-                if ((b & S6) != 0) w.WriteByte((byte)qx.PathParm.Head.Attach);
-                if ((b & S7) != 0) w.WriteByte((byte)qx.PathParm.Head.Connect);
+                if ((b & S5) != 0) w.WriteByte((byte)qx.PathParm.Facet1);
+                if ((b & S6) != 0) w.WriteByte((byte)qx.PathParm.Attach1);
+                if ((b & S7) != 0) w.WriteByte((byte)qx.PathParm.Connect1);
 
-                if ((b & S8) != 0) w.WriteByte((byte)qx.PathParm.Tail.Facet);
-                if ((b & S9) != 0) w.WriteByte((byte)qx.PathParm.Tail.Attach);
-                if ((b & S10) != 0) w.WriteByte((byte)qx.PathParm.Tail.Connect);
+                if ((b & S8) != 0) w.WriteByte((byte)qx.PathParm.Facet2);
+                if ((b & S9) != 0) w.WriteByte((byte)qx.PathParm.Attach2);
+                if ((b & S10) != 0) w.WriteByte((byte)qx.PathParm.Connect2);
+
+                if ((b & S11) != 0) w.WriteByte((byte)qx.PathParm.DashStyle);
+                if ((b & S12) != 0) w.WriteByte((byte)qx.PathParm.LineStyle);
+                if ((b & S13) != 0) WriteString(w, qx.PathParm.LineColor);
             }
             w.WriteByte((byte)Mark.QueryXEnding); // itegrity marker
         }
@@ -540,13 +548,13 @@ namespace RepositoryUWP
                                         w.WriteByte((byte)eg.Face1.Index);
                                         w.WriteByte((byte)eg.Face1.Count);
                                         w.WriteByte((byte)eg.Face1.Facet);
-                                        w.WriteByte((byte)eg.Face1.Attach);
+                                        w.WriteByte((byte)eg.Face1.Terminal);
 
                                         w.WriteByte((byte)eg.Face2.Side);
                                         w.WriteByte((byte)eg.Face2.Index);
                                         w.WriteByte((byte)eg.Face2.Count);
                                         w.WriteByte((byte)eg.Face2.Facet);
-                                        w.WriteByte((byte)eg.Face2.Attach);
+                                        w.WriteByte((byte)eg.Face2.Terminal);
 
                                         var len = (eg.Bends == null) ? 0 : eg.Bends.Length;
                                         if (len > 0)

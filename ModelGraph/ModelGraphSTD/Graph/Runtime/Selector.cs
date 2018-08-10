@@ -36,23 +36,23 @@ namespace ModelGraphSTD
         #endregion
 
         #region Properties  ===================================================
-        public bool IsVoidHit { get { return (HitLocation == HitLocation.Void); } }
-        public bool IsNodeHit { get { return ((HitLocation & HitLocation.Node) != 0); } }
-        public bool IsEdgeHit { get { return ((HitLocation & HitLocation.Edge) != 0); } }
-        public bool IsRegionHit { get { return ((HitLocation & HitLocation.Region) != 0); } }
+        public bool IsVoidHit => (HitLocation == HitLocation.Void);
+        public bool IsNodeHit => ((HitLocation & HitLocation.Node) != 0);
+        public bool IsEdgeHit => ((HitLocation & HitLocation.Edge) != 0);
+        public bool IsRegionHit => ((HitLocation & HitLocation.Region) != 0);
 
-        public bool IsChanged { get { return PrevNode != HitNode || PrevEdge != HitEdge || PrevLocation != HitLocation; } }
+        public bool IsChanged => (PrevNode != HitNode) || (PrevEdge != HitEdge) || (PrevLocation != HitLocation);
 
-        public bool HitTop { get { return ((HitLocation & HitLocation.Top) != 0); } }
-        public bool HitLeft { get { return ((HitLocation & HitLocation.Left) != 0); } }
-        public bool HitRignt { get { return ((HitLocation & HitLocation.Right) != 0); } }
-        public bool HitBottom { get { return ((HitLocation & HitLocation.Bottom) != 0); } }
-        public bool HitCenter { get { return ((HitLocation & HitLocation.Center) != 0); } }
-        public bool HitSideOf { get { return ((HitLocation & HitLocation.SideOf) != 0); } }
+        public bool HitTop => ((HitLocation & HitLocation.Top) != 0);
+        public bool HitLeft => ((HitLocation & HitLocation.Left) != 0);
+        public bool HitRignt => ((HitLocation & HitLocation.Right) != 0);
+        public bool HitBottom => ((HitLocation & HitLocation.Bottom) != 0);
+        public bool HitCenter => ((HitLocation & HitLocation.Center) != 0);
+        public bool HitSideOf => ((HitLocation & HitLocation.SideOf) != 0);
 
-        public bool HitNearEnd1 { get { return ((HitLocation & HitLocation.End1) != 0); } }
-        public bool HitNearEnd2 { get { return ((HitLocation & HitLocation.End2) != 0); } }
-        public bool HitBendPoint { get { return ((HitLocation & HitLocation.Bend) != 0); } }
+        public bool HitNearEnd1 => ((HitLocation & HitLocation.End1) != 0);
+        public bool HitNearEnd2 => ((HitLocation & HitLocation.End2) != 0);
+        public bool HitBendPoint => ((HitLocation & HitLocation.Bend) != 0);
 
         // Cached results of GetUnion for efficient repeated access 
         public HashSet<Node> Nodes = new HashSet<Node>();     // nodes inside the union of regions

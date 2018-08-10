@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {/*
@@ -211,8 +210,8 @@ namespace ModelGraphSTD
                             var eg = new Edge(e1.Key)
                             {
                                 Owner = g,
-                                Face1 = new Face(e1.Key.PathParm.Head),
-                                Face2 = new Face(e1.Key.PathParm.Tail),
+                                Face1 = new Face(e1.Key.PathParm.Facet1),
+                                Face2 = new Face(e1.Key.PathParm.Facet2),
                             };
                             g.Edges.Add(eg);
                             paramList.Add(eg);
@@ -229,8 +228,8 @@ namespace ModelGraphSTD
                         {
                             var eg = pm as Edge;
                             eg.Owner = g;
-                            eg.Face1 = new Face(eg.Face1, e1.Key.PathParm.Head);
-                            eg.Face2 = new Face(eg.Face2, e1.Key.PathParm.Tail);
+                            eg.Face1 = new Face(eg.Face1, e1.Key.PathParm.Facet1);
+                            eg.Face2 = new Face(eg.Face2, e1.Key.PathParm.Facet2);
                             g.Edges.Add(eg);
 
                             if (!item_items.TryGetValue(eg.Node1.Item, out items))
@@ -249,8 +248,8 @@ namespace ModelGraphSTD
                             var eg = new Edge(e1.Key)
                             {
                                 Owner = g,
-                                Face1 = new Face(e1.Key.PathParm.Head),
-                                Face2 = new Face(e1.Key.PathParm.Tail),
+                                Face1 = new Face(e1.Key.PathParm.Facet1),
+                                Face2 = new Face(e1.Key.PathParm.Facet2),
                             };
                             g.Edges.Add(eg);
                             paramList.Add(eg);
@@ -383,7 +382,73 @@ namespace ModelGraphSTD
         {
             foreach (var gx in GraphXStore.Items)
             {
-                if (gx.Count > 0) { foreach (var g in gx.Items) { RefreshGraph(g); } }
+                if (gx.Count > 0)
+                {
+                    foreach (var g in gx.Items) { RefreshGraph(g); }
+                }
+            }
+        }
+
+        private void RefreshGraphX(QueryX qx)
+        {
+            while (QueryX_QueryX.TryGetParent(qx, out qx));
+
+            if (GraphX_QueryX.TryGetParent(qx, out GraphX gx))
+                RefreshGraphX(gx);
+        }
+        private void RefreshGraphX(GraphX gx)
+        {
+            if (gx.Count > 0)
+            {
+                #region Rebuild ARGBList, NodeOwners  =========================
+                gx.Color.Reset();
+                gx.NodeOwners.Clear();
+
+                if (GraphX_ColorColumnX.TryGetChild(gx, out ColumnX cx) && TableX_ColumnX.TryGetParent(cx, out TableX tx) && tx.Count > 0)
+                {
+                    foreach (var item in tx.Items)
+                    {
+                        gx.Color.BuildARGBList(cx.Value.GetString(item));
+                    }
+                }
+
+                if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> qxList))
+                {
+                    var workQueue = new Queue<QueryX>(qxList);
+                    while (workQueue.Count > 0)
+                    {
+                        var qx = workQueue.Dequeue();
+                        if (qx.PathParm != null)
+                        {
+                            gx.Color.BuildARGBList(qx.PathParm.LineColor);
+                        }
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> qcList))
+                        {
+                            foreach (var qc in qcList)
+                            {
+                                workQueue.Enqueue(qc);
+                            }
+                        }
+                        if (qx.QueryKind == QueryType.Path && qx.IsHead)
+                        {
+                            GetHeadTail(qx, out Store head, out Store t);
+                            gx.NodeOwners.Add(head);
+
+                            var qt = qx;
+                            while (QueryX_QueryX.TryGetChild(qt, out QueryX qn)) { qt = qn; }
+
+                            GetHeadTail(qx, out Store h, out Store tail);
+                            gx.NodeOwners.Add(tail);
+                        }
+
+                    }
+                }
+                #endregion
+
+                foreach (var g in gx.Items)
+                {
+                    RefreshGraph(g);
+                }
             }
         }
 
@@ -391,15 +456,16 @@ namespace ModelGraphSTD
         {
             var gx = g.GraphX;
             var rt = g.SeedItem;
-            var nodeOwners = GetNodeOwners(gx);
 
             g.Reset();
-            TryGetForest(g, rt, nodeOwners);
+            TryGetForest(g, rt, gx.NodeOwners);
             var anyChange = ValidateGraphParms(g);
 
             TryCreateQueryPaths(g);
             while (TryPathReduction(g)) { }
+
             AssignNodeColor(g);
+            AssignEdgeColor(g);
 
             if (anyChange) g.CheckLayout();
             g.RefreshGraphPoints();
@@ -409,100 +475,40 @@ namespace ModelGraphSTD
         #region AssignNodeColor  ==============================================
         private void AssignNodeColor(Graph g)
         {
-            g.GroupColor.Clear();
+            var group_Color = new Dictionary<Item, byte>();
+            var item_group = new Dictionary<Item, Item>();
 
             if (GraphX_ColorColumnX.TryGetChild(g.GraphX, out ColumnX cx) && TableX_ColumnX.TryGetParent(cx, out TableX tx) && tx.Count > 0)
             {
-                var items = tx.Items;
-                foreach (var item in items)
+                foreach (var gp in tx.Items)
                 {
-                    g.GroupColor.Add(GetARGB(cx.Value.GetString(item)));
+                    group_Color[gp] = g.GraphX.Color.ColorIndex(cx.Value.GetString(gp));
                 }
 
-                var item_GroupIndex = new Dictionary<Item, byte>();
                 foreach (var (q1, q2) in g.GroupQuerys)
                 {
-                    var inx = q2.Items[0].Index;
-                    item_GroupIndex.Add(q1.Item, (byte)((inx < items.Count) ? inx : 0));
+                    item_group[q1.Item] = q2.Items[0];
                 }
 
-                foreach (var node in g.Nodes)
+                foreach (var nd in g.Nodes)
                 {
-                    node.Color = item_GroupIndex.TryGetValue(node.Item, out byte ix) ? ix : (byte)0;
+                    nd.Color = (item_group.TryGetValue(nd.Item, out Item gp) && group_Color.TryGetValue(gp, out byte index)) ? index : (byte)0;
                 }
             }
             else
             {
-                g.GroupColor.Add(GetARGB("#FF800080")); // default when there is no color criteria
                 foreach (var node in g.Nodes) { node.Color = 0; }
             }
-
-            //= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-            (byte, byte, byte, byte) GetARGB(string color)
-            {
-                const int N = 9;
-                var argb = ((byte)0xFF, (byte)0x80, (byte)0x80, (byte)0x70); // default color when there is a bad color string 
-                if (!string.IsNullOrWhiteSpace(color) && color.Length == N)
-                {
-                    var ca = color.ToLower().ToCharArray();
-                    if (ca[0] == '#')
-                    {
-                        int[] va = new int[N];
-                        for (int j = 1; j < N; j++)
-                        {
-                            va[j] = _hexValues.IndexOf(ca[j]);
-                            if (va[j] < 0) return argb;
-                        }
-                        argb = ((byte)((va[1] << 4) | va[2]), (byte)((va[3] << 4) | va[4]), (byte)((va[5] << 4) | va[6]), (byte)((va[7] << 4) | va[8]));
-                    }
-                }
-                return argb;
-            }
         }
-        static string _hexValues = "0123456789abcdef";
         #endregion
 
-        #region GetNodeOwners  ================================================
-        private HashSet<Store> GetNodeOwners(GraphX gx)
+        #region AssignEdgeColor  ==============================================
+        private void AssignEdgeColor(Graph g)
         {
-            var nodeOwners = new HashSet<Store>();
-
-            if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> qxChildren))
+            foreach (var eg in g.Edges)
             {
-                var workQueue = new Queue<QueryX>(qxChildren);
-                while (workQueue.Count > 0)
-                {
-                    var qx = workQueue.Dequeue();
-                    if (qx.IsHead && qx.QueryKind == QueryType.Path)
-                    {
-                        GetHeadTail(qx, out Store head, out Store tail);
-                        {
-                            nodeOwners.Add(head);
-
-                            var tx = qx;
-                            while (QueryX_QueryX.TryGetChild(tx, out QueryX cx)) { tx = cx; }
-                            if (tx != qx) GetHeadTail(tx, out head, out tail);
-
-                            nodeOwners.Add(tail);
-                        }
-                    }
-                    else if (QueryX_QueryX.TryGetChildren(qx, out qxChildren))
-                    {
-                        foreach (var qc in qxChildren) 
-                        {
-                            switch (qc.QueryKind)
-                            {
-                                case QueryType.Path:
-                                case QueryType.Graph:
-                                    workQueue.Enqueue(qc);
-                                    break;
-                            }
-                        }
-                    }
-                }
+                eg.LineColor = (eg.QueryX.PathParm != null) ? g.GraphX.Color.ColorIndex(eg.QueryX.PathParm.LineColor) : (byte)0;
             }
-            return nodeOwners;
         }
         #endregion
     }

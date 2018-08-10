@@ -6,25 +6,22 @@
         internal byte Index;
         internal byte Count;
         internal Facet Facet;
-        internal Attach Attach;
         internal Termianl Terminal;
 
-        internal Face(PathEnd pathEnd)
+        internal Face(Facet facet)
         {
             Side = Side.Any;
             Index = 1;
             Count = 1;
-            Facet = pathEnd.Facet;
-            Attach = pathEnd.Attach;
+            Facet = facet;
             Terminal = Termianl.Radial;
         }
-        internal Face(Face face, PathEnd pathEnd)
+        internal Face(Face face, Facet facet)
         {
             Side = face.Side;
             Index = face.Index;
             Count = face.Count;
-            Facet = pathEnd.Facet;
-            Attach = pathEnd.Attach;
+            Facet = ((facet & Facet.Forced) != 0) ? facet : face.Facet;
             Terminal = face.Terminal;
         }
         //=====================================================================

@@ -22,7 +22,7 @@ namespace ModelGraphSTD
         public Dictionary<Node, List<Edge>> Node_Edges = new Dictionary<Node, List<Edge>>(); // list of edges for each node
         public Dictionary<Item, Node> Item_Node = new Dictionary<Item, Node>();              // look up item -> node
 
-        public List<(byte A, byte R, byte G, byte B)> GroupColor = new List<(byte A, byte R, byte G, byte B)>();
+        public List<(byte A, byte R, byte G, byte B)> ARGBList => GraphX.ARGBList;
 
         public Extent Extent;  // current x,y extent of this graph
 

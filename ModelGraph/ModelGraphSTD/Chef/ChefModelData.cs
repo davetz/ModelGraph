@@ -5341,7 +5341,7 @@ namespace ModelGraphSTD
                 ModelParms = (m) =>
                 {
                     var (kind, name) = GetKindName(m);
-                    var count = GetNodeOwners(m.GraphX).Count;
+                    var count = m.GraphX.NodeOwners.Count;
 
                     m.CanExpandLeft = (count > 0);
 
@@ -5357,7 +5357,7 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var gx = m.GraphX;
-                    var owners = GetNodeOwners(gx);
+                    var owners = gx.NodeOwners;
                     if (owners.Count == 0) return (false, false);
 
                     m.InitChildModels(prev);
@@ -5783,9 +5783,9 @@ namespace ModelGraphSTD
                         anyChange |= AddProperyModel(prev, m, _queryXIsReversedProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXIsBreakPointProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXRootWhereProperty);
+                        anyChange |= AddProperyModel(prev, m, _queryXLineColorProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXLineStyleProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXDashStyleProperty);
-                        anyChange |= AddProperyModel(prev, m, _queryXLineColorProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXFacet1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXAttach1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect1Property);

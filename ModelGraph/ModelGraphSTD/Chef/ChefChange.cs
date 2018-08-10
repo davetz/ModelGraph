@@ -222,13 +222,13 @@ namespace ModelGraphSTD
         #region ItemUpdated  ==================================================
         private void SetValue(ItemModel m, string newValue)
         {
+            m.Item.ModelDelta++;
             if (m.Property.IsCovert)
             {
                 m.Property.Value.SetString(m.Item, newValue);
             }
             else
             {
-                m.Item.ModelDelta++;
                 var oldValue = m.Property.Value.GetString(m.Item);
                 if (IsNotSameValue(oldValue, newValue))
                 {

@@ -6,6 +6,9 @@ namespace ModelGraphSTD
  */
     public class GraphX : StoreOf<Graph>
     {
+        internal Color Color = new Color();
+        internal HashSet<Store> NodeOwners = new HashSet<Store>();
+
         internal string Name;
         internal string Summary;
         internal string Description;
@@ -15,6 +18,8 @@ namespace ModelGraphSTD
         internal byte TerminalLength = 8;
         internal byte TerminalSpacing = 8;
         internal byte TerminalAngleSkew = 2;
+
+        public List<(byte A, byte R, byte G, byte B)> ARGBList => Color.ARGBList;
 
         #region Constructors  =================================================
         internal GraphX(Store owner)

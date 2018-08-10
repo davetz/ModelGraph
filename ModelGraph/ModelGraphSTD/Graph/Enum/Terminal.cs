@@ -6,6 +6,6 @@
         RightAngle = 1,
         SkewedAngle = 2,
         AutoSpacing = 4,
-        FixedSpacing = 5,
+        ManualSpacing = 5,
     }
 }

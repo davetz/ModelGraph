@@ -6,16 +6,21 @@ namespace ModelGraphSTD
         private readonly QueryX _queryX;
         public Node Node1;
         public Node Node2;
+        public Extent Extent = new Extent(); // all points are withing this extent+
 
         public (int X, int Y)[] Points;
-        public Extent Extent = new Extent(); // all points are withing this extent+
+        public (int X, int Y)[] Bends;
+        
         public short Tm1; // index of terminal point 1
         public short Bp1; // index of closest bend point after Tm1 (to the right) 
         public short Bp2; // index of closest bend point after Tm2 (to the left)
         public short Tm2; // index of terminal point 2
 
+        public DashStyle DashStyle;
+        public LineStyle LineStyle;
+        public byte LineColor;
+
         #region Parms  ========================================================
-        public (int X, int Y)[] Bends;
         public Face Face1;
         public Face Face2;
 
@@ -33,7 +38,6 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        internal bool HasBends => (Bends != null && Bends.Length > 0);
 
         #region Constructors  =================================================
         internal Edge(QueryX queryX)
@@ -45,12 +49,13 @@ namespace ModelGraphSTD
         #endregion
 
         #region Properties/Methods  ===========================================
+        internal bool HasBends => (Bends != null && Bends.Length > 0);
         internal Graph Graph { get { return Owner as Graph; } }
         internal GraphX GraphX { get { return (Owner == null) ? null : Owner.Owner as GraphX; } }
-        internal QueryX QueryX { get { return _queryX as QueryX; } }
+        internal QueryX QueryX => _queryX;
 
-        internal Connect Connect1 { get { return QueryX.PathParm.Head.Connect; } }
-        internal Connect Connect2 { get { return QueryX.PathParm.Tail.Connect; } }
+        internal Connect Connect1 { get { return QueryX.PathParm.Connect1; } }
+        internal Connect Connect2 { get { return QueryX.PathParm.Connect2; } }
         #endregion
 
 
@@ -345,8 +350,8 @@ namespace ModelGraphSTD
         /// </remarks>
         internal void Refresh()
         {
-            var facet1 = Node1.IsPointNode ? NoFacet : Facets[(int)Face1.Facet];
-            var facet2 = Node2.IsPointNode ? NoFacet : Facets[(int)Face2.Facet];
+            var facet1 = Node1.IsPointNode ? NoFacet : Facets[(int)(Face1.Facet & Facet.Mask)];
+            var facet2 = Node2.IsPointNode ? NoFacet : Facets[(int)(Face2.Facet & Facet.Mask)];
 
             var tmLen = GraphDefault.TerminalLength;
             var tmSpc = GraphDefault.TerminalSpacing / 2;

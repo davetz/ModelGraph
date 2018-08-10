@@ -707,6 +707,10 @@ namespace ModelGraphSTD
         Facet_Nubby = 0xB01,
         Facet_Diamond = 0xB02,
         Facet_InArrow = 0xB03,
+        Facet_Force_None = 0xB20,
+        Facet_Force_Nubby = 0xB21,
+        Facet_Force_Diamond = 0xB22,
+        Facet_Force_InArrow = 0xB23,
         FacetEnum = 0xB3F,
 
         CompuType_RowValue = 0xB40,

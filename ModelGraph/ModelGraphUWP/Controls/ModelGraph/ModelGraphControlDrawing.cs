@@ -14,7 +14,7 @@ namespace ModelGraphUWP
 {
     public sealed partial class ModelGraphControl
     {
-        private List<Color> _groupColor = new List<Color>() { Color.FromArgb(255, 255, 255, 127) };
+        private List<Color> _colorList = new List<Color>() { Color.FromArgb(255, 255, 255, 127) };
         private float _zoomFactor; //scale the view extent so that it fits on the canvas
         private Vector2 _offset; //complete offset need to exactly center the view extent on the canvas
 
@@ -30,14 +30,11 @@ namespace ModelGraphUWP
         #region DrawCanvas_Draw  ==============================================
         private void DrawCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
         {
-            #region RefreshGroupColors  =======================================
-            if (_graph.GroupColor.Count > 0)
+            #region RefreshColorList  =========================================
+            _colorList.Clear();
+            foreach (var (a, r, g, b) in _graph.ARGBList)
             {
-                _groupColor.Clear();
-                foreach (var (a, r, g, b) in _graph.GroupColor)
-                {
-                    _groupColor.Add(Color.FromArgb(a, r, g, b));
-                }
+               _colorList.Add(Color.FromArgb(a, r, g, b));
             }
             #endregion
 
@@ -60,20 +57,27 @@ namespace ModelGraphUWP
             #endregion
 
             #region DrawEdges  ================================================
-            pen.Width = 2;
+            pen.Width = 3;
             pen.Color = Colors.Magenta;
+            var edges = _graph.Edges;
             for (int i = 0; i < _graph.EdgeCount; i++)
             {
-                var points = _graph.Edges[i].Points;
-                var len = (points == null) ? 0 : points.Length;
-                if (len > 1)
+                var edge = edges[i];
+                var points = edge.Points;
+                var N = (points == null) ? 0 : points.Length;
+                if (N > 1)
                 {
-                    var ix1 = _graph.Edges[i].Node1.Color;
-                    var ix2 = _graph.Edges[i].Node2.Color;
-                    var ix = (ix1 > ix2) ? ix1 : ix2;
-                    pen.Color = _groupColor[ix];
-                    pen.Initialize();
-                    for (int j = 0; j < len; j++)
+                    var ipc = edge.LineColor;
+                    if (ipc == 0)
+                    {
+                        var i1 = edge.Node1.Color;
+                        var i2 = edge.Node2.Color;
+                        ipc = (i1 > i2) ? i1 : i2;
+                    }
+                    pen.Color = _colorList[ipc];
+                    pen.Initialize((CanvasDashStyle)edge.DashStyle);
+
+                    for (int j = 0; j < N; j++)
                     {
                         pen.DrawLine(points[j]);
                     }
@@ -90,7 +94,7 @@ namespace ModelGraphUWP
                 var k = node.Symbol - 2;
                 if (k < 0 || k >= _graph.SymbolCount || _graph.Symbols[k].Data == null)
                 {
-                    pen.Color = _groupColor[node.Color];
+                    pen.Color = _colorList[node.Color];
                     pen.Initialize();
                     if (node.IsPointNode)
                     {
@@ -189,6 +193,14 @@ namespace ModelGraphUWP
                 Style.DashCap = CanvasCapStyle.Round;
                 Style.StartCap = CanvasCapStyle.Round;
                 Style.DashStyle = CanvasDashStyle.Solid;
+                _firstItteration = true;
+            }
+            internal void Initialize(CanvasDashStyle dashStyle)
+            {
+                Style.EndCap = CanvasCapStyle.Round;
+                Style.DashCap = CanvasCapStyle.Round;
+                Style.StartCap = CanvasCapStyle.Round;
+                Style.DashStyle = dashStyle;
                 _firstItteration = true;
             }
 

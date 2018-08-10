@@ -123,6 +123,10 @@
             new PairZ(_facetEnum, Trait.Facet_Nubby);
             new PairZ(_facetEnum, Trait.Facet_Diamond);
             new PairZ(_facetEnum, Trait.Facet_InArrow);
+            new PairZ(_facetEnum, Trait.Facet_Force_None);
+            new PairZ(_facetEnum, Trait.Facet_Force_Nubby);
+            new PairZ(_facetEnum, Trait.Facet_Force_Diamond);
+            new PairZ(_facetEnum, Trait.Facet_Force_InArrow);
 
             _contactEnum = new EnumZ(EnumZStore, Trait.ContactEnum);
             new PairZ(_contactEnum, Trait.Contact_Any);
