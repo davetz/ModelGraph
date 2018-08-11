@@ -107,9 +107,9 @@
             new PairZ(_flipRotateEnum, Trait.FlipRotate_RotateFlipBothWays);
 
             _barWidthEnum = new EnumZ(EnumZStore, Trait.BarWidthEnum);
-            new PairZ(_barWidthEnum, Trait.BarWidth_Normal);
             new PairZ(_barWidthEnum, Trait.BarWidth_Thin);
             new PairZ(_barWidthEnum, Trait.BarWidth_Wide);
+            new PairZ(_barWidthEnum, Trait.BarWidth_ExtraWide);
 
             _sideEnum = new EnumZ(EnumZStore, Trait.SideEnum);
             new PairZ(_sideEnum, Trait.Side_Any);

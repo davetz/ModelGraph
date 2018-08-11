@@ -1792,13 +1792,13 @@ These are the behind the scene internal collections. They are listed here so tha
     <value>Type of automatic name generation when copying nodes</value>
   </data>
   <data name="A00N" xml:space="preserve">
-    <value>Normal</value>
-  </data>
-  <data name="A01N" xml:space="preserve">
     <value>Thin</value>
   </data>
-  <data name="A02N" xml:space="preserve">
+  <data name="A01N" xml:space="preserve">
     <value>Wide</value>
+  </data>
+  <data name="A02N" xml:space="preserve">
+    <value>Extra Wide</value>
   </data>
   <data name="A3FN" xml:space="preserve">
     <value>BarWidth</value>

@@ -12,8 +12,9 @@ namespace ModelGraphSTD
         internal string Name;
         internal string Summary;
         internal string Description;
-        internal byte WideBusSize = 20;
         internal byte ThinBusSize = 8;
+        internal byte WideBusSize = 20;
+        internal byte ExtraWideBusSize = 30;
         internal byte MinNodeSize = 4;
         internal byte TerminalLength = 8;
         internal byte TerminalSpacing = 8;

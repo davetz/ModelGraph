@@ -669,9 +669,9 @@ namespace ModelGraphSTD
         Naming_SubstituteParent = 0x9C4,
         NamingEnum = 0x9FF,
 
-        BarWidth_Normal = 0xA00,
-        BarWidth_Thin = 0xA01,
-        BarWidth_Wide = 0xA02,
+        BarWidth_Thin = 0xA00,
+        BarWidth_Wide = 0xA01,
+        BarWidth_ExtraWide = 0xA02,
         BarWidthEnum = 0xA3F,
 
         Contact_Any = 0xA40,

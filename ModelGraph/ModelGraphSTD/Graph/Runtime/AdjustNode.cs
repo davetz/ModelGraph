@@ -7,9 +7,14 @@ namespace ModelGraphSTD
  */
     public partial class Graph
     {
-        private void AdjustAutoNode(Node node, int spL)
+        private void AdjustAutoNode(Node node)
         {
             if (!Node_Edges.TryGetValue(node, out List<Edge> edges)) return;
+
+            var gx = node.Graph.GraphX;
+            var spacing = gx.TerminalSpacing;
+            var barSize = ((node.BarWidth == BarWidth.Thin) ? gx.ThinBusSize : (node.BarWidth == BarWidth.Wide) ? gx.WideBusSize : gx.ExtraWideBusSize) / 2;
+
 
             var order = new LineOrder(node, edges);
 
@@ -30,7 +35,7 @@ namespace ModelGraphSTD
             //  Assign line end terminal points  
             //	based on the just determined order of connections
             //	and on the line end and node termination styles
-            int NI, EI, WI, SI, NC, SC, EC, WC, VC, HC;
+            int iNorth = 0, iEast = 0, iWest = 0, iSouth = 0, nNorth, nSouth, nEast, nWest, nVert, nHorz, Width, Height;
 
             var East = Side.East;
             var West = Side.West;
@@ -39,76 +44,74 @@ namespace ModelGraphSTD
 
             if (node.Orientation == Orientation.Vertical)
             {
-                EI = 0;
-                WI = 0;
-                EC = nquad[1] + nquad[4]; //the right side connection count
-                WC = nquad[2] + nquad[3]; //the left side  connection count
-                VC = (EC > WC) ? EC : WC; //determines stretch bar length
+                nEast = nquad[1] + nquad[4]; //the right side connection count
+                nWest = nquad[2] + nquad[3]; //the left side  connection count
 
-                node.SetSize(w, (VC * spL) / 2);
+                nVert = (nEast > nWest) ? nEast : nWest; //determines stretch bar length
+                Height = (nVert * spacing) / 2;
+                node.SetSize(barSize, Height);
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (quad[i] == 4) lines[i].SetFace(node, East, EI++, EC);
+                    if (quad[i] == 4) lines[i].SetFace(node, East, iEast++, nEast);
                 }
                 for (int i = 0; i < count; i++)
                 {
-                    if (quad[i] == 1) lines[i].SetFace(node, East, EI++, EC);
+                    if (quad[i] == 1) lines[i].SetFace(node, East, iEast++, nEast);
                 }
                 for (int i = count - 1; i >= 0; i--)
                 {
-                    if ((quad[i] == 2) || (quad[i] == 2)) lines[i].SetFace(node, West, WI++, WC);
+                    if ((quad[i] == 3) || (quad[i] == 2)) lines[i].SetFace(node, West, iWest++, nWest);
                 }
             }
             else if (node.Orientation == Orientation.Horizontal)
             {
-                SI = 0;
-                NI = 0;
-                SC = nquad[1] + nquad[2];
-                NC = nquad[3] + nquad[4];
-                HC = (SC > NC) ? SC : NC;
+                nSouth = nquad[1] + nquad[2];
+                nNorth = nquad[3] + nquad[4];
 
-                node.SetSize((HC * spL) / 2, h);
+                nHorz = (nSouth > nNorth) ? nSouth : nNorth;
+                Width = (nHorz * spacing) / 2;
+                node.SetSize(Width, barSize);
 
                 for (int i = 0; i < count; i++)
                 {
-                    if ((quad[i] == 3) || (quad[i] == 3)) lines[i].SetFace(node, North, NI++, NC);
+                    if ((quad[i] == 3) || (quad[i] == 4)) lines[i].SetFace(node, North, iNorth++, nNorth);
                 }
                 for (int i = count - 1; i >= 0; i--)
                 {
-                    if ((quad[i] == 3) || (quad[i] == 4)) lines[i].SetFace(node, South, SI++, SC);
+                    if ((quad[i] == 2) || (quad[i] == 1)) lines[i].SetFace(node, South, iSouth++, nSouth);
                 }
             }
             else if (node.Orientation == Orientation.Central)
             {
-                SI = 0;
-                EI = 0;
-                WI = 0;               
-                NI = 0;
-                SC = nsect[2] + nsect[3];
-                EC = nsect[4] + nsect[5];
-                NC = nsect[6] + nsect[7];
-                WC = nsect[8] + nsect[1];
+                nSouth = nsect[2] + nsect[3];
+                nWest = nsect[4] + nsect[5];
+                nNorth = nsect[6] + nsect[7];
+                nEast = nsect[8] + nsect[1];
 
-                VC = (EC > WC) ? EC : WC; 
-                HC = (SC > NC) ? SC : NC;
+                nVert = (nEast > nWest) ? nEast : nWest;
+                Height = (nVert * spacing) / 2;
+                if (Height < barSize) Height = barSize;
 
+                nHorz = (nSouth > nNorth) ? nSouth : nNorth;
+                Width = (nHorz * spacing) / 2;
+                if (Width < barSize) Width = barSize;
 
-                node.SetSize((HC * spL) / 2, (VC * spL) / 2);
+                node.SetSize(Width, Height);
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (sect[i] == 8) lines[i].SetFace(node, East, EI++, EC);
+                    if (sect[i] == 8) lines[i].SetFace(node, East, iEast++, nEast);
                 }
                 for (int i = 0; i < count; i++)
                 {
-                    if (sect[i] == 1) lines[i].SetFace(node, East, EI++, EC);
-                    if (sect[i] == 2 || sect[i] == 3) lines[i].SetFace(node, South, SI++, SC);
+                    if (sect[i] == 1) lines[i].SetFace(node, East, iEast++, nEast);
+                    if (sect[i] == 6 || sect[i] == 7) lines[i].SetFace(node, North, iNorth++, nNorth);
                 }
                 for (int i = count - 1; i >= 0; i--)
                 {
-                    if (sect[i] == 7 || sect[i] == 6)  lines[i].SetFace(node, North, NI++, NC);
-                    if (sect[i] == 5 || sect[i] == 4) lines[i].SetFace(node, West, WI++, WC);
+                    if (sect[i] == 5 || sect[i] == 4) lines[i].SetFace(node, West, iWest++, nWest);
+                    if (sect[i] == 3 || sect[i] == 2) lines[i].SetFace(node, South, iSouth++, nSouth);
                 }
             }
             else
