@@ -18,8 +18,8 @@ namespace ModelGraphSTD
         public short Bp2; // index of closest bend point after Tm2 (to the left)
         public short Tm2; // index of terminal point 2
 
-        public DashStyle DashStyle;
-        public LineStyle LineStyle;
+        public DashStyle DashStyle => QueryX.PathParm.DashStyle;
+        public LineStyle LineStyle => QueryX.PathParm.LineStyle;
         public byte LineColor;
 
         #region Parms  ========================================================

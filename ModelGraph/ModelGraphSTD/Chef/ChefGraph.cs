@@ -389,12 +389,15 @@ namespace ModelGraphSTD
             }
         }
 
-        private void RefreshGraphX(QueryX qx)
+        private bool RefreshGraphX(QueryX qx)
         {
-            while (QueryX_QueryX.TryGetParent(qx, out qx));
+            var qr = qx;
+            while (QueryX_QueryX.TryGetParent(qr, out qx)) { qr = qx; }
 
-            if (GraphX_QueryX.TryGetParent(qx, out GraphX gx))
+            if (GraphX_QueryX.TryGetParent(qr, out GraphX gx))
                 RefreshGraphX(gx);
+
+            return true;
         }
         private void RefreshGraphX(GraphX gx)
         {

@@ -438,63 +438,63 @@ namespace ModelGraphSTD
             {
                 var p = _queryXFacet1Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXFacet1_P, _facetEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Facet1);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Facet1 = (Facet)GetEnumZKey(p.EnumZ, value); return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Facet1 = (Facet)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _queryXAttach1Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXAttatch1_P, _attatchEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Attach1);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Attach1 = (Attach)GetEnumZKey(p.EnumZ, value); return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Attach1 = (Attach)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _queryXConnect1Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXConnect1_P, _connectEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Connect1);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Connect1 = (Connect)GetEnumZKey(p.EnumZ, value); return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Connect1 = (Connect)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _queryXFacet2Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXFacet2_P, _facetEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Facet2);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Facet2 = (Facet)GetEnumZKey(p.EnumZ, value); return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Facet2 = (Facet)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _queryXAttatch2Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXAttatch2_P, _attatchEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Attach2);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Attach2 = (Attach)GetEnumZKey(p.EnumZ, value); return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Attach2 = (Attach)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _queryXConnect2Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXConnect2_P, _connectEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Connect2);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Connect2 = (Connect)GetEnumZKey(p.EnumZ, value); return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Connect2 = (Connect)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _queryXLineStyleProperty = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXLineStyle_P, _lineStyleEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.LineStyle);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.LineStyle = (LineStyle)GetEnumZKey(p.EnumZ, value); return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.LineStyle = (LineStyle)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _queryXDashStyleProperty = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXDashStyle_P, _dashStyleEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.DashStyle);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.DashStyle = (DashStyle)GetEnumZKey(p.EnumZ, value); return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.DashStyle = (DashStyle)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _queryXLineColorProperty = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXLineColor_P);
                 p.GetValFunc = (item) => p.Cast(item).PathParm.LineColor;
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.LineColor = value; return true; };
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.LineColor = value; return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
