@@ -30,65 +30,85 @@ namespace ModelGraphSTD
             //  Assign line end terminal points  
             //	based on the just determined order of connections
             //	and on the line end and node termination styles
-            int Idx, Idy, Pdx, Pdy, Ndx, Ndy, Pcnt, Ncnt, Tcnt;
+            int NI, EI, WI, SI, NC, SC, EC, WC, VC, HC;
 
             var East = Side.East;
             var West = Side.West;
             var North = Side.North;
             var South = Side.South;
 
-            if (node.IsVertical)
+            if (node.Orientation == Orientation.Vertical)
             {
-                Idy = spL;
-                Pdy = 0;
-                Ndy = 0;
-                Pcnt = nquad[1] + nquad[4]; //the right side connection count
-                Ncnt = nquad[2] + nquad[3]; //the left side  connection count
-                Tcnt = (Pcnt > Ncnt) ? (Pcnt) : (Ncnt); //determines stretch bar length
+                EI = 0;
+                WI = 0;
+                EC = nquad[1] + nquad[4]; //the right side connection count
+                WC = nquad[2] + nquad[3]; //the left side  connection count
+                VC = (EC > WC) ? EC : WC; //determines stretch bar length
 
-                node.SetSize(w, (Tcnt * Idy) / 2);
+                node.SetSize(w, (VC * spL) / 2);
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (quad[i] != 4) continue;
-                    lines[i].SetFace(node, East, Pdy, Pcnt);
-                    Pdy += 1;
+                    if (quad[i] == 4) lines[i].SetFace(node, East, EI++, EC);
                 }
                 for (int i = 0; i < count; i++)
                 {
-                    if (quad[i] != 1) continue;
-                    lines[i].SetFace(node, East, Pdy, Pcnt);
-                    Pdy += 1;
+                    if (quad[i] == 1) lines[i].SetFace(node, East, EI++, EC);
                 }
                 for (int i = count - 1; i >= 0; i--)
                 {
-                    if ((quad[i] == 1) || (quad[i] == 4)) continue;
-                    lines[i].SetFace(node, West, Ndy, Ncnt);
-                    Ndy += 1;
+                    if ((quad[i] == 2) || (quad[i] == 2)) lines[i].SetFace(node, West, WI++, WC);
                 }
             }
-            else if (node.IsHorizontal)
+            else if (node.Orientation == Orientation.Horizontal)
             {
-                Pdx = 0;
-                Ndx = 0;
-                Idx = spL;
-                Pcnt = nquad[1] + nquad[2];
-                Ncnt = nquad[3] + nquad[4];
-                Tcnt = (Pcnt > Ncnt) ? (Pcnt) : (Ncnt);
+                SI = 0;
+                NI = 0;
+                SC = nquad[1] + nquad[2];
+                NC = nquad[3] + nquad[4];
+                HC = (SC > NC) ? SC : NC;
 
-                node.SetSize((Tcnt * Idx) / 2, h);
+                node.SetSize((HC * spL) / 2, h);
 
                 for (int i = 0; i < count; i++)
                 {
-                    if ((quad[i] == 1) || (quad[i] == 2)) continue;
-                    lines[i].SetFace(node, North, Ndx, Ncnt);
-                    Ndx += 1;
+                    if ((quad[i] == 3) || (quad[i] == 3)) lines[i].SetFace(node, North, NI++, NC);
                 }
                 for (int i = count - 1; i >= 0; i--)
                 {
-                    if ((quad[i] == 3) || (quad[i] == 4)) continue;
-                    lines[i].SetFace(node, South, Pdx, Pcnt);
-                    Pdx += 1;
+                    if ((quad[i] == 3) || (quad[i] == 4)) lines[i].SetFace(node, South, SI++, SC);
+                }
+            }
+            else if (node.Orientation == Orientation.Central)
+            {
+                SI = 0;
+                EI = 0;
+                WI = 0;               
+                NI = 0;
+                SC = nsect[2] + nsect[3];
+                EC = nsect[4] + nsect[5];
+                NC = nsect[6] + nsect[7];
+                WC = nsect[8] + nsect[1];
+
+                VC = (EC > WC) ? EC : WC; 
+                HC = (SC > NC) ? SC : NC;
+
+
+                node.SetSize((HC * spL) / 2, (VC * spL) / 2);
+
+                for (int i = 0; i < count; i++)
+                {
+                    if (sect[i] == 8) lines[i].SetFace(node, East, EI++, EC);
+                }
+                for (int i = 0; i < count; i++)
+                {
+                    if (sect[i] == 1) lines[i].SetFace(node, East, EI++, EC);
+                    if (sect[i] == 2 || sect[i] == 3) lines[i].SetFace(node, South, SI++, SC);
+                }
+                for (int i = count - 1; i >= 0; i--)
+                {
+                    if (sect[i] == 7 || sect[i] == 6)  lines[i].SetFace(node, North, NI++, NC);
+                    if (sect[i] == 5 || sect[i] == 4) lines[i].SetFace(node, West, WI++, WC);
                 }
             }
             else

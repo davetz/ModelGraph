@@ -28,6 +28,23 @@ namespace ModelGraphSTD
                 AddNodeEdges(edge.Node1, nodes, edges);
                 AddNodeEdges(edge.Node2, nodes, edges);
             }
+            var ndList = new List<Node>();
+            foreach (var nd in nodes)
+            {
+                if (Node_Edges.TryGetValue(nd, out List<Edge> egList))
+                {
+                    foreach (var eg in egList)
+                    {
+                        edges.Add(eg);
+                        ndList.Add(eg.Node1);
+                        ndList.Add(eg.Node2);
+                    }
+                }
+            }
+            foreach (var nd in ndList)
+            {
+                nodes.Add(nd);
+            }
 
             foreach (var node in nodes) { AdjustNode(node); }
             foreach (var edge in edges) { edge.Refresh(); }

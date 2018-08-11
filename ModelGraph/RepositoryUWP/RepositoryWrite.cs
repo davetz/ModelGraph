@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_8;
+            var fileFormat = _fileFormat_9;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -548,13 +548,11 @@ namespace RepositoryUWP
                                         w.WriteByte((byte)eg.Face1.Index);
                                         w.WriteByte((byte)eg.Face1.Count);
                                         w.WriteByte((byte)eg.Face1.Facet);
-                                        w.WriteByte((byte)eg.Face1.Terminal);
 
                                         w.WriteByte((byte)eg.Face2.Side);
                                         w.WriteByte((byte)eg.Face2.Index);
                                         w.WriteByte((byte)eg.Face2.Count);
                                         w.WriteByte((byte)eg.Face2.Facet);
-                                        w.WriteByte((byte)eg.Face2.Terminal);
 
                                         var len = (eg.Bends == null) ? 0 : eg.Bends.Length;
                                         if (len > 0)

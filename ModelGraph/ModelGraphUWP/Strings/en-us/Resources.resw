@@ -851,13 +851,13 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Filter the rows for specific property values</value>
   </data>
   <data name="464N" xml:space="preserve">
-    <value>Path Head Attach</value>
+    <value>Attach1</value>
   </data>
   <data name="464S" xml:space="preserve">
     <value>Specify the style of the connection on head end</value>
   </data>
   <data name="465N" xml:space="preserve">
-    <value>Path Tail Attach</value>
+    <value>Attach2</value>
   </data>
   <data name="465S" xml:space="preserve">
     <value>Specify the style of the connection on tail end</value>
@@ -2148,13 +2148,13 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Amount of offset in skewed angle connctions (2 is tyical) </value>
   </data>
   <data name="462N" xml:space="preserve">
-    <value>Path Head Connect</value>
+    <value>Connect1</value>
   </data>
   <data name="462S" xml:space="preserve">
     <value>Specify allowed connections on head end</value>
   </data>
   <data name="463N" xml:space="preserve">
-    <value>Path Tail Connect</value>
+    <value>Connect2</value>
   </data>
   <data name="463S" xml:space="preserve">
     <value>Specify allowed conntions on tail end</value>
@@ -2178,13 +2178,13 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
     <value>Style of connection</value>
   </data>
   <data name="46FN" xml:space="preserve">
-    <value>Path Head Facet</value>
+    <value>Facet1</value>
   </data>
   <data name="46FS" xml:space="preserve">
     <value>Path head end facet</value>
   </data>
   <data name="470N" xml:space="preserve">
-    <value>Path Tail Facet</value>
+    <value>Facet2</value>
   </data>
   <data name="470S" xml:space="preserve">
     <value>Path tail end facet</value>

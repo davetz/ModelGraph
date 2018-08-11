@@ -6,7 +6,6 @@
         internal byte Index;
         internal byte Count;
         internal Facet Facet;
-        internal Termianl Terminal;
 
         internal Face(Facet facet)
         {
@@ -14,7 +13,6 @@
             Index = 1;
             Count = 1;
             Facet = facet;
-            Terminal = Termianl.Radial;
         }
         internal Face(Face face, Facet facet)
         {
@@ -22,7 +20,6 @@
             Index = face.Index;
             Count = face.Count;
             Facet = ((facet & Facet.Forced) != 0) ? facet : face.Facet;
-            Terminal = face.Terminal;
         }
         //=====================================================================
         // The index is 0 based, the totalCount is 1's based 
