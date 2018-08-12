@@ -1,8 +1,6 @@
 ﻿namespace ModelGraphSTD
-{/*
-
- */
-    public enum Resizing : byte
+{
+    public enum Sizing : byte
     {
         Auto = 0,
         Fixed = 1,

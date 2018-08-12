@@ -1071,10 +1071,10 @@ namespace RepositoryUWP
                                 node.DX = r.ReadByte();
                                 node.DY = r.ReadByte();
                                 node.Symbol = r.ReadByte();
-                                node.Orientation = (Orientation)r.ReadByte();
+                                node.Orient = (Orient)r.ReadByte();
                                 node.FlipRotate = (FlipRotate)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
-                                node.Resizing = (Resizing)r.ReadByte();
+                                node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
                             }
                             #endregion
@@ -1233,10 +1233,10 @@ namespace RepositoryUWP
                                 node.DX = r.ReadByte();
                                 node.DY = r.ReadByte();
                                 node.Symbol = r.ReadByte();
-                                node.Orientation = (Orientation)r.ReadByte();
+                                node.Orient = (Orient)r.ReadByte();
                                 node.FlipRotate = (FlipRotate)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
-                                node.Resizing = (Resizing)r.ReadByte();
+                                node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
                             }
                             #endregion
@@ -1398,10 +1398,10 @@ namespace RepositoryUWP
                                 node.DX = r.ReadByte();
                                 node.DY = r.ReadByte();
                                 node.Symbol = r.ReadByte();
-                                node.Orientation = (Orientation)r.ReadByte();
+                                node.Orient = (Orient)r.ReadByte();
                                 node.FlipRotate = (FlipRotate)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
-                                node.Resizing = (Resizing)r.ReadByte();
+                                node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
                             }
                             #endregion

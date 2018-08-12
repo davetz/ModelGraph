@@ -336,17 +336,17 @@ namespace ModelGraphSTD
 
         #region Refresh  ======================================================
         /// <summary>
-        ///  Populate the edge bendPoint and edgePoints arrays
+        ///  Populate the edge Point array
         /// </summary>
         /// <remarks>
-        ///         facet1         bend points          facet2 
-        /// node1 |o------o----------------------------o------o| node2
-        ///        sp1    tm1                         tm2   sp2
+        ///         facet1     optional bend points     facet2 
+        /// node1 |o------o------o------o------o-----o------o| node2
+        ///       sp1    tm1    bp1    ...    bp2   tm2    sp2
         /// </remarks>
         internal void Refresh()
         {
-            var facet1 = Node1.IsPointNode ? NoFacet : Facets[(int)(Face1.Facet & Facet.Mask)];
-            var facet2 = Node2.IsPointNode ? NoFacet : Facets[(int)(Face2.Facet & Facet.Mask)];
+            var facet1 = Node1.IsNodePoint ? NoFacet : Facets[(int)(Face1.Facet & Facet.Mask)];
+            var facet2 = Node2.IsNodePoint ? NoFacet : Facets[(int)(Face2.Facet & Facet.Mask)];
 
             var tmLen = GraphDefault.TerminalLength;
             var tmSpc = GraphDefault.TerminalSpacing / 2;
@@ -966,3745 +966,516 @@ namespace ModelGraphSTD
 
             #endregion
 
-            #region NewResolution  ============================================
-            if (Node1.IsNode)
+            #region ResolveNodePermutations  ==================================
+            if (Node1.IsGraphNode)
             {
-                if (Node2.IsNode)
+                if (Node1.Orient == Orient.Point)
                 {
-                    switch (Node1.Orientation)
+                    if (Node2.IsGraphNode)
                     {
-                        case Orientation.Point:
-                            #region (IsNode, IsPoint) - (IsNode)
-                            #region AssignFace1  ==============================
-                            if (Face1.Side == Side.East)
+                        if (Node2.Orient == Orient.Point)
+                        {
+                            Asign_1_IsPoint_2_IsPoint();
+                        }
+                        else
+                        {
+                            if (Node2.Sizing == Sizing.Auto)
                             {
-                                points[sp1].X = cx1;
-                                points[tm1].X = cx1 + 1;
-                                points[sp1].Y = points[tm1].Y = cy1;
-                            }
-                            else if (Face1.Side == Side.West)
-                            {
-                                points[sp1].X = cx1;
-                                points[tm1].X = cx1 - 1;
-                                points[sp1].Y = points[tm1].Y = cy1;
-                            }
-                            else if (Face1.Side == Side.South)
-                            {
-                                points[sp1].Y = cy1;
-                                points[tm1].Y = cy1 + 1;
-                                points[sp1].X = points[tm1].X = cx1;
+                                Asign_1_IsPoint_2_IsBox_IsAuto();
                             }
                             else
                             {
-                                points[sp1].Y = cy1;
-                                points[tm1].Y = cy1 - 1;
-                                points[sp1].X = points[tm1].X = cx1;
+                                Asign_1_IsPoint_2_IsBox_IsManual();
                             }
-                            #endregion
-
-                            if (Node2.Orientation == Orientation.Point)
+                        }
+                    }
+                    else if (Node2.IsGraphSymbol)
+                    {
+                        if (Node2.Sizing == Sizing.Auto)
+                        {
+                            Asign_1_IsPoint_2_IsSymbol_IsAuto();
+                        }
+                        else
+                        {
+                            Asign_1_IsPoint_2_IsSymbol_IsManual();
+                        }
+                    }
+                    else if (Node2.IsGraphEgress)
+                    {
+                        Asign_1_IsPoint_2_IsEgress();
+                    }
+                }
+                else
+                {
+                    if (Node1.Sizing == Sizing.Auto)
+                    {
+                        if (Node2.IsGraphNode)
+                        {
+                            if (Node2.Orient == Orient.Point)
                             {
-                                #region (IsNode, IsPoint) - (IsNode, IsPoint)
-                                if (Face2.Side == Side.East)
-                                {
-                                    points[sp2].X = cx2;
-                                    points[tm2].X = cx2 + 1;
-                                    points[sp2].Y = points[tm2].Y = cy2;
-                                }
-                                else if (Face2.Side == Side.West)
-                                {
-                                    points[sp2].X = cx2;
-                                    points[tm2].X = cx2 - 1;
-                                    points[sp2].Y = points[tm2].Y = cy2;
-                                }
-                                else if (Face2.Side == Side.South)
-                                {
-                                    points[sp2].Y = cy2;
-                                    points[tm2].Y = cy2 + 1;
-                                    points[sp2].X = points[tm2].X = cx2;
-                                }
-                                else
-                                {
-                                    points[sp2].Y = cy2;
-                                    points[tm2].Y = cy2 - 1;
-                                    points[sp2].X = points[tm2].X = cx2;
-                                }
-                                #endregion
+                                Asign_1_IsBox_IsAuto_2_IsPoint();
                             }
                             else
                             {
-                                #region (IsNode, IsPoint) - (IsNode, IsNotPoint)
-                                if (Node2.Resizing == Resizing.Auto)
+                                if (Node2.Sizing == Sizing.Auto)
                                 {
-                                    #region (IsNode, IsPoint) - (IsNode, IsNotPoint, IsAuto)
-                                    if (Face2.Side == Side.East)
-                                    {
-                                        var x = points[sp2].X = x2R;
-                                        points[tm2].X = x2R + tmLen;
-                                        var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
-
-                                        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-                                        {
-                                            var dx = facet2.DXY[i++];
-                                            var dy = facet2.DXY[i++];
-
-                                            points[j].X = x + dx;
-                                            points[j].Y = y + dy;
-                                        }
-                                    }
-                                    else if (Face2.Side == Side.West)
-                                    {
-                                        var x = points[sp2].X = x2L;
-                                        points[tm2].X = x2L - tmLen;
-                                        var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
-
-                                        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-                                        {
-                                            var dx = facet2.DXY[i++];
-                                            var dy = facet2.DXY[i++];
-
-                                            points[j].X = x - dx;
-                                            points[j].Y = y - dy;
-                                        }
-                                    }
-                                    else if (Face2.Side == Side.South)
-                                    {
-                                        var y = points[sp2].Y = y2B;
-                                        points[tm2].Y = y2B + tmLen;
-                                        var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
-
-                                        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-                                        {
-                                            var dx = facet2.DXY[i++];
-                                            var dy = facet2.DXY[i++];
-
-                                            points[j].X = x + dy;
-                                            points[j].Y = y + dx;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        var y = points[sp2].Y = y2T;
-                                        points[tm2].Y = y2T - tmLen;
-                                        var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
-
-                                        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-                                        {
-                                            var dx = facet2.DXY[i++];
-                                            var dy = facet2.DXY[i++];
-
-                                            points[j].X = x - dy;
-                                            points[j].Y = y - dx;
-                                        }
-                                    }
-                                    #endregion
+                                    Asign_1_IsBox_IsAuto_2_IsBox_IsAuto();
                                 }
                                 else
                                 {
-                                    #region (IsNode, IsPoint) - (IsNode, IsNotPoint, IsFixed)
-                                    #endregion
+                                    Asign_1_IsBox_IsAuto_2_IsBox_IsManual();
                                 }
-                                break;
-                                #endregion
                             }
-                            #endregion
-                            break;
-                        case Orientation.Central:
-                            switch (Node2.Orientation)
+                        }
+                        else if (Node2.IsGraphSymbol)
+                        {
+                            if (Node2.Sizing == Sizing.Auto)
                             {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
+                                Asign_1_IsBox_IsAuto_2_IsSymbol_IsAuto();
                             }
-                            break;
-                        case Orientation.Vertical:
-                            switch (Node2.Orientation)
+                            else
                             {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
+                                Asign_1_IsBox_IsAuto_2_IsSymbol_IsManual();
                             }
-                            break;
-                        case Orientation.Horizontal:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
+                        }
+                        else if (Node2.IsGraphEgress)
+                        {
+                            Asign_1_IsBox_IsAuto_2_IsEgress();
+                        }
                     }
-                }
-                else if (Node2.IsSymbol)
-                {
-                    switch (Node1.Orientation)
+                    else
                     {
-                        case Orientation.Point:
-                            switch (Node2.Orientation)
+                        if (Node2.IsGraphNode)
+                        {
+                            if (Node2.Orient == Orient.Point)
                             {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
+                                Asign_1_IsBox_IsManual_2_IsPoint();
                             }
-                            break;
-                        case Orientation.Central:
-                            switch (Node2.Orientation)
+                            else
                             {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
+                                if (Node2.Sizing == Sizing.Auto)
+                                {
+                                    Asign_1_IsBox_IsManual_2_IsBox_IsAuto();
+                                }
+                                else
+                                {
+                                    Asign_1_IsBox_IsManual_2_IsBox_IsManual();
+                                }
                             }
-                            break;
-                        case Orientation.Vertical:
-                            switch (Node2.Orientation)
+                        }
+                        else if (Node2.IsGraphSymbol)
+                        {
+                            if (Node2.Sizing == Sizing.Auto)
                             {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
+                                Asign_1_IsBox_IsManual_2_IsSymbol_IsAuto();
                             }
-                            break;
-                        case Orientation.Horizontal:
-                            switch (Node2.Orientation)
+                            else
                             {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
+                                Asign_1_IsBox_IsManual_2_IsSymbol_IsManual();
                             }
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (Node1.Orientation)
-                    {
-                        case Orientation.Point:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsPoint, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsPoint, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Central:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsCentral, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsCentral, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Vertical:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsVertical, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsVertical, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Horizontal:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsNode, IsHorizontal, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
+                        }
+                        else if (Node2.IsGraphEgress)
+                        {
+                            Asign_1_IsBox_IsManual_2_IsEgress();
+                        }
                     }
                 }
             }
-            else if (Node1.IsSymbol)
+            else if (Node1.IsGraphSymbol)
             {
-                if (Node2.IsNode)
+                if (Node1.Sizing == Sizing.Auto)
                 {
-                    switch (Node1.Orientation)
+                    if (Node2.IsGraphNode)
                     {
-                        case Orientation.Point:
-                            switch (Node2.Orientation)
+                        if (Node2.Orient == Orient.Point)
+                        {
+                            Asign_1_IsSymbol_IsAuto_2_IsPoint();
+                        }
+                        else
+                        {
+                            if (Node2.Sizing == Sizing.Auto)
                             {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
+                                Asign_1_IsSymbol_IsAuto_2_IsBox_IsAuto();
                             }
-                            break;
-                        case Orientation.Central:
-                            switch (Node2.Orientation)
+                            else
                             {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
+                                Asign_1_IsSymbol_IsAuto_2_IsBox_IsManual();
                             }
-                            break;
-                        case Orientation.Vertical:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Horizontal:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
+                        }
                     }
-                }
-                else if (Node2.IsSymbol)
-                {
-                    switch (Node1.Orientation)
+                    else if (Node2.IsGraphSymbol)
                     {
-                        case Orientation.Point:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Central:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Vertical:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Horizontal:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
+                        if (Node2.Sizing == Sizing.Auto)
+                        {
+                            Asign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto();
+                        }
+                        else
+                        {
+                            Asign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto();
+                        }
+                    }
+                    else if (Node2.IsGraphEgress)
+                    {
+                        Asign_1_IsSymbol_IsAuto_2_IsEgress();
                     }
                 }
                 else
                 {
-                    switch (Node1.Orientation)
+                    if (Node2.IsGraphNode)
                     {
-                        case Orientation.Point:
-                            switch (Node2.Orientation)
+                        if (Node2.Orient == Orient.Point)
+                        {
+                            Asign_1_IsSymbol_IsManual_2_IsPoint();
+                        }
+                        else
+                        {
+                            if (Node2.Sizing == Sizing.Auto)
                             {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsPoint, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
+                                Asign_1_IsSymbol_IsManual_2_IsBox_IsAuto();
                             }
-                            break;
-                        case Orientation.Central:
-                            switch (Node2.Orientation)
+                            else
                             {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsCentral, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
+                                Asign_1_IsSymbol_IsManual_2_IsBox_IsManual();
                             }
-                            break;
-                        case Orientation.Vertical:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsVertical, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Horizontal:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsSymbol, IsHorizontal, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
+                        }
+                    }
+                    else if (Node2.IsGraphSymbol)
+                    {
+                        if (Node2.Sizing == Sizing.Auto)
+                        {
+                            Asign_1_IsSymbol_IsManual_2_IsSymbol_IsAuto();
+                        }
+                        else
+                        {
+                            Asign_1_IsSymbol_IsManual_2_IsSymbol_IsManual();
+                        }
+                    }
+                    else if (Node2.IsGraphEgress)
+                    {
+                        Asign_1_IsSymbol_IsManual_2_IsEgress();
                     }
                 }
             }
-            else
+            else if (Node1.IsGraphEgress)
             {
-                if (Node2.IsNode)
+                if (Node2.IsGraphNode)
                 {
-                    switch (Node1.Orientation)
+                    if (Node2.Orient == Orient.Point)
                     {
-                        case Orientation.Point:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Central:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Vertical:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Horizontal:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsNode, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsNode, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsNode, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsNode, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsNode, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsNode, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsNode, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsNode, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsNode, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
+                        Asign_1_IsEgress_IsManual_2_IsPoint();
+                    }
+                    else
+                    {
+                        if (Node2.Sizing == Sizing.Auto)
+                        {
+                            Asign_1_IsEgress_2_IsBox_IsAuto();
+                        }
+                        else
+                        {
+                            Asign_1_IsEgress_2_IsBox_IsManual();
+                        }
                     }
                 }
-                else if (Node2.IsSymbol)
+                else if (Node2.IsGraphSymbol)
                 {
-                    switch (Node1.Orientation)
+                    if (Node2.Sizing == Sizing.Auto)
                     {
-                        case Orientation.Point:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Central:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Vertical:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Horizontal:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsSymbol, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsSymbol, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsSymbol, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsSymbol, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsSymbol, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsSymbol, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsSymbol, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsSymbol, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsSymbol, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
+                        Asign_1_IsEgress_2_IsSymbol_IsAuto();
+                    }
+                    else
+                    {
+                        Asign_1_IsEgress_2_IsSymbol_IsManual();
                     }
                 }
-                else
+                else if (Node2.IsGraphEgress)
                 {
-                    switch (Node1.Orientation)
-                    {
-                        case Orientation.Point:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsPoint, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Central:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsCentral, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Vertical:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsVertical, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                        case Orientation.Horizontal:
-                            switch (Node2.Orientation)
-                            {
-                                case Orientation.Point:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsEgress, IsPoint, IsAuto)
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsEgress, IsPoint, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsEgress, IsPoint, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Central:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsEgress, IsCentral, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsEgress, IsCentral, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Vertical:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsEgress, IsVertical, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsEgress, IsVertical, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                                case Orientation.Horizontal:
-                                    if (Node1.Resizing == Resizing.Auto)
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsAuto) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Node2.Resizing == Resizing.Auto)
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsEgress, IsHorizontal, IsAuto) 
-                                            
-                                        }
-                                        else
-                                        {//(IsEgress, IsHorizontal, IsFixed) - (IsEgress, IsHorizontal, IsFixed) 
-                                            
-                                        }
-                                    }
-                                    break;
-                            }
-                            break;
-                    }
+                    Asign_1_IsEgress_2_IsEgress();
                 }
             }
             #endregion
 
             SetExtent(points, GraphDefault.HitMargin);
 
+            #region AssignMethods  ============================================
+
+            #region Assign1_IsPoint  ==========================================
+            void Assign1_IsPoint()
+            {
+                if (Face1.Side == Side.East)
+                {
+                    points[sp1].X = cx1;
+                    points[tm1].X = cx1 + 1;
+                    points[sp1].Y = points[tm1].Y = cy1;
+                }
+                else if (Face1.Side == Side.West)
+                {
+                    points[sp1].X = cx1;
+                    points[tm1].X = cx1 - 1;
+                    points[sp1].Y = points[tm1].Y = cy1;
+                }
+                else if (Face1.Side == Side.South)
+                {
+                    points[sp1].Y = cy1;
+                    points[tm1].Y = cy1 + 1;
+                    points[sp1].X = points[tm1].X = cx1;
+                }
+                else
+                {
+                    points[sp1].Y = cy1;
+                    points[tm1].Y = cy1 - 1;
+                    points[sp1].X = points[tm1].X = cx1;
+                }
+            }
+            #endregion
+
+            #region Assign2_IsPoint  ==========================================
+            void Assign2_IsPoint()
+            {
+                if (Face2.Side == Side.East)
+                {
+                    points[sp2].X = cx2;
+                    points[tm2].X = cx2 + 1;
+                    points[sp2].Y = points[tm2].Y = cy2;
+                }
+                else if (Face2.Side == Side.West)
+                {
+                    points[sp2].X = cx2;
+                    points[tm2].X = cx2 - 1;
+                    points[sp2].Y = points[tm2].Y = cy2;
+                }
+                else if (Face2.Side == Side.South)
+                {
+                    points[sp2].Y = cy2;
+                    points[tm2].Y = cy2 + 1;
+                    points[sp2].X = points[tm2].X = cx2;
+                }
+                else
+                {
+                    points[sp2].Y = cy2;
+                    points[tm2].Y = cy2 - 1;
+                    points[sp2].X = points[tm2].X = cx2;
+                }
+            }
+            #endregion
+
+            #region Assign2_IsBox_IsAuto  =====================================
+            void Assign2_IsBox_IsAuto()
+            {
+                if (Face2.Side == Side.East)
+                {
+                    var x = points[sp2].X = x2R;
+                    points[tm2].X = x2R + tmLen;
+                    var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
+
+                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
+                    {
+                        var dx = facet2.DXY[i++];
+                        var dy = facet2.DXY[i++];
+
+                        points[j].X = x + dx;
+                        points[j].Y = y + dy;
+                    }
+                }
+                else if (Face2.Side == Side.West)
+                {
+                    var x = points[sp2].X = x2L;
+                    points[tm2].X = x2L - tmLen;
+                    var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
+
+                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
+                    {
+                        var dx = facet2.DXY[i++];
+                        var dy = facet2.DXY[i++];
+
+                        points[j].X = x - dx;
+                        points[j].Y = y - dy;
+                    }
+                }
+                else if (Face2.Side == Side.South)
+                {
+                    var y = points[sp2].Y = y2B;
+                    points[tm2].Y = y2B + tmLen;
+                    var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
+
+                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
+                    {
+                        var dx = facet2.DXY[i++];
+                        var dy = facet2.DXY[i++];
+
+                        points[j].X = x + dy;
+                        points[j].Y = y + dx;
+                    }
+                }
+                else
+                {
+                    var y = points[sp2].Y = y2T;
+                    points[tm2].Y = y2T - tmLen;
+                    var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
+
+                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
+                    {
+                        var dx = facet2.DXY[i++];
+                        var dy = facet2.DXY[i++];
+
+                        points[j].X = x - dy;
+                        points[j].Y = y - dx;
+                    }
+                }
+
+            }
+            #endregion
+
+
+            #region Asign_1_IsPoint_2_IsPoint  ================================
+            void Asign_1_IsPoint_2_IsPoint()
+            {
+                Assign1_IsPoint();
+                Assign2_IsPoint();
+            }
+
+            #endregion
+
+            #region Asign_1_IsPoint_2_IsBox_IsAuto  ===========================
+            void Asign_1_IsPoint_2_IsBox_IsAuto()
+            {
+                Assign1_IsPoint();
+                Assign2_IsBox_IsAuto();
+            }
+            #endregion
+
+            //1_IsPoint_2_IsBox_IsManual
+            void Asign_1_IsPoint_2_IsBox_IsManual()
+            {
+            }
+            //1_IsPoint_2_IsSymbol_IsAuto
+            void Asign_1_IsPoint_2_IsSymbol_IsAuto()
+            {
+            }
+            //1_IsPoint_2_IsSymbol_IsManual
+            void Asign_1_IsPoint_2_IsSymbol_IsManual()
+            {
+            }
+            //1_IsPoint_2_IsEgress
+            void Asign_1_IsPoint_2_IsEgress()
+            {
+            }
+            //1_IsBox_IsAuto_2_IsPoint
+            void Asign_1_IsBox_IsAuto_2_IsPoint()
+            {
+            }
+            //1_IsBox_IsAuto_2_IsBox_IsAuto
+            void Asign_1_IsBox_IsAuto_2_IsBox_IsAuto()
+            {
+            }
+            //1_IsBox_IsAuto_2_IsBox_IsManual
+            void Asign_1_IsBox_IsAuto_2_IsBox_IsManual()
+            {
+            }
+            //1_IsBox_IsAuto_2_IsSymbol_IsAuto
+            void Asign_1_IsBox_IsAuto_2_IsSymbol_IsAuto()
+            {
+            }
+            //1_IsBox_IsAuto_2_IsSymbol_IsManual
+            void Asign_1_IsBox_IsAuto_2_IsSymbol_IsManual()
+            {
+            }
+            //1_IsBox_IsAuto_2_IsEgress
+            void Asign_1_IsBox_IsAuto_2_IsEgress()
+            {
+            }
+            //1_IsBox_IsManual_2_IsPoint
+            void Asign_1_IsBox_IsManual_2_IsPoint()
+            {
+            }
+            //1_IsBox_IsManual_2_IsBox_IsAuto
+            void Asign_1_IsBox_IsManual_2_IsBox_IsAuto()
+            {
+            }
+            //1_IsBox_IsManual_2_IsBox_IsManual
+            void Asign_1_IsBox_IsManual_2_IsBox_IsManual()
+            {
+            }
+            //1_IsBox_IsManual_2_IsSymbol_IsAuto
+            void Asign_1_IsBox_IsManual_2_IsSymbol_IsAuto()
+            {
+            }
+            //1_IsBox_IsManual_2_IsSymbol_IsManual
+            void Asign_1_IsBox_IsManual_2_IsSymbol_IsManual()
+            {
+            }
+            //1_IsBox_IsManual_2_IsEgress
+            void Asign_1_IsBox_IsManual_2_IsEgress()
+            {
+            }
+            //1_IsSymbol_IsAuto_2_IsPoint
+            void Asign_1_IsSymbol_IsAuto_2_IsPoint()
+            {
+            }
+            //1_IsSymbol_IsAuto_2_IsBox_IsAuto
+            void Asign_1_IsSymbol_IsAuto_2_IsBox_IsAuto()
+            {
+            }
+            //1_IsSymbol_IsAuto_2_IsBox_IsManual
+            void Asign_1_IsSymbol_IsAuto_2_IsBox_IsManual()
+            {
+            }
+            //1_IsSymbol_IsAuto_2_IsSymbol_IsAuto
+            void Asign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto()
+            {
+            }
+            //1_IsSymbol_IsAuto_2_IsEgress
+            void Asign_1_IsSymbol_IsAuto_2_IsEgress()
+            {
+            }
+            //1_IsSymbol_IsManual_2_IsPoint
+            void Asign_1_IsSymbol_IsManual_2_IsPoint()
+            {
+            }
+            //1_IsSymbol_IsManual_2_IsBox_IsAuto
+            void Asign_1_IsSymbol_IsManual_2_IsBox_IsAuto()
+            {
+            }
+            //1_IsSymbol_IsManual_2_IsBox_IsManual
+            void Asign_1_IsSymbol_IsManual_2_IsBox_IsManual()
+            {
+            }
+            //1_IsSymbol_IsManual_2_IsSymbol_IsAuto
+            void Asign_1_IsSymbol_IsManual_2_IsSymbol_IsAuto()
+            {
+            }
+            //1_IsSymbol_IsManual_2_IsSymbol_IsManual
+            void Asign_1_IsSymbol_IsManual_2_IsSymbol_IsManual()
+            {
+            }
+            //1_IsSymbol_IsManual_2_IsEgress
+            void Asign_1_IsSymbol_IsManual_2_IsEgress()
+            {
+            }
+            //1_IsEgress_IsManual_2_IsPoint
+            void Asign_1_IsEgress_IsManual_2_IsPoint()
+            {
+            }
+            //1_IsEgress_2_IsBox_IsAuto
+            void Asign_1_IsEgress_2_IsBox_IsAuto()
+            {
+            }
+            //1_IsEgress_2_IsBox_IsManual
+            void Asign_1_IsEgress_2_IsBox_IsManual()
+            {
+            }
+            //1_IsEgress_2_IsSymbol_IsAuto
+            void Asign_1_IsEgress_2_IsSymbol_IsAuto()
+            {
+            }
+            //1_IsEgress_2_IsSymbol_IsManual
+            void Asign_1_IsEgress_2_IsSymbol_IsManual()
+            {
+            }
+            //1_IsEgress_2_IsEgress
+            void Asign_1_IsEgress_2_IsEgress()
+            {
+            }
+            #endregion
         }
         #endregion
     }

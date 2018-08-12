@@ -69,14 +69,14 @@ namespace ModelGraphSTD
         }
         private void AdjustNode(Node node)
         {
-            if (node.IsNode)
+            if (node.IsGraphNode)
             {
                 if (node.IsManualSizing || node.IsFixedSizing)
                     AdjustFixedNode(node);
                 else
                     AdjustAutoNode(node);
             }
-            else if (node.IsSymbol)
+            else if (node.IsGraphSymbol)
                 AdjustSymbol(node);
         }
 

@@ -42,7 +42,7 @@ namespace ModelGraphSTD
             var North = Side.North;
             var South = Side.South;
 
-            if (node.Orientation == Orientation.Vertical)
+            if (node.Orient == Orient.Vertical)
             {
                 nEast = nquad[1] + nquad[4]; //the right side connection count
                 nWest = nquad[2] + nquad[3]; //the left side  connection count
@@ -64,7 +64,7 @@ namespace ModelGraphSTD
                     if ((quad[i] == 3) || (quad[i] == 2)) lines[i].SetFace(node, West, iWest++, nWest);
                 }
             }
-            else if (node.Orientation == Orientation.Horizontal)
+            else if (node.Orient == Orient.Horizontal)
             {
                 nSouth = nquad[1] + nquad[2];
                 nNorth = nquad[3] + nquad[4];
@@ -82,7 +82,7 @@ namespace ModelGraphSTD
                     if ((quad[i] == 2) || (quad[i] == 1)) lines[i].SetFace(node, South, iSouth++, nSouth);
                 }
             }
-            else if (node.Orientation == Orientation.Central)
+            else if (node.Orient == Orient.Central)
             {
                 nSouth = nsect[2] + nsect[3];
                 nWest = nsect[4] + nsect[5];

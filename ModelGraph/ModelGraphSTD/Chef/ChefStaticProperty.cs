@@ -573,8 +573,8 @@ namespace ModelGraphSTD
             }
             {
                 var p = _nodeOrientationProperty = new PropertyOf<Node, string>(PropertyZStore, Trait.NodeOrientation_P, _orientationEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Orientation);
-                p.SetValFunc = (item, value) => { p.Cast(item).Orientation = (Orientation)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Orient);
+                p.SetValFunc = (item, value) => { p.Cast(item).Orient = (Orient)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
@@ -591,8 +591,8 @@ namespace ModelGraphSTD
             }
             {
                 var p = _nodeResizingProperty = new PropertyOf<Node, string>(PropertyZStore, Trait.NodeResizing_P, _resizingEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Resizing);
-                p.SetValFunc = (item, value) => { p.Cast(item).Resizing = (Resizing)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Sizing);
+                p.SetValFunc = (item, value) => { p.Cast(item).Sizing = (Sizing)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {

@@ -96,7 +96,7 @@ namespace ModelGraphUWP
                 {
                     pen.Color = _colorList[node.Color];
                     pen.Initialize();
-                    if (node.IsPointNode)
+                    if (node.IsNodePoint)
                     {
                         pen.DrawPoint(node);
                     }

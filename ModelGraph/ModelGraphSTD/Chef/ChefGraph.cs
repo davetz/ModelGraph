@@ -345,7 +345,7 @@ namespace ModelGraphSTD
                     if (i == symbols.Count) continue;
 
                     node.Symbol = (byte)(i + 2);
-                    node.Orientation = Orientation.Central;
+                    node.Orient = Orient.Central;
                     if ((node.FlipRotate & FlipRotate.RotateClockWise) == 0)
                     {
                         node.DX = (byte)(sx.Width / 2);

@@ -14,15 +14,15 @@ namespace ModelGraphSTD
         public byte Color;
         public byte Symbol;
         public Labeling Labeling;
-        public Resizing Resizing;
+        public Sizing Sizing;
         public BarWidth BarWidth;
         public FlipRotate FlipRotate;
-        public Orientation Orientation;
+        public Orient Orient;
 
-        internal (int X, int Y, byte DX, byte DY, byte Color, byte Symbol, Labeling Labeling, Resizing Resizing, BarWidth BarWidth, FlipRotate FlipRotate, Orientation Orientation)
+        internal (int X, int Y, byte DX, byte DY, byte Color, byte Symbol, Labeling Labeling, Sizing Resizing, BarWidth BarWidth, FlipRotate FlipRotate, Orient Orientation)
             Parms
         {
-            get { return (X, Y, DX, DY, Color, Symbol, Labeling, Resizing, BarWidth, FlipRotate, Orientation); }
+            get { return (X, Y, DX, DY, Color, Symbol, Labeling, Sizing, BarWidth, FlipRotate, Orient); }
             set
             {
                 X = value.X;
@@ -32,10 +32,10 @@ namespace ModelGraphSTD
                 Color = value.Color;
                 Symbol = value.Symbol;
                 Labeling = value.Labeling;
-                Resizing = value.Resizing;
+                Sizing = value.Resizing;
                 BarWidth = value.BarWidth;
                 FlipRotate = value.FlipRotate;
-                Orientation = value.Orientation;
+                Orient = value.Orientation;
             }
         }
         #endregion
@@ -50,20 +50,21 @@ namespace ModelGraphSTD
         #endregion
 
         #region Booleans  =====================================================
-        public bool IsVertical { get { return Orientation == Orientation.Vertical; } }
-        public bool IsHorizontal { get { return Orientation == Orientation.Horizontal; } }
+        public bool IsGraphPoint => Orient == Orient.Point;
 
-        public bool IsNode { get { return Symbol == 0; } }
-        public bool IsEgress { get { return Symbol == 1; } }
-        public bool IsSymbol { get { return Symbol > 1; } }
-        public bool IsMasked { get { return (IsNode && Orientation != Orientation.Central && Resizing == Resizing.Manual); } }
+        public bool IsGraphNode => Symbol == 0;
+        public bool IsGraphEgress => Symbol == 1;
+        public bool IsGraphSymbol => Symbol > 1;
 
-        public bool IsPointNode { get { return IsNode && Orientation == Orientation.Point; } }
-        public bool IsAutoSizing { get { return (Resizing == Resizing.Auto && Orientation != Orientation.Point); } }
-        public bool IsFixedSizing { get { return (Resizing == Resizing.Fixed && Orientation != Orientation.Point); } }
-        public bool IsManualSizing { get { return (IsNode && Resizing == Resizing.Manual && Orientation != Orientation.Point); } }
-        public bool IsVerticalSizing { get { return (Resizing == Resizing.Auto && (Orientation == Orientation.Vertical || Orientation == Orientation.Central)); } }
-        public bool IsHorizontalSizing { get { return (Resizing == Resizing.Auto && (Orientation == Orientation.Horizontal || Orientation == Orientation.Central)); } }
+
+        public bool IsAutoResizing => Sizing == Sizing.Auto;
+
+        public bool IsMasked { get { return (IsGraphNode && Orient != Orient.Central && Sizing == Sizing.Manual); } }
+
+        public bool IsNodePoint => IsGraphNode && Orient == Orient.Point; 
+        public bool IsAutoSizing { get { return (Sizing == Sizing.Auto && Orient != Orient.Point); } }
+        public bool IsFixedSizing { get { return (Sizing == Sizing.Fixed && Orient != Orient.Point); } }
+        public bool IsManualSizing { get { return (IsGraphNode && Sizing == Sizing.Manual && Orient != Orient.Point); } }
         #endregion
 
         #region Center, Extent, Radius  =======================================
@@ -93,7 +94,7 @@ namespace ModelGraphSTD
         }
         internal (int x, int y, int w, int h) Values()
         {
-            return IsPointNode ? (X, Y, 1, 1) : (X, Y, DX, DY);
+            return IsGraphPoint ? (X, Y, 1, 1) : (X, Y, DX, DY);
         }
         internal (int X, int Y) GetCenter() => (X, Y);
         internal int[] CenterXY
@@ -154,12 +155,12 @@ namespace ModelGraphSTD
             DX = dy;
             DY = dx;
 
-            switch (Orientation)
+            switch (Orient)
             {
-                case Orientation.Point:
-                case Orientation.Central: break;
-                case Orientation.Vertical: Orientation = Orientation.Horizontal; break;
-                case Orientation.Horizontal: Orientation = Orientation.Vertical; break;
+                case Orient.Point:
+                case Orient.Central: break;
+                case Orient.Vertical: Orient = Orient.Horizontal; break;
+                case Orient.Horizontal: Orient = Orient.Vertical; break;
             }
         }
 
@@ -217,27 +218,27 @@ namespace ModelGraphSTD
             }
         }
 
-        internal void SetOrientation(Orientation val, SymbolX sym)
+        internal void SetOrientation(Orient val, SymbolX sym)
         {
             if (sym == null)
             {
-                switch (Orientation)
+                switch (Orient)
                 {
-                    case Orientation.Point:
-                    case Orientation.Central: break;
-                    case Orientation.Vertical: Orientation = Orientation.Horizontal; break;
-                    case Orientation.Horizontal: Orientation = Orientation.Vertical; break;
+                    case Orient.Point:
+                    case Orient.Central: break;
+                    case Orient.Vertical: Orient = Orient.Horizontal; break;
+                    case Orient.Horizontal: Orient = Orient.Vertical; break;
                 }
                 FlipRotate = FlipRotate.None;
             }
             else
             {
-                switch (Orientation)
+                switch (Orient)
                 {
-                    case Orientation.Point:
-                    case Orientation.Central: break;
-                    case Orientation.Vertical: Orientation = Orientation.Horizontal; break;
-                    case Orientation.Horizontal: Orientation = Orientation.Vertical; break;
+                    case Orient.Point:
+                    case Orient.Central: break;
+                    case Orient.Vertical: Orient = Orient.Horizontal; break;
+                    case Orient.Horizontal: Orient = Orient.Vertical; break;
                 }
             }
         }

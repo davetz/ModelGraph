@@ -527,10 +527,10 @@ namespace RepositoryUWP
                                         w.WriteByte(nd.DX);
                                         w.WriteByte(nd.DY);
                                         w.WriteByte(nd.Symbol);
-                                        w.WriteByte((byte)nd.Orientation);
+                                        w.WriteByte((byte)nd.Orient);
                                         w.WriteByte((byte)nd.FlipRotate);
                                         w.WriteByte((byte)nd.Labeling);
-                                        w.WriteByte((byte)nd.Resizing);
+                                        w.WriteByte((byte)nd.Sizing);
                                         w.WriteByte((byte)nd.BarWidth);
                                     }
                                     #endregion
