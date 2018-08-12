@@ -51,13 +51,22 @@ namespace ModelGraphSTD
         #endregion
 
         #region Properties/Methods  ===========================================
-        internal bool HasBends => (Bends != null && Bends.Length > 0);
+        internal bool HasBends => !HasNoBends;
+        internal bool HasNoBends => Bends == null || Bends.Length == 0;
         internal Graph Graph { get { return Owner as Graph; } }
         internal GraphX GraphX { get { return (Owner == null) ? null : Owner.Owner as GraphX; } }
         internal QueryX QueryX => _queryX;
 
         internal Connect Connect1 { get { return QueryX.PathParm.Connect1; } }
         internal Connect Connect2 { get { return QueryX.PathParm.Connect2; } }
+
+        public override string ToString()
+        {
+            var chef = GetChef();
+            var headName = chef.GetIdentity(Node1.Item, IdentityStyle.Double);
+            var tailName = chef.GetIdentity(Node2.Item, IdentityStyle.Double);
+            return $"{headName} --> {tailName}";
+        }
         #endregion
 
 
@@ -339,7 +348,7 @@ namespace ModelGraphSTD
         ///  Populate the edge Point array
         /// </summary>
         /// <remarks>
-        ///         facet1     optional bend points     facet2 
+        ///         facet1     optional bend points   facet2 
         /// node1 |o------o------o------o------o-----o------o| node2
         ///       sp1    tm1    bp1    ...    bp2   tm2    sp2
         /// </remarks>
@@ -350,7 +359,7 @@ namespace ModelGraphSTD
 
             var tmLen = GraphDefault.TerminalLength;
             var tmSpc = GraphDefault.TerminalSpacing / 2;
-            var tmSkf = GraphDefault.TerminalAngleSkew;
+            var tmSko = GraphDefault.TerminalSkewOffset;
 
             if (Owner != null && Owner.IsGraph)
             {
@@ -975,17 +984,17 @@ namespace ModelGraphSTD
                     {
                         if (Node2.Orient == Orient.Point)
                         {
-                            Asign_1_IsPoint_2_IsPoint();
+                            Assign_1_IsPoint_2_IsPoint();
                         }
                         else
                         {
                             if (Node2.Sizing == Sizing.Auto)
                             {
-                                Asign_1_IsPoint_2_IsBox_IsAuto();
+                                Assign_1_IsPoint_2_IsBox_IsAuto();
                             }
                             else
                             {
-                                Asign_1_IsPoint_2_IsBox_IsManual();
+                                Assign_1_IsPoint_2_IsBox_IsManual();
                             }
                         }
                     }
@@ -993,16 +1002,16 @@ namespace ModelGraphSTD
                     {
                         if (Node2.Sizing == Sizing.Auto)
                         {
-                            Asign_1_IsPoint_2_IsSymbol_IsAuto();
+                            Assign_1_IsPoint_2_IsSymbol_IsAuto();
                         }
                         else
                         {
-                            Asign_1_IsPoint_2_IsSymbol_IsManual();
+                            Assign_1_IsPoint_2_IsSymbol_IsManual();
                         }
                     }
                     else if (Node2.IsGraphEgress)
                     {
-                        Asign_1_IsPoint_2_IsEgress();
+                        Assign_1_IsPoint_2_IsEgress();
                     }
                 }
                 else
@@ -1013,17 +1022,17 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Orient == Orient.Point)
                             {
-                                Asign_1_IsBox_IsAuto_2_IsPoint();
+                                Assign_1_IsBox_IsAuto_2_IsPoint();
                             }
                             else
                             {
                                 if (Node2.Sizing == Sizing.Auto)
                                 {
-                                    Asign_1_IsBox_IsAuto_2_IsBox_IsAuto();
+                                    Assign_1_IsBox_IsAuto_2_IsBox_IsAuto();
                                 }
                                 else
                                 {
-                                    Asign_1_IsBox_IsAuto_2_IsBox_IsManual();
+                                    Assign_1_IsBox_IsAuto_2_IsBox_IsManual();
                                 }
                             }
                         }
@@ -1031,16 +1040,16 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Sizing == Sizing.Auto)
                             {
-                                Asign_1_IsBox_IsAuto_2_IsSymbol_IsAuto();
+                                Assign_1_IsBox_IsAuto_2_IsSymbol_IsAuto();
                             }
                             else
                             {
-                                Asign_1_IsBox_IsAuto_2_IsSymbol_IsManual();
+                                Assign_1_IsBox_IsAuto_2_IsSymbol_IsManual();
                             }
                         }
                         else if (Node2.IsGraphEgress)
                         {
-                            Asign_1_IsBox_IsAuto_2_IsEgress();
+                            Assign_1_IsBox_IsAuto_2_IsEgress();
                         }
                     }
                     else
@@ -1049,17 +1058,17 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Orient == Orient.Point)
                             {
-                                Asign_1_IsBox_IsManual_2_IsPoint();
+                                Assign_1_IsBox_IsManual_2_IsPoint();
                             }
                             else
                             {
                                 if (Node2.Sizing == Sizing.Auto)
                                 {
-                                    Asign_1_IsBox_IsManual_2_IsBox_IsAuto();
+                                    Assign_1_IsBox_IsManual_2_IsBox_IsAuto();
                                 }
                                 else
                                 {
-                                    Asign_1_IsBox_IsManual_2_IsBox_IsManual();
+                                    Assign_1_IsBox_IsManual_2_IsBox_IsManual();
                                 }
                             }
                         }
@@ -1067,16 +1076,16 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Sizing == Sizing.Auto)
                             {
-                                Asign_1_IsBox_IsManual_2_IsSymbol_IsAuto();
+                                Assign_1_IsBox_IsManual_2_IsSymbol_IsAuto();
                             }
                             else
                             {
-                                Asign_1_IsBox_IsManual_2_IsSymbol_IsManual();
+                                Assign_1_IsBox_IsManual_2_IsSymbol_IsManual();
                             }
                         }
                         else if (Node2.IsGraphEgress)
                         {
-                            Asign_1_IsBox_IsManual_2_IsEgress();
+                            Assign_1_IsBox_IsManual_2_IsEgress();
                         }
                     }
                 }
@@ -1089,17 +1098,17 @@ namespace ModelGraphSTD
                     {
                         if (Node2.Orient == Orient.Point)
                         {
-                            Asign_1_IsSymbol_IsAuto_2_IsPoint();
+                            Assign_1_IsSymbol_IsAuto_2_IsPoint();
                         }
                         else
                         {
                             if (Node2.Sizing == Sizing.Auto)
                             {
-                                Asign_1_IsSymbol_IsAuto_2_IsBox_IsAuto();
+                                Assign_1_IsSymbol_IsAuto_2_IsBox_IsAuto();
                             }
                             else
                             {
-                                Asign_1_IsSymbol_IsAuto_2_IsBox_IsManual();
+                                Assign_1_IsSymbol_IsAuto_2_IsBox_IsManual();
                             }
                         }
                     }
@@ -1107,16 +1116,16 @@ namespace ModelGraphSTD
                     {
                         if (Node2.Sizing == Sizing.Auto)
                         {
-                            Asign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto();
+                            Assign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto();
                         }
                         else
                         {
-                            Asign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto();
+                            Assign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto();
                         }
                     }
                     else if (Node2.IsGraphEgress)
                     {
-                        Asign_1_IsSymbol_IsAuto_2_IsEgress();
+                        Assign_1_IsSymbol_IsAuto_2_IsEgress();
                     }
                 }
                 else
@@ -1125,17 +1134,17 @@ namespace ModelGraphSTD
                     {
                         if (Node2.Orient == Orient.Point)
                         {
-                            Asign_1_IsSymbol_IsManual_2_IsPoint();
+                            Assign_1_IsSymbol_IsManual_2_IsPoint();
                         }
                         else
                         {
                             if (Node2.Sizing == Sizing.Auto)
                             {
-                                Asign_1_IsSymbol_IsManual_2_IsBox_IsAuto();
+                                Assign_1_IsSymbol_IsManual_2_IsBox_IsAuto();
                             }
                             else
                             {
-                                Asign_1_IsSymbol_IsManual_2_IsBox_IsManual();
+                                Assign_1_IsSymbol_IsManual_2_IsBox_IsManual();
                             }
                         }
                     }
@@ -1143,16 +1152,16 @@ namespace ModelGraphSTD
                     {
                         if (Node2.Sizing == Sizing.Auto)
                         {
-                            Asign_1_IsSymbol_IsManual_2_IsSymbol_IsAuto();
+                            Assign_1_IsSymbol_IsManual_2_IsSymbol_IsAuto();
                         }
                         else
                         {
-                            Asign_1_IsSymbol_IsManual_2_IsSymbol_IsManual();
+                            Assign_1_IsSymbol_IsManual_2_IsSymbol_IsManual();
                         }
                     }
                     else if (Node2.IsGraphEgress)
                     {
-                        Asign_1_IsSymbol_IsManual_2_IsEgress();
+                        Assign_1_IsSymbol_IsManual_2_IsEgress();
                     }
                 }
             }
@@ -1162,17 +1171,17 @@ namespace ModelGraphSTD
                 {
                     if (Node2.Orient == Orient.Point)
                     {
-                        Asign_1_IsEgress_IsManual_2_IsPoint();
+                        Assign_1_IsEgress_IsManual_2_IsPoint();
                     }
                     else
                     {
                         if (Node2.Sizing == Sizing.Auto)
                         {
-                            Asign_1_IsEgress_2_IsBox_IsAuto();
+                            Assign_1_IsEgress_2_IsBox_IsAuto();
                         }
                         else
                         {
-                            Asign_1_IsEgress_2_IsBox_IsManual();
+                            Assign_1_IsEgress_2_IsBox_IsManual();
                         }
                     }
                 }
@@ -1180,16 +1189,16 @@ namespace ModelGraphSTD
                 {
                     if (Node2.Sizing == Sizing.Auto)
                     {
-                        Asign_1_IsEgress_2_IsSymbol_IsAuto();
+                        Assign_1_IsEgress_2_IsSymbol_IsAuto();
                     }
                     else
                     {
-                        Asign_1_IsEgress_2_IsSymbol_IsManual();
+                        Assign_1_IsEgress_2_IsSymbol_IsManual();
                     }
                 }
                 else if (Node2.IsGraphEgress)
                 {
-                    Asign_1_IsEgress_2_IsEgress();
+                    Assign_1_IsEgress_2_IsEgress();
                 }
             }
             #endregion
@@ -1325,9 +1334,76 @@ namespace ModelGraphSTD
             }
             #endregion
 
+            #region Assign1_IsBox_IsAuto  =====================================
+            void Assign1_IsBox_IsAuto()
+            {
+                if (Face1.Side == Side.East)
+                {
+                    var x = points[sp1].X = x1R;
+                    points[tm1].X = x1R + tmLen;
+                    var y = points[sp1].Y = points[tm1].Y = cy1 + Face1.Offset * tmSpc;
 
-            #region Asign_1_IsPoint_2_IsPoint  ================================
-            void Asign_1_IsPoint_2_IsPoint()
+                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
+                    {
+                        var dx = facet1.DXY[i++];
+                        var dy = facet1.DXY[i++];
+
+                        points[j].X = x + dx;
+                        points[j].Y = y + dy;
+                    }
+                }
+                else if (Face1.Side == Side.West)
+                {
+                    var x = points[sp1].X = x1L;
+                    points[tm1].X = x1L - tmLen;
+                    var y = points[sp1].Y = points[tm1].Y = cy1 + Face1.Offset * tmSpc;
+
+                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
+                    {
+                        var dx = facet1.DXY[i++];
+                        var dy = facet1.DXY[i++];
+
+                        points[j].X = x - dx;
+                        points[j].Y = y - dy;
+                    }
+                }
+                else if (Face1.Side == Side.South)
+                {
+                    var y = points[sp1].Y = y1B;
+                    points[tm1].Y = y1B + tmLen;
+                    var x = points[sp1].X = points[tm1].X = cx1 + Face1.Offset * tmSpc;
+
+                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
+                    {
+                        var dx = facet1.DXY[i++];
+                        var dy = facet1.DXY[i++];
+
+                        points[j].X = x + dy;
+                        points[j].Y = y + dx;
+                    }
+                }
+                else
+                {
+                    var y = points[sp1].Y = y1T;
+                    points[tm1].Y = y1T - tmLen;
+                    var x = points[sp1].X = points[tm1].X = cx1 + Face1.Offset * tmSpc;
+
+                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
+                    {
+                        var dx = facet1.DXY[i++];
+                        var dy = facet1.DXY[i++];
+
+                        points[j].X = x - dy;
+                        points[j].Y = y - dx;
+                    }
+                }
+
+            }
+            #endregion
+
+
+            #region Assign_1_IsPoint_2_IsPoint  ================================
+            void Assign_1_IsPoint_2_IsPoint()
             {
                 Assign1_IsPoint();
                 Assign2_IsPoint();
@@ -1335,144 +1411,151 @@ namespace ModelGraphSTD
 
             #endregion
 
-            #region Asign_1_IsPoint_2_IsBox_IsAuto  ===========================
-            void Asign_1_IsPoint_2_IsBox_IsAuto()
+            #region Assign_1_IsPoint_2_IsBox_IsAuto  ===========================
+            void Assign_1_IsPoint_2_IsBox_IsAuto()
             {
                 Assign1_IsPoint();
                 Assign2_IsBox_IsAuto();
             }
             #endregion
 
-            //1_IsPoint_2_IsBox_IsManual
-            void Asign_1_IsPoint_2_IsBox_IsManual()
+            #region Assign_1_IsPoint_2_IsBox_IsManual  =========================
+            void Assign_1_IsPoint_2_IsBox_IsManual()
             {
             }
+            #endregion
+
             //1_IsPoint_2_IsSymbol_IsAuto
-            void Asign_1_IsPoint_2_IsSymbol_IsAuto()
+            void Assign_1_IsPoint_2_IsSymbol_IsAuto()
             {
             }
             //1_IsPoint_2_IsSymbol_IsManual
-            void Asign_1_IsPoint_2_IsSymbol_IsManual()
+            void Assign_1_IsPoint_2_IsSymbol_IsManual()
             {
             }
             //1_IsPoint_2_IsEgress
-            void Asign_1_IsPoint_2_IsEgress()
+            void Assign_1_IsPoint_2_IsEgress()
             {
             }
             //1_IsBox_IsAuto_2_IsPoint
-            void Asign_1_IsBox_IsAuto_2_IsPoint()
+            void Assign_1_IsBox_IsAuto_2_IsPoint()
             {
             }
-            //1_IsBox_IsAuto_2_IsBox_IsAuto
-            void Asign_1_IsBox_IsAuto_2_IsBox_IsAuto()
+
+            #region Assign_1_IsBox_IsAuto_2_IsBox_IsAuto  ======================
+            void Assign_1_IsBox_IsAuto_2_IsBox_IsAuto()
             {
+                Assign1_IsBox_IsAuto();
+                Assign2_IsBox_IsAuto();
             }
+            #endregion
+
             //1_IsBox_IsAuto_2_IsBox_IsManual
-            void Asign_1_IsBox_IsAuto_2_IsBox_IsManual()
+            void Assign_1_IsBox_IsAuto_2_IsBox_IsManual()
             {
             }
             //1_IsBox_IsAuto_2_IsSymbol_IsAuto
-            void Asign_1_IsBox_IsAuto_2_IsSymbol_IsAuto()
+            void Assign_1_IsBox_IsAuto_2_IsSymbol_IsAuto()
             {
             }
             //1_IsBox_IsAuto_2_IsSymbol_IsManual
-            void Asign_1_IsBox_IsAuto_2_IsSymbol_IsManual()
+            void Assign_1_IsBox_IsAuto_2_IsSymbol_IsManual()
             {
             }
             //1_IsBox_IsAuto_2_IsEgress
-            void Asign_1_IsBox_IsAuto_2_IsEgress()
+            void Assign_1_IsBox_IsAuto_2_IsEgress()
             {
             }
             //1_IsBox_IsManual_2_IsPoint
-            void Asign_1_IsBox_IsManual_2_IsPoint()
+            void Assign_1_IsBox_IsManual_2_IsPoint()
             {
             }
             //1_IsBox_IsManual_2_IsBox_IsAuto
-            void Asign_1_IsBox_IsManual_2_IsBox_IsAuto()
+            void Assign_1_IsBox_IsManual_2_IsBox_IsAuto()
             {
             }
             //1_IsBox_IsManual_2_IsBox_IsManual
-            void Asign_1_IsBox_IsManual_2_IsBox_IsManual()
+            void Assign_1_IsBox_IsManual_2_IsBox_IsManual()
             {
             }
             //1_IsBox_IsManual_2_IsSymbol_IsAuto
-            void Asign_1_IsBox_IsManual_2_IsSymbol_IsAuto()
+            void Assign_1_IsBox_IsManual_2_IsSymbol_IsAuto()
             {
             }
             //1_IsBox_IsManual_2_IsSymbol_IsManual
-            void Asign_1_IsBox_IsManual_2_IsSymbol_IsManual()
+            void Assign_1_IsBox_IsManual_2_IsSymbol_IsManual()
             {
             }
             //1_IsBox_IsManual_2_IsEgress
-            void Asign_1_IsBox_IsManual_2_IsEgress()
+            void Assign_1_IsBox_IsManual_2_IsEgress()
             {
             }
             //1_IsSymbol_IsAuto_2_IsPoint
-            void Asign_1_IsSymbol_IsAuto_2_IsPoint()
+            void Assign_1_IsSymbol_IsAuto_2_IsPoint()
             {
             }
             //1_IsSymbol_IsAuto_2_IsBox_IsAuto
-            void Asign_1_IsSymbol_IsAuto_2_IsBox_IsAuto()
+            void Assign_1_IsSymbol_IsAuto_2_IsBox_IsAuto()
             {
             }
             //1_IsSymbol_IsAuto_2_IsBox_IsManual
-            void Asign_1_IsSymbol_IsAuto_2_IsBox_IsManual()
+            void Assign_1_IsSymbol_IsAuto_2_IsBox_IsManual()
             {
             }
             //1_IsSymbol_IsAuto_2_IsSymbol_IsAuto
-            void Asign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto()
+            void Assign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto()
             {
             }
             //1_IsSymbol_IsAuto_2_IsEgress
-            void Asign_1_IsSymbol_IsAuto_2_IsEgress()
+            void Assign_1_IsSymbol_IsAuto_2_IsEgress()
             {
             }
             //1_IsSymbol_IsManual_2_IsPoint
-            void Asign_1_IsSymbol_IsManual_2_IsPoint()
+            void Assign_1_IsSymbol_IsManual_2_IsPoint()
             {
             }
             //1_IsSymbol_IsManual_2_IsBox_IsAuto
-            void Asign_1_IsSymbol_IsManual_2_IsBox_IsAuto()
+            void Assign_1_IsSymbol_IsManual_2_IsBox_IsAuto()
             {
             }
             //1_IsSymbol_IsManual_2_IsBox_IsManual
-            void Asign_1_IsSymbol_IsManual_2_IsBox_IsManual()
+            void Assign_1_IsSymbol_IsManual_2_IsBox_IsManual()
             {
             }
             //1_IsSymbol_IsManual_2_IsSymbol_IsAuto
-            void Asign_1_IsSymbol_IsManual_2_IsSymbol_IsAuto()
+            void Assign_1_IsSymbol_IsManual_2_IsSymbol_IsAuto()
             {
             }
             //1_IsSymbol_IsManual_2_IsSymbol_IsManual
-            void Asign_1_IsSymbol_IsManual_2_IsSymbol_IsManual()
+            void Assign_1_IsSymbol_IsManual_2_IsSymbol_IsManual()
             {
             }
             //1_IsSymbol_IsManual_2_IsEgress
-            void Asign_1_IsSymbol_IsManual_2_IsEgress()
+            void Assign_1_IsSymbol_IsManual_2_IsEgress()
             {
             }
             //1_IsEgress_IsManual_2_IsPoint
-            void Asign_1_IsEgress_IsManual_2_IsPoint()
+            void Assign_1_IsEgress_IsManual_2_IsPoint()
             {
             }
             //1_IsEgress_2_IsBox_IsAuto
-            void Asign_1_IsEgress_2_IsBox_IsAuto()
+            void Assign_1_IsEgress_2_IsBox_IsAuto()
             {
             }
             //1_IsEgress_2_IsBox_IsManual
-            void Asign_1_IsEgress_2_IsBox_IsManual()
+            void Assign_1_IsEgress_2_IsBox_IsManual()
             {
             }
             //1_IsEgress_2_IsSymbol_IsAuto
-            void Asign_1_IsEgress_2_IsSymbol_IsAuto()
+            void Assign_1_IsEgress_2_IsSymbol_IsAuto()
             {
             }
             //1_IsEgress_2_IsSymbol_IsManual
-            void Asign_1_IsEgress_2_IsSymbol_IsManual()
+            void Assign_1_IsEgress_2_IsSymbol_IsManual()
             {
             }
             //1_IsEgress_2_IsEgress
-            void Asign_1_IsEgress_2_IsEgress()
+            void Assign_1_IsEgress_2_IsEgress()
             {
             }
             #endregion

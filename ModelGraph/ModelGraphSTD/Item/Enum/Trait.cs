@@ -334,8 +334,8 @@ namespace ModelGraphSTD
         //=========================================
         EdgeFace1_P = 0x4A1 | IsCovert,
         EdgeFace2_P = 0x4A2 | IsCovert,
-        EdgeGnarl1_P = 0x4A3 | IsCovert,
-        EdgeGnarl2_P = 0x4A4 | IsCovert,
+        EdgeFacet1_P = 0x4A3 | IsCovert,
+        EdgeFacet2_P = 0x4A4 | IsCovert,
         EdgeConnect1_P = 0x4A5 | IsCovert,
         EdgeConnect2_P = 0x4A6 | IsCovert,
 

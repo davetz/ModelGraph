@@ -21,8 +21,7 @@ namespace ModelGraphSTD
         internal Node Node;         // the given node
         internal int Count;         // the number of closed lines
 
-        internal Edge[] Opens;      // list of open ended lines
-        internal Edge[] Lines;      // list of closed lines (connects to someother node)
+        internal Edge[] Lines;      // list of closed lines (connects to some other node)
         internal Node[] Other;      // list of nodes at the other end of the line
         internal (int X, int Y)[] Bends;  // list of inflection points closest to the node
         internal EdgeRotator[] Conn;// flip and rotate edge connects
@@ -39,7 +38,6 @@ namespace ModelGraphSTD
             #region Initialize  ===============================================
             Node = node;
 
-            var opens = new List<Edge>();
             var lines = new List<Edge>();
             var bends = new List<(int X, int Y)>();
             var others = new List<Node>();
@@ -47,21 +45,13 @@ namespace ModelGraphSTD
             foreach (var edge in edges)
             {
                 var other = edge.OtherNode(Node);
-                if (other == null)
-                {
-                    opens.Add(edge);
-                }
-                else
-                {
-                    others.Add(other);
-                    lines.Add(edge);
-                    bends.Add(edge.GetClosestBend(Node));
-                }
+                others.Add(other);
+                lines.Add(edge);
+                bends.Add(edge.GetClosestBend(Node));
             }
 
             Count = lines.Count;
 
-            Opens = opens.ToArray();    // list of open ended lines
             Lines = lines.ToArray();    // list of lines
             Other = others.ToArray();   // list of the other end line node
             Bends = bends.ToArray();    // list of closest line bend;
@@ -77,14 +67,10 @@ namespace ModelGraphSTD
 
             var ext = new Extent();
             var slope = new float[Count];  //slope of connecting line's radial vecotor
-            var pref = new int[Count];	   //ordering preference (for parallel lines)
 
             ext.Point1 = Node.Center;
             for (int i = 0; i < Count; i++)
             {
-                //	ordering preferance ensures parallel lines don't cross
-                pref[i] = i;
-
                 ext.Point2 = Bends[i];
 
                 //	find the line slope and radial quadrant
@@ -129,41 +115,41 @@ namespace ModelGraphSTD
             //	the radial direction to its destination line end
             //	quad[] identifies the radial quadrant (1,2,3,4 clockwise from horz-right)
             //	slope[] is the radial direction within that quadrant
+            var swap = false;
             for (int i = 0; i < Count; i++)
             {
                 for (int j = i + 1; j < Count; j++)
                 {
-                    bool swap = false;
+                    if (IsSpecialCase(i, j) && TestSpecialCase(i, j)) Swap(i, j);
+                }
+            }
+            for (int i = 0; i < Count; i++)
+            {
+                for (int j = i + 1; j < Count; j++)
+                {
+                    if (IsSpecialCase(i, j)) continue;
                     switch (Quad[i])
                     {
                         case 1:
-                            if ((Other[j] == Other[i]) && (pref[j] > pref[i]) && (slope[j] == slope[i])) { swap = true; }
-                            else if ((Quad[j] == 1) && (slope[j] < slope[i])) { swap = true; }
+                            if ((Quad[j] == 1) && (slope[j] < slope[i])) swap = true;
                             break;
                         case 2:
                             if (Quad[j] < 2) { swap = true; }
-                            else if ((Other[j] == Other[i]) && (pref[j] < pref[i]) && (slope[j] == slope[i])) { swap = true; }
-                            else if ((Quad[j] == 2) && (slope[j] < slope[i])) { swap = true; }
+                            else if ((Quad[j] == 2) && (slope[j] < slope[i])) swap = true;
                             break;
                         case 3:
                             if (Quad[j] < 3) { swap = true; }
-                            else if ((Other[j] == Other[i]) && (pref[j] < pref[i]) && (slope[j] == slope[i])) { swap = true; }
-                            else if ((Quad[j] == 3) && (slope[j] < slope[i])) { swap = true; }
+                            else if ((Quad[j] == 3) && (slope[j] < slope[i])) swap = true;
                             break;
                         case 4:
                             if (Quad[j] < 4) { swap = true; }
-                            else if ((Other[j] == Other[i]) && (pref[j] > pref[i]) && (slope[j] == slope[i])) { swap = true; }
-                            else if ((Quad[j] == 4) && (slope[j] < slope[i])) { swap = true; }
+                            else if ((Quad[j] == 4) && (slope[j] < slope[i])) swap = true;
                             break;
                     }
                     if (swap)
                     {
-                        var td = slope[i]; slope[i] = slope[j]; slope[j] = td;
-                        var nd = Other[i]; Other[i] = Other[j]; Other[j] = nd;
-                        var ti = pref[i]; pref[i] = pref[j]; pref[j] = ti;
-                        var ln = Lines[i]; Lines[i] = Lines[j]; Lines[j] = ln;
-                        ti = Quad[i]; Quad[i] = Quad[j]; Quad[j] = ti;
-                        ti = Sect[i]; Sect[i] = Sect[j]; Sect[j] = ti;
+                        swap = false;
+                        Swap(i, j);
                     }
                 }
             }
@@ -183,6 +169,18 @@ namespace ModelGraphSTD
             {
                 Conn[i] = new EdgeRotator(Lines[i].GetConnect(Node));
             }
+
+            bool IsSpecialCase(int i, int j) => (Other[i] == Other[j] && Lines[i].HasNoBends && Lines[j].HasNoBends);
+            bool TestSpecialCase(int i, int j) => (Lines[i].GetHashCode() < Lines[j].GetHashCode());
+            void Swap(int i, int j)
+            {
+                var t1 = slope[i]; slope[i] = slope[j]; slope[j] = t1;
+                var t2 = Other[i]; Other[i] = Other[j]; Other[j] = t2;
+                var t3 = Lines[i]; Lines[i] = Lines[j]; Lines[j] = t3;
+                var t4 = Quad[i]; Quad[i] = Quad[j]; Quad[j] = t4;
+                var t5 = Sect[i]; Sect[i] = Sect[j]; Sect[j] = t5;
+            }
+
         }
     }
 }

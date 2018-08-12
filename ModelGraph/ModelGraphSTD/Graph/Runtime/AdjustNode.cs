@@ -20,7 +20,6 @@ namespace ModelGraphSTD
 
             //var node = order.Node;
             var count = order.Count;
-            var open = order.Opens;
             var lines = order.Lines;
             var nodes = order.Other;
             var quad = order.Quad;
@@ -144,7 +143,6 @@ namespace ModelGraphSTD
             var order = new LineOrder(node, edges);
 
             var count = order.Count;
-            var open = order.Opens;
             var lines = order.Lines;
             var nodes = order.Other;
             var bends = order.Bends;

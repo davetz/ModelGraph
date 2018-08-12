@@ -324,6 +324,7 @@ namespace ModelGraphSTD
             X = X + delta.X;
             Y = Y + delta.Y;
         }
+        public override string ToString() => GetChef().GetIdentity(Item, IdentityStyle.Double);
         #endregion
     }
 }

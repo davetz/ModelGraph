@@ -136,7 +136,7 @@ namespace ModelGraphSTD
                 {
                     foreach (var pm in e1.Value)
                     {
-                        qxParams[e1.Key].Remove(pm);
+                        if (qxParams.ContainsKey(e1.Key)) qxParams[e1.Key].Remove(pm);
                     }
                     if (qxParams[e1.Key].Count == 0) qxParams.Remove(e1.Key);
                 }
