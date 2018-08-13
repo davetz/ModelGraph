@@ -65,7 +65,7 @@ namespace ModelGraphSTD
             var chef = GetChef();
             var headName = chef.GetIdentity(Node1.Item, IdentityStyle.Double);
             var tailName = chef.GetIdentity(Node2.Item, IdentityStyle.Double);
-            return $"{headName} --> {tailName}";
+            return $"{headName} --> {tailName}  ({LineColor})";
         }
         #endregion
 
