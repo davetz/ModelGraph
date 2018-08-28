@@ -162,6 +162,11 @@ namespace ModelGraphSTD
             if (Points == null) Refresh();
             return (node == Node1) ? Points[Bp1] : Points[Bp2];
         }
+        internal (Node other, (int, int) bend) OtherBend(Node n)
+        {
+            if (Points == null) Refresh();
+            return (n == Node1) ? (Node2, Points[Bp1]) : (Node1, Points[Bp2]);
+        }
         #endregion
 
         #region GetConnect  ===================================================

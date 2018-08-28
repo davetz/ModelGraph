@@ -115,7 +115,6 @@ namespace ModelGraphSTD
             //	the radial direction to its destination line end
             //	quad[] identifies the radial quadrant (1,2,3,4 clockwise from horz-right)
             //	slope[] is the radial direction within that quadrant
-            var swap = false;
             for (int i = 0; i < Count; i++)
             {
                 for (int j = i + 1; j < Count; j++)
@@ -131,25 +130,20 @@ namespace ModelGraphSTD
                     switch (Quad[i])
                     {
                         case 1:
-                            if ((Quad[j] == 1) && (slope[j] < slope[i])) swap = true;
+                            if ((Quad[j] == 1) && (slope[j] < slope[i])) Swap(i, j);
                             break;
                         case 2:
-                            if (Quad[j] < 2) { swap = true; }
-                            else if ((Quad[j] == 2) && (slope[j] < slope[i])) swap = true;
+                            if (Quad[j] < 2) Swap(i, j);
+                            else if ((Quad[j] == 2) && (slope[j] < slope[i])) Swap(i, j);
                             break;
                         case 3:
-                            if (Quad[j] < 3) { swap = true; }
-                            else if ((Quad[j] == 3) && (slope[j] < slope[i])) swap = true;
+                            if (Quad[j] < 3) Swap(i, j);
+                            else if ((Quad[j] == 3) && (slope[j] < slope[i])) Swap(i, j);
                             break;
                         case 4:
-                            if (Quad[j] < 4) { swap = true; }
-                            else if ((Quad[j] == 4) && (slope[j] < slope[i])) swap = true;
+                            if (Quad[j] < 4) Swap(i, j);
+                            else if ((Quad[j] == 4) && (slope[j] < slope[i])) Swap(i, j);
                             break;
-                    }
-                    if (swap)
-                    {
-                        swap = false;
-                        Swap(i, j);
                     }
                 }
             }
@@ -171,7 +165,32 @@ namespace ModelGraphSTD
             }
 
             bool IsSpecialCase(int i, int j) => (Other[i] == Other[j] && Lines[i].HasNoBends && Lines[j].HasNoBends);
-            bool TestSpecialCase(int i, int j) => (Lines[i].GetHashCode() < Lines[j].GetHashCode());
+            bool TestSpecialCase(int i, int j)
+            {
+                var isLess = (Lines[i].GetHashCode() < Lines[j].GetHashCode());
+                var isMore = !isLess;
+                switch (node.Orient)
+                {
+                    case Orient.Point:
+                    case Orient.Central:
+                        if ((Sect[i] == 6 || Sect[i] == 7) && (Sect[j] == 6 || Sect[j] == 7)) return isLess;        //N
+                        else if ((Sect[i] == 2 || Sect[i] == 3) && (Sect[j] == 2 || Sect[j] == 3)) return isMore;   //S
+                        else if ((Sect[i] == 4 || Sect[i] == 5) && (Sect[j] == 4 || Sect[j] == 5)) return isLess;   //W
+                        else if ((Sect[i] == 1 || Sect[i] == 8) && (Sect[j] == 1 || Sect[j] == 8)) return isMore;   //E
+                        else return false;
+
+                    case Orient.Vertical:
+                        if ((Quad[i] == 4 || Quad[i] == 1) && (Quad[j] == 4 || Quad[j] == 1)) return isLess;        //W
+                        else if ((Quad[i] == 3 || Quad[i] == 2) && (Quad[j] == 3 || Quad[j] == 2)) return isMore;   //E
+                        else return false;
+                    
+                    case Orient.Horizontal:
+                        if ((Quad[i] == 3 || Quad[i] == 4) && (Quad[j] == 3 || Quad[j] == 4)) return isLess;        //N
+                        else if ((Quad[i] == 1 || Quad[i] == 2) && (Quad[j] == 1 || Quad[j] == 2)) return isMore;   //S
+                        else return false;
+                }
+                return false;
+            }
             void Swap(int i, int j)
             {
                 var t1 = slope[i]; slope[i] = slope[j]; slope[j] = t1;

@@ -38,6 +38,9 @@ namespace ModelGraphSTD
         #endregion
 
         #region Properties/Methods  ===========================================
+
+        internal (int count, Edge[] edges) ConnectedEdges(Node n) => Node_Edges.TryGetValue(n, out List<Edge> list) ? (list.Count, list.ToArray()) : (0, null);
+
         public void Add(Path path) { Paths.Add(path); }
         public void Add(Level level) { Levels.Add(level); }
 
