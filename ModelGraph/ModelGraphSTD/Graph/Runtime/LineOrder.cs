@@ -75,10 +75,10 @@ namespace ModelGraphSTD
 
                 //	find the line slope and radial quadrant
                 var dt = ext.Delta;
-                var qd = XYPoint.Quad(dt);
+                var qd = XYPair.Quad(dt);
                 Quad[i] = qd;
                 NQuad[qd] += 1;
-                slope[i] = XYPoint.Slope(dt);
+                slope[i] = XYPair.Slope(dt);
 
                 //	count the number of connections in each radial section
                 if (Quad[i] == 1)

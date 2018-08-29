@@ -115,13 +115,13 @@ namespace ModelGraphSTD
             var len = Points.Length;
             for (int i = 0; i < len;)
             {
-                Points[i] = XYPoint.Rotate(Points[i], (x, y));
+                Points[i] = XYPair.Rotate(Points[i], (x, y));
             }
 
             len = (Bends == null) ? 0 : Bends.Length;
             for (int i = 0; i < len;)
             {
-                Bends[i] = XYPoint.Rotate(Bends[i], (x, y));
+                Bends[i] = XYPair.Rotate(Bends[i], (x, y));
             }
         }
 
@@ -130,13 +130,13 @@ namespace ModelGraphSTD
             var len = Points.Length;
             for (int i = 0; i < len;)
             {
-                Points[i] = XYPoint.VerticalFlip(Points[i], y);
+                Points[i] = XYPair.VerticalFlip(Points[i], y);
             }
 
             len = (Bends == null) ? 0 : Bends.Length;
             for (int i = 0; i < len;)
             {
-                Bends[i] = XYPoint.VerticalFlip(Bends[i], y);
+                Bends[i] = XYPair.VerticalFlip(Bends[i], y);
             }
         }
 
@@ -145,13 +145,13 @@ namespace ModelGraphSTD
             var len = Points.Length;
             for (int i = 0; i < len;)
             {
-                Points[i] = XYPoint.HorizontalFlip(Points[i], x);
+                Points[i] = XYPair.HorizontalFlip(Points[i], x);
             }
 
             len = (Bends == null) ? 0 : Bends.Length;
             for (int i = 0; i < len;)
             {
-                Bends[i] = XYPoint.HorizontalFlip(Bends[i], x);
+                Bends[i] = XYPair.HorizontalFlip(Bends[i], x);
             }
         }
         #endregion

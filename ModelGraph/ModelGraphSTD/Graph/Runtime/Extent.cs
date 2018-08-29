@@ -148,9 +148,9 @@ namespace ModelGraphSTD
         public int DY => Y2 - Y1;
         public (int X, int Y) Delta => (DX, DY);
         public int Length => (int)Math.Sqrt(Diagonal);
-        public int Diagonal => XYPoint.Diagonal(Delta);
-        public float Slope => XYPoint.Slope(Delta);
-        public int Quad => XYPoint.Quad(Delta);
+        public int Diagonal => XYPair.Diagonal(Delta);
+        public float Slope => XYPair.Slope(Delta);
+        public int Quad => XYPair.Quad(Delta);
 
         public bool TryGetDelta(out (int X, int Y) delta)
         {

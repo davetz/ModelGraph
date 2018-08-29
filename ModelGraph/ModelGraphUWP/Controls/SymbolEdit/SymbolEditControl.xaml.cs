@@ -901,7 +901,7 @@ namespace ModelGraphUWP
             {
                 for (int i = 0; i < line.Points.Count; i++)
                 {
-                    line.Points[i] = XYPoint.VerticalFlip(line.Points[i], center.Y);
+                    line.Points[i] = XYPair.VerticalFlip(line.Points[i], center.Y);
                 }
             }
             DrawCanvas.Invalidate();
@@ -914,7 +914,7 @@ namespace ModelGraphUWP
             {
                 for (int i = 0; i < line.Points.Count; i++)
                 {
-                    line.Points[i] = XYPoint.HorizontalFlip(line.Points[i], center.X);
+                    line.Points[i] = XYPair.HorizontalFlip(line.Points[i], center.X);
                 }
             }
             DrawCanvas.Invalidate();
@@ -927,7 +927,7 @@ namespace ModelGraphUWP
             {
                 for (int i = 0; i < line.Points.Count; i++)
                 {
-                    line.Points[i] = XYPoint.Rotate(line.Points[i], (center.X, center.Y));
+                    line.Points[i] = XYPair.Rotate(line.Points[i], (center.X, center.Y));
                 }
             }
             DrawCanvas.Invalidate();
@@ -1007,7 +1007,7 @@ namespace ModelGraphUWP
                         continue;
                     }
 
-                    line.Points[i] = XYPoint.Move(line.Points[i], delta);
+                    line.Points[i] = XYPair.Move(line.Points[i], delta);
                 }
                 Consolidate();
             }
@@ -1021,7 +1021,7 @@ namespace ModelGraphUWP
                     var n = line.Points.Count;
                     for (int i = 0; i < n; i++)
                     {
-                        line.Points[i] = XYPoint.Move(line.Points[i], delta);
+                        line.Points[i] = XYPair.Move(line.Points[i], delta);
                     }
                 }
                 Consolidate();

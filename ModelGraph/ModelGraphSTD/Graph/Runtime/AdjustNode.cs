@@ -9,23 +9,12 @@ namespace ModelGraphSTD
     {
         private void AdjustAutoNode(Node node)
         {
-            if (!Node_Edges.TryGetValue(node, out List<Edge> edges)) return;
+            var (count, edges, quad, sect, side, slope, nquad, nsect, _, _) = Layout.FarNodeParms(node);
+            if (count == 0) return;
 
             var gx = node.Graph.GraphX;
             var spacing = gx.TerminalSpacing;
-            var barSize = ((node.BarWidth == BarWidth.Thin) ? gx.ThinBusSize : (node.BarWidth == BarWidth.Wide) ? gx.WideBusSize : gx.ExtraWideBusSize) / 2;
-
-
-            var order = new LineOrder(node, edges);
-
-            //var node = order.Node;
-            var count = order.Count;
-            var lines = order.Lines;
-            var nodes = order.Other;
-            var quad = order.Quad;
-            var sect = order.Sect;
-            var nquad = order.NQuad;
-            var nsect = order.NSect;
+            var barSize = ((node.BarWidth == BarWidth.Thin) ? gx.ThinBusSize : (node.BarWidth == BarWidth.Wide) ? gx.WideBusSize : gx.ExtraWideBusSize) / 2;          
 
             //int x, y, w, h;
             //node.GetValues(out x, out y, out w, out h);
@@ -52,15 +41,15 @@ namespace ModelGraphSTD
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (quad[i] == 4) lines[i].SetFace(node, East, iEast++, nEast);
+                    if (quad[i] == 4) edges[i].SetFace(node, East, iEast++, nEast);
                 }
                 for (int i = 0; i < count; i++)
                 {
-                    if (quad[i] == 1) lines[i].SetFace(node, East, iEast++, nEast);
+                    if (quad[i] == 1) edges[i].SetFace(node, East, iEast++, nEast);
                 }
                 for (int i = count - 1; i >= 0; i--)
                 {
-                    if ((quad[i] == 3) || (quad[i] == 2)) lines[i].SetFace(node, West, iWest++, nWest);
+                    if ((quad[i] == 3) || (quad[i] == 2)) edges[i].SetFace(node, West, iWest++, nWest);
                 }
             }
             else if (node.Orient == Orient.Horizontal)
@@ -74,11 +63,11 @@ namespace ModelGraphSTD
 
                 for (int i = 0; i < count; i++)
                 {
-                    if ((quad[i] == 3) || (quad[i] == 4)) lines[i].SetFace(node, North, iNorth++, nNorth);
+                    if ((quad[i] == 3) || (quad[i] == 4)) edges[i].SetFace(node, North, iNorth++, nNorth);
                 }
                 for (int i = count - 1; i >= 0; i--)
                 {
-                    if ((quad[i] == 2) || (quad[i] == 1)) lines[i].SetFace(node, South, iSouth++, nSouth);
+                    if ((quad[i] == 2) || (quad[i] == 1)) edges[i].SetFace(node, South, iSouth++, nSouth);
                 }
             }
             else if (node.Orient == Orient.Central)
@@ -100,17 +89,17 @@ namespace ModelGraphSTD
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (sect[i] == 8) lines[i].SetFace(node, East, iEast++, nEast);
+                    if (sect[i] == 8) edges[i].SetFace(node, East, iEast++, nEast);
                 }
                 for (int i = 0; i < count; i++)
                 {
-                    if (sect[i] == 1) lines[i].SetFace(node, East, iEast++, nEast);
-                    if (sect[i] == 6 || sect[i] == 7) lines[i].SetFace(node, North, iNorth++, nNorth);
+                    if (sect[i] == 1) edges[i].SetFace(node, East, iEast++, nEast);
+                    if (sect[i] == 6 || sect[i] == 7) edges[i].SetFace(node, North, iNorth++, nNorth);
                 }
                 for (int i = count - 1; i >= 0; i--)
                 {
-                    if (sect[i] == 5 || sect[i] == 4) lines[i].SetFace(node, West, iWest++, nWest);
-                    if (sect[i] == 3 || sect[i] == 2) lines[i].SetFace(node, South, iSouth++, nSouth);
+                    if (sect[i] == 5 || sect[i] == 4) edges[i].SetFace(node, West, iWest++, nWest);
+                    if (sect[i] == 3 || sect[i] == 2) edges[i].SetFace(node, South, iSouth++, nSouth);
                 }
             }
             else
@@ -121,16 +110,16 @@ namespace ModelGraphSTD
                     {
                         case 1:
                         case 8:
-                            lines[i].SetFace(node, East); break;
+                            edges[i].SetFace(node, East); break;
                         case 2:
                         case 3:
-                            lines[i].SetFace(node, South); break;
+                            edges[i].SetFace(node, South); break;
                         case 4:
                         case 5:
-                            lines[i].SetFace(node, West); break;
+                            edges[i].SetFace(node, West); break;
                         case 6:
                         case 7:
-                            lines[i].SetFace(node, North); break;
+                            edges[i].SetFace(node, North); break;
                     }
                 }
             }
