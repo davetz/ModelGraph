@@ -6,31 +6,30 @@ namespace ModelGraphSTD
 {
     internal static class Layout
     {
-        internal static (int count, Edge[] edges, int[] quad, int[] sect, Side[] side, float[] slope, int[] nquad, int[] nsect, int[] sectEdge, EdgeRotator[] conn) 
+        internal static (int count, Edge[] edge, int[] quad, int[] sect, float[] slope, int[] nquad, int[] nsect, int[] sectEdge, EdgeRotator[] conn) 
             FarNodeParms(Node n1)
         {/*
-            Construct an optimumly ordered line list for the given node.
+            Construct an optimumly ordered edge list for the given node.
+
             Consider the given node is at the center of a circle and the
-            line connections are represented as a sequence of radial vectors. 
-            Order the lines so that the radial vectors progress arround the circle
+            edge connections are represented as a sequence of radial vectors. 
+            Order the edges so that the radial vectors progress arround the circle
             in a clockwise direction. The circle has 8 sectors and 4 qaudrants as
             shown below. Keep track of the number of lines in each quadrant and
-            sector.
-
-                sect         quad       side
-               =======       ====       ======
-               5\6|7/8        3|4         N
-               ~~~+~~~        ~+~       W + E
-               4/3|2\1        2|1         S
+            sector.    
+                            sect         quad       side
+                           =======       ====       ======
+                           5\6|7/8        3|4         N
+                           ~~~+~~~        ~+~       W + E
+                           4/3|2\1        2|1         S
         */
-            var (count, edges) = n1.Graph.ConnectedEdges(n1);
-            if (count == 0) return (count, null, null, null, null, null, null, null, null, null);
+            var (count, edge) = n1.Graph.ConnectedEdges(n1);
+            if (count == 0) return (count, null, null, null, null, null, null, null, null);
 
             var other = new Node[count];
             var sect = new int[count];
             var quad = new int[count];
             var slope = new float[count];
-            var side = new Side[count];
 
             var bends = new (int X, int Y)[count];
             var ex = new Extent(n1.Center);
@@ -41,27 +40,36 @@ namespace ModelGraphSTD
             var sectEdge = new int[10];
             var conn = new EdgeRotator[count];
 
-            var indexOfParallelEdge = new List<int>(count);
-            var nodeHash = new HashSet<Node>();
+            #region Locate Parallel Edges  ====================================
+            var otherEdgeCount = new Dictionary<Node, int>(count);
             for (int i = 0; i < count; i++)
             {
-                var p = edges[i].OtherBend(n1);
+                var p = edge[i].OtherBend(n1);
                 other[i] = p.other;
                 bends[i] = p.bend;
 
-                if (nodeHash.Contains(p.other))
-                    indexOfParallelEdge.Add(i); // there are parallel edges between two nodes
+                if (otherEdgeCount.TryGetValue(p.other, out int c))
+                    otherEdgeCount[p.other] = c + 1;
                 else
-                    nodeHash.Add(p.other);
+                    otherEdgeCount.Add(p.other, 1);
             }
 
+            var indexOfParallelEdge = new List<int>(count);
+            for (int i = 0; i < count; i++)
+            {
+                if (otherEdgeCount[other[i]] == 1) continue;
+                indexOfParallelEdge.Add(i);
+            }
+            #endregion
+
+            #region Set Parallel Edge Bend Point  ============================= 
             if (indexOfParallelEdge.Count > 0)
             {
                 indexOfParallelEdge.Sort(CompareParallelEdges);
 
                 var i = 0;
-                var k = indexOfParallelEdge.Count;
-                while (i < k)
+                var np = indexOfParallelEdge.Count;
+                while (i < np)
                 {
                     var n2 = other[indexOfParallelEdge[i]];
                     var (w, z) = ex.Point2 = n2.GetCenter();
@@ -74,13 +82,13 @@ namespace ModelGraphSTD
                         if (n2.Sizing == Sizing.Auto && n2.Orient != Orient.Point)
                         {
                             var d = (2 * j - (n - 1)) * 2;
-                            bends[l] = (w + x * d, z + y * d);
+                            bends[l] = (w + d * x, d * y + z);
                         }
                     }
 
                     int InParallelCount(int t)
                     {
-                        while (t < k && n2 == other[indexOfParallelEdge[t]]) { t++; }
+                        while (t < np && n2 == other[indexOfParallelEdge[t]]) { t++; }
                         return t - i;
                     }
 
@@ -97,93 +105,87 @@ namespace ModelGraphSTD
                     }
                 }
             }
+            #endregion
 
+            #region Calculate Quad, Sect, Slope  ==============================
             for (int i = 0; i < count; i++)
             {
                 ex.Point2 = bends[i];
-                var p = XYPair.QuadSectSideSlope(ex.Delta);
+                var p = XYPair.QuadSectSlope(ex.Delta);
 
                 quad[i] = p.quad;
                 sect[i] = p.sect;
-                side[i] = p.side;
+                slope[i] = p.slope;
 
                 nquad[p.quad] += 1;
                 nsect[p.sect] += 1;
-
-                slope[i] = p.slope;
             }
+            #endregion
 
+            #region Order Edges Based On Bend Point  ==========================
             //	Reorder the connections based on the radial direction to its destination line end
             //	quad[] identifies the radial quadrant (1,2,3,4 clockwise from horz-right)
             //	slope[] is the radial direction within that quadrant
+
+            var allEdges = new List<int>(count);
+            for (int i = 0; i < count; i++) { allEdges.Add(i); }
+            allEdges.Sort(CompareAllEdges);
+
+
             for (int i = 0; i < count; i++)
             {
-                for (int j = i + 1; j < count; j++)
-                {
-                    switch (quad[i])
-                    {
-                        case 1:
-                            if ((quad[j] == 1) && (slope[j] < slope[i])) Swap();
-                            break;
-                        case 2:
-                            if (quad[j] < 2) Swap();
-                            else if ((quad[j] == 2) && (slope[j] < slope[i])) Swap();
-                            break;
-                        case 3:
-                            if (quad[j] < 3) Swap();
-                            else if ((quad[j] == 3) && (slope[j] < slope[i])) Swap();
-                            break;
-                        case 4:
-                            if (quad[j] < 4) Swap();
-                            else if ((quad[j] == 4) && (slope[j] < slope[i])) Swap();
-                            break;
-                    }
+                var j = allEdges[i];
+                if (j == i) continue;
 
-                    void Swap()
-                    {
-                        var t1 = quad[i]; quad[i] = quad[j]; quad[j] = t1;
-                        var t2 = sect[i]; sect[i] = sect[j]; sect[j] = t2;
-                        var t3 = edges[i]; edges[i] = edges[j]; edges[j] = t3;
-                        var t4 = other[i]; other[i] = other[j]; other[j] = t4;
-                        var t5 = slope[i]; slope[i] = slope[j]; slope[j] = t5;
-                    }
-                }
+                var t1 = quad[i]; quad[i] = quad[j]; quad[j] = t1;
+                var t2 = sect[i]; sect[i] = sect[j]; sect[j] = t2;
+                var t3 = edge[i]; edge[i] = edge[j]; edge[j] = t3;
+                var t4 = other[i]; other[i] = other[j]; other[j] = t4;
+                var t5 = slope[i]; slope[i] = slope[j]; slope[j] = t5;
             }
+            #endregion
 
-            ComputeSectEdge();
-            InitEdgeRotators();
-
-            return (count, edges, quad, sect, side, slope, nquad, nsect, sectEdge, conn);
-
-
-            void ComputeSectEdge()
+            #region ComputeSectEdge  ==========================================
+            int h = 0, k = 0, N = 10;
+            for (int i = 0; i < count; i++)
             {
-                int h = 0, k = 0, N = 10;
-                for (int i = 0; i < count; i++)
-                {
-                    if (k == sect[i]) continue;
-                    k = sect[i];
-                    for (; h <= k; h++) { sectEdge[h] = i; }
-                }
-                for (; h < N; h++) { sectEdge[h] = count; }
+                if (k == sect[i]) continue;
+                k = sect[i];
+                for (; h <= k; h++) { sectEdge[h] = i; }
             }
+            for (; h < N; h++) { sectEdge[h] = count; }
+            #endregion
 
-            void InitEdgeRotators()
+            #region InitEdgeRotators  =========================================
+            for (int i = 0; i < count; i++)
             {
-                for (int i = 0; i < count; i++)
-                {
-                    conn[i] = new EdgeRotator(edges[i].GetConnect(n1));
-                }
+                conn[i] = new EdgeRotator(edge[i].GetConnect(n1));
             }
+            #endregion
 
+            return (count, edge, quad, sect, slope, nquad, nsect, sectEdge, conn);
+
+            #region CompareParallelEdges  =====================================
             int CompareParallelEdges(int i, int j)
             {
                 if (other[i].GetHashCode() < other[j].GetHashCode()) return -1;
                 if (other[i].GetHashCode() > other[j].GetHashCode()) return 1;
-                if (edges[i].GetHashCode() < edges[j].GetHashCode()) return -1;
-                if (edges[i].GetHashCode() > edges[j].GetHashCode()) return 1;
+                if (edge[i].GetHashCode() < edge[j].GetHashCode()) return -1;
+                if (edge[i].GetHashCode() > edge[j].GetHashCode()) return 1;
                 return 0;
             }
+            #endregion
+
+            #region CompareAllEdges  =====================================
+            int CompareAllEdges(int i, int j)
+            {
+                if (quad[i] < quad[j]) return -1;
+                if (quad[i] > quad[j]) return +1;
+                if (slope[i] < slope[j]) return -1;
+                if (slope[i] > slope[j]) return +1;
+                return 0;
+            }
+            #endregion
         }
     }
 }
