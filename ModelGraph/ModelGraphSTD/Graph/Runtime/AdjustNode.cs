@@ -47,7 +47,7 @@ namespace ModelGraphSTD
             {
                 var nSouth = nquad[1] + nquad[2];
                 var nNorth = nquad[3] + nquad[4];
-                var iSouth = nSouth - 1;
+                var iSouth = 0;
                 var iNorth = 0;
 
                 var nHorz = (nSouth > nNorth) ? nSouth : nNorth;
@@ -56,7 +56,7 @@ namespace ModelGraphSTD
 
                 for (int i = 0; i < count; i++)
                 {
-                    if ((quad[i] == 1) || (quad[i] == 2)) edge[i].SetFace(node, Side.South, iSouth--, nSouth);
+                    if ((quad[i] == 1) || (quad[i] == 2)) edge[i].SetFace(node, Side.South, iSouth++, nSouth);
                     else if ((quad[i] == 3) || (quad[i] == 4)) edge[i].SetFace(node, Side.North, iNorth++, nNorth);
                 }
             }
@@ -67,8 +67,8 @@ namespace ModelGraphSTD
                 var nNorth = nsect[6] + nsect[7];
                 var nEast = nsect[8] + nsect[1];
 
-                var iSouth = nSouth - 1;
-                var iWest = nWest - 1;
+                var iSouth = 0;
+                var iWest = 0;
                 var iNorth = 0;
                 var iEast = 0;
 
@@ -88,8 +88,8 @@ namespace ModelGraphSTD
                 for (int i = 0; i < count; i++)
                 {
                     if (sect[i] == 1) edge[i].SetFace(node, Side.East, iEast++, nEast);
-                    else if (sect[i] == 2 || sect[i] == 3) edge[i].SetFace(node, Side.South, iSouth--, nSouth);
-                    else if (sect[i] == 4 || sect[i] == 5) edge[i].SetFace(node, Side.West, iWest--, nWest);
+                    else if (sect[i] == 2 || sect[i] == 3) edge[i].SetFace(node, Side.South, iSouth++, nSouth);
+                    else if (sect[i] == 4 || sect[i] == 5) edge[i].SetFace(node, Side.West, iWest++, nWest);
                     else if (sect[i] == 6 || sect[i] == 7) edge[i].SetFace(node, Side.North, iNorth++, nNorth);
                 }
             }
