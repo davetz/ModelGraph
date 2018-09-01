@@ -11,8 +11,8 @@ namespace ModelGraphSTD
         {/*
             Construct an optimumly ordered edge list for the given node.
 
-            Consider the given node is at the center of a circle and the
-            edge connections are represented as a sequence of radial vectors. 
+            Consider the given node is at the center of a circle and the edge
+            connections are a sequence of radial vectors.  
             Order the edges so that the radial vectors progress arround the circle
             in a clockwise direction. The circle has 8 sectors and 4 qaudrants as
             shown below. Keep track of the number of lines in each quadrant and
@@ -67,41 +67,28 @@ namespace ModelGraphSTD
             {
                 indexOfParallelEdge.Sort(CompareParallelEdges);
 
-                var i = 0;
+                var ip = 0;
                 var np = indexOfParallelEdge.Count;
-                while (i < np)
+                while (ip < np)
                 {
-                    var n2 = other[indexOfParallelEdge[i]];
-                    var (w, z) = ex.Point2 = n2.GetCenter();
-                    var (x, y) = GetVector();
+                    var n2 = other[indexOfParallelEdge[ip]];
+                    var (x2, y2) = ex.Point2 = n2.GetCenter();
 
-                    var n = InParallelCount(i);
-                    var l = indexOfParallelEdge[i];
-                    for (int j = 0; j < n; i++, j++)
+                    var pc = InParallelCount(ip);
+                    if (n2.Sizing == Sizing.Auto && n2.Orient != Orient.Point)
                     {
-                        if (n2.Sizing == Sizing.Auto && n2.Orient != Orient.Point)
+                        for (int i = ip, j = 0; j < pc; i++, j++)
                         {
-                            var d = (2 * j - (n - 1)) * 2;
-                            bends[l] = (w + d * x, d * y + z);
+                            var ds = 4 * Displacement(j, pc);
+                            bends[indexOfParallelEdge[i]] = ex.OrthoginalDisplacedPoint(ds);
                         }
                     }
+                    ip += pc;
 
                     int InParallelCount(int t)
                     {
                         while (t < np && n2 == other[indexOfParallelEdge[t]]) { t++; }
-                        return t - i;
-                    }
-
-                    (int x, int y) GetVector()
-                    {
-                        switch (XYPair.Quad(ex.Delta))
-                        {
-                            case 1: return (-1, +1);
-                            case 2: return (-1, -1);
-                            case 3: return (+1, -1);
-                            case 4: return (+1, +1);
-                            default: return (0, 0);
-                        }
+                        return t - ip;
                     }
                 }
             }
@@ -129,7 +116,7 @@ namespace ModelGraphSTD
 
             var allEdges = new List<int>(count);
             for (int i = 0; i < count; i++) { allEdges.Add(i); }
-            allEdges.Sort(CompareAllEdges);
+            allEdges.Sort(CompareQuadSlope);
 
 
             for (int i = 0; i < count; i++)
@@ -168,16 +155,16 @@ namespace ModelGraphSTD
             #region CompareParallelEdges  =====================================
             int CompareParallelEdges(int i, int j)
             {
-                if (other[i].GetHashCode() < other[j].GetHashCode()) return -1;
-                if (other[i].GetHashCode() > other[j].GetHashCode()) return 1;
+                if (other[i].Item.GetHashCode() < other[j].Item.GetHashCode()) return -1;
+                if (other[i].Item.GetHashCode() > other[j].Item.GetHashCode()) return 1;
                 if (edge[i].GetHashCode() < edge[j].GetHashCode()) return -1;
                 if (edge[i].GetHashCode() > edge[j].GetHashCode()) return 1;
                 return 0;
             }
             #endregion
 
-            #region CompareAllEdges  =====================================
-            int CompareAllEdges(int i, int j)
+            #region CompareQuadSlope  =========================================
+            int CompareQuadSlope(int i, int j)
             {
                 if (quad[i] < quad[j]) return -1;
                 if (quad[i] > quad[j]) return +1;
@@ -186,6 +173,20 @@ namespace ModelGraphSTD
                 return 0;
             }
             #endregion
+        }
+
+        internal static int Displacement(int index, int count)
+        {
+            //=====================================================================
+            // The index is 0 based, the totalCount is 1's based 
+            // for examle:    0,  1,  2,  3,  4 with the totalCount = 5
+            //    _offset:   -4, -2,  0,  2,  4  
+            //              . . . . . | . . . . . 
+            //  or examle:  0,  1,  2,  3,  4,  5 with the totalCount = 6
+            //    _offset: -5, -3, -1,  1,  3,  5
+            //
+            // The diference between succesive offset values is always 2
+            return 2 * index - (count - 1);
         }
     }
 }

@@ -22,15 +22,15 @@ namespace ModelGraphSTD
             //  Assign line end terminal points based  
             //	on the just determined order of connections
             //	and on the line end and node termination styles
-            int iNorth = 0, iEast = 0, iWest = 0, iSouth = 0, nNorth, nSouth, nEast, nWest, nVert, nHorz, width, height;
-
             if (node.Orient == Orient.Vertical)
             {
-                nEast = nquad[1] + nquad[4]; //the right side connection count
-                nWest = nquad[2] + nquad[3]; //the left side  connection count
+                var nEast = nquad[1] + nquad[4]; //the right side connection count
+                var nWest = nquad[2] + nquad[3]; //the left side  connection count
+                var iEast = 0;
+                var iWest = 0;
 
-                nVert = (nEast > nWest) ? nEast : nWest; //determine the resizable bar length
-                height = (nVert * spacing) / 2;
+                var nVert = (nEast > nWest) ? nEast : nWest; //determine the resizable bar length
+                var height = (nVert * spacing) / 2;
                 node.SetSize(barSize, height);
 
                 for (int i = 0; i < count; i++)
@@ -40,45 +40,45 @@ namespace ModelGraphSTD
                 for (int i = 0; i < count; i++)
                 {
                     if (quad[i] == 1) edge[i].SetFace(node, Side.East, iEast++, nEast);
-                }
-                for (int i = last; i >= 0; i--)
-                {
-                    if ((quad[i] == 3) || (quad[i] == 2)) edge[i].SetFace(node, Side.West, iWest++, nWest);
+                    else if (quad[i] == 2 || quad[i] == 3) edge[i].SetFace(node, Side.West, iWest++, nWest);
                 }
             }
             else if (node.Orient == Orient.Horizontal)
             {
-                nSouth = nquad[1] + nquad[2];
-                nNorth = nquad[3] + nquad[4];
+                var nSouth = nquad[1] + nquad[2];
+                var nNorth = nquad[3] + nquad[4];
+                var iSouth = nSouth - 1;
+                var iNorth = 0;
 
-                nHorz = (nSouth > nNorth) ? nSouth : nNorth;
-                width = (nHorz * spacing) / 2;
+                var nHorz = (nSouth > nNorth) ? nSouth : nNorth;
+                var width = (nHorz * spacing) / 2;
                 node.SetSize(width, barSize);
 
                 for (int i = 0; i < count; i++)
                 {
-                    if ((quad[i] == 3) || (quad[i] == 4)) edge[i].SetFace(node, Side.North, iNorth++, nNorth);
-                }
-                for (int i = last; i >= 0; i--)
-                {
-                    if ((quad[i] == 2) || (quad[i] == 1)) edge[i].SetFace(node, Side.South, iSouth++, nSouth);
+                    if ((quad[i] == 1) || (quad[i] == 2)) edge[i].SetFace(node, Side.South, iSouth--, nSouth);
+                    else if ((quad[i] == 3) || (quad[i] == 4)) edge[i].SetFace(node, Side.North, iNorth++, nNorth);
                 }
             }
             else if (node.Orient == Orient.Central)
             {
-                nSouth = nsect[2] + nsect[3];
-                nWest = nsect[4] + nsect[5];
-                nNorth = nsect[6] + nsect[7];
-                nEast = nsect[8] + nsect[1];
+                var nSouth = nsect[2] + nsect[3];
+                var nWest = nsect[4] + nsect[5];
+                var nNorth = nsect[6] + nsect[7];
+                var nEast = nsect[8] + nsect[1];
 
-                nVert = (nEast > nWest) ? nEast : nWest;
-                height = (nVert * spacing) / 2;
+                var iSouth = nSouth - 1;
+                var iWest = nWest - 1;
+                var iNorth = 0;
+                var iEast = 0;
+
+                var nVert = (nEast > nWest) ? nEast : nWest;
+                var height = (nVert * spacing) / 2;
                 if (height < barSize) height = barSize;
 
-                nHorz = (nSouth > nNorth) ? nSouth : nNorth;
-                width = (nHorz * spacing) / 2;
+                var nHorz = (nSouth > nNorth) ? nSouth : nNorth;
+                var width = (nHorz * spacing) / 2;
                 if (width < barSize) width = barSize;
-
                 node.SetSize(width, height);
 
                 for (int i = 0; i < count; i++)
@@ -88,33 +88,19 @@ namespace ModelGraphSTD
                 for (int i = 0; i < count; i++)
                 {
                     if (sect[i] == 1) edge[i].SetFace(node, Side.East, iEast++, nEast);
-                    if (sect[i] == 6 || sect[i] == 7) edge[i].SetFace(node, Side.North, iNorth++, nNorth);
-                }
-                for (int i = last; i >= 0; i--)
-                {
-                    if (sect[i] == 5 || sect[i] == 4) edge[i].SetFace(node, Side.West, iWest++, nWest);
-                    if (sect[i] == 3 || sect[i] == 2) edge[i].SetFace(node, Side.South, iSouth++, nSouth);
+                    else if (sect[i] == 2 || sect[i] == 3) edge[i].SetFace(node, Side.South, iSouth--, nSouth);
+                    else if (sect[i] == 4 || sect[i] == 5) edge[i].SetFace(node, Side.West, iWest--, nWest);
+                    else if (sect[i] == 6 || sect[i] == 7) edge[i].SetFace(node, Side.North, iNorth++, nNorth);
                 }
             }
             else
             {
                 for (int i = 0; i < count; i++)
                 {
-                    switch (sect[i])
-                    {
-                        case 1:
-                        case 8:
-                            edge[i].SetFace(node, Side.East); break;
-                        case 2:
-                        case 3:
-                            edge[i].SetFace(node, Side.South); break;
-                        case 4:
-                        case 5:
-                            edge[i].SetFace(node, Side.West); break;
-                        case 6:
-                        case 7:
-                            edge[i].SetFace(node, Side.North); break;
-                    }
+                    if (sect[i] == 8 || sect[i] == 1) edge[i].SetFace(node, Side.East);
+                    else if (sect[i] == 2 || sect[i] == 3) edge[i].SetFace(node, Side.South);
+                    else if (sect[i] == 4 || sect[i] == 5) edge[i].SetFace(node, Side.West);
+                    else if (sect[i] == 6 || sect[i] == 7) edge[i].SetFace(node, Side.North);
                 }
             }
         }

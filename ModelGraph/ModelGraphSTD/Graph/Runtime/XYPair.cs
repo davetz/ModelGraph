@@ -11,9 +11,19 @@ namespace ModelGraphSTD
         public static (int X, int Y) Rotate((int x, int y) p, (int x, int y) b) => ((b.x - (p.y - b.y)), (b.y + (p.x - b.x)));
         public static (int X, int Y) VerticalFlip((int x, int y) p, int y) => ((y + (y - p.y)), (p.x));
         public static (int X, int Y) HorizontalFlip((int x, int y) p, int x) => ((x + (x - p.x)), p.y);
-        public static int Quad((int dx, int dy) p) => (p.dx >= 0) ? ((p.dy >= 0) ? 1 : 4) : (p.dy >= 0) ? 2 : 3;
+        public static int Quad((int dx, int dy) p) => (p.dy >= 0) ? ((p.dx <= 0) ? 2 : 1) : (p.dx >= 0) ? 4 : 3;
         public static int Diagonal((int dx, int dy) p) => ((p.dx * p.dx) + (p.dy * p.dy));
-        public static float Slope((int dx, int dy) p) => p.dy / ((p.dx == 0) ? 0.4f : p.dx);
+        public static (double ux, double uy) OrthoginalUnitVector(int dx, int dy)
+        {
+            var mag = System.Math.Sqrt(dx * dx + dy * dy);
+            return (dy / mag, -dx / mag);
+        }
+        public static (int x, int y) OrthoginalDisplacedPoint(int dx, int dy, int x0, int y0, double ds)
+        {
+            var (ux, uy) = OrthoginalUnitVector(dx, dy);
+            return ((int)(ds * ux + x0), (int)(ds* uy + y0));
+        }
+        public static float Slope((int dx, int dy) p) => p.dy / ((p.dx == 0) ? 0.001f : p.dx);
         public static (int quad, int sect, float slope) QuadSectSlope((int dx, int dy) p)
         {
             var quad = Quad(p);

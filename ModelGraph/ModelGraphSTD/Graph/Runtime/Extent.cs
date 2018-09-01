@@ -151,6 +151,9 @@ namespace ModelGraphSTD
         public int Diagonal => XYPair.Diagonal(Delta);
         public float Slope => XYPair.Slope(Delta);
         public int Quad => XYPair.Quad(Delta);
+        public (int x, int y) OrthoginalDisplacedPoint(double ds) => XYPair.OrthoginalDisplacedPoint(DX, DY, X2, Y2, ds);
+
+
 
         public bool TryGetDelta(out (int X, int Y) delta)
         {
