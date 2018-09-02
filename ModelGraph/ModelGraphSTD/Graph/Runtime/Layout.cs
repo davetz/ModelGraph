@@ -6,7 +6,7 @@ namespace ModelGraphSTD
 {
     internal static class Layout
     {
-        internal static (int count, Edge[] edge, int[] quad, int[] sect, float[] slope, int[] nquad, int[] nsect, int[] sectEdge, EdgeRotator[] conn) 
+        internal static (int count, Edge[] edge, int[] quad, int[] sect, int[] nquad, int[] nsect, int[] sectEdge, EdgeRotator[] conn) 
             FarNodeParms(Node n1)
         {/*
             Construct an optimumly ordered edge list for the given node.
@@ -24,7 +24,7 @@ namespace ModelGraphSTD
                            4/3|2\1        2|1         S
         */
             var (count, edge) = n1.Graph.ConnectedEdges(n1);
-            if (count == 0) return (count, null, null, null, null, null, null, null, null);
+            if (count == 0) return (count, null, null, null, null, null, null, null);
 
             var other = new Node[count];
             var sect = new int[count];
@@ -79,7 +79,7 @@ namespace ModelGraphSTD
                     {
                         for (int i = ip, j = 0; j < pc; i++, j++)
                         {
-                            var ds = 4 * Displacement(j, pc);
+                            var ds = 7 * Displacement(j, pc);
                             bends[indexOfParallelEdge[i]] = ex.OrthoginalDisplacedPoint(ds);
                         }
                     }
@@ -124,6 +124,7 @@ namespace ModelGraphSTD
                 var j = allEdges[i];
                 if (j == i) continue;
 
+                var t0 = allEdges[i]; allEdges[i] = allEdges[j]; allEdges[j] = t0;
                 var t1 = quad[i]; quad[i] = quad[j]; quad[j] = t1;
                 var t2 = sect[i]; sect[i] = sect[j]; sect[j] = t2;
                 var t3 = edge[i]; edge[i] = edge[j]; edge[j] = t3;
@@ -150,7 +151,7 @@ namespace ModelGraphSTD
             }
             #endregion
 
-            return (count, edge, quad, sect, slope, nquad, nsect, sectEdge, conn);
+            return (count, edge, quad, sect, nquad, nsect, sectEdge, conn);
 
             #region CompareParallelEdges  =====================================
             int CompareParallelEdges(int i, int j)
@@ -166,8 +167,8 @@ namespace ModelGraphSTD
             #region CompareQuadSlope  =========================================
             int CompareQuadSlope(int i, int j)
             {
-                if (quad[i] < quad[j]) return -1;
-                if (quad[i] > quad[j]) return +1;
+                //if (quad[i] < quad[j]) return -1;
+                //if (quad[i] > quad[j]) return +1;
                 if (slope[i] < slope[j]) return -1;
                 if (slope[i] > slope[j]) return +1;
                 return 0;

@@ -9,7 +9,7 @@ namespace ModelGraphSTD
     {
         private void AdjustAutoNode(Node node)
         {
-            var (count, edge, quad, sect, slope, nquad, nsect, _, _) = Layout.FarNodeParms(node);
+            var (count, edge, quad, sect, nquad, nsect, _, _) = Layout.FarNodeParms(node);
             if (count == 0) return;
             var last = count - 1;
 
