@@ -9,9 +9,8 @@ namespace ModelGraphSTD
     {
         private void AdjustAutoNode(Node node)
         {
-            var (count, edge, quad, sect, nquad, nsect, _, _) = Layout.FarNodeParms(node);
+            var (count, nquad, nsect, sectEdge, E) = Layout.FarNodeParms(node);
             if (count == 0) return;
-            var last = count - 1;
 
             var gx = node.Graph.GraphX;
             var spacing = gx.TerminalSpacing;
@@ -35,12 +34,12 @@ namespace ModelGraphSTD
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (quad[i] == 4) edge[i].SetFace(node, Side.East, iEast++, nEast);
+                    if (E[i].quad == 4) E[i].edge.SetFace(node, Side.East, iEast++, nEast);
                 }
                 for (int i = 0; i < count; i++)
                 {
-                    if (quad[i] == 1) edge[i].SetFace(node, Side.East, iEast++, nEast);
-                    else if (quad[i] == 2 || quad[i] == 3) edge[i].SetFace(node, Side.West, iWest++, nWest);
+                    if (E[i].quad == 1) E[i].edge.SetFace(node, Side.East, iEast++, nEast);
+                    else if (E[i].quad == 2 || E[i].quad == 3) E[i].edge.SetFace(node, Side.West, iWest++, nWest);
                 }
             }
             else if (node.Orient == Orient.Horizontal)
@@ -56,8 +55,8 @@ namespace ModelGraphSTD
 
                 for (int i = 0; i < count; i++)
                 {
-                    if ((quad[i] == 1) || (quad[i] == 2)) edge[i].SetFace(node, Side.South, iSouth++, nSouth);
-                    else if ((quad[i] == 3) || (quad[i] == 4)) edge[i].SetFace(node, Side.North, iNorth++, nNorth);
+                    if ((E[i].quad == 1) || (E[i].quad == 2)) E[i].edge.SetFace(node, Side.South, iSouth++, nSouth);
+                    else if ((E[i].quad == 3) || (E[i].quad == 4)) E[i].edge.SetFace(node, Side.North, iNorth++, nNorth);
                 }
             }
             else if (node.Orient == Orient.Central)
@@ -83,42 +82,32 @@ namespace ModelGraphSTD
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (sect[i] == 8) edge[i].SetFace(node, Side.East, iEast++, nEast);
+                    if (E[i].sect == 8) E[i].edge.SetFace(node, Side.East, iEast++, nEast);
                 }
                 for (int i = 0; i < count; i++)
                 {
-                    if (sect[i] == 1) edge[i].SetFace(node, Side.East, iEast++, nEast);
-                    else if (sect[i] == 2 || sect[i] == 3) edge[i].SetFace(node, Side.South, iSouth++, nSouth);
-                    else if (sect[i] == 4 || sect[i] == 5) edge[i].SetFace(node, Side.West, iWest++, nWest);
-                    else if (sect[i] == 6 || sect[i] == 7) edge[i].SetFace(node, Side.North, iNorth++, nNorth);
+                    if (E[i].sect == 1) E[i].edge.SetFace(node, Side.East, iEast++, nEast);
+                    else if (E[i].sect == 2 || E[i].sect == 3) E[i].edge.SetFace(node, Side.South, iSouth++, nSouth);
+                    else if (E[i].sect == 4 || E[i].sect == 5) E[i].edge.SetFace(node, Side.West, iWest++, nWest);
+                    else if (E[i].sect == 6 || E[i].sect == 7) E[i].edge.SetFace(node, Side.North, iNorth++, nNorth);
                 }
             }
             else
             {
                 for (int i = 0; i < count; i++)
                 {
-                    if (sect[i] == 8 || sect[i] == 1) edge[i].SetFace(node, Side.East);
-                    else if (sect[i] == 2 || sect[i] == 3) edge[i].SetFace(node, Side.South);
-                    else if (sect[i] == 4 || sect[i] == 5) edge[i].SetFace(node, Side.West);
-                    else if (sect[i] == 6 || sect[i] == 7) edge[i].SetFace(node, Side.North);
+                    if (E[i].sect == 8 || E[i].sect == 1) E[i].edge.SetFace(node, Side.East);
+                    else if (E[i].sect == 2 || E[i].sect == 3) E[i].edge.SetFace(node, Side.South);
+                    else if (E[i].sect == 4 || E[i].sect == 5) E[i].edge.SetFace(node, Side.West);
+                    else if (E[i].sect == 6 || E[i].sect == 7) E[i].edge.SetFace(node, Side.North);
                 }
             }
         }
 
         private void AdjustFixedNode(Node node)
         {
-            if (!Node_Edges.TryGetValue(node, out List<Edge> edges)) return;
-
-            var order = new LineOrder(node, edges);
-
-            var count = order.Count;
-            var lines = order.Lines;
-            var nodes = order.Other;
-            var bends = order.Bends;
-            var quad = order.Quad;
-            var sect = order.Sect;
-            var nquad = order.NQuad;
-            var nsect = order.NSect;
+            var (count, nquad, nsect, sectEdge, E) = Layout.FarNodeParms(node);
+            if (count == 0) return;
 
             (int x, int y, int w, int h) = node.Values();
 
@@ -129,35 +118,34 @@ namespace ModelGraphSTD
 
             for (int i = 0; i < count; i++)
             {
-                var x2 = bends[i].X;
-                var y2 = bends[i].Y;
+                var (x2, y2) = E[i].bend;
 
                 if (x2 < xL)
                 {
                     if (y2 < yT)
-                        lines[i].SetFace(node, Side.North);
+                        E[i].edge.SetFace(node, Side.North);
                     else if (y2 > yB)
-                        lines[i].SetFace(node, Side.South);
+                        E[i].edge.SetFace(node, Side.South);
                     else
-                        lines[i].SetFace(node, Side.West);
+                        E[i].edge.SetFace(node, Side.West);
 
                 }
                 else if (x2 > xR)
                 {
                     if (y2 < yT)
-                        lines[i].SetFace(node, Side.North);
+                        E[i].edge.SetFace(node, Side.North);
                     else if (y2 > yB)
-                        lines[i].SetFace(node, Side.South);
+                        E[i].edge.SetFace(node, Side.South);
                     else
-                        lines[i].SetFace(node, Side.East);
+                        E[i].edge.SetFace(node, Side.East);
 
                 }
                 else
                 {
                     if (y2 < y)
-                        lines[i].SetFace(node, Side.North);
+                        E[i].edge.SetFace(node, Side.North);
                     else
-                        lines[i].SetFace(node, Side.South);
+                        E[i].edge.SetFace(node, Side.South);
                 }
             }
         }

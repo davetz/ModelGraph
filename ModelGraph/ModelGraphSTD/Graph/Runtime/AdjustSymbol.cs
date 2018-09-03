@@ -204,19 +204,13 @@ namespace ModelGraphSTD
         private void AdjustSymbol(Node node)
         {
             #region Fields  ===================================================
-            if (!Node_Edges.TryGetValue(node, out List<Edge> edges)) return;
+            var (count, nquad, nsect, sectEdge, E) = Layout.FarNodeParms(node);
+            if (count == 0) return;
+
 
             var isym = node.Symbol - 2;
             var symbol = Symbols[isym];
             var sr = new SymbolRotator(symbol);
-
-            var order = new LineOrder(node, edges);
-
-            var count = order.Count;
-            var lines = order.Lines;
-            var bends = order.Bends;
-            var Conn = order.Conn;
-            var SectLine = order.SectLine;
 
             var done = new bool[count];
 
@@ -246,7 +240,7 @@ namespace ModelGraphSTD
                 sr.SetFlipRotate(flipRotate);
                 for (int i = 0; i < count; i++)
                 {
-                    Conn[i].SetFlipRotate(flipRotate);
+                    E[i].conn.SetFlipRotate(flipRotate);
                     done[i] = false;
                 }
 
@@ -267,30 +261,30 @@ namespace ModelGraphSTD
 
                     if (invert)
                     {
-                        int i1 = SectLine[s];
-                        int i2 = SectLine[s + 1] - 1;
+                        int i1 = sectEdge[s];
+                        int i2 = sectEdge[s + 1] - 1;
                         for (int i = i2; i >= i1; i--)
                         {
                             if (done[i]) continue;
                             if (sr.Contact(f) == Contact.None) continue;
-                            if (!Conn[i].CanConnect(f)) continue;
+                            if (!E[i].conn.CanConnect(f)) continue;
                             if (sr.Contact(f) == Contact.One && FaceEdge[f].Count > 0) continue;
                             Cost += delta;
                             done[i] = true;
-                            FaceEdge[f].Insert(0, lines[i]);
+                            FaceEdge[f].Insert(0, E[i].edge);
                         }
                     }
                     else
                     {
-                        for (int i = SectLine[s]; i < SectLine[s + 1]; i++)
+                        for (int i = sectEdge[s]; i < sectEdge[s + 1]; i++)
                         {
                             if (done[i]) continue;
                             if (sr.Contact(f) == Contact.None) continue;
-                            if (!Conn[i].CanConnect(f)) continue;
+                            if (!E[i].conn.CanConnect(f)) continue;
                             if (sr.Contact(f) == Contact.One && FaceEdge[f].Count > 0) continue;
                             Cost += delta;
                             done[i] = true;
-                            FaceEdge[f].Add(lines[i]);
+                            FaceEdge[f].Add(E[i].edge);
                         }
                     }
 
