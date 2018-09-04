@@ -340,12 +340,12 @@ namespace ModelGraphSTD
         #region Facets  =======================================================
         static readonly FacetDXY[] Facets =
         {
-            new FacetDXY(new int[0]),
-            new FacetDXY(new int[] { 0, 1,    3, 1,    6,0,   3,-1,   0,-1,    0, 0,    6, 0 }),
-            new FacetDXY(new int[] { 3, 0,    7,-4,   11,0,   7, 4,   3, 0,    7,-4,   11, 0 }),
-            new FacetDXY(new int[] { 2, 0,   12,-3,    8,0,  12, 3,   2, 0,   12, 0 })
+            new FacetDXY(new (int,int)[0]),
+            new FacetDXY(new (int,int)[] { (0, 1),    (3,  1),    (6, 0),   (3, -1),   (0, -1),    (0,  0),    (6, 0) }),
+            new FacetDXY(new (int,int)[] { (3, 0),    (7, -4),   (11, 0),   (7,  4),   (3,  0),    (7, -4),   (11, 0) }),
+            new FacetDXY(new (int,int)[] { (2, 0),   (12, -3),    (8, 0),   (12, 3),   (2,  0),   (12,  0) })
         };
-        static readonly FacetDXY NoFacet = new FacetDXY(new int[0]);
+        static readonly FacetDXY NoFacet = new FacetDXY(new (int, int)[0]);
         #endregion
 
         #region Refresh  ======================================================
@@ -375,8 +375,8 @@ namespace ModelGraphSTD
 
             var bendCount = (Bends == null) ? 0 : Bends.Length;
 
-            var len1 = facet1.Length / 2;
-            var len2 = facet2.Length / 2;
+            var len1 = facet1.Length;
+            var len2 = facet2.Length;
 
             var len = len1 + bendCount + len2 + 4;  // allow for pseudo points sp1 tp1 tp2 sp2 (x,y)
             var points = new(int X, int Y)[len];        // line coordinate values x,y,x,y,...
@@ -995,11 +995,11 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Sizing == Sizing.Auto)
                             {
-                                Assign_1_IsPoint_2_IsBox_IsAuto();
+                                Assign_1_IsPoint_2_IsRectangle_IsAuto();
                             }
                             else
                             {
-                                Assign_1_IsPoint_2_IsBox_IsManual();
+                                Assign_1_IsPoint_2_IsRectangle_IsManual();
                             }
                         }
                     }
@@ -1027,17 +1027,17 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Orient == Orient.Point)
                             {
-                                Assign_1_IsBox_IsAuto_2_IsPoint();
+                                Assign_1_IsRectangle_IsAuto_2_IsPoint();
                             }
                             else
                             {
                                 if (Node2.Sizing == Sizing.Auto)
                                 {
-                                    Assign_1_IsBox_IsAuto_2_IsBox_IsAuto();
+                                    Assign_1_IsRectangle_IsAuto_2_IsRectangle_IsAuto();
                                 }
                                 else
                                 {
-                                    Assign_1_IsBox_IsAuto_2_IsBox_IsManual();
+                                    Assign_1_IsRectangle_IsAuto_2_IsRectangle_IsManual();
                                 }
                             }
                         }
@@ -1045,16 +1045,16 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Sizing == Sizing.Auto)
                             {
-                                Assign_1_IsBox_IsAuto_2_IsSymbol_IsAuto();
+                                Assign_1_IsRectangle_IsAuto_2_IsSymbol_IsAuto();
                             }
                             else
                             {
-                                Assign_1_IsBox_IsAuto_2_IsSymbol_IsManual();
+                                Assign_1_IsRectangle_IsAuto_2_IsSymbol_IsManual();
                             }
                         }
                         else if (Node2.IsGraphEgress)
                         {
-                            Assign_1_IsBox_IsAuto_2_IsEgress();
+                            Assign_1_IsRectangle_IsAuto_2_IsEgress();
                         }
                     }
                     else
@@ -1063,17 +1063,17 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Orient == Orient.Point)
                             {
-                                Assign_1_IsBox_IsManual_2_IsPoint();
+                                Assign_1_IsRectangle_IsManual_2_IsPoint();
                             }
                             else
                             {
                                 if (Node2.Sizing == Sizing.Auto)
                                 {
-                                    Assign_1_IsBox_IsManual_2_IsBox_IsAuto();
+                                    Assign_1_IsRectangle_IsManual_2_IsRectangle_IsAuto();
                                 }
                                 else
                                 {
-                                    Assign_1_IsBox_IsManual_2_IsBox_IsManual();
+                                    Assign_1_IsRectangle_IsManual_2_IsRectangle_IsManual();
                                 }
                             }
                         }
@@ -1081,16 +1081,16 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Sizing == Sizing.Auto)
                             {
-                                Assign_1_IsBox_IsManual_2_IsSymbol_IsAuto();
+                                Assign_1_IsRectangle_IsManual_2_IsSymbol_IsAuto();
                             }
                             else
                             {
-                                Assign_1_IsBox_IsManual_2_IsSymbol_IsManual();
+                                Assign_1_IsRectangle_IsManual_2_IsSymbol_IsManual();
                             }
                         }
                         else if (Node2.IsGraphEgress)
                         {
-                            Assign_1_IsBox_IsManual_2_IsEgress();
+                            Assign_1_IsRectangle_IsManual_2_IsEgress();
                         }
                     }
                 }
@@ -1109,11 +1109,11 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Sizing == Sizing.Auto)
                             {
-                                Assign_1_IsSymbol_IsAuto_2_IsBox_IsAuto();
+                                Assign_1_IsSymbol_IsAuto_2_IsRectangle_IsAuto();
                             }
                             else
                             {
-                                Assign_1_IsSymbol_IsAuto_2_IsBox_IsManual();
+                                Assign_1_IsSymbol_IsAuto_2_IsRectangle_IsManual();
                             }
                         }
                     }
@@ -1145,11 +1145,11 @@ namespace ModelGraphSTD
                         {
                             if (Node2.Sizing == Sizing.Auto)
                             {
-                                Assign_1_IsSymbol_IsManual_2_IsBox_IsAuto();
+                                Assign_1_IsSymbol_IsManual_2_IsRectangle_IsAuto();
                             }
                             else
                             {
-                                Assign_1_IsSymbol_IsManual_2_IsBox_IsManual();
+                                Assign_1_IsSymbol_IsManual_2_IsRectangle_IsManual();
                             }
                         }
                     }
@@ -1182,11 +1182,11 @@ namespace ModelGraphSTD
                     {
                         if (Node2.Sizing == Sizing.Auto)
                         {
-                            Assign_1_IsEgress_2_IsBox_IsAuto();
+                            Assign_1_IsEgress_2_IsRectangle_IsAuto();
                         }
                         else
                         {
-                            Assign_1_IsEgress_2_IsBox_IsManual();
+                            Assign_1_IsEgress_2_IsRectangle_IsManual();
                         }
                     }
                 }
@@ -1272,8 +1272,9 @@ namespace ModelGraphSTD
             }
             #endregion
 
-            #region Assign2_IsBox_IsAuto  =====================================
-            void Assign2_IsBox_IsAuto()
+
+            #region Assign2_IsRectangle_IsAuto  ===============================
+            void Assign2_IsRectangle_IsAuto()
             {
                 if (Face2.Side == Side.East)
                 {
@@ -1281,13 +1282,10 @@ namespace ModelGraphSTD
                     points[tm2].X = x2R + tmLen;
                     var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
 
-                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
+                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--, i++)
                     {
-                        var dx = facet2.DXY[i++];
-                        var dy = facet2.DXY[i++];
-
-                        points[j].X = x + dx;
-                        points[j].Y = y + dy;
+                        points[j].X = x + facet2.DXY[i].X;
+                        points[j].Y = y + facet2.DXY[i].Y;
                     }
                 }
                 else if (Face2.Side == Side.West)
@@ -1296,13 +1294,10 @@ namespace ModelGraphSTD
                     points[tm2].X = x2L - tmLen;
                     var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
 
-                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
+                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--, i++)
                     {
-                        var dx = facet2.DXY[i++];
-                        var dy = facet2.DXY[i++];
-
-                        points[j].X = x - dx;
-                        points[j].Y = y - dy;
+                        points[j].X = x - facet2.DXY[i].X;
+                        points[j].Y = y - facet2.DXY[i].Y;
                     }
                 }
                 else if (Face2.Side == Side.South)
@@ -1311,13 +1306,10 @@ namespace ModelGraphSTD
                     points[tm2].Y = y2B + tmLen;
                     var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
 
-                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
+                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--, i++)
                     {
-                        var dx = facet2.DXY[i++];
-                        var dy = facet2.DXY[i++];
-
-                        points[j].X = x + dy;
-                        points[j].Y = y + dx;
+                        points[j].X = x + facet2.DXY[i].Y;
+                        points[j].Y = y + facet2.DXY[i].X;
                     }
                 }
                 else
@@ -1326,21 +1318,18 @@ namespace ModelGraphSTD
                     points[tm2].Y = y2T - tmLen;
                     var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
 
-                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
+                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--, i++)
                     {
-                        var dx = facet2.DXY[i++];
-                        var dy = facet2.DXY[i++];
-
-                        points[j].X = x - dy;
-                        points[j].Y = y - dx;
+                        points[j].X = x - facet2.DXY[i].Y;
+                        points[j].Y = y - facet2.DXY[i].X;
                     }
                 }
 
             }
             #endregion
 
-            #region Assign1_IsBox_IsAuto  =====================================
-            void Assign1_IsBox_IsAuto()
+            #region Assign1_IsRectangle_IsAuto  ===============================
+            void Assign1_IsRectangle_IsAuto()
             {
                 if (Face1.Side == Side.East)
                 {
@@ -1348,13 +1337,10 @@ namespace ModelGraphSTD
                     points[tm1].X = x1R + tmLen;
                     var y = points[sp1].Y = points[tm1].Y = cy1 + Face1.Offset * tmSpc;
 
-                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
+                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++, i++)
                     {
-                        var dx = facet1.DXY[i++];
-                        var dy = facet1.DXY[i++];
-
-                        points[j].X = x + dx;
-                        points[j].Y = y + dy;
+                        points[j].X = x + facet1.DXY[i].X;
+                        points[j].Y = y + facet1.DXY[i].Y;
                     }
                 }
                 else if (Face1.Side == Side.West)
@@ -1363,13 +1349,10 @@ namespace ModelGraphSTD
                     points[tm1].X = x1L - tmLen;
                     var y = points[sp1].Y = points[tm1].Y = cy1 + Face1.Offset * tmSpc;
 
-                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
+                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++, i++)
                     {
-                        var dx = facet1.DXY[i++];
-                        var dy = facet1.DXY[i++];
-
-                        points[j].X = x - dx;
-                        points[j].Y = y - dy;
+                        points[j].X = x - facet1.DXY[i].X;
+                        points[j].Y = y - facet1.DXY[i].Y;
                     }
                 }
                 else if (Face1.Side == Side.South)
@@ -1378,13 +1361,10 @@ namespace ModelGraphSTD
                     points[tm1].Y = y1B + tmLen;
                     var x = points[sp1].X = points[tm1].X = cx1 + Face1.Offset * tmSpc;
 
-                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
+                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++, i++)
                     {
-                        var dx = facet1.DXY[i++];
-                        var dy = facet1.DXY[i++];
-
-                        points[j].X = x + dy;
-                        points[j].Y = y + dx;
+                        points[j].X = x + facet1.DXY[i].Y;
+                        points[j].Y = y + facet1.DXY[i].X;
                     }
                 }
                 else
@@ -1393,13 +1373,10 @@ namespace ModelGraphSTD
                     points[tm1].Y = y1T - tmLen;
                     var x = points[sp1].X = points[tm1].X = cx1 + Face1.Offset * tmSpc;
 
-                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
+                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++, i++)
                     {
-                        var dx = facet1.DXY[i++];
-                        var dy = facet1.DXY[i++];
-
-                        points[j].X = x - dy;
-                        points[j].Y = y - dx;
+                        points[j].X = x - facet1.DXY[i].Y;
+                        points[j].Y = y - facet1.DXY[i].X;
                     }
                 }
 
@@ -1407,6 +1384,7 @@ namespace ModelGraphSTD
             #endregion
 
 
+            
             #region Assign_1_IsPoint_2_IsPoint  ================================
             void Assign_1_IsPoint_2_IsPoint()
             {
@@ -1416,17 +1394,19 @@ namespace ModelGraphSTD
 
             #endregion
 
-            #region Assign_1_IsPoint_2_IsBox_IsAuto  ===========================
-            void Assign_1_IsPoint_2_IsBox_IsAuto()
+            #region Assign_1_IsPoint_2_IsRectangle_IsAuto  ====================
+            void Assign_1_IsPoint_2_IsRectangle_IsAuto()
             {
                 Assign1_IsPoint();
-                Assign2_IsBox_IsAuto();
+                Assign2_IsRectangle_IsAuto();
             }
-            #endregion
+            #endregion 
 
-            #region Assign_1_IsPoint_2_IsBox_IsManual  =========================
-            void Assign_1_IsPoint_2_IsBox_IsManual()
+            #region Assign_1_IsPoint_2_IsRectangle_IsManual  ==================
+            void Assign_1_IsPoint_2_IsRectangle_IsManual()
             {
+                Assign1_IsPoint();
+
             }
             #endregion
 
@@ -1442,69 +1422,69 @@ namespace ModelGraphSTD
             void Assign_1_IsPoint_2_IsEgress()
             {
             }
-            //1_IsBox_IsAuto_2_IsPoint
-            void Assign_1_IsBox_IsAuto_2_IsPoint()
+            //1_IsRectangle_IsAuto_2_IsPoint
+            void Assign_1_IsRectangle_IsAuto_2_IsPoint()
             {
             }
 
-            #region Assign_1_IsBox_IsAuto_2_IsBox_IsAuto  ======================
-            void Assign_1_IsBox_IsAuto_2_IsBox_IsAuto()
+            #region Assign_1_IsRectangle_IsAuto_2_IsRectangle_IsAuto  =========
+            void Assign_1_IsRectangle_IsAuto_2_IsRectangle_IsAuto()
             {
-                Assign1_IsBox_IsAuto();
-                Assign2_IsBox_IsAuto();
+                Assign1_IsRectangle_IsAuto();
+                Assign2_IsRectangle_IsAuto();
             }
             #endregion
 
-            //1_IsBox_IsAuto_2_IsBox_IsManual
-            void Assign_1_IsBox_IsAuto_2_IsBox_IsManual()
+            //1_IsRectangle_IsAuto_2_IsRectangle_IsManual
+            void Assign_1_IsRectangle_IsAuto_2_IsRectangle_IsManual()
             {
             }
-            //1_IsBox_IsAuto_2_IsSymbol_IsAuto
-            void Assign_1_IsBox_IsAuto_2_IsSymbol_IsAuto()
+            //1_IsRectangle_IsAuto_2_IsSymbol_IsAuto
+            void Assign_1_IsRectangle_IsAuto_2_IsSymbol_IsAuto()
             {
             }
-            //1_IsBox_IsAuto_2_IsSymbol_IsManual
-            void Assign_1_IsBox_IsAuto_2_IsSymbol_IsManual()
+            //1_IsRectangle_IsAuto_2_IsSymbol_IsManual
+            void Assign_1_IsRectangle_IsAuto_2_IsSymbol_IsManual()
             {
             }
-            //1_IsBox_IsAuto_2_IsEgress
-            void Assign_1_IsBox_IsAuto_2_IsEgress()
+            //1_IsRectangle_IsAuto_2_IsEgress
+            void Assign_1_IsRectangle_IsAuto_2_IsEgress()
             {
             }
-            //1_IsBox_IsManual_2_IsPoint
-            void Assign_1_IsBox_IsManual_2_IsPoint()
+            //1_IsRectangle_IsManual_2_IsPoint
+            void Assign_1_IsRectangle_IsManual_2_IsPoint()
             {
             }
-            //1_IsBox_IsManual_2_IsBox_IsAuto
-            void Assign_1_IsBox_IsManual_2_IsBox_IsAuto()
+            //1_IsRectangle_IsManual_2_IsRectangle_IsAuto
+            void Assign_1_IsRectangle_IsManual_2_IsRectangle_IsAuto()
             {
             }
-            //1_IsBox_IsManual_2_IsBox_IsManual
-            void Assign_1_IsBox_IsManual_2_IsBox_IsManual()
+            //1_IsRectangle_IsManual_2_IsRectangle_IsManual
+            void Assign_1_IsRectangle_IsManual_2_IsRectangle_IsManual()
             {
             }
-            //1_IsBox_IsManual_2_IsSymbol_IsAuto
-            void Assign_1_IsBox_IsManual_2_IsSymbol_IsAuto()
+            //1_IsRectangle_IsManual_2_IsSymbol_IsAuto
+            void Assign_1_IsRectangle_IsManual_2_IsSymbol_IsAuto()
             {
             }
-            //1_IsBox_IsManual_2_IsSymbol_IsManual
-            void Assign_1_IsBox_IsManual_2_IsSymbol_IsManual()
+            //1_IsRectangle_IsManual_2_IsSymbol_IsManual
+            void Assign_1_IsRectangle_IsManual_2_IsSymbol_IsManual()
             {
             }
-            //1_IsBox_IsManual_2_IsEgress
-            void Assign_1_IsBox_IsManual_2_IsEgress()
+            //1_IsRectangle_IsManual_2_IsEgress
+            void Assign_1_IsRectangle_IsManual_2_IsEgress()
             {
             }
             //1_IsSymbol_IsAuto_2_IsPoint
             void Assign_1_IsSymbol_IsAuto_2_IsPoint()
             {
             }
-            //1_IsSymbol_IsAuto_2_IsBox_IsAuto
-            void Assign_1_IsSymbol_IsAuto_2_IsBox_IsAuto()
+            //1_IsSymbol_IsAuto_2_IsRectangle_IsAuto
+            void Assign_1_IsSymbol_IsAuto_2_IsRectangle_IsAuto()
             {
             }
-            //1_IsSymbol_IsAuto_2_IsBox_IsManual
-            void Assign_1_IsSymbol_IsAuto_2_IsBox_IsManual()
+            //1_IsSymbol_IsAuto_2_IsRectangle_IsManual
+            void Assign_1_IsSymbol_IsAuto_2_IsRectangle_IsManual()
             {
             }
             //1_IsSymbol_IsAuto_2_IsSymbol_IsAuto
@@ -1519,12 +1499,12 @@ namespace ModelGraphSTD
             void Assign_1_IsSymbol_IsManual_2_IsPoint()
             {
             }
-            //1_IsSymbol_IsManual_2_IsBox_IsAuto
-            void Assign_1_IsSymbol_IsManual_2_IsBox_IsAuto()
+            //1_IsSymbol_IsManual_2_IsRectangle_IsAuto
+            void Assign_1_IsSymbol_IsManual_2_IsRectangle_IsAuto()
             {
             }
-            //1_IsSymbol_IsManual_2_IsBox_IsManual
-            void Assign_1_IsSymbol_IsManual_2_IsBox_IsManual()
+            //1_IsSymbol_IsManual_2_IsRectangle_IsManual
+            void Assign_1_IsSymbol_IsManual_2_IsRectangle_IsManual()
             {
             }
             //1_IsSymbol_IsManual_2_IsSymbol_IsAuto
@@ -1543,12 +1523,12 @@ namespace ModelGraphSTD
             void Assign_1_IsEgress_IsManual_2_IsPoint()
             {
             }
-            //1_IsEgress_2_IsBox_IsAuto
-            void Assign_1_IsEgress_2_IsBox_IsAuto()
+            //1_IsEgress_2_IsRectangle_IsAuto
+            void Assign_1_IsEgress_2_IsRectangle_IsAuto()
             {
             }
-            //1_IsEgress_2_IsBox_IsManual
-            void Assign_1_IsEgress_2_IsBox_IsManual()
+            //1_IsEgress_2_IsRectangle_IsManual
+            void Assign_1_IsEgress_2_IsRectangle_IsManual()
             {
             }
             //1_IsEgress_2_IsSymbol_IsAuto

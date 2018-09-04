@@ -1,9 +1,7 @@
-﻿using System;
-
+﻿
 namespace ModelGraphSTD
 {
-    [Flags]
-    public enum Side : byte
+    public enum Quad : byte
     {/*
          sect         quad       side
         =======       ====       ======
@@ -12,9 +10,9 @@ namespace ModelGraphSTD
         4/3|2\1        2|1         S
      */
         Any = 0,
-        East = 1,   // right
-        West = 2,   // left 
-        North = 4,  // top
-        South = 8,  // bottom 
+        Q1 = 1, 
+        Q2 = 2,  
+        Q3 = 3,
+        Q4 = 4, 
     };
 }

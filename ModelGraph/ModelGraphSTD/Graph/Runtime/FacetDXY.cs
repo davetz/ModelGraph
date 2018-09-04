@@ -2,28 +2,26 @@
 {
     public class FacetDXY
     {
-        internal FacetDXY(int[] dxy)
+        internal readonly (sbyte X, sbyte Y)[] DXY;
+        internal int Length { get { return DXY.Length; } }
+
+        internal FacetDXY((int x, int y)[] dxy)
         {
             var len = (dxy == null) ? 0 : dxy.Length;
 
-            if ((len % 2) == 1) len -= 1; // ensure even number
-
-            DXY = new sbyte[len];
+            DXY = new (sbyte X, sbyte y)[len];
 
             for (int i = 0; i < len; i++)
             {
-                var val = dxy[i];
-                DXY[i] = (val < sbyte.MinValue) ? sbyte.MinValue :
-                    ((val > sbyte.MaxValue) ? sbyte.MaxValue :
-                    (sbyte)val);
+                var (x, y) = dxy[i];
+
+                // enforce reasonable limits on the (dx, dy) values
+                x = (x < sbyte.MinValue) ? sbyte.MinValue : (x > sbyte.MaxValue) ? sbyte.MaxValue : x;
+                y = (y < sbyte.MinValue) ? sbyte.MinValue : (y > sbyte.MaxValue) ? sbyte.MaxValue : y;
+
+                DXY[i] = ((sbyte)x, (sbyte)y);
             }
         }
-
-        // enforce reasonable limits on the (dx, dy) values
-        internal readonly sbyte[] DXY;
-
-        internal int Length { get { return DXY.Length; } }
-
 
         #region Width  ========================================================
         /// <summary>
@@ -34,9 +32,9 @@
             int y, ymin, ymax;
             y = ymin = ymax = 0;
 
-            for (int i = 1; i < DXY.Length; i += 2)
+            for (int i = 1; i < DXY.Length; i++)
             {
-                y += DXY[i];
+                y += DXY[i].Y;
 
                 if (y < ymin) ymin = y;
                 else if (y > ymax) ymax = y;

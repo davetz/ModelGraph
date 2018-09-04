@@ -149,12 +149,8 @@ namespace ModelGraphSTD
         public (int X, int Y) Delta => (DX, DY);
         public int Length => (int)Math.Sqrt(Diagonal);
         public int Diagonal => XYPair.Diagonal(Delta);
-        public float Slope => (float)XYPair.Slope(Delta);
-        public int Quad => XYPair.Quad(Delta);
         public (int x, int y) OrthoginalDisplacedPoint(double ds) => XYPair.OrthoginalDisplacedPoint(DX, DY, X2, Y2, ds);
-
-
-
+        public (Quad quad, Sect sect, double slope) QuadSectSlope => XYPair.QuadSectSlope((X1, Y1), (X2, Y2));
         public bool TryGetDelta(out (int X, int Y) delta)
         {
             delta = Delta;
