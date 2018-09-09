@@ -74,7 +74,7 @@ namespace ModelGraphSTD
                     var (x2, y2) = ext.Point2 = n2.GetCenter();
 
                     var pc = InParallelCount(ip);
-                    if (n2.Sizing == Sizing.Auto && n2.Orient != Orient.Point)
+                    if (n2.Sizing == Sizing.Auto && n2.Aspect != Aspect.Point)
                     {
                         tc++;
                         for (int i = ip, j = 0; j < pc; i++, j++)

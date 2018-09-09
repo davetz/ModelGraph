@@ -12,13 +12,14 @@ namespace ModelGraphSTD
         internal string Name;
         internal string Summary;
         internal string Description;
-        internal byte ThinBusSize = 8;
-        internal byte WideBusSize = 20;
-        internal byte ExtraWideBusSize = 30;
+        internal byte ThinBusSize = 6;
+        internal byte WideBusSize = 10;
+        internal byte ExtraBusSize = 20;
         internal byte MinNodeSize = 4;
-        internal byte TerminalLength = 8;
+        internal byte TerminalLength = 10;
         internal byte TerminalSpacing = 8;
-        internal byte TerminalAngleSkew = 2;
+        internal byte SurfaceSkew = 4;
+        internal byte TerminalSkew = 2;
 
         public List<(byte A, byte R, byte G, byte B)> ARGBList => Color.ARGBList;
 

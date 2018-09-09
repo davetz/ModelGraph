@@ -8419,8 +8419,6 @@ namespace ModelGraphSTD
 
                     m.InitChildModels(prev);
 
-                    AddProperyModel(prev, m, _edgeFace1Property);
-                    AddProperyModel(prev, m, _edgeFace2Property);
                     AddProperyModel(prev, m, _edgeFacet1Property);
                     AddProperyModel(prev, m, _edgeFacet2Property);
                     AddProperyModel(prev, m, _edgeConnect1Property);

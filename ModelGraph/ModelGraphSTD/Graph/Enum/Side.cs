@@ -16,5 +16,9 @@ namespace ModelGraphSTD
         West = 2,   // left 
         North = 4,  // top
         South = 8,  // bottom 
+        NorthEast = North | East, //diagonally off top right corner
+        NorthWest = North | West, //diagonally off top left corner
+        SouthEast = South | East, //diagonally off bottom right corner
+        SouthWest = South | West, //diagonally off bottom left corner
     };
 }

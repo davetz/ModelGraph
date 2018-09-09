@@ -228,8 +228,8 @@ namespace ModelGraphSTD
                         {
                             var eg = pm as Edge;
                             eg.Owner = g;
-                            eg.Face1 = new Face(eg.Face1, e1.Key.PathParm.Facet1);
-                            eg.Face2 = new Face(eg.Face2, e1.Key.PathParm.Facet2);
+                            eg.Face1 = new Face(e1.Key.PathParm.Facet1);
+                            eg.Face2 = new Face(e1.Key.PathParm.Facet2);
                             g.Edges.Add(eg);
 
                             if (!item_items.TryGetValue(eg.Node1.Item, out items))
@@ -345,7 +345,7 @@ namespace ModelGraphSTD
                     if (i == symbols.Count) continue;
 
                     node.Symbol = (byte)(i + 2);
-                    node.Orient = Orient.Central;
+                    node.Aspect = Aspect.Central;
                     if ((node.FlipRotate & FlipRotate.RotateClockWise) == 0)
                     {
                         node.DX = (byte)(sx.Width / 2);

@@ -48,6 +48,6 @@ namespace ModelGraphSTD
 
         B15_spare = 0x4000, // currently unused
 
-        B16_spare = 0x8000, // currently unused
+        NeedsRefresh = 0x8000, // Edge 
     }
 }

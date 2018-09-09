@@ -72,7 +72,7 @@ namespace ModelGraphSTD
             if (node.IsGraphNode)
             {
                 if (node.IsManualSizing || node.IsFixedSizing)
-                    AdjustFixedNode(node);
+                    AdjustManualNode(node);
                 else
                     AdjustAutoNode(node);
             }

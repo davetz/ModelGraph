@@ -82,8 +82,6 @@ namespace ModelGraphSTD
         private PropertyOf<Node, string> _nodeOrientationProperty;
         private PropertyOf<Node, string> _nodeFlipRotateProperty;
 
-        private PropertyOf<Edge, string> _edgeFace1Property;
-        private PropertyOf<Edge, string> _edgeFace2Property;
         private PropertyOf<Edge, string> _edgeFacet1Property;
         private PropertyOf<Edge, string> _edgeFacet2Property;
         private PropertyOf<Edge, string> _edgeConnect1Property;
@@ -377,8 +375,8 @@ namespace ModelGraphSTD
             }
             {
                 var p = _graphXTerminalStretchProperty = new PropertyOf<GraphX, int>(PropertyStore, Trait.GraphTerminalStretch_P);
-                p.GetValFunc = (item) => p.Cast(item).TerminalAngleSkew;
-                p.SetValFunc = (item, value) => { p.Cast(item).TerminalAngleSkew = (byte)value; return true; };
+                p.GetValFunc = (item) => p.Cast(item).TerminalSkew;
+                p.SetValFunc = (item, value) => { p.Cast(item).TerminalSkew = (byte)value; return true; };
                 p.Value = new Int32Value(p);
                 props.Add(p);
             }
@@ -573,8 +571,8 @@ namespace ModelGraphSTD
             }
             {
                 var p = _nodeOrientationProperty = new PropertyOf<Node, string>(PropertyZStore, Trait.NodeOrientation_P, _orientationEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Orient);
-                p.SetValFunc = (item, value) => { p.Cast(item).Orient = (Orient)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Aspect);
+                p.SetValFunc = (item, value) => { p.Cast(item).Aspect = (Aspect)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
@@ -604,18 +602,6 @@ namespace ModelGraphSTD
             #endregion
 
             #region Edge  =====================================================
-            {
-                var p = _edgeFace1Property = new PropertyOf<Edge, string>(PropertyZStore, Trait.EdgeFace1_P, _sideEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Face1.Side);
-                p.SetValFunc = (item, value) => { p.Cast(item).Face1.Side = (Side)GetEnumZKey(p.EnumZ, value); return true; };
-                p.Value = new StringValue(p);
-            }
-            {
-                var p = _edgeFace2Property = new PropertyOf<Edge, string>(PropertyZStore, Trait.EdgeFace2_P, _sideEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Face2.Side);
-                p.SetValFunc = (item, value) => { p.Cast(item).Face2.Side = (Side)GetEnumZKey(p.EnumZ, value); return true; };
-                p.Value = new StringValue(p);
-            }
             {
                 var p =  _edgeFacet1Property = new PropertyOf<Edge, string>(PropertyZStore, Trait.EdgeFacet1_P, _facetEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Face1.Facet);

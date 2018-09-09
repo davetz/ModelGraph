@@ -176,9 +176,9 @@ namespace ModelGraphUWP
         {
             //if (_modifier == Modifier.Zip)
             //{
-            //    if (_keyName == "V") _hitNode.Node.Orient = Orient.Vertical;
-            //    else if (_keyName == "H") _hitNode.Node.Orient = Orient.Horizontal;
-            //    else if (_keyName == "C") _hitNode.Node.Orient = Orient.Central;
+            //    if (_keyName == "V") _hitNode.Node.Aspect = Aspect.Vertical;
+            //    else if (_keyName == "H") _hitNode.Node.Aspect = Aspect.Horizontal;
+            //    else if (_keyName == "C") _hitNode.Node.Aspect = Aspect.Central;
             //    else if (_keyName == "A") _hitNode.Node.Resizing = Resizing.Auto;
             //    else if (_keyName == "M") _hitNode.Node.Resizing = Resizing.Manual;
             //}

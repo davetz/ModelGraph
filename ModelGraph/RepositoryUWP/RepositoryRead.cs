@@ -50,7 +50,64 @@ namespace RepositoryUWP
 
             if (header == 0)
             {
-                if (fileFormat == _fileFormat_9)
+                if (fileFormat == _fileFormat_C)
+                {
+                    vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
+                    {
+                        null,               // 0
+                        ReadViewX_1,        // 1 ViewX
+                        ReadEnumX_1,        // 2 EnumX
+                        ReadTableX_1,       // 3 TableX
+                        ReadGraphX_3,       // 4 GraphX
+                        ReadQueryX_5,       // 5 QueryX
+                        ReadSymbolX_2,      // 6 SymbolX
+                        ReadColumnX_4,      // 7 ColumnX
+                        ReadComputeX_3,     // 8 ComputeX 
+                        null,               // 9 CommandX
+                        ReadRelationX_2,    // 10 RelationX
+                        ReadGraphParm_6,    // 11 GraphParam
+                        ReadRelationLink_1, // 12 RelationLink
+                    };
+                }
+                else if (fileFormat == _fileFormat_B)
+                {
+                    vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
+                    {
+                        null,               // 0
+                        ReadViewX_1,        // 1 ViewX
+                        ReadEnumX_1,        // 2 EnumX
+                        ReadTableX_1,       // 3 TableX
+                        ReadGraphX_3,       // 4 GraphX
+                        ReadQueryX_5,       // 5 QueryX
+                        ReadSymbolX_2,      // 6 SymbolX
+                        ReadColumnX_4,      // 7 ColumnX
+                        ReadComputeX_3,     // 8 ComputeX 
+                        null,               // 9 CommandX
+                        ReadRelationX_2,    // 10 RelationX
+                        ReadGraphParm_5,    // 11 GraphParam
+                        ReadRelationLink_1, // 12 RelationLink
+                    };
+                }
+                else if (fileFormat == _fileFormat_A)
+                {
+                    vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
+                    {
+                        null,               // 0
+                        ReadViewX_1,        // 1 ViewX
+                        ReadEnumX_1,        // 2 EnumX
+                        ReadTableX_1,       // 3 TableX
+                        ReadGraphX_2,       // 4 GraphX
+                        ReadQueryX_5,       // 5 QueryX
+                        ReadSymbolX_2,      // 6 SymbolX
+                        ReadColumnX_4,      // 7 ColumnX
+                        ReadComputeX_3,     // 8 ComputeX 
+                        null,               // 9 CommandX
+                        ReadRelationX_2,    // 10 RelationX
+                        ReadGraphParm_4,    // 11 GraphParam
+                        ReadRelationLink_1, // 12 RelationLink
+                    };
+                }
+                else if (fileFormat == _fileFormat_9)
                 {
                     vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
                     {
@@ -391,6 +448,73 @@ namespace RepositoryUWP
                 if ((b & B1) != 0) gx.Name = ReadString(r);
                 if ((b & B2) != 0) gx.Summary = ReadString(r);
                 if ((b & B3) != 0) gx.Description = ReadString(r);
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.GraphXEnding) throw new Exception($"Expected GraphXEnding marker, instead got {mark}");
+        }
+        #endregion
+
+        #region ReadGraphX_2  =================================================
+        private void ReadGraphX_2(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            var store = chef.GraphXStore;
+            var count = r.ReadInt32();
+            if (count < 0) throw new Exception($"Invalid count {count}");
+
+            for (int i = 0; i < count; i++)
+            {
+                var index = r.ReadInt32();
+                if (index < 0 || index >= items.Length) throw new Exception($"Invalid index {index}");
+
+                var gx = new GraphX(store, guids[index]);
+                items[index] = gx;
+
+                var b = r.ReadByte();
+                if ((b & B1) != 0) gx.Name = ReadString(r);
+                if ((b & B2) != 0) gx.Summary = ReadString(r);
+                if ((b & B3) != 0) gx.Description = ReadString(r);
+                gx.MinNodeSize = r.ReadByte();
+                gx.ThinBusSize = r.ReadByte();
+                gx.WideBusSize = r.ReadByte();
+                gx.ExtraBusSize = r.ReadByte();
+                gx.TerminalLength = r.ReadByte();
+                gx.TerminalSpacing = r.ReadByte();
+                gx.TerminalSkew = r.ReadByte();
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.GraphXEnding) throw new Exception($"Expected GraphXEnding marker, instead got {mark}");
+        }
+        #endregion
+
+        #region ReadGraphX_3  =================================================
+        private void ReadGraphX_3(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            var store = chef.GraphXStore;
+            var count = r.ReadInt32();
+            if (count < 0) throw new Exception($"Invalid count {count}");
+
+            for (int i = 0; i < count; i++)
+            {
+                var index = r.ReadInt32();
+                if (index < 0 || index >= items.Length) throw new Exception($"Invalid index {index}");
+
+                var gx = new GraphX(store, guids[index]);
+                items[index] = gx;
+
+                var b = r.ReadByte();
+                if ((b & B1) != 0) gx.Name = ReadString(r);
+                if ((b & B2) != 0) gx.Summary = ReadString(r);
+                if ((b & B3) != 0) gx.Description = ReadString(r);
+
+                gx.MinNodeSize = r.ReadByte();
+                gx.ThinBusSize = r.ReadByte();
+                gx.WideBusSize = r.ReadByte();
+                gx.ExtraBusSize = r.ReadByte();
+
+                gx.SurfaceSkew = r.ReadByte();
+                gx.TerminalSkew = r.ReadByte();
+                gx.TerminalLength = r.ReadByte();
+                gx.TerminalSpacing = r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.GraphXEnding) throw new Exception($"Expected GraphXEnding marker, instead got {mark}");
@@ -1071,7 +1195,7 @@ namespace RepositoryUWP
                                 node.DX = r.ReadByte();
                                 node.DY = r.ReadByte();
                                 node.Symbol = r.ReadByte();
-                                node.Orient = (Orient)r.ReadByte();
+                                node.Aspect = (Aspect)r.ReadByte();
                                 node.FlipRotate = (FlipRotate)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
@@ -1105,12 +1229,10 @@ namespace RepositoryUWP
                                 edge.Node1 = node1;
                                 edge.Node2 = node2;
 
-                                edge.Face1.Side = (Side)r.ReadByte();
-                                edge.Face1.Index = r.ReadByte();
-                                edge.Face1.Count = r.ReadByte();
-                                edge.Face2.Side = (Side)r.ReadByte();
-                                edge.Face2.Index = r.ReadByte();
-                                edge.Face2.Count = r.ReadByte();
+                                r.ReadByte();
+                                r.ReadByte(); r.ReadByte();
+                                r.ReadByte();
+                                r.ReadByte(); r.ReadByte();
                                 edge.Face1.Facet = (Facet)r.ReadByte();
                                 edge.Face2.Facet = (Facet)r.ReadByte();
 
@@ -1233,7 +1355,7 @@ namespace RepositoryUWP
                                 node.DX = r.ReadByte();
                                 node.DY = r.ReadByte();
                                 node.Symbol = r.ReadByte();
-                                node.Orient = (Orient)r.ReadByte();
+                                node.Aspect = (Aspect)r.ReadByte();
                                 node.FlipRotate = (FlipRotate)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
@@ -1267,16 +1389,14 @@ namespace RepositoryUWP
                                 edge.Node1 = node1;
                                 edge.Node2 = node2;
 
-                                edge.Face1.Side = (Side)r.ReadByte();
-                                edge.Face1.Index = r.ReadByte();
-                                edge.Face1.Count = r.ReadByte();
-                                edge.Face1.Facet = (Facet)r.ReadByte();
+                                r.ReadByte();
+                                r.ReadByte(); r.ReadByte();
+                                r.ReadByte();
                                 r.ReadByte(); //new parameter
 
-                                edge.Face2.Side = (Side)r.ReadByte();
-                                edge.Face2.Index = r.ReadByte();
-                                edge.Face2.Count = r.ReadByte();
-                                edge.Face2.Facet = (Facet)r.ReadByte();
+                                r.ReadByte();
+                                r.ReadByte(); r.ReadByte();
+                                r.ReadByte();
                                 r.ReadByte(); //new parameter
 
                                 var pnCount = r.ReadUInt16();
@@ -1398,7 +1518,7 @@ namespace RepositoryUWP
                                 node.DX = r.ReadByte();
                                 node.DY = r.ReadByte();
                                 node.Symbol = r.ReadByte();
-                                node.Orient = (Orient)r.ReadByte();
+                                node.Aspect = (Aspect)r.ReadByte();
                                 node.FlipRotate = (FlipRotate)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
@@ -1432,20 +1552,505 @@ namespace RepositoryUWP
                                 edge.Node1 = node1;
                                 edge.Node2 = node2;
 
-                                edge.Face1.Side = (Side)r.ReadByte();
-                                edge.Face1.Index = r.ReadByte();
-                                edge.Face1.Count = r.ReadByte();
+                                r.ReadByte();
+                                r.ReadByte(); r.ReadByte();
                                 edge.Face1.Facet = (Facet)r.ReadByte();
 
-                                edge.Face2.Side = (Side)r.ReadByte();
-                                edge.Face2.Index = r.ReadByte();
-                                edge.Face2.Count = r.ReadByte();
+                                r.ReadByte();
+                                r.ReadByte(); r.ReadByte();
                                 edge.Face2.Facet = (Facet)r.ReadByte();
 
                                 var pnCount = r.ReadUInt16();
                                 if (pnCount > 0)
                                 {
                                     edge.Bends = new(int X, int Y)[pnCount];
+                                    for (int n = 0; n < pnCount; n++)
+                                    {
+                                        edge.Bends[n].X = r.ReadInt32();
+                                        edge.Bends[n].Y = r.ReadInt32();
+                                    }
+                                }
+                            }
+                            #endregion
+                        }
+                    }
+                }
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.GraphParmEnding) throw new Exception($"Expected GraphParamEnding marker, instead got {mark}");
+        }
+        #endregion
+
+        #region ReadGraphParm_4  ==============================================
+        private void ReadGraphParm_4(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            Dictionary<QueryX, List<NodeEdge>> Qx_NE = null;
+            List<NodeEdge> NE = null;
+
+            var gxIndex = r.ReadInt32();
+            if (gxIndex < 0 || gxIndex >= items.Length) throw new Exception($"Invalid index {gxIndex}");
+
+            var gxLen = r.ReadInt32();
+            if (gxLen < 0) throw new Exception($"Invalid count {gxLen}");
+
+            if (!(items[gxIndex] is GraphX gx)) throw new Exception($"Expected graphDef object, got null {gxIndex}");
+
+            var graphParms = new Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>>(gxLen);
+            chef.GraphParms = graphParms;
+
+
+            #region FindCreate Ri_Qx_NE =======================================
+            if (!graphParms.TryGetValue(gx, out Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>> Ri_Qx_NE))
+            {
+                Ri_Qx_NE = new Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>(gxLen);
+                graphParms.Add(gx, Ri_Qx_NE);
+            }
+            #endregion
+
+            for (int i = 0; i < gxLen; i++)
+            {
+                var rtIndex = r.ReadInt32();
+                if (rtIndex < 0 || rtIndex >= items.Length) throw new Exception($"Invalid index {rtIndex}");
+
+                var rtLen = r.ReadInt32();
+                if (rtLen < 0) throw new Exception($"Invalid count {rtLen}");
+
+                var rt = items[rtIndex];
+                if (rt == null) throw new Exception($"Expected root object, got null {rtIndex}");
+
+                #region FindCreate Qx_NE ======================================
+                if (!Ri_Qx_NE.TryGetValue(rt, out Qx_NE))
+                {
+                    Qx_NE = new Dictionary<QueryX, List<NodeEdge>>(rtLen);
+                    Ri_Qx_NE.Add(rt, Qx_NE);
+                }
+                #endregion
+
+                var Item_Node = new Dictionary<Item, Node>();
+
+                for (int j = 0; j < rtLen; j++)
+                {
+                    var qxIndex = r.ReadInt32();
+                    if (qxIndex < 0 || qxIndex >= items.Length) throw new Exception($"Invalid index {qxIndex}");
+
+                    var npLen = r.ReadInt32();
+                    if (npLen < 0) throw new Exception($"Invalid count {npLen}");
+
+                    var qx = items[qxIndex] as QueryX;
+                    if (qx == null)
+                    {
+                        var guid = guids[qxIndex];
+                        if (!guidItems.TryGetValue(guid, out Item itm)) throw new Exception($"Could not find QueryX for guid {guid}");
+                        items[qxIndex] = itm;
+                        qx = itm as QueryX;
+                    }
+
+                    #region FindCreate  NE ====================================
+                    if (!Qx_NE.TryGetValue(qx, out NE))
+                    {
+                        NE = new List<NodeEdge>(npLen);
+                        Qx_NE.Add(qx, NE);
+                    }
+                    #endregion
+
+                    if (npLen > 0)
+                    {
+                        if (qx == chef.QueryXNode)
+                        {
+                            #region ReadNodeParms  ============================
+                            for (int k = 0; k < npLen; k++)
+                            {
+                                var itmIndex = r.ReadInt32();
+                                if (itmIndex < 0 || itmIndex >= items.Length) throw new Exception($"Invalid index {itmIndex}");
+
+                                var itm = items[itmIndex];
+                                if (itm == null) throw new Exception($"Expected node item object, got null {itmIndex}");
+
+                                if (!Item_Node.TryGetValue(itm, out Node node))
+                                {
+                                    node = new Node() { Item = itm };
+
+                                    Item_Node.Add(itm, node);
+                                    NE.Add(node);
+                                }
+
+                                node.X = r.ReadInt32();
+                                node.Y = r.ReadInt32();
+                                node.DX = r.ReadByte();
+                                node.DY = r.ReadByte();
+                                node.Symbol = r.ReadByte();
+                                node.Aspect = (Aspect)r.ReadByte();
+                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.Labeling = (Labeling)r.ReadByte();
+                                node.Sizing = (Sizing)r.ReadByte();
+                                node.BarWidth = (BarWidth)r.ReadByte();
+                            }
+                            #endregion
+                        }
+                        else
+                        {
+                            #region ReadEdgeParms  ============================
+                            for (int k = 0; k < npLen; k++)
+                            {
+                                var itm1Index = r.ReadInt32();
+                                if (itm1Index < 0 || itm1Index >= items.Length) throw new Exception($"Invalid index {itm1Index}");
+
+                                var itm1 = items[itm1Index];
+                                if (itm1 == null) throw new Exception($"Expected node object, got null {itm1Index}");
+
+                                var itm2Index = r.ReadInt32();
+                                if (itm2Index < 0 || itm2Index >= items.Length) throw new Exception($"Invalid index {itm2Index}");
+
+                                var itm2 = items[itm2Index];
+                                if (itm2 == null) throw new Exception($"Expected node object, got null {itm2Index}");
+
+                                if (!Item_Node.TryGetValue(itm1, out Node node1)) throw new Exception("Could not Finde Item1Node");
+                                if (!Item_Node.TryGetValue(itm2, out Node node2)) throw new Exception("Could not Finde Item2Node");
+
+                                var edge = new Edge(qx);
+                                NE.Add(edge);
+
+                                edge.Node1 = node1;
+                                edge.Node2 = node2;
+
+                                r.ReadByte();
+                                r.ReadByte();
+                                r.ReadInt16();
+
+                                r.ReadByte();
+                                edge.Face2.Facet = (Facet)r.ReadByte();
+                                r.ReadInt16();
+
+                                var pnCount = r.ReadUInt16();
+                                if (pnCount > 0)
+                                {
+                                    edge.Bends = new (int X, int Y)[pnCount];
+                                    for (int n = 0; n < pnCount; n++)
+                                    {
+                                        edge.Bends[n].X = r.ReadInt32();
+                                        edge.Bends[n].Y = r.ReadInt32();
+                                    }
+                                }
+                            }
+                            #endregion
+                        }
+                    }
+                }
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.GraphParmEnding) throw new Exception($"Expected GraphParamEnding marker, instead got {mark}");
+        }
+        #endregion
+
+        #region ReadGraphParm_5  ==============================================
+        private void ReadGraphParm_5(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            Dictionary<QueryX, List<NodeEdge>> Qx_NE = null;
+            List<NodeEdge> NE = null;
+
+            var gxIndex = r.ReadInt32();
+            if (gxIndex < 0 || gxIndex >= items.Length) throw new Exception($"Invalid index {gxIndex}");
+
+            var gxLen = r.ReadInt32();
+            if (gxLen < 0) throw new Exception($"Invalid count {gxLen}");
+
+            if (!(items[gxIndex] is GraphX gx)) throw new Exception($"Expected graphDef object, got null {gxIndex}");
+
+            var graphParms = new Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>>(gxLen);
+            chef.GraphParms = graphParms;
+
+
+            #region FindCreate Ri_Qx_NE =======================================
+            if (!graphParms.TryGetValue(gx, out Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>> Ri_Qx_NE))
+            {
+                Ri_Qx_NE = new Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>(gxLen);
+                graphParms.Add(gx, Ri_Qx_NE);
+            }
+            #endregion
+
+            for (int i = 0; i < gxLen; i++)
+            {
+                var rtIndex = r.ReadInt32();
+                if (rtIndex < 0 || rtIndex >= items.Length) throw new Exception($"Invalid index {rtIndex}");
+
+                var rtLen = r.ReadInt32();
+                if (rtLen < 0) throw new Exception($"Invalid count {rtLen}");
+
+                var rt = items[rtIndex];
+                if (rt == null) throw new Exception($"Expected root object, got null {rtIndex}");
+
+                #region FindCreate Qx_NE ======================================
+                if (!Ri_Qx_NE.TryGetValue(rt, out Qx_NE))
+                {
+                    Qx_NE = new Dictionary<QueryX, List<NodeEdge>>(rtLen);
+                    Ri_Qx_NE.Add(rt, Qx_NE);
+                }
+                #endregion
+
+                var Item_Node = new Dictionary<Item, Node>();
+
+                for (int j = 0; j < rtLen; j++)
+                {
+                    var qxIndex = r.ReadInt32();
+                    if (qxIndex < 0 || qxIndex >= items.Length) throw new Exception($"Invalid index {qxIndex}");
+
+                    var npLen = r.ReadInt32();
+                    if (npLen < 0) throw new Exception($"Invalid count {npLen}");
+
+                    var qx = items[qxIndex] as QueryX;
+                    if (qx == null)
+                    {
+                        var guid = guids[qxIndex];
+                        if (!guidItems.TryGetValue(guid, out Item itm)) throw new Exception($"Could not find QueryX for guid {guid}");
+                        items[qxIndex] = itm;
+                        qx = itm as QueryX;
+                    }
+
+                    #region FindCreate  NE ====================================
+                    if (!Qx_NE.TryGetValue(qx, out NE))
+                    {
+                        NE = new List<NodeEdge>(npLen);
+                        Qx_NE.Add(qx, NE);
+                    }
+                    #endregion
+
+                    if (npLen > 0)
+                    {
+                        if (qx == chef.QueryXNode)
+                        {
+                            #region ReadNodeParms  ============================
+                            for (int k = 0; k < npLen; k++)
+                            {
+                                var itmIndex = r.ReadInt32();
+                                if (itmIndex < 0 || itmIndex >= items.Length) throw new Exception($"Invalid index {itmIndex}");
+
+                                var itm = items[itmIndex];
+                                if (itm == null) throw new Exception($"Expected node item object, got null {itmIndex}");
+
+                                if (!Item_Node.TryGetValue(itm, out Node node))
+                                {
+                                    node = new Node() { Item = itm };
+
+                                    Item_Node.Add(itm, node);
+                                    NE.Add(node);
+                                }
+
+                                node.X = r.ReadInt32();
+                                node.Y = r.ReadInt32();
+                                node.DX = r.ReadByte();
+                                node.DY = r.ReadByte();
+                                node.Symbol = r.ReadByte();
+                                node.Aspect = (Aspect)r.ReadByte();
+                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.Labeling = (Labeling)r.ReadByte();
+                                node.Sizing = (Sizing)r.ReadByte();
+                                node.BarWidth = (BarWidth)r.ReadByte();
+                            }
+                            #endregion
+                        }
+                        else
+                        {
+                            #region ReadEdgeParms  ============================
+                            for (int k = 0; k < npLen; k++)
+                            {
+                                var itm1Index = r.ReadInt32();
+                                if (itm1Index < 0 || itm1Index >= items.Length) throw new Exception($"Invalid index {itm1Index}");
+
+                                var itm1 = items[itm1Index];
+                                if (itm1 == null) throw new Exception($"Expected node object, got null {itm1Index}");
+
+                                var itm2Index = r.ReadInt32();
+                                if (itm2Index < 0 || itm2Index >= items.Length) throw new Exception($"Invalid index {itm2Index}");
+
+                                var itm2 = items[itm2Index];
+                                if (itm2 == null) throw new Exception($"Expected node object, got null {itm2Index}");
+
+                                if (!Item_Node.TryGetValue(itm1, out Node node1)) throw new Exception("Could not Finde Item1Node");
+                                if (!Item_Node.TryGetValue(itm2, out Node node2)) throw new Exception("Could not Finde Item2Node");
+
+                                var edge = new Edge(qx);
+                                NE.Add(edge);
+
+                                edge.Node1 = node1;
+                                edge.Node2 = node2;
+
+                                r.ReadByte();
+                                edge.Face1.Facet = (Facet)r.ReadByte();
+                                r.ReadByte(); r.ReadByte();
+                                r.ReadByte(); r.ReadByte();
+
+                                r.ReadByte();
+                                edge.Face2.Facet = (Facet)r.ReadByte();
+                                r.ReadByte(); r.ReadByte();
+                                r.ReadByte(); r.ReadByte();
+
+                                var pnCount = r.ReadUInt16();
+                                if (pnCount > 0)
+                                {
+                                    edge.Bends = new (int X, int Y)[pnCount];
+                                    for (int n = 0; n < pnCount; n++)
+                                    {
+                                        edge.Bends[n].X = r.ReadInt32();
+                                        edge.Bends[n].Y = r.ReadInt32();
+                                    }
+                                }
+                            }
+                            #endregion
+                        }
+                    }
+                }
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.GraphParmEnding) throw new Exception($"Expected GraphParamEnding marker, instead got {mark}");
+        }
+        #endregion
+
+        #region ReadGraphParm_6  ==============================================
+        private void ReadGraphParm_6(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            Dictionary<QueryX, List<NodeEdge>> Qx_NE = null;
+            List<NodeEdge> NE = null;
+
+            var gxIndex = r.ReadInt32();
+            if (gxIndex < 0 || gxIndex >= items.Length) throw new Exception($"Invalid index {gxIndex}");
+
+            var gxLen = r.ReadInt32();
+            if (gxLen < 0) throw new Exception($"Invalid count {gxLen}");
+
+            if (!(items[gxIndex] is GraphX gx)) throw new Exception($"Expected graphDef object, got null {gxIndex}");
+
+            var graphParms = new Dictionary<GraphX, Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>>(gxLen);
+            chef.GraphParms = graphParms;
+
+
+            #region FindCreate Ri_Qx_NE =======================================
+            if (!graphParms.TryGetValue(gx, out Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>> Ri_Qx_NE))
+            {
+                Ri_Qx_NE = new Dictionary<Item, Dictionary<QueryX, List<NodeEdge>>>(gxLen);
+                graphParms.Add(gx, Ri_Qx_NE);
+            }
+            #endregion
+
+            for (int i = 0; i < gxLen; i++)
+            {
+                var rtIndex = r.ReadInt32();
+                if (rtIndex < 0 || rtIndex >= items.Length) throw new Exception($"Invalid index {rtIndex}");
+
+                var rtLen = r.ReadInt32();
+                if (rtLen < 0) throw new Exception($"Invalid count {rtLen}");
+
+                var rt = items[rtIndex];
+                if (rt == null) throw new Exception($"Expected root object, got null {rtIndex}");
+
+                #region FindCreate Qx_NE ======================================
+                if (!Ri_Qx_NE.TryGetValue(rt, out Qx_NE))
+                {
+                    Qx_NE = new Dictionary<QueryX, List<NodeEdge>>(rtLen);
+                    Ri_Qx_NE.Add(rt, Qx_NE);
+                }
+                #endregion
+
+                var Item_Node = new Dictionary<Item, Node>();
+
+                for (int j = 0; j < rtLen; j++)
+                {
+                    var qxIndex = r.ReadInt32();
+                    if (qxIndex < 0 || qxIndex >= items.Length) throw new Exception($"Invalid index {qxIndex}");
+
+                    var npLen = r.ReadInt32();
+                    if (npLen < 0) throw new Exception($"Invalid count {npLen}");
+
+                    var qx = items[qxIndex] as QueryX;
+                    if (qx == null)
+                    {
+                        var guid = guids[qxIndex];
+                        if (!guidItems.TryGetValue(guid, out Item itm)) throw new Exception($"Could not find QueryX for guid {guid}");
+                        items[qxIndex] = itm;
+                        qx = itm as QueryX;
+                    }
+
+                    #region FindCreate  NE ====================================
+                    if (!Qx_NE.TryGetValue(qx, out NE))
+                    {
+                        NE = new List<NodeEdge>(npLen);
+                        Qx_NE.Add(qx, NE);
+                    }
+                    #endregion
+
+                    if (npLen > 0)
+                    {
+                        if (qx == chef.QueryXNode)
+                        {
+                            #region ReadNodeParms  ============================
+                            for (int k = 0; k < npLen; k++)
+                            {
+                                var itmIndex = r.ReadInt32();
+                                if (itmIndex < 0 || itmIndex >= items.Length) throw new Exception($"Invalid index {itmIndex}");
+
+                                var itm = items[itmIndex];
+                                if (itm == null) throw new Exception($"Expected node item object, got null {itmIndex}");
+
+                                if (!Item_Node.TryGetValue(itm, out Node node))
+                                {
+                                    node = new Node() { Item = itm };
+
+                                    Item_Node.Add(itm, node);
+                                    NE.Add(node);
+                                }
+
+                                node.X = r.ReadInt32();
+                                node.Y = r.ReadInt32();
+                                node.DX = r.ReadByte();
+                                node.DY = r.ReadByte();
+                                node.Symbol = r.ReadByte();
+                                node.Aspect = (Aspect)r.ReadByte();
+                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.Labeling = (Labeling)r.ReadByte();
+                                node.Sizing = (Sizing)r.ReadByte();
+                                node.BarWidth = (BarWidth)r.ReadByte();
+                            }
+                            #endregion
+                        }
+                        else
+                        {
+                            #region ReadEdgeParms  ============================
+                            for (int k = 0; k < npLen; k++)
+                            {
+                                var itm1Index = r.ReadInt32();
+                                if (itm1Index < 0 || itm1Index >= items.Length) throw new Exception($"Invalid index {itm1Index}");
+
+                                var itm1 = items[itm1Index];
+                                if (itm1 == null) throw new Exception($"Expected node object, got null {itm1Index}");
+
+                                var itm2Index = r.ReadInt32();
+                                if (itm2Index < 0 || itm2Index >= items.Length) throw new Exception($"Invalid index {itm2Index}");
+
+                                var itm2 = items[itm2Index];
+                                if (itm2 == null) throw new Exception($"Expected node object, got null {itm2Index}");
+
+                                if (!Item_Node.TryGetValue(itm1, out Node node1)) throw new Exception("Could not Finde Item1Node");
+                                if (!Item_Node.TryGetValue(itm2, out Node node2)) throw new Exception("Could not Finde Item2Node");
+
+                                var edge = new Edge(qx);
+                                NE.Add(edge);
+
+                                edge.Node1 = node1;
+                                edge.Node2 = node2;
+
+                                edge.Face1.Facet = (Facet)r.ReadByte();
+                                edge.Face1.Delta1 = (r.ReadInt16(), r.ReadInt16());
+                                edge.Face1.Delta2 = (r.ReadInt16(), r.ReadInt16());
+                                edge.Face1.Delta3 = (r.ReadInt16(), r.ReadInt16());
+
+                                edge.Face2.Facet = (Facet)r.ReadByte();
+                                edge.Face2.Delta1 = (r.ReadInt16(), r.ReadInt16());
+                                edge.Face2.Delta2 = (r.ReadInt16(), r.ReadInt16());
+                                edge.Face2.Delta3 = (r.ReadInt16(), r.ReadInt16());
+
+                                var pnCount = r.ReadUInt16();
+                                if (pnCount > 0)
+                                {
+                                    edge.Bends = new (int X, int Y)[pnCount];
                                     for (int n = 0; n < pnCount; n++)
                                     {
                                         edge.Bends[n].X = r.ReadInt32();

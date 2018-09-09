@@ -159,8 +159,10 @@ namespace ModelGraphSTD
         #region LineOrder  ====================================================
         internal (int X, int Y) GetClosestBend(Node node)
         {
-            if (Points == null) Refresh();
-            return (node == Node1) ? Points[Bp1] : Points[Bp2];
+            if (Points == null)
+                return (node == Node1) ? Node2.GetCenter() : Node1.GetCenter();
+            else
+                return (node == Node1) ? Points[Bp1] : Points[Bp2];
         }
         internal (Node other, (int, int) bend) OtherBend(Node n)
         {
@@ -320,20 +322,48 @@ namespace ModelGraphSTD
         #region Options  ======================================================
         internal Node OtherNode(Node node) => (node == Node1) ? Node2 : Node1;
 
-        internal void SetFace(Node node, Side side, int index = 0, int count = 1)
+        internal void SetFace(Node node, Facet facet)
         {
             if (node == Node1)
-            {
-                Face1.Side = side;
-                Face1.Index = (byte)((index > byte.MaxValue) ? byte.MaxValue : index);
-                Face1.Count = (byte)((count > byte.MaxValue) ? byte.MaxValue : count);
-            }
+                Face1 = new Face(facet, Face1.Delta1, Face1.Delta2, Face1.Delta3);
             else
-            {
-                Face2.Side = side;
-                Face2.Index = (byte)((index > byte.MaxValue) ? byte.MaxValue : index);
-                Face2.Count = (byte)((count > byte.MaxValue) ? byte.MaxValue : count);
-            }
+                Face2 = new Face(facet, Face2.Delta1, Face2.Delta2, Face2.Delta3);
+
+            Refresh();
+            NeedsRefresh = false;
+        }
+        internal void SetFace(Node node, (int x, int y) d)
+        {
+            if (node == Node1)
+                Face1 = new Face(Face1.Facet, ((short)d.x, (short)d.y));
+            else
+                Face2 = new Face(Face2.Facet, ((short)d.x, (short)d.y));
+
+            ToggleRefresh();
+        }
+        internal void SetFace(Node node, (int x, int y) d1, (int x, int y) d3)
+        {
+            if (node == Node1)
+                Face1 = new Face(Face1.Facet, ((short)d1.x, (short)d1.y), ((short)d3.x, (short)d3.y));
+            else
+                Face2 = new Face(Face2.Facet, ((short)d1.x, (short)d1.y), ((short)d3.x, (short)d3.y));
+
+            ToggleRefresh();
+        }
+        internal void SetFace(Node node, (int x, int y) d1, (int x, int y) d2, (int x, int y) d3)
+        {
+            if (node == Node1)
+                Face1 = new Face(Face1.Facet, ((short)d1.x, (short)d1.y), ((short)d2.x, (short)d2.y), ((short)d3.x, (short)d3.y));
+            else
+                Face2 = new Face(Face2.Facet, ((short)d1.x, (short)d1.y), ((short)d2.x, (short)d2.y), ((short)d3.x, (short)d3.y));
+
+            ToggleRefresh();
+        }
+        private void ToggleRefresh()
+        {
+            // do the refresh after both faces have changed
+            if (NeedsRefresh) Refresh();
+            NeedsRefresh = !NeedsRefresh;
         }
         #endregion
 
@@ -353,1195 +383,254 @@ namespace ModelGraphSTD
         ///  Populate the edge Point array
         /// </summary>
         /// <remarks>
-        ///         facet1     optional bend points   facet2 
-        /// node1 |o------o------o------o------o-----o------o| node2
-        ///       sp1    tm1    bp1    ...    bp2   tm2    sp2
+        ///           facet1    optional bend points   facet2 
+        /// node1 |o--o-----o------o------o------o-----o-----o--o| node2
+        ///      sp1 fp1  tm1    bp1    ...    bp2   tm2    fp2 sp2
+        ///      
+        /// sp:(surface point), fp:(facet point), tp:(terminal point), bp:(bend point)
         /// </remarks>
         internal void Refresh()
         {
             var facet1 = Node1.IsNodePoint ? NoFacet : Facets[(int)(Face1.Facet & Facet.Mask)];
             var facet2 = Node2.IsNodePoint ? NoFacet : Facets[(int)(Face2.Facet & Facet.Mask)];
 
-            var tmLen = GraphDefault.TerminalLength;
-            var tmSpc = GraphDefault.TerminalSpacing / 2;
-            var tmSko = GraphDefault.TerminalSkewOffset;
-
-            if (Owner != null && Owner.IsGraph)
-            {
-                var gx = GraphX;
-                tmLen = gx.TerminalLength;
-                tmSpc = gx.TerminalSpacing / 2;
-            }
-
             var bendCount = (Bends == null) ? 0 : Bends.Length;
 
             var len1 = facet1.Length;
             var len2 = facet2.Length;
 
-            var len = len1 + bendCount + len2 + 4;  // allow for pseudo points sp1 tp1 tp2 sp2 (x,y)
-            var points = new(int X, int Y)[len];        // line coordinate values x,y,x,y,...
+            var len = len1 + bendCount + len2 + 6; // allow for pseudo points sp1 fp1 tp1 tp2 fp2 sp2 (x,y)
+            var P = new(int X, int Y)[len];        // line coordinate values (x,y), (x,y),..
 
             var sp1 = 0;               // index of surface point 1 value
-            var tm1 = len1 + 1;        // index of terminal point 1 value
-            var tm2 = len - 2 - len2;  // index of terminal point 2 value
+            var fp1 = 1;               // index of facet point 1 value
+            var tp1 = len1 + 2;        // index of terminal point 1 value
+            var tp2 = len - 3 - len2;  // index of terminal point 2 value
+            var fp2 = len - 2;         // index of facet point 2 value
             var sp2 = len - 1;         // index of surface point 2 value
-            var bp1 = tm1 + 1;         // index of bend point 1 value
-            var bp2 = tm2 - 1;         // index of bend point 2 value
+            var bp1 = tp1 + 1;         // index of bend point 1 value
+            var bp2 = tp2 - 1;         // index of bend point 2 value
 
-            Tm1 = (short)tm1;
+            Tm1 = (short)tp1;
             Bp1 = (short)bp1;
             Bp2 = (short)bp2;
-            Tm2 = (short)tm2;
+            Tm2 = (short)tp2;
 
-            Points = points;
+            Points = P;
 
             (int cx1, int cy1, int w1, int h1) = Node1.Values();
             (int cx2, int cy2, int w2, int h2) = Node2.Values();
 
-            var y1T = cy1 - h1;     // node 1 top Y
-            var x1L = cx1 - w1;     // node 1 left X
-            var x1R = cx1 + w1;     // node 1 right X
-            var y1B = cy1 + h1;     // node 1 bottom Y
+            var (dx11, dy11) = Face1.Delta1;
+            var (dx12, dy12) = Face1.Delta2;
+            var (dx13, dy13) = Face1.Delta3;
+            var (dx21, dy21) = Face2.Delta1;
+            var (dx22, dy22) = Face2.Delta2;
+            var (dx23, dy23) = Face2.Delta3;
 
-            var y2T = cy2 - h2;     // node 2 top Y
-            var x2L = cx2 - w2;     // node 2 left X
-            var x2R = cx2 + w2;     // node 2 right X
-            var y2B = cy2 + h2;     // node 2 bottom Y
+            P[sp1].X = cx1 + dx11;
+            P[sp1].Y = cy1 + dy11;
 
-            var at1 = QueryX.PathParm.Attach1;
-            var at2 = QueryX.PathParm.Attach2;
+            P[fp1].X = cx1 + dx12;
+            P[fp1].Y = cy1 + dy12;
 
-            #region Initialize Bend Points  ===================================
+            P[tp1].X = cx1 + dx13;
+            P[tp1].Y = cy1 + dy13;
+
+            P[sp2].X = cx2 + dx21;
+            P[sp2].Y = cy2 + dy21;
+
+            P[fp2].X = cx2 + dx22;
+            P[fp2].Y = cy2 + dy22;
+
+            P[tp2].X = cx2 + dx23;
+            P[tp2].Y = cy2 + dy23;
+
+            #region Bend Points  ==============================================
             if (bendCount > 0)
             {
-                for (int i = 0, j = (tm1 + 1); i < bendCount; i++, j++)
+                for (int i = 0, j = (tp1 + 1); i < bendCount; i++, j++)
                 {
-                    points[j] = Bends[i];
+                    P[j] = Bends[i];
                 }
-            }
-            else
-            {
-                #region FallBack Values  ======================================
-                switch (Face1.Side)
-                {
-                    case Side.East:
-                        points[bp1].X = x2R;
-                        points[bp1].Y = cy2;
-                        break;
-
-                    case Side.West:
-                        points[bp1].X = x2L;
-                        points[bp1].Y = cy2;
-                        break;
-
-                    case Side.South:
-                        points[bp1].X = cx2;
-                        points[bp1].Y = y2B;
-                        break;
-
-                    case Side.North:
-                        points[bp1].X = cx2;
-                        points[bp1].Y = y2T;
-                        break;
-                }
-                switch (Face2.Side)
-                {
-                    case Side.East:
-                        points[bp2].X = x1R;
-                        points[bp2].Y = cy1;
-                        break;
-
-                    case Side.West:
-                        points[bp2].X = x1L;
-                        points[bp2].Y = cy1;
-                        break;
-
-                    case Side.South:
-                        points[bp2].X = cx1;
-                        points[bp2].Y = y1B;
-                        break;
-
-                    case Side.North:
-                        points[bp2].X = cx1;
-                        points[bp2].Y = y1T;
-                        break;
-                }
-                #endregion
             }
             #endregion
 
-            #region PrevResolution  ===========================================
-            //if (Node1.IsPointNode)
-            //{
-            //    #region PointNode  ============================================
-            //    if (Face1.Side == Side.East)
-            //    {
-            //        points[sp1].X = cx1;
-            //        points[tm1].X = x1R;
-            //        points[sp1].Y = points[tm1].Y = cy1;
-            //    }
-            //    else if (Face1.Side == Side.West)
-            //    {
-            //        points[sp1].X = cx1;
-            //        points[tm1].X = x1L;
-            //        points[sp1].Y = points[tm1].Y = cy1;
-            //    }
-            //    else if (Face1.Side == Side.South)
-            //    {
-            //        points[sp1].Y = cy1;
-            //        points[tm1].Y = y1B;
-            //        points[sp1].X = points[tm1].X = cx1;
-            //    }
-            //    else
-            //    {
-            //        points[sp1].Y = cy1;
-            //        points[tm1].Y = y1T;
-            //        points[sp1].X = points[tm1].X = cx1;
-            //    }
-            //    #endregion
-            //}
-            //if (Node2.IsPointNode)
-            //{
-            //    #region PointNode  ============================================
-            //    if (Face2.Side == Side.East)
-            //    {
-            //        points[sp2].X = cx2;
-            //        points[tm2].X = x2R;
-            //        points[sp2].Y = points[tm2].Y = cy2;
-            //    }
-            //    else if (Face2.Side == Side.West)
-            //    {
-            //        points[sp2].X = cx2;
-            //        points[tm2].X = x2L;
-            //        points[sp2].Y = points[tm2].Y = cy2;
-            //    }
-            //    else if (Face2.Side == Side.South)
-            //    {
-            //        points[sp2].Y = cy2;
-            //        points[tm2].Y = y2B;
-            //        points[sp2].X = points[tm2].X = cx2;
-            //    }
-            //    else
-            //    {
-            //        points[sp2].Y = cy2;
-            //        points[tm2].Y = y2T;
-            //        points[sp2].X = points[tm2].X = cx2;
-            //    }
-            //    #endregion
-            //}
-
-            //if (Node1.IsAutoSizing)
-            //{
-            //    #region AutoSpacing  ==========================================
-            //    if (Face1.Side == Side.East)
-            //    {
-            //        var x = points[sp1].X = x1R;
-            //        points[tm1].X = x1R + tmLen;
-            //        var y = points[sp1].Y = points[tm1].Y = cy1 + Face1.Offset * tmSpc;
-
-            //        for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
-            //        {
-            //            var dx = facet1.DXY[i++];
-            //            var dy = facet1.DXY[i++];
-
-            //            points[j].X = x + dx;
-            //            points[j].Y = y + dy;
-            //        }
-            //    }
-            //    else if (Face1.Side == Side.West)
-            //    {
-            //        var x = points[sp1].X = x1L;
-            //        points[tm1].X = cx1 - (w1 + tmLen);
-            //        var y = points[sp1].Y = points[tm1].Y = cy1 + Face1.Offset * tmSpc;
-
-            //        for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
-            //        {
-            //            var dx = facet1.DXY[i++];
-            //            var dy = facet1.DXY[i++];
-
-            //            points[j].X = x - dx;
-            //            points[j].Y = y - dy;
-            //        }
-            //    }
-            //    else if (Face1.Side == Side.South)
-            //    {
-            //        var y = points[sp1].Y = y1B;
-            //        points[tm1].Y = y1B + tmLen;
-            //        var x = points[sp1].X = points[tm1].X = cx1 + Face1.Offset * tmSpc;
-
-            //        for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
-            //        {
-            //            var dx = facet1.DXY[i++];
-            //            var dy = facet1.DXY[i++];
-
-            //            points[j].X = x + dy;
-            //            points[j].Y = y + dx;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        var y = points[sp1].Y = y1T;
-            //        points[tm1].Y = y1T - tmLen;
-            //        var x = points[sp1].X = points[tm1].X = cx1 + Face1.Offset * tmSpc;
-
-            //        for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
-            //        {
-            //            var dx = facet1.DXY[i++];
-            //            var dy = facet1.DXY[i++];
-
-            //            points[j].X = x - dy;
-            //            points[j].Y = y - dx;
-            //        }
-            //    }
-            //    #endregion
-            //}
-            //if (Node2.IsAutoSizing)
-            //{
-            //    #region AutoSpacing  ==========================================
-            //    if (Face2.Side == Side.East)
-            //    {
-            //        var x = points[sp2].X = x2R;
-            //        points[tm2].X = x2R + tmLen;
-            //        var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
-
-            //        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-            //        {
-            //            var dx = facet2.DXY[i++];
-            //            var dy = facet2.DXY[i++];
-
-            //            points[j].X = x + dx;
-            //            points[j].Y = y + dy;
-            //        }
-            //    }
-            //    else if (Face2.Side == Side.West)
-            //    {
-            //        var x = points[sp2].X = x2L;
-            //        points[tm2].X = x2L - tmLen;
-            //        var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
-
-            //        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-            //        {
-            //            var dx = facet2.DXY[i++];
-            //            var dy = facet2.DXY[i++];
-
-            //            points[j].X = x - dx;
-            //            points[j].Y = y - dy;
-            //        }
-            //    }
-            //    else if (Face2.Side == Side.South)
-            //    {
-            //        var y = points[sp2].Y = y2B;
-            //        points[tm2].Y = y2B + tmLen;
-            //        var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
-
-            //        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-            //        {
-            //            var dx = facet2.DXY[i++];
-            //            var dy = facet2.DXY[i++];
-
-            //            points[j].X = x + dy;
-            //            points[j].Y = y + dx;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        var y = points[sp2].Y = y2T;
-            //        points[tm2].Y = y2T - tmLen;
-            //        var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
-
-            //        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-            //        {
-            //            var dx = facet2.DXY[i++];
-            //            var dy = facet2.DXY[i++];
-
-            //            points[j].X = x - dy;
-            //            points[j].Y = y - dx;
-            //        }
-            //    }
-            //    #endregion
-            //}
-
-            //if (Node1.IsManualSizing)
-            //{
-            //    #region ManualSpacing  ========================================
-            //    var x = points[bp1].X;
-            //    var y = points[bp1].Y;
-
-            //    var f1W = facet1.Width();
-
-            //    if (Node1.IsVertical)
-            //    {
-            //        if (y < (y1T + f1W))
-            //        {
-            //            y = points[sp1].Y = y1T;
-            //            x = points[sp1].X = points[tm1].X = cx1;
-            //            points[tm1].Y = y - tmLen;
-
-            //            Face1.Side = Side.North;
-            //        }
-            //        else if (y > (y1B - f1W))
-            //        {
-            //            y = points[sp1].Y = y1B;
-            //            x = points[sp1].X = points[tm1].X = cx1;
-            //            points[tm1].Y = y + tmLen;
-
-            //            Face1.Side = Side.South;
-            //        }
-            //        else
-            //        {
-            //            points[tm1].Y = points[sp1].Y = y;
-            //            if (x < cx1)
-            //            {
-            //                x = points[sp1].X = x1L;
-            //                points[tm1].X = x - tmLen;
-            //                Face1.Side = Side.West;
-            //            }
-            //            else
-            //            {
-            //                x = points[sp1].X = x1R;
-            //                points[tm1].X = x + tmLen;
-            //                Face1.Side = Side.East;
-            //            }
-            //        }
-            //    }
-            //    else if (Node1.IsHorizontal)
-            //    {
-            //        if (x < (x1L + f1W))
-            //        {
-            //            x = points[sp1].X = x1L;
-            //            y = points[sp1].Y = points[tm1].Y = cy1;
-            //            points[tm1].X = x - tmLen;
-
-            //            Face1.Side = Side.West;
-            //        }
-            //        else if (x > (x1R - f1W))
-            //        {
-            //            x = points[sp1].X = x1R;
-            //            y = points[sp1].Y = points[tm1].Y = cy1;
-            //            points[tm1].X = x + tmLen;
-
-            //            Face1.Side = Side.East;
-            //        }
-            //        else
-            //        {
-            //            points[tm1].X = points[sp1].X = x;
-            //            if (y < cy1)
-            //            {
-            //                y = points[sp1].Y = y1T;
-            //                points[tm1].Y = y - tmLen;
-            //                Face1.Side = Side.North;
-            //            }
-            //            else
-            //            {
-            //                y = points[sp1].Y = y1B;
-            //                points[tm1].Y = y + tmLen;
-            //                Face1.Side = Side.South;
-            //            }
-            //        }
-            //    }
-
-            //    if (Face1.Side == Side.East)
-            //    {
-            //        for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
-            //        {
-            //            var dx = facet1.DXY[i++];
-            //            var dy = facet1.DXY[i++];
-
-            //            points[j].X = x + dx;
-            //            points[j].Y = y + dy;
-            //        }
-            //    }
-            //    else if (Face1.Side == Side.West)
-            //    {
-            //        for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
-            //        {
-            //            var dx = facet1.DXY[i++];
-            //            var dy = facet1.DXY[i++];
-
-            //            points[j].X = x - dx;
-            //            points[j].Y = y + dy;
-            //        }
-            //    }
-            //    else if (Face1.Side == Side.South)
-            //    {
-            //        for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
-            //        {
-            //            var dx = facet1.DXY[i++];
-            //            var dy = facet1.DXY[i++];
-
-            //            points[j].X = x + dy;
-            //            points[j].Y = y + dx;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++)
-            //        {
-            //            var dx = facet1.DXY[i++];
-            //            var dy = facet1.DXY[i++];
-
-            //            points[j].X = x - dy;
-            //            points[j].Y = y - dx;
-            //        }
-            //    }
-            //    #endregion
-            //}
-            //if (Node2.IsManualSizing)
-            //{
-            //    #region ManualSpacing  ========================================
-            //    var x = points[bp2].X;
-            //    var y = points[bp2].Y;
-
-            //    var f2W = facet2.Width();
-
-            //    if (Node2.IsVertical)
-            //    {
-            //        if (y < (y2T + f2W))
-            //        {
-            //            y = points[sp2].Y = y2T;
-            //            x = points[sp2].X = points[tm2].X = cx2;
-            //            points[tm2].Y = y - tmLen;
-
-            //            Face2.Side = Side.North;
-            //        }
-            //        else if (y > (y2B - f2W))
-            //        {
-            //            y = points[sp2].Y = y2B;
-            //            x = points[sp2].X = points[tm2].X = cx2;
-            //            points[tm2].Y = y + tmLen;
-
-            //            Face2.Side = Side.South;
-            //        }
-            //        else
-            //        {
-            //            points[tm2].Y = points[sp2].Y = y;
-            //            if (x < cx2)
-            //            {
-            //                x = points[sp2].X = x2L;
-            //                points[tm2].X = x - tmLen;
-            //                Face2.Side = Side.West;
-            //            }
-            //            else
-            //            {
-            //                x = points[sp2].X = x2R;
-            //                points[tm2].X = x + tmLen;
-            //                Face2.Side = Side.East;
-            //            }
-            //        }
-            //    }
-            //    else if (Node2.IsHorizontal)
-            //    {
-            //        if (x < (x2L + f2W))
-            //        {
-            //            x = points[sp2].X = x2L;
-            //            y = points[sp2].Y = points[tm2].Y = cy2;
-            //            points[tm2].X = x - tmLen;
-
-            //            Face2.Side = Side.West;
-            //        }
-            //        else if (x > (x2R - f2W))
-            //        {
-            //            x = points[sp2].X = x2R;
-            //            y = points[sp2].Y = points[tm2].Y = cy2;
-            //            points[tm2].X = x + tmLen;
-
-            //            Face2.Side = Side.East;
-            //        }
-            //        else
-            //        {
-            //            points[tm2].X = points[sp2].X = x;
-            //            if (y < cy2)
-            //            {
-            //                y = points[sp2].Y = y2T;
-            //                points[tm2].Y = y - tmLen;
-            //                Face2.Side = Side.North;
-            //            }
-            //            else
-            //            {
-            //                y = points[sp2].Y = y2B;
-            //                points[tm2].Y = y + tmLen;
-            //                Face2.Side = Side.South;
-            //            }
-            //        }
-            //    }
-
-            //    if (Face2.Side == Side.East)
-            //    {
-            //        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-            //        {
-            //            var dx = facet2.DXY[i++];
-            //            var dy = facet2.DXY[i++];
-
-            //            points[j].X = y + dy;
-            //            points[j].Y = x + dx;
-            //        }
-            //    }
-            //    else if (Face2.Side == Side.West)
-            //    {
-            //        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-            //        {
-            //            var dx = facet2.DXY[i++];
-            //            var dy = facet2.DXY[i++];
-
-            //            points[j].X = y + dy;
-            //            points[j].Y = x - dx;
-            //        }
-            //    }
-            //    else if (Face2.Side == Side.South)
-            //    {
-            //        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-            //        {
-            //            var dx = facet2.DXY[i++];
-            //            var dy = facet2.DXY[i++];
-
-            //            points[j].X = y + dx;
-            //            points[j].Y = x + dy;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--)
-            //        {
-            //            var dx = facet2.DXY[i++];
-            //            var dy = facet2.DXY[i++];
-
-            //            points[j].X = y - dx;
-            //            points[j].Y = x - dy;
-            //        }
-            //    }
-            //    #endregion
-            //}
-
-            //if (Node1.IsSymbol && Node2.IsNode)
-            //{
-            //    #region SkewOffset  ===========================================
-            //    //                 tm o--------------------------------o| Node1
-            //    //                   /|
-            //    //                  / |
-            //    //          Face2  /  | skew offset
-            //    //  Node2 |o------o bp
-            //    //
-            //    var bx = points[bp1].X;
-            //    var by = points[bp1].Y;
-
-            //    var dx = points[tm1].X - bx;
-            //    var dy = points[tm1].Y - by;
-
-            //    switch (Face1.Side)
-            //    {
-            //        case Side.East:
-            //            if (dx < 0) points[tm1].X = bx - tmSkf;
-            //            break;
-            //        case Side.West:
-            //            if (dx > 0) points[tm1].X = bx + tmSkf;
-            //            break;
-            //        case Side.South:
-            //            if (dy < 0) points[tm1].Y = by - tmSkf;
-            //            break;
-            //        case Side.North:
-            //            if (dy > 0) points[tm1].Y = by + tmSkf;
-            //            break;
-            //    }
-            //    #endregion
-            //}
-
-            //if (Node1.IsSymbol && Node2.IsNode)
-            //{
-            //    #region SkewFactor  ===========================================
-            //    //                 tm o--------------------------------o| Node2
-            //    //                   /
-            //    //                  /--skew angle(skewFactor)
-            //    //          Face1  /
-            //    //  Node1 |o------o bp
-            //    //
-            //    var bx = points[bp2].X;
-            //    var by = points[bp2].Y;
-
-            //    var dx = points[tm2].X - bx;
-            //    var dy = points[tm2].Y - by;
-
-            //    switch (Face1.Side)
-            //    {
-            //        case Side.East:
-            //            if (dx < 0) points[tm1].X = bx - tmSkf;
-            //            break;
-            //        case Side.West:
-            //            if (dx > 0) points[tm1].X = bx + tmSkf;
-            //            break;
-            //        case Side.South:
-            //            if (dy < 0) points[tm1].Y = by - tmSkf;
-            //            break;
-            //        case Side.North:
-            //            if (dy > 0) points[tm1].Y = by + tmSkf;
-            //            break;
-            //    }
-            //    #endregion
-            //}
-
-            #endregion
-
-            #region ResolveNodePermutations  ==================================
-            if (Node1.IsGraphNode)
+            #region Facet1 Points  ============================================
+            if (len1 > 0)
             {
-                if (Node1.Orient == Orient.Point)
+                if (dx13 > dx12)
                 {
-                    if (Node2.IsGraphNode)
-                    {
-                        if (Node2.Orient == Orient.Point)
-                        {
-                            Assign_1_IsPoint_2_IsPoint();
-                        }
-                        else
-                        {
-                            if (Node2.Sizing == Sizing.Auto)
-                            {
-                                Assign_1_IsPoint_2_IsRectangle_IsAuto();
-                            }
-                            else
-                            {
-                                Assign_1_IsPoint_2_IsRectangle_IsManual();
-                            }
-                        }
+                    if (dy13 > dy12)
+                    {//==================================== off south-east corner
+                        NotImplemented();
                     }
-                    else if (Node2.IsGraphSymbol)
-                    {
-                        if (Node2.Sizing == Sizing.Auto)
+                    else if (dy13 < dy12)
+                    {//==================================== off north-east corner
+                        var x = P[fp1].X;
+                        var y = P[fp1].Y;
+                        for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
                         {
-                            Assign_1_IsPoint_2_IsSymbol_IsAuto();
-                        }
-                        else
-                        {
-                            Assign_1_IsPoint_2_IsSymbol_IsManual();
-                        }
-                    }
-                    else if (Node2.IsGraphEgress)
-                    {
-                        Assign_1_IsPoint_2_IsEgress();
-                    }
-                }
-                else
-                {
-                    if (Node1.Sizing == Sizing.Auto)
-                    {
-                        if (Node2.IsGraphNode)
-                        {
-                            if (Node2.Orient == Orient.Point)
-                            {
-                                Assign_1_IsRectangle_IsAuto_2_IsPoint();
-                            }
-                            else
-                            {
-                                if (Node2.Sizing == Sizing.Auto)
-                                {
-                                    Assign_1_IsRectangle_IsAuto_2_IsRectangle_IsAuto();
-                                }
-                                else
-                                {
-                                    Assign_1_IsRectangle_IsAuto_2_IsRectangle_IsManual();
-                                }
-                            }
-                        }
-                        else if (Node2.IsGraphSymbol)
-                        {
-                            if (Node2.Sizing == Sizing.Auto)
-                            {
-                                Assign_1_IsRectangle_IsAuto_2_IsSymbol_IsAuto();
-                            }
-                            else
-                            {
-                                Assign_1_IsRectangle_IsAuto_2_IsSymbol_IsManual();
-                            }
-                        }
-                        else if (Node2.IsGraphEgress)
-                        {
-                            Assign_1_IsRectangle_IsAuto_2_IsEgress();
+                            P[j].X = x + facet1.DXY[i].X + facet1.DXY[i].Y;
+                            P[j].Y = y + facet1.DXY[i].Y + facet1.DXY[i].X;
                         }
                     }
                     else
-                    {
-                        if (Node2.IsGraphNode)
+                    {//==================================== off east side
+                        var x = P[fp1].X;
+                        var y = P[fp1].Y;
+                        for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
                         {
-                            if (Node2.Orient == Orient.Point)
-                            {
-                                Assign_1_IsRectangle_IsManual_2_IsPoint();
-                            }
-                            else
-                            {
-                                if (Node2.Sizing == Sizing.Auto)
-                                {
-                                    Assign_1_IsRectangle_IsManual_2_IsRectangle_IsAuto();
-                                }
-                                else
-                                {
-                                    Assign_1_IsRectangle_IsManual_2_IsRectangle_IsManual();
-                                }
-                            }
-                        }
-                        else if (Node2.IsGraphSymbol)
-                        {
-                            if (Node2.Sizing == Sizing.Auto)
-                            {
-                                Assign_1_IsRectangle_IsManual_2_IsSymbol_IsAuto();
-                            }
-                            else
-                            {
-                                Assign_1_IsRectangle_IsManual_2_IsSymbol_IsManual();
-                            }
-                        }
-                        else if (Node2.IsGraphEgress)
-                        {
-                            Assign_1_IsRectangle_IsManual_2_IsEgress();
+                            P[j].X = x + facet1.DXY[i].X;
+                            P[j].Y = y + facet1.DXY[i].Y;
                         }
                     }
                 }
-            }
-            else if (Node1.IsGraphSymbol)
-            {
-                if (Node1.Sizing == Sizing.Auto)
+                else if (dx13 < dx12)
                 {
-                    if (Node2.IsGraphNode)
-                    {
-                        if (Node2.Orient == Orient.Point)
-                        {
-                            Assign_1_IsSymbol_IsAuto_2_IsPoint();
-                        }
-                        else
-                        {
-                            if (Node2.Sizing == Sizing.Auto)
-                            {
-                                Assign_1_IsSymbol_IsAuto_2_IsRectangle_IsAuto();
-                            }
-                            else
-                            {
-                                Assign_1_IsSymbol_IsAuto_2_IsRectangle_IsManual();
-                            }
-                        }
+                    if (dy13 > dy12)
+                    {//==================================== off south-west corner
+                        NotImplemented();
                     }
-                    else if (Node2.IsGraphSymbol)
-                    {
-                        if (Node2.Sizing == Sizing.Auto)
-                        {
-                            Assign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto();
-                        }
-                        else
-                        {
-                            Assign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto();
-                        }
-                    }
-                    else if (Node2.IsGraphEgress)
-                    {
-                        Assign_1_IsSymbol_IsAuto_2_IsEgress();
-                    }
-                }
-                else
-                {
-                    if (Node2.IsGraphNode)
-                    {
-                        if (Node2.Orient == Orient.Point)
-                        {
-                            Assign_1_IsSymbol_IsManual_2_IsPoint();
-                        }
-                        else
-                        {
-                            if (Node2.Sizing == Sizing.Auto)
-                            {
-                                Assign_1_IsSymbol_IsManual_2_IsRectangle_IsAuto();
-                            }
-                            else
-                            {
-                                Assign_1_IsSymbol_IsManual_2_IsRectangle_IsManual();
-                            }
-                        }
-                    }
-                    else if (Node2.IsGraphSymbol)
-                    {
-                        if (Node2.Sizing == Sizing.Auto)
-                        {
-                            Assign_1_IsSymbol_IsManual_2_IsSymbol_IsAuto();
-                        }
-                        else
-                        {
-                            Assign_1_IsSymbol_IsManual_2_IsSymbol_IsManual();
-                        }
-                    }
-                    else if (Node2.IsGraphEgress)
-                    {
-                        Assign_1_IsSymbol_IsManual_2_IsEgress();
-                    }
-                }
-            }
-            else if (Node1.IsGraphEgress)
-            {
-                if (Node2.IsGraphNode)
-                {
-                    if (Node2.Orient == Orient.Point)
-                    {
-                        Assign_1_IsEgress_IsManual_2_IsPoint();
+                    else if (dy13 < dy12)
+                    {//==================================== off north-west corner
+                        NotImplemented();
                     }
                     else
-                    {
-                        if (Node2.Sizing == Sizing.Auto)
+                    {//==================================== off west side
+                        var x = P[fp1].X;
+                        var y = P[fp1].Y;
+                        for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
                         {
-                            Assign_1_IsEgress_2_IsRectangle_IsAuto();
-                        }
-                        else
-                        {
-                            Assign_1_IsEgress_2_IsRectangle_IsManual();
+                            P[j].X = x - facet1.DXY[i].X;
+                            P[j].Y = y - facet1.DXY[i].Y;
                         }
                     }
                 }
-                else if (Node2.IsGraphSymbol)
+                else
                 {
-                    if (Node2.Sizing == Sizing.Auto)
-                    {
-                        Assign_1_IsEgress_2_IsSymbol_IsAuto();
+                    if (dy13 > dy12)
+                    {//==================================== off south side
+                        var x = P[fp1].X;
+                        var y = P[fp1].Y;
+                        for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
+                        {
+                            P[j].X = x + facet1.DXY[i].Y;
+                            P[j].Y = y + facet1.DXY[i].X;
+                        }
+                    }
+                    else if (dy13 < dy12)
+                    {//==================================== off north side
+                        var x = P[fp1].X;
+                        var y = P[fp1].Y;
+                        for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
+                        {
+                            P[j].X = x - facet1.DXY[i].Y;
+                            P[j].Y = y - facet1.DXY[i].X;
+                        }
                     }
                     else
-                    {
-                        Assign_1_IsEgress_2_IsSymbol_IsManual();
+                    {//==================================== all balled-up in a knot
+                        NotImplemented();
                     }
                 }
-                else if (Node2.IsGraphEgress)
+
+                void NotImplemented()
                 {
-                    Assign_1_IsEgress_2_IsEgress();
+                    var x = P[fp1].X;
+                    var y = P[fp1].Y;
+                    for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
+                    {
+                        P[j].X = x;
+                        P[j].Y = y;
+                    }
                 }
             }
             #endregion
 
-            SetExtent(points, GraphDefault.HitMargin);
-
-            #region AssignMethods  ============================================
-
-            #region Assign1_IsPoint  ==========================================
-            void Assign1_IsPoint()
+            #region Facet2 Points  ============================================
+            if (len2 > 0)
             {
-                if (Face1.Side == Side.East)
+                if (dx23 > dx22)
                 {
-                    points[sp1].X = cx1;
-                    points[tm1].X = cx1 + 1;
-                    points[sp1].Y = points[tm1].Y = cy1;
-                }
-                else if (Face1.Side == Side.West)
-                {
-                    points[sp1].X = cx1;
-                    points[tm1].X = cx1 - 1;
-                    points[sp1].Y = points[tm1].Y = cy1;
-                }
-                else if (Face1.Side == Side.South)
-                {
-                    points[sp1].Y = cy1;
-                    points[tm1].Y = cy1 + 1;
-                    points[sp1].X = points[tm1].X = cx1;
-                }
-                else
-                {
-                    points[sp1].Y = cy1;
-                    points[tm1].Y = cy1 - 1;
-                    points[sp1].X = points[tm1].X = cx1;
-                }
-            }
-            #endregion
-
-            #region Assign2_IsPoint  ==========================================
-            void Assign2_IsPoint()
-            {
-                if (Face2.Side == Side.East)
-                {
-                    points[sp2].X = cx2;
-                    points[tm2].X = cx2 + 1;
-                    points[sp2].Y = points[tm2].Y = cy2;
-                }
-                else if (Face2.Side == Side.West)
-                {
-                    points[sp2].X = cx2;
-                    points[tm2].X = cx2 - 1;
-                    points[sp2].Y = points[tm2].Y = cy2;
-                }
-                else if (Face2.Side == Side.South)
-                {
-                    points[sp2].Y = cy2;
-                    points[tm2].Y = cy2 + 1;
-                    points[sp2].X = points[tm2].X = cx2;
-                }
-                else
-                {
-                    points[sp2].Y = cy2;
-                    points[tm2].Y = cy2 - 1;
-                    points[sp2].X = points[tm2].X = cx2;
-                }
-            }
-            #endregion
-
-
-            #region Assign2_IsRectangle_IsAuto  ===============================
-            void Assign2_IsRectangle_IsAuto()
-            {
-                if (Face2.Side == Side.East)
-                {
-                    var x = points[sp2].X = x2R;
-                    points[tm2].X = x2R + tmLen;
-                    var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
-
-                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--, i++)
-                    {
-                        points[j].X = x + facet2.DXY[i].X;
-                        points[j].Y = y + facet2.DXY[i].Y;
+                    if (dy23 > dy22)
+                    {//==================================== off south-east corner
+                        NotImplemented();
+                    }
+                    else if (dy23 < dy22)
+                    {//==================================== off north-east corner
+                        NotImplemented();
+                    }
+                    else
+                    {//==================================== off east side
+                        var x = P[fp2].X;
+                        var y = P[fp2].Y;
+                        for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
+                        {
+                            P[j].X = x + facet2.DXY[i].X;
+                            P[j].Y = y + facet2.DXY[i].Y;
+                        }
                     }
                 }
-                else if (Face2.Side == Side.West)
+                else if (dx23 < dx22)
                 {
-                    var x = points[sp2].X = x2L;
-                    points[tm2].X = x2L - tmLen;
-                    var y = points[sp2].Y = points[tm2].Y = cy2 + Face2.Offset * tmSpc;
-
-                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--, i++)
-                    {
-                        points[j].X = x - facet2.DXY[i].X;
-                        points[j].Y = y - facet2.DXY[i].Y;
+                    if (dy23 > dy22)
+                    {//==================================== off south-west corner
+                        NotImplemented();
                     }
-                }
-                else if (Face2.Side == Side.South)
-                {
-                    var y = points[sp2].Y = y2B;
-                    points[tm2].Y = y2B + tmLen;
-                    var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
-
-                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--, i++)
-                    {
-                        points[j].X = x + facet2.DXY[i].Y;
-                        points[j].Y = y + facet2.DXY[i].X;
+                    else if (dy23 < dy22)
+                    {//==================================== off north-west corner
+                        NotImplemented();
+                    }
+                    else
+                    {//==================================== off west side
+                        var x = P[fp2].X;
+                        var y = P[fp2].Y;
+                        for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
+                        {
+                            P[j].X = x - facet2.DXY[i].X;
+                            P[j].Y = y - facet2.DXY[i].Y;
+                        }
                     }
                 }
                 else
                 {
-                    var y = points[sp2].Y = y2T;
-                    points[tm2].Y = y2T - tmLen;
-                    var x = points[sp2].X = points[tm2].X = cx2 + Face2.Offset * tmSpc;
-
-                    for (int i = 0, j = (sp2 - 1); i < facet2.Length; j--, i++)
-                    {
-                        points[j].X = x - facet2.DXY[i].Y;
-                        points[j].Y = y - facet2.DXY[i].X;
+                    if (dy23 > dy22)
+                    {//==================================== off south side
+                        var x = P[fp2].X;
+                        var y = P[fp2].Y;
+                        for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
+                        {
+                            P[j].X = x + facet2.DXY[i].Y;
+                            P[j].Y = y + facet2.DXY[i].X;
+                        }
+                    }
+                    else if (dy23 < dy22)
+                    {//==================================== off north side
+                        var x = P[fp2].X;
+                        var y = P[fp2].Y;
+                        for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
+                        {
+                            P[j].X = x - facet2.DXY[i].Y;
+                            P[j].Y = y - facet2.DXY[i].X;
+                        }
+                    }
+                    else
+                    {//==================================== all balled-up in a knot
+                        NotImplemented();
                     }
                 }
 
-            }
-            #endregion
-
-            #region Assign1_IsRectangle_IsAuto  ===============================
-            void Assign1_IsRectangle_IsAuto()
-            {
-                if (Face1.Side == Side.East)
+                void NotImplemented()
                 {
-                    var x = points[sp1].X = x1R;
-                    points[tm1].X = x1R + tmLen;
-                    var y = points[sp1].Y = points[tm1].Y = cy1 + Face1.Offset * tmSpc;
-
-                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++, i++)
+                    var x = P[fp2].X;
+                    var y = P[fp2].Y;
+                    for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
                     {
-                        points[j].X = x + facet1.DXY[i].X;
-                        points[j].Y = y + facet1.DXY[i].Y;
+                        P[j].X = x;
+                        P[j].Y = y;
                     }
                 }
-                else if (Face1.Side == Side.West)
-                {
-                    var x = points[sp1].X = x1L;
-                    points[tm1].X = x1L - tmLen;
-                    var y = points[sp1].Y = points[tm1].Y = cy1 + Face1.Offset * tmSpc;
-
-                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++, i++)
-                    {
-                        points[j].X = x - facet1.DXY[i].X;
-                        points[j].Y = y - facet1.DXY[i].Y;
-                    }
-                }
-                else if (Face1.Side == Side.South)
-                {
-                    var y = points[sp1].Y = y1B;
-                    points[tm1].Y = y1B + tmLen;
-                    var x = points[sp1].X = points[tm1].X = cx1 + Face1.Offset * tmSpc;
-
-                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++, i++)
-                    {
-                        points[j].X = x + facet1.DXY[i].Y;
-                        points[j].Y = y + facet1.DXY[i].X;
-                    }
-                }
-                else
-                {
-                    var y = points[sp1].Y = y1T;
-                    points[tm1].Y = y1T - tmLen;
-                    var x = points[sp1].X = points[tm1].X = cx1 + Face1.Offset * tmSpc;
-
-                    for (int i = 0, j = (sp1 + 1); i < facet1.Length; j++, i++)
-                    {
-                        points[j].X = x - facet1.DXY[i].Y;
-                        points[j].Y = y - facet1.DXY[i].X;
-                    }
-                }
-
-            }
-            #endregion
-
-
-            
-            #region Assign_1_IsPoint_2_IsPoint  ================================
-            void Assign_1_IsPoint_2_IsPoint()
-            {
-                Assign1_IsPoint();
-                Assign2_IsPoint();
-            }
-
-            #endregion
-
-            #region Assign_1_IsPoint_2_IsRectangle_IsAuto  ====================
-            void Assign_1_IsPoint_2_IsRectangle_IsAuto()
-            {
-                Assign1_IsPoint();
-                Assign2_IsRectangle_IsAuto();
-            }
-            #endregion 
-
-            #region Assign_1_IsPoint_2_IsRectangle_IsManual  ==================
-            void Assign_1_IsPoint_2_IsRectangle_IsManual()
-            {
-                Assign1_IsPoint();
-
-            }
-            #endregion
-
-            //1_IsPoint_2_IsSymbol_IsAuto
-            void Assign_1_IsPoint_2_IsSymbol_IsAuto()
-            {
-            }
-            //1_IsPoint_2_IsSymbol_IsManual
-            void Assign_1_IsPoint_2_IsSymbol_IsManual()
-            {
-            }
-            //1_IsPoint_2_IsEgress
-            void Assign_1_IsPoint_2_IsEgress()
-            {
-            }
-            //1_IsRectangle_IsAuto_2_IsPoint
-            void Assign_1_IsRectangle_IsAuto_2_IsPoint()
-            {
-            }
-
-            #region Assign_1_IsRectangle_IsAuto_2_IsRectangle_IsAuto  =========
-            void Assign_1_IsRectangle_IsAuto_2_IsRectangle_IsAuto()
-            {
-                Assign1_IsRectangle_IsAuto();
-                Assign2_IsRectangle_IsAuto();
-            }
-            #endregion
-
-            //1_IsRectangle_IsAuto_2_IsRectangle_IsManual
-            void Assign_1_IsRectangle_IsAuto_2_IsRectangle_IsManual()
-            {
-            }
-            //1_IsRectangle_IsAuto_2_IsSymbol_IsAuto
-            void Assign_1_IsRectangle_IsAuto_2_IsSymbol_IsAuto()
-            {
-            }
-            //1_IsRectangle_IsAuto_2_IsSymbol_IsManual
-            void Assign_1_IsRectangle_IsAuto_2_IsSymbol_IsManual()
-            {
-            }
-            //1_IsRectangle_IsAuto_2_IsEgress
-            void Assign_1_IsRectangle_IsAuto_2_IsEgress()
-            {
-            }
-            //1_IsRectangle_IsManual_2_IsPoint
-            void Assign_1_IsRectangle_IsManual_2_IsPoint()
-            {
-            }
-            //1_IsRectangle_IsManual_2_IsRectangle_IsAuto
-            void Assign_1_IsRectangle_IsManual_2_IsRectangle_IsAuto()
-            {
-            }
-            //1_IsRectangle_IsManual_2_IsRectangle_IsManual
-            void Assign_1_IsRectangle_IsManual_2_IsRectangle_IsManual()
-            {
-            }
-            //1_IsRectangle_IsManual_2_IsSymbol_IsAuto
-            void Assign_1_IsRectangle_IsManual_2_IsSymbol_IsAuto()
-            {
-            }
-            //1_IsRectangle_IsManual_2_IsSymbol_IsManual
-            void Assign_1_IsRectangle_IsManual_2_IsSymbol_IsManual()
-            {
-            }
-            //1_IsRectangle_IsManual_2_IsEgress
-            void Assign_1_IsRectangle_IsManual_2_IsEgress()
-            {
-            }
-            //1_IsSymbol_IsAuto_2_IsPoint
-            void Assign_1_IsSymbol_IsAuto_2_IsPoint()
-            {
-            }
-            //1_IsSymbol_IsAuto_2_IsRectangle_IsAuto
-            void Assign_1_IsSymbol_IsAuto_2_IsRectangle_IsAuto()
-            {
-            }
-            //1_IsSymbol_IsAuto_2_IsRectangle_IsManual
-            void Assign_1_IsSymbol_IsAuto_2_IsRectangle_IsManual()
-            {
-            }
-            //1_IsSymbol_IsAuto_2_IsSymbol_IsAuto
-            void Assign_1_IsSymbol_IsAuto_2_IsSymbol_IsAuto()
-            {
-            }
-            //1_IsSymbol_IsAuto_2_IsEgress
-            void Assign_1_IsSymbol_IsAuto_2_IsEgress()
-            {
-            }
-            //1_IsSymbol_IsManual_2_IsPoint
-            void Assign_1_IsSymbol_IsManual_2_IsPoint()
-            {
-            }
-            //1_IsSymbol_IsManual_2_IsRectangle_IsAuto
-            void Assign_1_IsSymbol_IsManual_2_IsRectangle_IsAuto()
-            {
-            }
-            //1_IsSymbol_IsManual_2_IsRectangle_IsManual
-            void Assign_1_IsSymbol_IsManual_2_IsRectangle_IsManual()
-            {
-            }
-            //1_IsSymbol_IsManual_2_IsSymbol_IsAuto
-            void Assign_1_IsSymbol_IsManual_2_IsSymbol_IsAuto()
-            {
-            }
-            //1_IsSymbol_IsManual_2_IsSymbol_IsManual
-            void Assign_1_IsSymbol_IsManual_2_IsSymbol_IsManual()
-            {
-            }
-            //1_IsSymbol_IsManual_2_IsEgress
-            void Assign_1_IsSymbol_IsManual_2_IsEgress()
-            {
-            }
-            //1_IsEgress_IsManual_2_IsPoint
-            void Assign_1_IsEgress_IsManual_2_IsPoint()
-            {
-            }
-            //1_IsEgress_2_IsRectangle_IsAuto
-            void Assign_1_IsEgress_2_IsRectangle_IsAuto()
-            {
-            }
-            //1_IsEgress_2_IsRectangle_IsManual
-            void Assign_1_IsEgress_2_IsRectangle_IsManual()
-            {
-            }
-            //1_IsEgress_2_IsSymbol_IsAuto
-            void Assign_1_IsEgress_2_IsSymbol_IsAuto()
-            {
-            }
-            //1_IsEgress_2_IsSymbol_IsManual
-            void Assign_1_IsEgress_2_IsSymbol_IsManual()
-            {
-            }
-            //1_IsEgress_2_IsEgress
-            void Assign_1_IsEgress_2_IsEgress()
-            {
             }
             #endregion
         }

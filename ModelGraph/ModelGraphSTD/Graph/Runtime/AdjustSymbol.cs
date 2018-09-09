@@ -316,14 +316,14 @@ namespace ModelGraphSTD
                             {
                                 for (int i = 0; i < n; i++)
                                 {
-                                    FaceEdge[f][i].SetFace(node, FaceDir[f], i, n);
+                                    //FaceEdge[f][i].SetFace(node, FaceDir[f], i, n);
                                 }
                             }
                             else                            // South or West
                             {
                                 for (int i = 0, j = (n - 1); i < n; i++, j--)
                                 {
-                                    FaceEdge[f][j].SetFace(node, FaceDir[f], i, n);
+                                    //FaceEdge[f][j].SetFace(node, FaceDir[f], i, n);
                                 }
                             }
                         }

@@ -25,8 +25,6 @@ namespace ModelGraphSTD
                 { _nodeResizingProperty, _resizingEnum },
                 { _nodeBarWidthProperty, _barWidthEnum },
 
-                { _edgeFace1Property, _sideEnum },
-                { _edgeFace2Property, _sideEnum },
                 { _edgeFacet1Property, _facetEnum },
                 { _edgeFacet2Property, _facetEnum },
                 { _edgeConnect1Property, _connectEnum },

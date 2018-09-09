@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_9;
+            var fileFormat = _fileFormat_C;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -194,6 +194,16 @@ namespace RepositoryUWP
                 if ((b & B1) != 0) WriteString(w, gx.Name);
                 if ((b & B2) != 0) WriteString(w, gx.Summary);
                 if ((b & B3) != 0) WriteString(w, gx.Description);
+
+                w.WriteByte(gx.MinNodeSize);
+                w.WriteByte(gx.ThinBusSize);
+                w.WriteByte(gx.WideBusSize);
+                w.WriteByte(gx.ExtraBusSize);
+
+                w.WriteByte(gx.SurfaceSkew);
+                w.WriteByte(gx.TerminalSkew);
+                w.WriteByte(gx.TerminalLength);
+                w.WriteByte(gx.TerminalSpacing);
             }
             w.WriteByte((byte)Mark.GraphXEnding); // itegrity marker
         }
@@ -527,7 +537,7 @@ namespace RepositoryUWP
                                         w.WriteByte(nd.DX);
                                         w.WriteByte(nd.DY);
                                         w.WriteByte(nd.Symbol);
-                                        w.WriteByte((byte)nd.Orient);
+                                        w.WriteByte((byte)nd.Aspect);
                                         w.WriteByte((byte)nd.FlipRotate);
                                         w.WriteByte((byte)nd.Labeling);
                                         w.WriteByte((byte)nd.Sizing);
@@ -544,15 +554,21 @@ namespace RepositoryUWP
                                         w.WriteInt32(itemIndex[eg.Node1.Item]);
                                         w.WriteInt32(itemIndex[eg.Node2.Item]);
 
-                                        w.WriteByte((byte)eg.Face1.Side);
-                                        w.WriteByte((byte)eg.Face1.Index);
-                                        w.WriteByte((byte)eg.Face1.Count);
                                         w.WriteByte((byte)eg.Face1.Facet);
+                                        w.WriteInt16(eg.Face1.Delta1.X);
+                                        w.WriteInt16(eg.Face1.Delta1.Y);
+                                        w.WriteInt16(eg.Face1.Delta2.X);
+                                        w.WriteInt16(eg.Face1.Delta2.Y);
+                                        w.WriteInt16(eg.Face1.Delta3.X);
+                                        w.WriteInt16(eg.Face1.Delta3.Y);
 
-                                        w.WriteByte((byte)eg.Face2.Side);
-                                        w.WriteByte((byte)eg.Face2.Index);
-                                        w.WriteByte((byte)eg.Face2.Count);
                                         w.WriteByte((byte)eg.Face2.Facet);
+                                        w.WriteInt16(eg.Face2.Delta1.X);
+                                        w.WriteInt16(eg.Face2.Delta1.Y);
+                                        w.WriteInt16(eg.Face2.Delta2.X);
+                                        w.WriteInt16(eg.Face2.Delta2.Y);
+                                        w.WriteInt16(eg.Face2.Delta3.X);
+                                        w.WriteInt16(eg.Face2.Delta3.Y);
 
                                         var len = (eg.Bends == null) ? 0 : eg.Bends.Length;
                                         if (len > 0)

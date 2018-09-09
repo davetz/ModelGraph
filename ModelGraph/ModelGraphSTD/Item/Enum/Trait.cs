@@ -621,11 +621,11 @@ namespace ModelGraphSTD
         Pairing_ManyToMany = 0x882,
         PairingEnum = 0x8BF,
 
-        Orientation_Point = 0x8C0,
-        Orientation_Central = 0x8C1,
-        Orientation_Vertical = 0x8C2,
-        Orientation_Horizontal = 0x8C3,
-        OrientationEnum = 0x8FF,
+        Aspect_Point = 0x8C0,
+        Aspect_Central = 0x8C1,
+        Aspect_Vertical = 0x8C2,
+        Aspect_Horizontal = 0x8C3,
+        AspectEnum = 0x8FF,
 
         Labeling_None = 0x900,
         Labeling_Top = 0x901,

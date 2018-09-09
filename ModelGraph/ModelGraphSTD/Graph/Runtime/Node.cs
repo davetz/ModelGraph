@@ -17,12 +17,12 @@ namespace ModelGraphSTD
         public Sizing Sizing;
         public BarWidth BarWidth;
         public FlipRotate FlipRotate;
-        public Orient Orient;
+        public Aspect Aspect;
 
-        internal (int X, int Y, byte DX, byte DY, byte Color, byte Symbol, Labeling Labeling, Sizing Resizing, BarWidth BarWidth, FlipRotate FlipRotate, Orient Orientation)
+        internal (int X, int Y, byte DX, byte DY, byte Color, byte Symbol, Labeling Labeling, Sizing Resizing, BarWidth BarWidth, FlipRotate FlipRotate, Aspect Orientation)
             Parms
         {
-            get { return (X, Y, DX, DY, Color, Symbol, Labeling, Sizing, BarWidth, FlipRotate, Orient); }
+            get { return (X, Y, DX, DY, Color, Symbol, Labeling, Sizing, BarWidth, FlipRotate, Aspect); }
             set
             {
                 X = value.X;
@@ -35,7 +35,7 @@ namespace ModelGraphSTD
                 Sizing = value.Resizing;
                 BarWidth = value.BarWidth;
                 FlipRotate = value.FlipRotate;
-                Orient = value.Orientation;
+                Aspect = value.Orientation;
             }
         }
         #endregion
@@ -50,7 +50,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Booleans  =====================================================
-        public bool IsGraphPoint => Orient == Orient.Point;
+        public bool IsGraphPoint => Aspect == Aspect.Point;
 
         public bool IsGraphNode => Symbol == 0;
         public bool IsGraphEgress => Symbol == 1;
@@ -59,12 +59,12 @@ namespace ModelGraphSTD
 
         public bool IsAutoResizing => Sizing == Sizing.Auto;
 
-        public bool IsMasked { get { return (IsGraphNode && Orient != Orient.Central && Sizing == Sizing.Manual); } }
+        public bool IsMasked { get { return (IsGraphNode && Aspect != Aspect.Central && Sizing == Sizing.Manual); } }
 
-        public bool IsNodePoint => IsGraphNode && Orient == Orient.Point; 
-        public bool IsAutoSizing { get { return (Sizing == Sizing.Auto && Orient != Orient.Point); } }
-        public bool IsFixedSizing { get { return (Sizing == Sizing.Fixed && Orient != Orient.Point); } }
-        public bool IsManualSizing { get { return (IsGraphNode && Sizing == Sizing.Manual && Orient != Orient.Point); } }
+        public bool IsNodePoint => IsGraphNode && Aspect == Aspect.Point; 
+        public bool IsAutoSizing { get { return (Sizing == Sizing.Auto && Aspect != Aspect.Point); } }
+        public bool IsFixedSizing { get { return (Sizing == Sizing.Fixed && Aspect != Aspect.Point); } }
+        public bool IsManualSizing { get { return (IsGraphNode && Sizing == Sizing.Manual && Aspect != Aspect.Point); } }
         #endregion
 
         #region Center, Extent, Radius  =======================================
@@ -155,12 +155,12 @@ namespace ModelGraphSTD
             DX = dy;
             DY = dx;
 
-            switch (Orient)
+            switch (Aspect)
             {
-                case Orient.Point:
-                case Orient.Central: break;
-                case Orient.Vertical: Orient = Orient.Horizontal; break;
-                case Orient.Horizontal: Orient = Orient.Vertical; break;
+                case Aspect.Point:
+                case Aspect.Central: break;
+                case Aspect.Vertical: Aspect = Aspect.Horizontal; break;
+                case Aspect.Horizontal: Aspect = Aspect.Vertical; break;
             }
         }
 
@@ -218,27 +218,27 @@ namespace ModelGraphSTD
             }
         }
 
-        internal void SetOrientation(Orient val, SymbolX sym)
+        internal void SetOrientation(Aspect val, SymbolX sym)
         {
             if (sym == null)
             {
-                switch (Orient)
+                switch (Aspect)
                 {
-                    case Orient.Point:
-                    case Orient.Central: break;
-                    case Orient.Vertical: Orient = Orient.Horizontal; break;
-                    case Orient.Horizontal: Orient = Orient.Vertical; break;
+                    case Aspect.Point:
+                    case Aspect.Central: break;
+                    case Aspect.Vertical: Aspect = Aspect.Horizontal; break;
+                    case Aspect.Horizontal: Aspect = Aspect.Vertical; break;
                 }
                 FlipRotate = FlipRotate.None;
             }
             else
             {
-                switch (Orient)
+                switch (Aspect)
                 {
-                    case Orient.Point:
-                    case Orient.Central: break;
-                    case Orient.Vertical: Orient = Orient.Horizontal; break;
-                    case Orient.Horizontal: Orient = Orient.Vertical; break;
+                    case Aspect.Point:
+                    case Aspect.Central: break;
+                    case Aspect.Vertical: Aspect = Aspect.Horizontal; break;
+                    case Aspect.Horizontal: Aspect = Aspect.Vertical; break;
                 }
             }
         }

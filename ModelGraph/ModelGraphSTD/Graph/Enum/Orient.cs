@@ -2,7 +2,7 @@
 {/*
 
  */
-    public enum Orient : byte
+    public enum Aspect : byte
     {
         Point = 0,
         Central = 1,

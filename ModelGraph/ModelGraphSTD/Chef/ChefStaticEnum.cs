@@ -65,11 +65,11 @@
             new PairZ(_pairingEnum, Trait.Pairing_OneToMany);
             new PairZ(_pairingEnum, Trait.Pairing_ManyToMany);
 
-            _orientationEnum = new EnumZ(EnumZStore, Trait.OrientationEnum);
-            new PairZ(_orientationEnum, Trait.Orientation_Point);
-            new PairZ(_orientationEnum, Trait.Orientation_Central);
-            new PairZ(_orientationEnum, Trait.Orientation_Vertical);
-            new PairZ(_orientationEnum, Trait.Orientation_Horizontal);
+            _orientationEnum = new EnumZ(EnumZStore, Trait.AspectEnum);
+            new PairZ(_orientationEnum, Trait.Aspect_Point);
+            new PairZ(_orientationEnum, Trait.Aspect_Central);
+            new PairZ(_orientationEnum, Trait.Aspect_Vertical);
+            new PairZ(_orientationEnum, Trait.Aspect_Horizontal);
 
             _labelingEnum = new EnumZ(EnumZStore, Trait.LabelingEnum);
             new PairZ(_labelingEnum, Trait.Labeling_None);

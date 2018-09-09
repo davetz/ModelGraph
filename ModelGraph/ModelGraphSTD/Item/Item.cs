@@ -80,6 +80,7 @@ namespace ModelGraphSTD
         internal bool IsCongealed { get { return GetFlag(State.IsCongealed); } set { SetFlag(State.IsCongealed, value); } }
 
         internal bool IsChoice { get { return GetFlag(State.IsChoice); } set { SetFlag(State.IsChoice, value); } }
+        internal bool NeedsRefresh { get { return GetFlag(State.NeedsRefresh); } set { SetFlag(State.NeedsRefresh, value); } }
 
 
         internal bool IsQueryGraphLink => !IsRoot && QueryKind == QueryType.Graph;
