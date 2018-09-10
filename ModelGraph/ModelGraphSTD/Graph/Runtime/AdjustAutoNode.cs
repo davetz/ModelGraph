@@ -6,8 +6,9 @@ namespace ModelGraphSTD
     {
         private void AdjustAutoNode(Node node)
         {
-            var (count, nquad, nsect, sectEdge, E) = Layout.FarNodeParms(node);
+            var (count, nquad, nsect, sectEdge, E) = Layout.SortedEdges(node);
             if (count == 0) return;
+            var last = count - 1;
 
             var gx = node.Graph.GraphX;
             var tmSpc = gx.TerminalSpacing / 2;
@@ -16,15 +17,10 @@ namespace ModelGraphSTD
 
             var (x, y, w, h) = node.Values();
 
-            var d1East = (short)w;
-            var d1West = (short)-w;
-            var d1South = (short)h;
-            var d1North = (short)-h;
-
-            var d2East = (short)(tmLen + w);
-            var d2West = (short)-d2East;
-            var d2South = (short)(tmLen + h);
-            var d2North = (short)-d2South;
+            var dx1 = w;
+            var dx2 = w + tmLen;
+            var dy1 = h;
+            var dy2 = h + tmLen;
 
             int iEast, nEast, iWest, nWest, iSouth, nSouth, iNorth, nNorth;
 
@@ -42,10 +38,10 @@ namespace ModelGraphSTD
                 var height = nVert * tmSpc;
 
                 node.SetSize(barSize, height);
-                d1East = (short)barSize;
-                d1West = (short)-d1East;
-                d2East = (short)(d1East + tmLen);
-                d2West = (short)-d2East;
+                dx1 = barSize;
+                dx2 = dx1 + tmLen;
+                dy1 = height;
+                dy2 = dy1 + tmLen;
 
                 for (int i = 0; i < count; i++)
                 {
@@ -54,7 +50,10 @@ namespace ModelGraphSTD
                 for (int i = 0; i < count; i++)
                 {
                     if (E[i].quad == Quad.Q1) SetEast(i);
-                    else if (E[i].quad == Quad.Q2 || E[i].quad == Quad.Q3) SetWest(i);
+                }
+                for (int i = last; i >= 0; i--)
+                {
+                    if (E[i].quad == Quad.Q2 || E[i].quad == Quad.Q3) SetWest(i);
                 }
             }
             else if (node.Aspect == Aspect.Horizontal)
@@ -68,16 +67,18 @@ namespace ModelGraphSTD
                 var width = nHorz * tmSpc;
 
                 node.SetSize(width, barSize);
-                d1South = (short)barSize;
-                d1North = (short)-d1South;
-                d2South = (short)(d1South + tmLen);
-                d2North = (short)-d2South;
-
+                dx1 = width;
+                dx2 = dx1 + tmLen;
+                dy1 = barSize;
+                dy2 = dy1 + tmLen;
 
                 for (int i = 0; i < count; i++)
                 {
-                    if ((E[i].quad == Quad.Q1) || (E[i].quad == Quad.Q2)) SetSouth(i);
-                    else if ((E[i].quad == Quad.Q3) || (E[i].quad == Quad.Q4)) SetNorth(i);
+                    if ((E[i].quad == Quad.Q3) || (E[i].quad == Quad.Q4)) SetNorth(i);
+                }
+                for (int i = last; i >= 0; i--)
+                {
+                    if (E[i].quad == Quad.Q1 || E[i].quad == Quad.Q2) SetSouth(i);
                 }
             }
             else if (node.Aspect == Aspect.Central)
@@ -101,25 +102,24 @@ namespace ModelGraphSTD
                 if (width < barSize) width = barSize;
 
                 node.SetSize(width, height);
-                d1East = (short)width;
-                d1West = (short)-d1East;
-                d2East = (short)(d1East + tmLen);
-                d2West = (short)-d2East;
-                d1South = (short)height;
-                d1North = (short)-d1South;
-                d2South = (short)(d1South + tmLen);
-                d2North = (short)-d2South;
+                dx1 = width;
+                dx2 = dx1 + tmLen;
+                dy1 = height;
+                dy2 = dy1 + tmLen;
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (E[i].sect == Sect.S8) SetEast(i);
+                    if (E[i].sect == Sect.S6 || E[i].sect == Sect.S7) SetNorth(i);
+                    else if (E[i].sect == Sect.S8) SetEast(i);
                 }
                 for (int i = 0; i < count; i++)
                 {
                     if (E[i].sect == Sect.S1) SetEast(i);
-                    else if (E[i].sect == Sect.S2 || E[i].sect == Sect.S3) SetSouth(i);
+                }
+                for (int i = last; i >= 0; i--)
+                {
+                    if (E[i].sect == Sect.S2 || E[i].sect == Sect.S3) SetSouth(i);
                     else if (E[i].sect == Sect.S4 || E[i].sect == Sect.S5) SetWest(i);
-                    else if (E[i].sect == Sect.S6 || E[i].sect == Sect.S7) SetNorth(i);
                 }
             }
             else
@@ -136,22 +136,22 @@ namespace ModelGraphSTD
             void SetEast(int e)
             {
                 var ds = (short)(tmSpc * Layout.Offset(iEast++, nEast));
-                E[e].edge.SetFace(node, (d1East, ds), (d2East, ds));
+                E[e].edge.SetFace(node, (dx1, ds), (dx2, ds));
             }
             void SetWest(int e)
             {
                 var ds = (short)(tmSpc * Layout.Offset(iWest++, nWest));
-                E[e].edge.SetFace(node, (d1West, ds), (d2West, ds));
+                E[e].edge.SetFace(node, (-dx1, ds), (-dx2, ds));
             }
             void SetSouth(int e)
             {
                 var ds = (short)(tmSpc * Layout.Offset(iSouth++, nSouth));
-                E[e].edge.SetFace(node, (ds, d1South), (ds, d2South));
+                E[e].edge.SetFace(node, (ds, dy1), (ds, dy2));
             }
             void SetNorth(int e)
             {
                 var ds = (short)(tmSpc * Layout.Offset(iNorth++, nNorth));
-                E[e].edge.SetFace(node, (d1North, ds), (d2North, ds));
+                E[e].edge.SetFace(node, (ds, -dy1), (ds, -dy2));
             }
         }
     }

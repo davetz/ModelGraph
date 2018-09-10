@@ -228,8 +228,8 @@ namespace ModelGraphSTD
                         {
                             var eg = pm as Edge;
                             eg.Owner = g;
-                            eg.Face1 = new Face(e1.Key.PathParm.Facet1);
-                            eg.Face2 = new Face(e1.Key.PathParm.Facet2);
+                            eg.Face1 = new Face(eg.Face1, e1.Key.PathParm.Facet1);
+                            eg.Face2 = new Face(eg.Face2, e1.Key.PathParm.Facet2);
                             g.Edges.Add(eg);
 
                             if (!item_items.TryGetValue(eg.Node1.Item, out items))
@@ -471,7 +471,7 @@ namespace ModelGraphSTD
             AssignEdgeColor(g);
 
             if (anyChange) g.CheckLayout();
-            g.RefreshGraphPoints();
+            g.AdjustGraph();
         }
         #endregion
 

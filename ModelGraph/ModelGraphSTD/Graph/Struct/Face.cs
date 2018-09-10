@@ -12,6 +12,13 @@
             Facet = facet;
             Delta1 = Delta2 = Delta3 = (0, 0);
         }
+        internal Face(Face face, Facet facet)
+        {
+            Facet = ((facet & Facet.Forced) != 0 || face.Facet == Facet.None) ? facet : face.Facet;
+            Delta1 = face.Delta1;
+            Delta2 = face.Delta2;
+            Delta3 = face.Delta3;
+        }
         internal Face(Facet facet, (short, short) delta1)
         {
             Facet = facet;

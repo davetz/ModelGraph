@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ModelGraphSTD
 {
     internal static class Layout
     {
-        internal static (int count, int[] nquad, int[] nsect, int[] sectEdge, (Edge edge, Node other, EdgeRotator conn, (int x, int y) bend, double slope, short ord1, short ord2, short tuple, Quad quad, Sect sect)[]) 
-            FarNodeParms(Node n1)
+        #region SortedEdges  ==================================================
+        internal static (int count, int[] nquad, int[] nsect, int[] sectEdge, (Edge edge, Node other, EdgeRotator conn, (int x, int y) bend, Quad quad, Sect sect)[])
+            SortedEdges(Node n1)
         {/*
             Construct an optimumly ordered edge list for the given node.
 
@@ -29,11 +31,13 @@ namespace ModelGraphSTD
             var nquad = new int[5];
             var nsect = new int[9];
             var sectEdge = new int[10];
-            var E = new (Edge edge, Node other, EdgeRotator conn, (int x, int y) bend, double slope, short ord1, short ord2, short tuple, Quad quad, Sect sect)[count];
-
+            var E = new (Edge edge, Node node, EdgeRotator conn, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect)[count];
+            var F = new (Edge edge, Node node, EdgeRotator conn, (int x, int y) bend, Quad quad, Sect sect)[count];
+            var P = new List<int>(count);
+            var O = new List<int>(count);
 
             #region Populate edge array and locate parallel edges  ============
-            var otherEdgeCount = new Dictionary<Node, int>(count);
+            var other_Count = new Dictionary<Node, int>(count);
             for (int i = 0; i < count; i++)
             {
                 E[i].ord2 = (short)i;
@@ -42,130 +46,75 @@ namespace ModelGraphSTD
 
                 var (other, bend) = edge[i].OtherBend(n1);
                 E[i].ord1 = (short)n1.Graph.Nodes.IndexOf(other);
-                E[i].other = other;
+                E[i].node = other;
                 E[i].bend = bend;
 
-                if (otherEdgeCount.TryGetValue(other, out int c))
-                    otherEdgeCount[other] = c + 1;
-                else
-                    otherEdgeCount.Add(other, 1);
-            }
-
-            var indexOfParallelEdge = new List<int>(count);
-            for (int i = 0; i < count; i++)
-            {
-                if (otherEdgeCount[E[i].other] == 1) continue;
-                indexOfParallelEdge.Add(i);
-            }
-            #endregion
-
-            #region Set parallel edge bend point  ============================= 
-            if (indexOfParallelEdge.Count > 0)
-            {
-                indexOfParallelEdge.Sort(CompareParallelEdges);
-
-                var ip = 0;
-                var np = indexOfParallelEdge.Count;
-                var tc = (byte)0;
-                var ext = new Extent(n1.Center);
-                while (ip < np)
-                {
-                    var n2 = E[indexOfParallelEdge[ip]].other;
-                    var (x2, y2) = ext.Point2 = n2.GetCenter();
-
-                    var pc = InParallelCount(ip);
-                    if (n2.Sizing == Sizing.Auto && n2.Aspect != Aspect.Point)
-                    {
-                        tc++;
-                        for (int i = ip, j = 0; j < pc; i++, j++)
-                        {
-                            var ds = 7 * Offset(j, pc);
-                            E[indexOfParallelEdge[i]].tuple = tc;
-                            E[indexOfParallelEdge[i]].bend = ext.OrthoginalDisplacedPoint(ds);
-                        }
-                    }
-                    ip += pc;
-
-                    int InParallelCount(int t)
-                    {
-                        while (t < np && n2 == E[indexOfParallelEdge[t]].other) { t++; }
-                        return t - ip;
-                    }
-                }
-            }
-            #endregion
-
-            #region Calculate quad, qect, slope  ==============================
-            for (int i = 0; i < count; i++)
-            {
                 var (quad, sect, slope) = XYPair.QuadSectSlope(n1.Center, E[i].bend);
-
                 E[i].quad = quad;
                 E[i].sect = sect;
                 E[i].slope = slope;
+
+                if (other_Count.TryGetValue(other, out int c))
+                    other_Count[other] = c + 1;
+                else
+                    other_Count.Add(other, 1);
             }
+
+            for (int i = 0; i < count; i++) { if (other_Count[E[i].node] > 1) P.Add(i); }
             #endregion
 
             #region Order edges based on quad and slope  ======================
-            var edgeIndex = new List<int>(count);
-            for (int i = 0; i < count; i++) { edgeIndex.Add(i); }
-            edgeIndex.Sort(CompareQuadSlope);
-
-
-            for (int i = 0; i < count; i++)
+            if (P.Count > 0)
             {
-                var j = edgeIndex[i];
-                if (j == i) continue;
+                P.Sort(CompareParallelEdges);
 
-                var t0 = edgeIndex[i]; edgeIndex[i] = edgeIndex[j]; edgeIndex[j] = t0;
-                var t1 = E[i]; E[i] = E[j]; E[j] = t1;
-            }
-            #endregion
+                var first = 0;
+                Node n2 = null;
+                for (int p = 0; p < P.Count; p++)
+                {
+                    var i = P[p];
 
-            #region AssignTupleQuadSect  ======================================
-            var tupleT = (short)0;
-            var firstT = 0;
-            var countT = 0;
-            for (int i = 0; i < count; i++)
-            {
-                if (E[i].tuple == 0)
-                {
-                    if (tupleT != 0) AssignTupleQuadSect();
-                }
-                else
-                {
-                    if (E[i].tuple == tupleT)
+                    E[i].isTuple = true;
+                    if (n2 == E[i].node)
                     {
-                        countT++;
+                        E[i].quad = E[first].quad;
+                        E[i].sect = E[first].sect;
+                        E[i].bend = E[first].bend;
                     }
                     else
                     {
-                        if (tupleT != 0) AssignTupleQuadSect();
-
-                        tupleT = E[i].tuple;
-                        firstT = i;
-                        countT = 1;
+                        n2 = E[i].node;
+                        first = i;
+                        E[i].isFirst = true;
                     }
                 }
-            }
-            if (tupleT != 0) AssignTupleQuadSect();
+                for (int i = 0; i < count; i++) { if (!E[i].isTuple || E[i].isFirst) O.Add(i); }
+                O.Sort(CompareQuadSlope);
 
-            void AssignTupleQuadSect()
-            {
-                if (tupleT != 0 && countT > 1)
+                var j = 0;
+                foreach (var i in O)
                 {
-                    var nd2 = E[firstT].other;
-                    var ex = new Extent(n1.Center);
-                    ex.Point2 = nd2.Center;
-                    var (quad, sect, slope) = XYPair.QuadSectSlope(n1.Center, nd2.Center);
-                    for (int i = 0, j = firstT; i < countT; i++, j++)
+                    if (E[i].isTuple)
                     {
-                        E[j].quad = quad;
-                        E[j].sect = sect;
+                        n2 = E[i].node;
+                        var Q = new List<int>(P.Count);
+                        foreach (var p in P) { if (E[p].node == n2) Q.Add(p); }
+
+                        var sectList = SectList(n2);
+                        if (sectList.Contains(E[i].sect)) Q.Reverse();
+
+                        foreach (var q in Q) { CopyToOutput(q, j++); }
                     }
+                    else
+                        CopyToOutput(i, j++);
                 }
-                tupleT = 0;
-                firstT = countT = 0;
+                Debug.Assert(j == count);
+            }
+            else
+            {
+                for (int i = 0; i < count; i++) { O.Add(i); }
+                O.Sort(CompareQuadSlope);
+                for (int i = 0; i < count; i++) { CopyToOutput(O[i], i); }
             }
             #endregion
 
@@ -178,7 +127,7 @@ namespace ModelGraphSTD
             #endregion
 
             #region Compute sectEdge  =========================================
-            int h = 0, k = 0,  N = 10;
+            int h = 0, k = 0, N = 10;
             for (int i = 0; i < count; i++)
             {
                 if (k == (int)E[i].sect) continue;
@@ -188,7 +137,39 @@ namespace ModelGraphSTD
             for (; h < N; h++) { sectEdge[h] = count; }
             #endregion
 
-            return (count, nquad, nsect, sectEdge, E);
+            return (count, nquad, nsect, sectEdge, F);
+
+            #region Copy E to F  ==============================================
+            void CopyToOutput(int i, int j)
+            {
+                F[j].edge = E[i].edge;
+                F[j].node = E[i].node;
+                F[j].conn = E[i].conn;
+                F[j].bend = E[i].bend;
+                F[j].quad = E[i].quad;
+                F[j].sect = E[i].sect;
+            }
+            #endregion
+
+            #region SectList  =================================================
+            List<Sect> SectList(Node n2)
+            {
+                if (n1.Aspect == n2.Aspect)
+                {
+                    switch (n1.Aspect)
+                    {
+                        case Aspect.Central: return new List<Sect>(0) { Sect.S2, Sect.S3, Sect.S4, Sect.S5, Sect.S6, Sect.S7 };
+                        case Aspect.Vertical: return new List<Sect>(0) { Sect.S3, Sect.S4, Sect.S5, Sect.S6 };
+                        case Aspect.Horizontal: return new List<Sect>(0) { Sect.S1, Sect.S2, Sect.S3, Sect.S4 };
+                    }
+                }
+                else
+                {
+                    if (n1.Aspect == Aspect.Horizontal && n2.Aspect == Aspect.Vertical) return new List<Sect>(0) { Sect.S1, Sect.S2, Sect.S3, Sect.S4, Sect.S5, Sect.S6, Sect.S7, Sect.S8 };
+                }
+                return new List<Sect>(0);
+            }
+            #endregion
 
             #region CompareParallelEdges  =====================================
             int CompareParallelEdges(int i, int j)
@@ -204,39 +185,28 @@ namespace ModelGraphSTD
             #region CompareQuadSlope  =========================================
             int CompareQuadSlope(int i, int j)
             {
-                if (E[i].tuple == 0 || E[i].tuple != E[j].tuple)
-                {
-                    if (E[i].quad < E[j].quad) return -1;
-                    if (E[i].quad > E[j].quad) return +1;
-                }
-                else if (E[i].quad == Quad.Q3 && E[j].quad == Quad.Q4)
-                    return -1;
-                else if (E[i].quad == Quad.Q4 && E[j].quad == Quad.Q3)
-                    return +1;
-                else if (E[i].quad == Quad.Q1 && E[j].quad == Quad.Q2)
-                    return -1;
-                else if (E[i].quad == Quad.Q2 && E[j].quad == Quad.Q1)
-                    return +1;
-
+                if (E[i].quad < E[j].quad) return -1;
+                if (E[i].quad > E[j].quad) return +1;
                 if (E[i].slope < E[j].slope) return -1;
                 if (E[i].slope > E[j].slope) return +1;
                 return 0;
             }
             #endregion
         }
+        #endregion
 
         #region Offset  =======================================================
         internal static int Offset(int index, int count)
         {/*
-            The index is 0 based, the totalCount is 1's based 
-            for examle:    0,  1,  2,  3,  4 with the totalCount = 5
-                offset:   -4, -2,  0,  2,  4  
-                         . . . . . | . . . . . 
-             or examle:  0,  1,  2,  3,  4,  5 with the totalCount = 6
+                The index is 0 based, the totalCount is 1's based 
+                for examle:    0,  1,  2,  3,  4 with the totalCount = 5
+                    offset:   -4, -2,  0,  2,  4  
+                             . . . . . | . . . . . 
+                or examle:  0,  1,  2,  3,  4,  5 with the totalCount = 6
                 offset: -5, -3, -1,  1,  3,  5
            
-            The diference between succesive offset values is always 2
-         */
+                The diference between succesive offset values is always 2
+            */
             return 2 * index - (count - 1);
         }
         #endregion

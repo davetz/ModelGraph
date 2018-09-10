@@ -7,10 +7,9 @@ namespace ModelGraphSTD
  */
     public partial class Graph
     {
-        private void AdjustGraph()
+        public void AdjustGraph()
         {
             foreach (var node in Nodes) { AdjustNode(node); }
-            foreach (var edge in Edges) { edge.Refresh(); }
             SetExtent();
         }
         public void AdjustGraph(Selector selector)
@@ -18,23 +17,33 @@ namespace ModelGraphSTD
             var nodes = new HashSet<Node>();
             var edges = new HashSet<Edge>();
 
-            if (selector.HitNode != null) AddNodeEdges(selector.HitNode, nodes, edges);
+            if (selector.HitNode != null) AddNodeEdges(selector.HitNode);
             if (selector.HitEdge != null) edges.Add(selector.HitEdge);
             foreach (var node in selector.Nodes) { nodes.Add(node); }
             foreach (var edge in selector.Edges) { edges.Add(edge); }
             foreach (var edge in selector.Chops)
             {
                 edges.Add(edge);
-                AddNodeEdges(edge.Node1, nodes, edges);
-                AddNodeEdges(edge.Node2, nodes, edges);
+                AddNodeEdges(edge.Node1);
+                AddNodeEdges(edge.Node2);
             }
 
             for (int i = 0; i < 2; i++) { ExpandNeighborhood(); }
 
             foreach (var node in nodes) { AdjustNode(node); }
-            foreach (var edge in edges) { edge.Refresh(); }
 
             SetExtent();
+
+            #region AddNodeEdges  =============================================
+            void AddNodeEdges(Node node)
+            {
+                nodes.Add(node);
+                if (Node_Edges.TryGetValue(node, out List<Edge> list))
+                {
+                    foreach (var edge in list) { edges.Add(edge); }
+                }
+            }
+            #endregion
 
             #region ExpandNeighborhood  =======================================
             void ExpandNeighborhood()
@@ -58,14 +67,6 @@ namespace ModelGraphSTD
                 }
             }
             #endregion
-        }
-        private void AddNodeEdges(Node node, HashSet<Node> nodeHash, HashSet<Edge> edgeHash)
-        {
-            nodeHash.Add(node);
-            if (Node_Edges.TryGetValue(node, out List<Edge> edges))
-            {
-                foreach (var edge in edges) { edgeHash.Add(edge); }
-            }
         }
         private void AdjustNode(Node node)
         {

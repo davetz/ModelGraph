@@ -106,11 +106,6 @@ namespace ModelGraphSTD
                 GraphX.Remove(this);
             }
         }
-        public void RefreshGraphPoints()
-        {
-            SetExtent();
-            foreach (var edge in Edges) { edge.Refresh(); }
-        }
         private void SetExtent()
         {
             Extent = new Extent();

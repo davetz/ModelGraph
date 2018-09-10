@@ -5,7 +5,7 @@ namespace ModelGraphSTD
     {
         private void AdjustManualNode(Node node)
         {
-            var (count, nquad, nsect, sectEdge, E) = Layout.FarNodeParms(node);
+            var (count, nquad, nsect, sectEdge, E) = Layout.SortedEdges(node);
             if (count == 0) return;
 
             var gx = node.Graph.GraphX;
@@ -32,7 +32,7 @@ namespace ModelGraphSTD
             var dy3 = dy2 + tmLen;
             var dy4 = dy3 + spSkew;
             /*
-             * delta dx1,dy1 determines the surface of the node
+             * delta dx1,dy1 determine the surface of the node
              * ================================================
                 (-dx4, -dy4)  o             o  (+dx4, -dy4)
                  (-dx3, -dy3)  o           o  (+dx3, -dy3)

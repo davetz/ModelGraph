@@ -156,14 +156,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region LineOrder  ====================================================
-        internal (int X, int Y) GetClosestBend(Node node)
-        {
-            if (Points == null)
-                return (node == Node1) ? Node2.GetCenter() : Node1.GetCenter();
-            else
-                return (node == Node1) ? Points[Bp1] : Points[Bp2];
-        }
+        #region OtherBend  ====================================================
         internal (Node other, (int, int) bend) OtherBend(Node n)
         {
             if (Points == null) Refresh();
@@ -633,6 +626,8 @@ namespace ModelGraphSTD
                 }
             }
             #endregion
+
+            Extent.SetExtent(P, 2);
         }
         #endregion
     }

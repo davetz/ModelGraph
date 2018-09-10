@@ -1960,8 +1960,7 @@ namespace RepositoryUWP
                     var npLen = r.ReadInt32();
                     if (npLen < 0) throw new Exception($"Invalid count {npLen}");
 
-                    var qx = items[qxIndex] as QueryX;
-                    if (qx == null)
+                    if (!(items[qxIndex] is QueryX qx))
                     {
                         var guid = guids[qxIndex];
                         if (!guidItems.TryGetValue(guid, out Item itm)) throw new Exception($"Could not find QueryX for guid {guid}");
@@ -2037,15 +2036,8 @@ namespace RepositoryUWP
                                 edge.Node1 = node1;
                                 edge.Node2 = node2;
 
-                                edge.Face1.Facet = (Facet)r.ReadByte();
-                                edge.Face1.Delta1 = (r.ReadInt16(), r.ReadInt16());
-                                edge.Face1.Delta2 = (r.ReadInt16(), r.ReadInt16());
-                                edge.Face1.Delta3 = (r.ReadInt16(), r.ReadInt16());
-
-                                edge.Face2.Facet = (Facet)r.ReadByte();
-                                edge.Face2.Delta1 = (r.ReadInt16(), r.ReadInt16());
-                                edge.Face2.Delta2 = (r.ReadInt16(), r.ReadInt16());
-                                edge.Face2.Delta3 = (r.ReadInt16(), r.ReadInt16());
+                                edge.Face1 = new Face((Facet)r.ReadByte(), (r.ReadInt16(), r.ReadInt16()), (r.ReadInt16(), r.ReadInt16()), (r.ReadInt16(), r.ReadInt16()));
+                                edge.Face2 = new Face((Facet)r.ReadByte(), (r.ReadInt16(), r.ReadInt16()), (r.ReadInt16(), r.ReadInt16()), (r.ReadInt16(), r.ReadInt16()));
 
                                 var pnCount = r.ReadUInt16();
                                 if (pnCount > 0)

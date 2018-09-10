@@ -204,7 +204,7 @@ namespace ModelGraphSTD
         private void AdjustSymbol(Node node)
         {
             #region Fields  ===================================================
-            var (count, nquad, nsect, sectEdge, E) = Layout.FarNodeParms(node);
+            var (count, nquad, nsect, sectEdge, E) = Layout.SortedEdges(node);
             if (count == 0) return;
 
 
