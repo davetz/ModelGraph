@@ -17,7 +17,7 @@ namespace ModelGraphSTD
             connections are a sequence of radial vectors.  
             Order the edges so that the radial vectors progress arround the circle
             in a clockwise direction. The circle has 8 sectors and 4 qaudrants as
-            shown below. Keep track of the number of lines in each quadrant and
+            shown below. Keep track of the number of edges in each quadrant and
             sector.    
                             sect         quad       side
                            =======       ====       ======
@@ -31,10 +31,12 @@ namespace ModelGraphSTD
             var nquad = new int[5];
             var nsect = new int[9];
             var sectEdge = new int[10];
-            var E = new (Edge edge, Node node, EdgeRotator conn, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect)[count];
-            var F = new (Edge edge, Node node, EdgeRotator conn, (int x, int y) bend, Quad quad, Sect sect)[count];
-            var P = new List<int>(count);
-            var O = new List<int>(count);
+
+            var E = new (Edge edge, Node node, EdgeRotator conn, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect)[count];  // working edge array
+            var F = new (Edge edge, Node node, EdgeRotator conn, (int x, int y) bend, Quad quad, Sect sect)[count];   // output edge array
+
+            var P = new List<int>(count);  // ordered edge indexes for parralell edges 
+            var O = new List<int>(count);  // ordered edge indexes for all non-parrallel edges, but including just one of the parallel edges
 
             #region Populate edge array and locate parallel edges  ============
             var other_Count = new Dictionary<Node, int>(count);
@@ -153,12 +155,30 @@ namespace ModelGraphSTD
 
             #region SectList  =================================================
             List<Sect> SectList(Node n2)
-            {
+            {/*
+                The order of the parallel edge tuples betwee two nodes need to 
+                be reversed for the specific apposing edge faces. For example
+                consider the edges labeled A, B, and C, as show below.
+
+                         /\     node-1   desired order  node-2     given order
+                         |C        A|= = = = = = = = = =|A        A|
+                         |B        B|= = = = = = = = = =|B        B|
+                         |A        C|= = = = = = = = = =|C        C|
+               given order                                        \/
+  
+                       ===Sector==    =========== For Each Node ============
+                         5\6|7/8      Imagine the center of each node is at
+                         ~~~+~~~   <- the + sign and the edges are ordered
+                         4/3|2\1      clockwise arround that begining at sector-1
+                              
+                This mitigation strategy works well, but even still, it doesn't
+                cover all the odd possible corner cases. (sigh)
+             */
                 if (n1.Aspect == n2.Aspect)
                 {
                     switch (n1.Aspect)
                     {
-                        case Aspect.Central: return new List<Sect>(0) { Sect.S2, Sect.S3, Sect.S4, Sect.S5, Sect.S6, Sect.S7 };
+                        case Aspect.Central: return new List<Sect>(0) { Sect.S2, Sect.S3, Sect.S4, Sect.S5, };
                         case Aspect.Vertical: return new List<Sect>(0) { Sect.S3, Sect.S4, Sect.S5, Sect.S6 };
                         case Aspect.Horizontal: return new List<Sect>(0) { Sect.S1, Sect.S2, Sect.S3, Sect.S4 };
                     }
@@ -166,6 +186,8 @@ namespace ModelGraphSTD
                 else
                 {
                     if (n1.Aspect == Aspect.Horizontal && n2.Aspect == Aspect.Vertical) return new List<Sect>(0) { Sect.S1, Sect.S2, Sect.S3, Sect.S4, Sect.S5, Sect.S6, Sect.S7, Sect.S8 };
+                    else if (n1.Aspect == Aspect.Central && n2.Aspect == Aspect.Vertical) return new List<Sect>(0) { Sect.S1, Sect.S2, Sect.S3, Sect.S4, Sect.S5, Sect.S6, Sect.S7, Sect.S8 };
+                    else if (n1.Aspect == Aspect.Central && n2.Aspect == Aspect.Horizontal) return new List<Sect>(0) { Sect.S1, Sect.S2, Sect.S3, Sect.S4, Sect.S5, Sect.S6, Sect.S7, Sect.S8 };
                 }
                 return new List<Sect>(0);
             }
@@ -202,11 +224,11 @@ namespace ModelGraphSTD
                 for examle:    0,  1,  2,  3,  4 with the totalCount = 5
                     offset:   -4, -2,  0,  2,  4  
                              . . . . . | . . . . . 
-                or examle:  0,  1,  2,  3,  4,  5 with the totalCount = 6
-                offset: -5, -3, -1,  1,  3,  5
+                 or examle:  0,  1,  2,  3,  4,  5 with the totalCount = 6
+                    offset: -5, -3, -1,  1,  3,  5
            
                 The diference between succesive offset values is always 2
-            */
+         */
             return 2 * index - (count - 1);
         }
         #endregion
