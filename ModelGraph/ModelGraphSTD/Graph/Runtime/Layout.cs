@@ -132,8 +132,8 @@ namespace ModelGraphSTD
             int h = 0, k = 0, N = 10;
             for (int i = 0; i < count; i++)
             {
-                if (k == (int)E[i].sect) continue;
-                k = (int)E[i].sect;
+                if (k == (int)F[i].sect) continue;
+                k = (int)F[i].sect;
                 for (; h <= k; h++) { sectEdge[h] = i; }
             }
             for (; h < N; h++) { sectEdge[h] = count; }

@@ -203,7 +203,6 @@ namespace ModelGraphSTD
 
         private void AdjustSymbol(Node node)
         {
-            #region Fields  ===================================================
             var (count, nquad, nsect, sectEdge, E) = Layout.SortedEdges(node);
             if (count == 0) return;
 
@@ -221,14 +220,6 @@ namespace ModelGraphSTD
                 new List<Edge>(count),
                 new List<Edge>(count),
             };
-            var FaceDir = new Side[]
-            {
-                Side.East,
-                Side.South,
-                Side.West,
-                Side.North,
-            };
-            #endregion
 
             bool allDone = false;
             int bestCost = int.MaxValue;
@@ -306,25 +297,65 @@ namespace ModelGraphSTD
                         node.DY = sr.DY;
                         node.FlipRotate = (FlipRotate)flipRotate;
 
+                        var d1 = 4;
+                        var tmSpc = node.Graph.GraphX.TerminalSpacing;
+                        var tmLen = node.Graph.GraphX.TerminalLength;
+
+                        var dx1 = node.DX;
+                        var dx2 = dx1 + d1;
+                        var dx3 = dx2 + tmLen;
+
+                        var dy1 = node.DY;
+                        var dy2 = dy1 + d1;
+                        var dy3 = dy2 + tmLen;
+
+                        var dsx = (double)dx1;
+                        var dsy = (double)dy1;
+
+                        var ds1 = 0;
+                        var ds2 = 0;
                         #region AssignEdgeConnectors  =========================
                         for (var f = 0; f < 4; f++)
                         {
                             var n = FaceEdge[f].Count;
                             if (n == 0) continue;
+                            switch(f)
+                            {
+                                case 0: //east
+                                    for (int i = 0; i < n; i++)
+                                    {
+                                        ds1 = (int)((dsx / n) * Layout.Offset(i, n));
+                                        ds2 = tmSpc * Layout.Offset(i, n);
+                                        FaceEdge[f][i].SetFace(node, (dx1, ds1), (dx2, ds2), (dx3, ds2));
+                                    }
+                                    break;
 
-                            if (f == 0 || f == 3)           // East or North
-                            {
-                                for (int i = 0; i < n; i++)
-                                {
-                                    //FaceEdge[f][i].SetFace(node, FaceDir[f], i, n);
-                                }
-                            }
-                            else                            // South or West
-                            {
-                                for (int i = 0, j = (n - 1); i < n; i++, j--)
-                                {
-                                    //FaceEdge[f][j].SetFace(node, FaceDir[f], i, n);
-                                }
+                                case 1: //south
+                                    for (int i = 0; i < n; i++)
+                                    {
+                                        ds1 = (int)((dsx / n) * Layout.Offset(i, n));
+                                        ds2 = tmSpc * Layout.Offset(i, n);
+                                        FaceEdge[f][i].SetFace(node, (ds1, dy1), (ds2, dy2), (ds2, dy2));
+                                    }
+                                    break;
+
+                                case 2: //west
+                                    for (int i = 0; i < n; i++)
+                                    {
+                                        ds1 = (int)((dsx / n) * Layout.Offset(i, n));
+                                        ds2 = tmSpc * Layout.Offset(i, n);
+                                        FaceEdge[f][i].SetFace(node, (-dx1, ds1), (-dx2, ds2), (-dx3, ds2));
+                                    }
+                                    break;
+
+                                case 3: //north
+                                    for (int i = 0; i < n; i++)
+                                    {
+                                        ds1 = (int)((dsx / n) * Layout.Offset(i, n));
+                                        ds2 = tmSpc * Layout.Offset(i, n);
+                                        FaceEdge[f][i].SetFace(node, (dx1, ds1), (dx2, ds2), (dx3, ds2));
+                                    }
+                                    break;
                             }
                         }
                         #endregion

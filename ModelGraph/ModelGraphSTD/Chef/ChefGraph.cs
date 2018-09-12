@@ -401,50 +401,47 @@ namespace ModelGraphSTD
         }
         private void RefreshGraphX(GraphX gx)
         {
-            if (gx.Count > 0)
+            #region Rebuild ARGBList, NodeOwners  =========================
+            gx.Color.Reset();
+            gx.NodeOwners.Clear();
+
+            if (GraphX_ColorColumnX.TryGetChild(gx, out ColumnX cx) && TableX_ColumnX.TryGetParent(cx, out TableX tx) && tx.Count > 0)
             {
-                #region Rebuild ARGBList, NodeOwners  =========================
-                gx.Color.Reset();
-                gx.NodeOwners.Clear();
-
-                if (GraphX_ColorColumnX.TryGetChild(gx, out ColumnX cx) && TableX_ColumnX.TryGetParent(cx, out TableX tx) && tx.Count > 0)
+                foreach (var item in tx.Items)
                 {
-                    foreach (var item in tx.Items)
-                    {
-                        gx.Color.BuildARGBList(cx.Value.GetString(item));
-                    }
+                    gx.Color.BuildARGBList(cx.Value.GetString(item));
                 }
+            }
 
-                if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> qxList))
+            if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> qxList))
+            {
+                var workQueue = new Queue<QueryX>(qxList);
+                while (workQueue.Count > 0)
                 {
-                    var workQueue = new Queue<QueryX>(qxList);
-                    while (workQueue.Count > 0)
+                    var qx = workQueue.Dequeue();
+                    if (qx.PathParm != null)
                     {
-                        var qx = workQueue.Dequeue();
-                        if (qx.PathParm != null)
-                        {
-                            gx.Color.BuildARGBList(qx.PathParm.LineColor);
-                        }
-                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> qcList))
-                        {
-                            foreach (var qc in qcList)
-                            {
-                                workQueue.Enqueue(qc);
-                            }
-                        }
-                        if (qx.QueryKind == QueryType.Path && qx.IsHead)
-                        {
-                            GetHeadTail(qx, out Store head, out Store t);
-                            gx.NodeOwners.Add(head);
-
-                            var qt = qx;
-                            while (QueryX_QueryX.TryGetChild(qt, out QueryX qn)) { qt = qn; }
-
-                            GetHeadTail(qx, out Store h, out Store tail);
-                            gx.NodeOwners.Add(tail);
-                        }
-
+                        gx.Color.BuildARGBList(qx.PathParm.LineColor);
                     }
+                    if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> qcList))
+                    {
+                        foreach (var qc in qcList)
+                        {
+                            workQueue.Enqueue(qc);
+                        }
+                    }
+                    if (qx.QueryKind == QueryType.Path && qx.IsHead)
+                    {
+                        GetHeadTail(qx, out Store head, out Store t);
+                        gx.NodeOwners.Add(head);
+
+                        var qt = qx;
+                        while (QueryX_QueryX.TryGetChild(qt, out QueryX qn)) { qt = qn; }
+
+                        GetHeadTail(qx, out Store h, out Store tail);
+                        gx.NodeOwners.Add(tail);
+                    }
+
                 }
                 #endregion
 
