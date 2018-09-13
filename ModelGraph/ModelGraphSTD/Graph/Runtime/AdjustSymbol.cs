@@ -160,11 +160,11 @@ namespace ModelGraphSTD
             new CostFaceSector(0, 0, 8),
             new CostFaceSector(0, 0, 1),
 
-            new CostFaceSector(0, 1, 2),
-            new CostFaceSector(0, 1, 3),
+            new CostFaceSector(0, 1, 2, 1),
+            new CostFaceSector(0, 1, 3, 1),
 
-            new CostFaceSector(0, 2, 4),
-            new CostFaceSector(0, 2, 5),
+            new CostFaceSector(0, 2, 4, 1),
+            new CostFaceSector(0, 2, 5, 1),
 
             new CostFaceSector(0, 3, 6),
             new CostFaceSector(0, 3, 7),
@@ -297,20 +297,20 @@ namespace ModelGraphSTD
                         node.DY = sr.DY;
                         node.FlipRotate = (FlipRotate)flipRotate;
 
-                        var d1 = 4;
+                        var d1 = 8;
                         var tmSpc = node.Graph.GraphX.TerminalSpacing;
                         var tmLen = node.Graph.GraphX.TerminalLength;
 
-                        var dx1 = node.DX;
+                        var dx1 = node.DX + 2;
                         var dx2 = dx1 + d1;
                         var dx3 = dx2 + tmLen;
 
-                        var dy1 = node.DY;
+                        var dy1 = node.DY + 2;
                         var dy2 = dy1 + d1;
                         var dy3 = dy2 + tmLen;
 
-                        var dsx = (double)dx1;
-                        var dsy = (double)dy1;
+                        var dsx = (double)dx1 / 2;
+                        var dsy = (double)dy1 / 2;
 
                         var ds1 = 0;
                         var ds2 = 0;
@@ -353,7 +353,7 @@ namespace ModelGraphSTD
                                     {
                                         ds1 = (int)((dsx / n) * Layout.Offset(i, n));
                                         ds2 = tmSpc * Layout.Offset(i, n);
-                                        FaceEdge[f][i].SetFace(node, (dx1, ds1), (dx2, ds2), (dx3, ds2));
+                                        FaceEdge[f][i].SetFace(node, (ds1, -dy1), (ds2, -dy2), (ds2, -dy2));
                                     }
                                     break;
                             }

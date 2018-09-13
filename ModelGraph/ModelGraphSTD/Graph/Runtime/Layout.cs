@@ -8,7 +8,7 @@ namespace ModelGraphSTD
     internal static class Layout
     {
         #region SortedEdges  ==================================================
-        internal static (int count, int[] nquad, int[] nsect, int[] sectEdge, (Edge edge, Node other, EdgeRotator conn, (int x, int y) bend, Quad quad, Sect sect)[])
+        internal static (int count, int[] nquad, int[] nsect, int[] sectEdge, (Edge edge, Node other, ConnectFlipRotate conn, (int x, int y) bend, Quad quad, Sect sect)[])
             SortedEdges(Node n1)
         {/*
             Construct an optimumly ordered edge list for the given node.
@@ -32,8 +32,8 @@ namespace ModelGraphSTD
             var nsect = new int[9];
             var sectEdge = new int[10];
 
-            var E = new (Edge edge, Node node, EdgeRotator conn, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect)[count];  // working edge array
-            var F = new (Edge edge, Node node, EdgeRotator conn, (int x, int y) bend, Quad quad, Sect sect)[count];   // output edge array
+            var E = new (Edge edge, Node node, ConnectFlipRotate conn, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect)[count];  // working edge array
+            var F = new (Edge edge, Node node, ConnectFlipRotate conn, (int x, int y) bend, Quad quad, Sect sect)[count];   // output edge array
 
             var P = new List<int>(count);  // ordered edge indexes for parralell edges 
             var O = new List<int>(count);  // ordered edge indexes for all non-parrallel edges, but including just one of the parallel edges
@@ -44,7 +44,7 @@ namespace ModelGraphSTD
             {
                 E[i].ord2 = (short)i;
                 E[i].edge = edge[i];
-                E[i].conn = new EdgeRotator(edge[i].GetConnect(n1));
+                E[i].conn = new ConnectFlipRotate(edge[i].GetConnect(n1));
 
                 var (other, bend) = edge[i].OtherBend(n1);
                 E[i].ord1 = (short)n1.Graph.Nodes.IndexOf(other);
