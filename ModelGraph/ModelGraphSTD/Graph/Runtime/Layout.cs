@@ -8,7 +8,7 @@ namespace ModelGraphSTD
     internal static class Layout
     {
         #region SortedEdges  ==================================================
-        internal static (int count, int[] nquad, int[] nsect, int[] sectEdge, (Edge edge, Node other, ConnectFlipRotate conn, (int x, int y) bend, Quad quad, Sect sect)[])
+        internal static (int count, int[] nquad, int[] nsect, (Edge edge, Node other, ConnectFlip conf, (int x, int y) bend, Quad quad, Sect sect)[])
             SortedEdges(Node n1)
         {/*
             Construct an optimumly ordered edge list for the given node.
@@ -26,14 +26,13 @@ namespace ModelGraphSTD
                            4/3|2\1        2|1         S
         */
             var (count, edge) = n1.Graph.ConnectedEdges(n1);
-            if (count == 0) return (count, null, null, null, null);
+            if (count == 0) return (count, null, null, null);
 
             var nquad = new int[5];
             var nsect = new int[9];
-            var sectEdge = new int[10];
 
-            var E = new (Edge edge, Node node, ConnectFlipRotate conn, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect)[count];  // working edge array
-            var F = new (Edge edge, Node node, ConnectFlipRotate conn, (int x, int y) bend, Quad quad, Sect sect)[count];   // output edge array
+            var E = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect)[count];  // working edge array
+            var F = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, Quad quad, Sect sect)[count];   // output edge array
 
             var P = new List<int>(count);  // ordered edge indexes for parralell edges 
             var O = new List<int>(count);  // ordered edge indexes for all non-parrallel edges, but including just one of the parallel edges
@@ -44,7 +43,7 @@ namespace ModelGraphSTD
             {
                 E[i].ord2 = (short)i;
                 E[i].edge = edge[i];
-                E[i].conn = new ConnectFlipRotate(edge[i].GetConnect(n1));
+                E[i].conf = new ConnectFlip(edge[i].GetConnect(n1));
 
                 var (other, bend) = edge[i].OtherBend(n1);
                 E[i].ord1 = (short)n1.Graph.Nodes.IndexOf(other);
@@ -128,25 +127,14 @@ namespace ModelGraphSTD
             }
             #endregion
 
-            #region Compute sectEdge  =========================================
-            int h = 0, k = 0, N = 10;
-            for (int i = 0; i < count; i++)
-            {
-                if (k == (int)F[i].sect) continue;
-                k = (int)F[i].sect;
-                for (; h <= k; h++) { sectEdge[h] = i; }
-            }
-            for (; h < N; h++) { sectEdge[h] = count; }
-            #endregion
-
-            return (count, nquad, nsect, sectEdge, F);
+            return (count, nquad, nsect, F);
 
             #region Copy E to F  ==============================================
             void CopyToOutput(int i, int j)
             {
                 F[j].edge = E[i].edge;
                 F[j].node = E[i].node;
-                F[j].conn = E[i].conn;
+                F[j].conf = E[i].conf;
                 F[j].bend = E[i].bend;
                 F[j].quad = E[i].quad;
                 F[j].sect = E[i].sect;

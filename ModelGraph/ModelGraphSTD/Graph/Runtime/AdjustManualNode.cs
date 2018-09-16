@@ -5,7 +5,7 @@ namespace ModelGraphSTD
     {
         private void AdjustManualNode(Node node)
         {
-            var (count, nquad, nsect, sectEdge, E) = Layout.SortedEdges(node);
+            var (count, nquad, nsect, E) = Layout.SortedEdges(node);
             if (count == 0) return;
 
             var gx = node.Graph.GraphX;
