@@ -199,6 +199,7 @@ namespace ModelGraphSTD
         {
             null, _sect1, _sect2, _sect3, _sect4, _sect5, _sect6, _sect7, _sect8
         };
+        private int flipIndex;
         #endregion
 
         private void AdjustSymbol(Node node)
@@ -389,23 +390,23 @@ namespace ModelGraphSTD
             }
             #endregion
 
-            for (int flip = 0; flip < 8; flip++)
+            for (int flipI = 0; flipI < 8; flipI++)
             {
-                InitializeFlip(flip);
+                InitializeFlip(flipI);
                 var done = 0;
                 var cost = 0;
 
-                for (int e = 0; e < count; e++)
+                for (int edgeI = 0; edgeI < count; edgeI++)
                 {
-                    int sectI = (int)E[e].sect;
-                    if (E[e].conf.IsPriority1 == true)
+                    int sectI = (int)E[edgeI].sect;
+                    if (E[edgeI].conf.IsPriority1 == true)
                     {
                         foreach (var (delta, side) in _sectCostSide[sectI])
                         {
                             int sideI = (int)side;
-                            if (SkipConnect(e, sideI)) continue;
+                            if (SkipConnect(edgeI, sideI)) continue;
 
-                            sideEdge[sideI].Add(e);
+                            sideEdge[sideI].Add(edgeI);
 
                             done++;
                             cost += delta;
@@ -413,17 +414,17 @@ namespace ModelGraphSTD
                         }
                     }
                 }
-                for (int e = 0; e < count; e++)
+                for (int edgeI = 0; edgeI < count; edgeI++)
                 {
-                    int sectI = (int)E[e].sect;
-                    if (E[e].conf.IsPriority1 == false)
+                    int sectI = (int)E[edgeI].sect;
+                    if (E[edgeI].conf.IsPriority1 == false)
                     {
                         foreach (var (delta, side) in _sectCostSide[sectI])
                         {
                             int sideI = (int)side;
-                            if (SkipConnect(e, sideI)) continue;
+                            if (SkipConnect(edgeI, sideI)) continue;
                             
-                            sideEdge[sideI].Add(e);
+                            sideEdge[sideI].Add(edgeI);
 
                             done++;
                             cost += delta;
@@ -439,17 +440,17 @@ namespace ModelGraphSTD
                 if (cost < bestCost)
                 {
                     bestCost = cost;
-                    bestFlip = flip;
-                    for (int i = 0; i < 4; i++)
+                    bestFlip = flipI;
+                    for (int sideI = 0; sideI < 4; sideI++)
                     {
-                        bestSideEdge[i].Clear();
-                        bestSideEdge[i].AddRange(sideEdge[i]);
+                        bestSideEdge[sideI].Clear();
+                        bestSideEdge[sideI].AddRange(sideEdge[sideI]);
                     }
 
                     unusedEdge.Clear();
-                    for (int i = 0; i < count; i++)
+                    for (int edgeI = 0; edgeI < count; edgeI++)
                     {
-                        if (E[i].conf.HasNotBeenUsed) unusedEdge.Add(E[i].edge);
+                        if (E[edgeI].conf.HasNotBeenUsed) unusedEdge.Add(E[edgeI].edge);
                     }
                 }
             }
@@ -484,18 +485,18 @@ namespace ModelGraphSTD
             bestSideEdge[3].Sort(CompareNorthQuadSlope);
 
             #region AssignEdgeConnectors  =========================
-            for (var s = 0; s < 4; s++)
+            for (var sideI = 0; sideI < 4; sideI++)
             {
-                var n = bestSideEdge[s].Count;
+                var n = bestSideEdge[sideI].Count;
                 if (n == 0) continue;
-                switch (s)
+                switch (sideI)
                 {
                     case 0: //east
                         for (int i = 0; i < n; i++)
                         {
                             ds1 = (int)((dsx / n) * Layout.Offset(i, n));
                             ds2 = tmSpc * Layout.Offset(i, n);
-                            E[bestSideEdge[s][i]].edge.SetFace(node, (dx1, ds1), (dx2, ds2), (dx3, ds2));
+                            E[bestSideEdge[sideI][i]].edge.SetFace(node, (dx1, ds1), (dx2, ds2), (dx3, ds2));
                         }
                         break;
 
@@ -504,7 +505,7 @@ namespace ModelGraphSTD
                         {
                             ds1 = (int)((dsx / n) * Layout.Offset(i, n));
                             ds2 = tmSpc * Layout.Offset(i, n);
-                            E[bestSideEdge[s][i]].edge.SetFace(node, (ds1, dy1), (ds2, dy2), (ds2, dy2));
+                            E[bestSideEdge[sideI][i]].edge.SetFace(node, (ds1, dy1), (ds2, dy2), (ds2, dy2));
                         }
                         break;
 
@@ -513,7 +514,7 @@ namespace ModelGraphSTD
                         {
                             ds1 = (int)((dsx / n) * Layout.Offset(i, n));
                             ds2 = tmSpc * Layout.Offset(i, n);
-                            E[bestSideEdge[s][i]].edge.SetFace(node, (-dx1, ds1), (-dx2, ds2), (-dx3, ds2));
+                            E[bestSideEdge[sideI][i]].edge.SetFace(node, (-dx1, ds1), (-dx2, ds2), (-dx3, ds2));
                         }
                         break;
 
@@ -522,7 +523,7 @@ namespace ModelGraphSTD
                         {
                             ds1 = (int)((dsx / n) * Layout.Offset(i, n));
                             ds2 = tmSpc * Layout.Offset(i, n);
-                            E[bestSideEdge[s][i]].edge.SetFace(node, (ds1, -dy1), (ds2, -dy2), (ds2, -dy2));
+                            E[bestSideEdge[sideI][i]].edge.SetFace(node, (ds1, -dy1), (ds2, -dy2), (ds2, -dy2));
                         }
                         break;
                 }
