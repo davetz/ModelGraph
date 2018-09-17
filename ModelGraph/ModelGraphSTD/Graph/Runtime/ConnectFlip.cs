@@ -16,6 +16,7 @@ namespace ModelGraphSTD
         private byte west;
         private byte east;
         private bool hasBeenUsed;
+        private bool isPriority1;
 
         #region Constructors  =============================================
         internal ConnectFlip(Connect connect)
@@ -29,6 +30,7 @@ namespace ModelGraphSTD
             }
             else
             {
+                isPriority1 = true;
                 ConnectNorth = north = (byte)(connect & Connect.North);
                 ConnectSouth = south = (byte)(connect & Connect.South);
                 ConnectWest = west = (byte)(connect & Connect.West);
@@ -47,6 +49,7 @@ namespace ModelGraphSTD
         }
 
         internal bool HasNotBeenUsed => !hasBeenUsed;
+        internal bool IsPriority1 => isPriority1;
 
         #region VectorTables  =============================================
         private static Func<ConnectFlip, bool>[] _canConnect = new Func<ConnectFlip, bool>[]

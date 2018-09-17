@@ -8,7 +8,7 @@ namespace ModelGraphSTD
     internal static class Layout
     {
         #region SortedEdges  ==================================================
-        internal static (int count, int[] nquad, int[] nsect, (Edge edge, Node other, ConnectFlip conf, (int x, int y) bend, Quad quad, Sect sect)[])
+        internal static (int count, int[] nquad, int[] nsect, (Edge edge, Node other, ConnectFlip conf, (int x, int y) bend, double slope, Quad quad, Sect sect)[])
             SortedEdges(Node n1)
         {/*
             Construct an optimumly ordered edge list for the given node.
@@ -32,7 +32,7 @@ namespace ModelGraphSTD
             var nsect = new int[9];
 
             var E = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect)[count];  // working edge array
-            var F = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, Quad quad, Sect sect)[count];   // output edge array
+            var F = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, double slope, Quad quad, Sect sect)[count];   // output edge array
 
             var P = new List<int>(count);  // ordered edge indexes for parralell edges 
             var O = new List<int>(count);  // ordered edge indexes for all non-parrallel edges, but including just one of the parallel edges
@@ -138,6 +138,7 @@ namespace ModelGraphSTD
                 F[j].bend = E[i].bend;
                 F[j].quad = E[i].quad;
                 F[j].sect = E[i].sect;
+                F[j].slope = E[i].slope;
             }
             #endregion
 

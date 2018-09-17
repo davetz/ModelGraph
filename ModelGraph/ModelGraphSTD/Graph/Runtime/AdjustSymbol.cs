@@ -128,7 +128,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region CostSideSector  ===============================================
+        #region CostSide  =====================================================
         //=====================================================================
         //      sect        quad         side
         //    5\6|7/8        3|4           N
@@ -139,51 +139,66 @@ namespace ModelGraphSTD
         // The are many permutations, but these are the rules and cost of assigning connections.
         // We pick the permutation with the cheapest overall cost.
 
-        static (short cost, Side side, Sect sect)[] _costSideSector = new (short cost, Side side, Sect sect)[]
+        static (byte, Side)[] _sect1 = new (byte, Side)[]
         {
-            (0, Side.East, Sect.S8),
-            (0, Side.East, Sect.S1),
-
-            (0, Side.South, Sect.S2),
-            (0, Side.South, Sect.S3),
-
-            (0, Side.West, Sect.S4),
-            (0, Side.West, Sect.S5),
-
-            (0, Side.North, Sect.S6),
-            (0, Side.North, Sect.S7),
-
-            (10, Side.East, Sect.S2),
-            (10, Side.South, Sect.S4),
-            (10, Side.West, Sect.S6),
-            (10, Side.North, Sect.S8),
-
-            (10, Side.East, Sect.S7),
-            (10, Side.South, Sect.S1),
-            (10, Side.West, Sect.S3),
-            (10, Side.North, Sect.S5),
-
-            (20, Side.East, Sect.S3),
-            (20, Side.South, Sect.S5),
-            (20, Side.West, Sect.S7),
-            (20, Side.North, Sect.S1),
-
-            (20, Side.East, Sect.S6),
-            (20, Side.South, Sect.S8),
-            (20, Side.West, Sect.S2),
-            (20, Side.North, Sect.S4),
-
-            (40, Side.East, Sect.S4),
-            (40, Side.South, Sect.S6),
-            (40, Side.West, Sect.S8),
-            (40, Side.North, Sect.S2),
-
-            (40, Side.East, Sect.S5),
-            (40, Side.South, Sect.S7),
-            (40, Side.West, Sect.S1),
-            (40, Side.North, Sect.S3),
-        };                              // Sect   S0     S1     S2    S3    S4    S5    S6     S7     S8
-        static bool[] _sectInsert = new bool[] { false, false, true, true, true, true, false, false, true };
+            (0, Side.East),
+            (10, Side.South),
+            (20, Side.North),
+            (40, Side.West),
+        };
+        static (byte, Side)[] _sect2 = new (byte, Side)[]
+        {
+            (0, Side.South),
+            (10, Side.East),
+            (20, Side.West),
+            (40, Side.North),
+        };
+        static (byte, Side)[] _sect3 = new (byte, Side)[]
+        {
+            (0, Side.South),
+            (10, Side.West),
+            (20, Side.East),
+            (40, Side.North),
+        };
+        static (byte, Side)[] _sect4 = new (byte, Side)[]
+        {
+            (0, Side.West),
+            (10, Side.South),
+            (20, Side.North),
+            (40, Side.East),
+        };
+        static (byte, Side)[] _sect5 = new (byte, Side)[]
+        {
+            (0, Side.West),
+            (10, Side.North),
+            (20, Side.South),
+            (40, Side.East),
+        };
+        static (byte, Side)[] _sect6 = new (byte, Side)[]
+        {
+            (0, Side.North),
+            (10, Side.West),
+            (20, Side.East),
+            (40, Side.South),
+        };
+        static (byte, Side)[] _sect7 = new (byte, Side)[]
+        {
+            (0, Side.North),
+            (10, Side.East),
+            (20, Side.West),
+            (40, Side.South),
+        };
+        static (byte, Side)[] _sect8 = new (byte, Side)[]
+        {
+            (0, Side.East),
+            (10, Side.North),
+            (20, Side.South),
+            (40, Side.West),
+        };
+        static (byte cost, Side side)[][] _sectCostSide = new (byte cost, Side side)[][]
+        {
+            null, _sect1, _sect2, _sect3, _sect4, _sect5, _sect6, _sect7, _sect8
+        };
         #endregion
 
         private void AdjustSymbol(Node node)
@@ -191,45 +206,230 @@ namespace ModelGraphSTD
             var (count, nquad, nsect, E) = Layout.SortedEdges(node);
             if (count == 0) return;
 
-            var sectEdge = new int[10];
-            BuildSectEdge();
-
             var isym = node.Symbol - 2;
             var symbol = Symbols[isym];
             var symFlip = new SymbolFlip(symbol);
 
-            var sideEdge = new List<Edge>[] { new List<Edge>(count), new List<Edge>(count), new List<Edge>(count), new List<Edge>(count) };
-            var bestSideEdge = new List<Edge>[] { new List<Edge>(count), new List<Edge>(count), new List<Edge>(count), new List<Edge>(count) };
+            var sideEdge = new List<int>[] { new List<int>(count), new List<int>(count), new List<int>(count), new List<int>(count) };
+            var bestSideEdge = new List<int>[] { new List<int>(count), new List<int>(count), new List<int>(count), new List<int>(count) };
             var unusedEdge = new List<Edge>(count);
 
             int bestCost = int.MaxValue;
             int bestFlip = 0;
+
+            #region CompareQuadSlope  =========================================
+
+            int CompareEastQuadSlope(int i, int j)
+            {
+                if (E[i].quad == Quad.Q1)
+                {
+                    if (E[j].quad == Quad.Q2)
+                        return 1;
+                    else if (E[j].quad == Quad.Q3)
+                        return 1;
+                    else if (E[j].quad == Quad.Q4)
+                        return 1;
+                }
+                else if (E[i].quad == Quad.Q2)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return 1;
+                    else if (E[j].quad == Quad.Q3)
+                        return 1;
+                    else if (E[j].quad == Quad.Q4)
+                        return 1;
+                }
+                else if (E[i].quad == Quad.Q3)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return -1;
+                    else if (E[j].quad == Quad.Q2)
+                        return -1;
+                    else if (E[j].quad == Quad.Q4)
+                        return -1;
+                }
+                else if (E[i].quad == Quad.Q4)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return -1;
+                    else if (E[j].quad == Quad.Q2)
+                        return -1;
+                    else if (E[j].quad == Quad.Q3)
+                        return -1;
+                }
+                if (E[i].slope < E[j].slope) return -1;
+                if (E[i].slope > E[j].slope) return +1;
+                return 0;
+            }
+            int CompareSouthQuadSlope(int i, int j)
+            {
+                if (E[i].quad == Quad.Q1)
+                {
+                    if (E[j].quad == Quad.Q2)
+                        return 1;
+                    else if (E[j].quad == Quad.Q3)
+                        return 1;
+                    else if (E[j].quad == Quad.Q4)
+                        return 1;
+                }
+                else if (E[i].quad == Quad.Q2)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return 1;
+                    else if (E[j].quad == Quad.Q3)
+                        return 1;
+                    else if (E[j].quad == Quad.Q4)
+                        return 1;
+                }
+                else if (E[i].quad == Quad.Q3)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return -1;
+                    else if (E[j].quad == Quad.Q2)
+                        return -1;
+                    else if (E[j].quad == Quad.Q4)
+                        return -1;
+                }
+                else if (E[i].quad == Quad.Q4)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return -1;
+                    else if (E[j].quad == Quad.Q2)
+                        return -1;
+                    else if (E[j].quad == Quad.Q3)
+                        return -1;
+                }
+                if (E[i].slope > E[j].slope) return -1;
+                if (E[i].slope < E[j].slope) return +1;
+                return 0;
+            }
+            int CompareWestQuadSlope(int i, int j)
+            {
+                if (E[i].quad == Quad.Q1)
+                {
+                    if (E[j].quad == Quad.Q2)
+                        return 1;
+                    else if (E[j].quad == Quad.Q3)
+                        return 1;
+                    else if (E[j].quad == Quad.Q4)
+                        return 1;
+                }
+                else if (E[i].quad == Quad.Q2)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return 1;
+                    else if (E[j].quad == Quad.Q3)
+                        return 1;
+                    else if (E[j].quad == Quad.Q4)
+                        return 1;
+                }
+                else if (E[i].quad == Quad.Q3)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return -1;
+                    else if (E[j].quad == Quad.Q2)
+                        return -1;
+                    else if (E[j].quad == Quad.Q4)
+                        return -1;
+                }
+                else if (E[i].quad == Quad.Q4)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return -1;
+                    else if (E[j].quad == Quad.Q2)
+                        return -1;
+                    else if (E[j].quad == Quad.Q3)
+                        return -1;
+                }
+                if (E[i].slope > E[j].slope) return -1;
+                if (E[i].slope < E[j].slope) return +1;
+                return 0;
+            }
+            int CompareNorthQuadSlope(int i, int j)
+            {
+                if (E[i].quad == Quad.Q1)
+                {
+                    if (E[j].quad == Quad.Q2)
+                        return 1;
+                    else if (E[j].quad == Quad.Q3)
+                        return 1;
+                    else if (E[j].quad == Quad.Q4)
+                        return 1;
+                }
+                else if (E[i].quad == Quad.Q2)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return 1;
+                    else if (E[j].quad == Quad.Q3)
+                        return 1;
+                    else if (E[j].quad == Quad.Q4)
+                        return 1;
+                }
+                else if (E[i].quad == Quad.Q3)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return -1;
+                    else if (E[j].quad == Quad.Q2)
+                        return -1;
+                    else if (E[j].quad == Quad.Q4)
+                        return -1;
+                }
+                else if (E[i].quad == Quad.Q4)
+                {
+                    if (E[j].quad == Quad.Q1)
+                        return -1;
+                    else if (E[j].quad == Quad.Q2)
+                        return -1;
+                    else if (E[j].quad == Quad.Q3)
+                        return -1;
+                }
+                if (E[i].slope < E[j].slope) return -1;
+                if (E[i].slope > E[j].slope) return +1;
+                return 0;
+            }
+            #endregion
+
             for (int flip = 0; flip < 8; flip++)
             {
                 InitializeFlip(flip);
+                var done = 0;
+                var cost = 0;
 
-                int cost = 0;
-                foreach (var (delta, side, sect) in _costSideSector)
+                for (int e = 0; e < count; e++)
                 {
-                    int sideI = (int)side;
-                    int sectI = (int)sect;
-                    var e1 = sectEdge[sectI];
-                    var e2 = sectEdge[sectI + 1];
-                    if (e1 == e2) continue;
-
-                    for (int e = e1; e < e2; e++)
+                    int sectI = (int)E[e].sect;
+                    if (E[e].conf.IsPriority1 == true)
                     {
-                        if (SkipConnect(e, sideI)) continue;
+                        foreach (var (delta, side) in _sectCostSide[sectI])
+                        {
+                            int sideI = (int)side;
+                            if (SkipConnect(e, sideI)) continue;
 
-                        if (_sectInsert[(int)E[e].sect])
-                            sideEdge[sideI].Insert(0, E[e].edge);
-                        else
-                            sideEdge[sideI].Add(E[e].edge);
+                            sideEdge[sideI].Add(e);
 
-                        cost += delta;
-                        if (cost > bestCost) break;
+                            done++;
+                            cost += delta;
+                            if (cost > bestCost) break;
+                        }
                     }
-                    if (cost > bestCost) break;
+                }
+                for (int e = 0; e < count; e++)
+                {
+                    int sectI = (int)E[e].sect;
+                    if (E[e].conf.IsPriority1 == false)
+                    {
+                        foreach (var (delta, side) in _sectCostSide[sectI])
+                        {
+                            int sideI = (int)side;
+                            if (SkipConnect(e, sideI)) continue;
+                            
+                            sideEdge[sideI].Add(e);
+
+                            done++;
+                            cost += delta;
+                            if (cost > bestCost) break;
+                        }
+                    }
                 }
                 for (int i = 0; i < count; i++)
                 {
@@ -278,6 +478,11 @@ namespace ModelGraphSTD
             var ds1 = 0;
             var ds2 = 0;
 
+            bestSideEdge[0].Sort(CompareEastQuadSlope);
+            bestSideEdge[1].Sort(CompareSouthQuadSlope);
+            bestSideEdge[2].Sort(CompareWestQuadSlope);
+            bestSideEdge[3].Sort(CompareNorthQuadSlope);
+
             #region AssignEdgeConnectors  =========================
             for (var s = 0; s < 4; s++)
             {
@@ -290,7 +495,7 @@ namespace ModelGraphSTD
                         {
                             ds1 = (int)((dsx / n) * Layout.Offset(i, n));
                             ds2 = tmSpc * Layout.Offset(i, n);
-                            bestSideEdge[s][i].SetFace(node, (dx1, ds1), (dx2, ds2), (dx3, ds2));
+                            E[bestSideEdge[s][i]].edge.SetFace(node, (dx1, ds1), (dx2, ds2), (dx3, ds2));
                         }
                         break;
 
@@ -299,7 +504,7 @@ namespace ModelGraphSTD
                         {
                             ds1 = (int)((dsx / n) * Layout.Offset(i, n));
                             ds2 = tmSpc * Layout.Offset(i, n);
-                            bestSideEdge[s][i].SetFace(node, (ds1, dy1), (ds2, dy2), (ds2, dy2));
+                            E[bestSideEdge[s][i]].edge.SetFace(node, (ds1, dy1), (ds2, dy2), (ds2, dy2));
                         }
                         break;
 
@@ -308,7 +513,7 @@ namespace ModelGraphSTD
                         {
                             ds1 = (int)((dsx / n) * Layout.Offset(i, n));
                             ds2 = tmSpc * Layout.Offset(i, n);
-                            bestSideEdge[s][i].SetFace(node, (-dx1, ds1), (-dx2, ds2), (-dx3, ds2));
+                            E[bestSideEdge[s][i]].edge.SetFace(node, (-dx1, ds1), (-dx2, ds2), (-dx3, ds2));
                         }
                         break;
 
@@ -317,7 +522,7 @@ namespace ModelGraphSTD
                         {
                             ds1 = (int)((dsx / n) * Layout.Offset(i, n));
                             ds2 = tmSpc * Layout.Offset(i, n);
-                            bestSideEdge[s][i].SetFace(node, (ds1, -dy1), (ds2, -dy2), (ds2, -dy2));
+                            E[bestSideEdge[s][i]].edge.SetFace(node, (ds1, -dy1), (ds2, -dy2), (ds2, -dy2));
                         }
                         break;
                 }
@@ -325,23 +530,6 @@ namespace ModelGraphSTD
             foreach (var edge in unusedEdge)
             {
                 edge.SetFace(node, (0, 0), (0, 0));
-            }
-            #endregion
-
-            #region BuildSectEdge  ============================================
-            void BuildSectEdge()
-            {
-                var sP = 0;     //prevous edge sector index
-                for (int eI = 0; eI < count; eI++)
-                {
-                    var sI = (int)E[eI].sect;
-                    if (sI != sP)
-                    {
-                        sectEdge[sI] = eI;
-                        sP = sI;
-                    }
-                    for (int s = sP + 1; s < 10; s++) { sectEdge[s] = eI + 1; }
-                }
             }
             #endregion
 
