@@ -1,5 +1,5 @@
 ﻿
-namespace ModelGraphSTD
+namespace ModelGraph.Controls
 {
     public interface IModelControl
     {

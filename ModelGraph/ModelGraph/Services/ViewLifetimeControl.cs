@@ -1,7 +1,7 @@
 ﻿using System;
-
+using System.Threading.Tasks;
 using ModelGraph.Helpers;
-
+using ModelGraphSTD;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 
@@ -29,6 +29,20 @@ namespace ModelGraph.Services
         public int Id { get; private set; }
 
         public string Title { get; set; }
+
+        #region ModelPageService  =============================================
+        public ModelPageControl PageControl { get; set; }
+        public void CloseModel()
+        {
+            if (PageControl is null) return;
+            PageControl = null;
+
+            var task = Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+            {
+                _window.Close();
+            });
+        }
+        #endregion
 
         public event ViewReleasedHandler Released
         {

@@ -2,13 +2,12 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
-using Microsoft.Graphics.Canvas.UI.Xaml;
 using ModelGraphSTD;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 
-
-namespace ModelGraphUWP
+namespace ModelGraph.Controls
 {
-    public sealed partial class ModelGraphControl : UserControl
+    public sealed partial class ModelGraphControl : UserControl, IModelControl
     {
         private Chef _chef;
         private Graph _graph;

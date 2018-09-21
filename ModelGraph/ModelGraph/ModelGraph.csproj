@@ -7,7 +7,7 @@
     <ProjectGuid>{10D0B308-B715-4657-A370-1A8448DF2809}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ModelGraphUWP</RootNamespace>
+    <RootNamespace>ModelGraph</RootNamespace>
     <AssemblyName>ModelGraph</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
@@ -102,12 +102,31 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
     </PackageReference>
+    <PackageReference Include="Win2D.uwp">
+      <Version>1.23.0</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="Strings\en-us\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activation\ActivationHandler.cs" />
+    <Compile Include="Controls\IModelControl.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControl.xaml.cs">
+      <DependentUpon>ModelGraphControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ModelGraph\ModelGraphControlDrawing.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlEventActions.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlInputEvents.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlMoveItems.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlVisualAids.cs" />
+    <Compile Include="Controls\ModelTree\ModelTreeControl.xaml.cs">
+      <DependentUpon>ModelTreeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ModelTree\ModelTreeUICache.cs" />
+    <Compile Include="Controls\SymbolEdit\SymbolEditControl.xaml.cs">
+      <DependentUpon>SymbolEditControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
     <Compile Include="Helpers\Json.cs" />
     <Compile Include="Helpers\NavHelper.cs" />
@@ -121,12 +140,20 @@
     <Compile Include="Services\DragAndDrop\DropConfiguration.cs" />
     <Compile Include="Services\DragAndDrop\ListViewDropConfiguration.cs" />
     <Compile Include="Services\DragAndDrop\VisualDropConfiguration.cs" />
+    <Compile Include="Services\ModelPageControl.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\ThemeSelectorService.cs" />
     <Compile Include="Services\ViewLifetimeControl.cs" />
+    <Compile Include="Services\ModelPageService.cs" />
     <Compile Include="Services\WindowManagerService.cs" />
-    <Compile Include="Views\MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="Views\HomePage.xaml.cs">
+      <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModelPage.xaml.cs">
+      <DependentUpon>ModelPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ComparePage.xaml.cs">
+      <DependentUpon>ComparePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
@@ -142,6 +169,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\ModelGraph\ModelGraphControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ModelTree\ModelTreeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\SymbolEdit\SymbolEditControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Styles\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -162,7 +201,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\MainPage.xaml">
+    <Page Include="Views\HomePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ModelPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ComparePage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -214,9 +261,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

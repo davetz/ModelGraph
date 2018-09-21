@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using ModelGraphSTD;
-using System.Threading.Tasks;
-using ModelGraphUWP.Helpers;
+using ModelGraph.Helpers;
 
-namespace ModelGraphUWP
+namespace ModelGraph.Controls
 {
-    public sealed partial class ModelTreeControl : UserControl
+    public sealed partial class ModelTreeControl : UserControl, IModelControl
     {
         public ModelTreeControl(RootModel root)
         {
@@ -38,7 +37,7 @@ namespace ModelGraphUWP
         {
             if (_viewIsReady) return false;
 
-            //_root.PageControl.SetActualSize();
+//            _root.PageControl.SetActualSize();
 
             return true;
         }

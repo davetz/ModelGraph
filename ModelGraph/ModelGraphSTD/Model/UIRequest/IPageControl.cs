@@ -8,6 +8,5 @@ namespace ModelGraphSTD
     public interface IPageControl
     {
         void Dispatch(UIRequest request);
-        void SetActualSize();
     }
 }

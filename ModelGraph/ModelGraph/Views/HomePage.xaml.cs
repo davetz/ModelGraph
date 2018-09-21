@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ModelGraph.Services;
+using ModelGraphSTD;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -6,9 +8,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace ModelGraph.Views
 {
-    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    public sealed partial class HomePage : Page, INotifyPropertyChanged
     {
-        public MainPage()
+        public HomePage()
         {
             InitializeComponent();
         }
@@ -27,5 +29,12 @@ namespace ModelGraph.Views
         }
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private void NewButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            var root = new RootModel();
+            var ctrl = new ModelPageControl(root);
+            ModelPageService.InsertModelPage(ctrl);
+        }
     }
 }

@@ -149,36 +149,2055 @@
     <value>Light</value>
     <comment>Light theme text for Settings</comment>
   </data>
-  <data name="Settings_About.Text" xml:space="preserve">    
+  <data name="Settings_About.Text" xml:space="preserve">
     <value>About this application</value>
     <comment>About this application title for Settings</comment>
   </data>
-  <data name="Settings_AboutDescription.Text" xml:space="preserve">    
+  <data name="Settings_AboutDescription.Text" xml:space="preserve">
     <value>Settings page placeholder text.  Your app description goes here.</value>
     <comment>About this application description for Settings</comment>
   </data>
-  <data name="Settings_PrivacyTermsLink.Content" xml:space="preserve">    
+  <data name="Settings_PrivacyTermsLink.Content" xml:space="preserve">
     <value>Privacy Statement</value>
     <comment>Privacy Statement link content for Settings</comment>
   </data>
-  <data name="Settings_PrivacyTermsLink.NavigateUri" xml:space="preserve">  
+  <data name="Settings_PrivacyTermsLink.NavigateUri" xml:space="preserve">
     <value>https://YourPrivacyUrlGoesHere/</value>
     <comment>Here is your Privacy Statement url for Settings</comment>
   </data>
-  <data name="Settings_Personalization.Text" xml:space="preserve">   
+  <data name="Settings_Personalization.Text" xml:space="preserve">
     <value>Personalization</value>
     <comment>Personalization text for Settings</comment>
   </data>
-  <data name="ExceptionEnumToBooleanConverterValueMustBeAnEnum" xml:space="preserve">   
+  <data name="ExceptionEnumToBooleanConverterValueMustBeAnEnum" xml:space="preserve">
     <value>value must be an Enum!</value>
     <comment>Value must be an Enum in enum to boolean converter</comment>
   </data>
-  <data name="ExceptionEnumToBooleanConverterParameterMustBeAnEnumName" xml:space="preserve">   
+  <data name="ExceptionEnumToBooleanConverterParameterMustBeAnEnumName" xml:space="preserve">
     <value>parameter must be an Enum name!</value>
     <comment>Parameter must be an Enum name in enum to boolean converter</comment>
   </data>
   <data name="ExceptionViewLifeTimeControlViewDisposal" xml:space="preserve">
     <value>This view is being disposed.</value>
     <comment>View disposed</comment>
+  </data>
+  <data name="001N" xml:space="preserve">
+    <value>???</value>
+  </data>
+  <data name="001S" xml:space="preserve">
+    <value>Item has a blank name</value>
+  </data>
+  <data name="002N" xml:space="preserve">
+    <value>######</value>
+  </data>
+  <data name="002S" xml:space="preserve">
+    <value>Item is invalid (it should not be here)</value>
+  </data>
+  <data name="003N" xml:space="preserve">
+    <value>Model Graph</value>
+  </data>
+  <data name="003S" xml:space="preserve">
+    <value>Model Graph application</value>
+  </data>
+  <data name="004N" xml:space="preserve">
+    <value>List of new or open models</value>
+  </data>
+  <data name="004S" xml:space="preserve">
+    <value>List of new or open models</value>
+  </data>
+  <data name="005S" xml:space="preserve">
+    <value>Sort Mode (None, Ascending, Descending)</value>
+  </data>
+  <data name="006S" xml:space="preserve">
+    <value>Expand/Collapse Tree Level</value>
+  </data>
+  <data name="007S" xml:space="preserve">
+    <value>Total Count</value>
+  </data>
+  <data name="008S" xml:space="preserve">
+    <value>Enter a filter string</value>
+  </data>
+  <data name="009S" xml:space="preserve">
+    <value>Filtered Count</value>
+  </data>
+  <data name="00AS" xml:space="preserve">
+    <value>Show/Hide Item Properties</value>
+  </data>
+  <data name="00BS" xml:space="preserve">
+    <value>Show/Hide Item Filter String</value>
+  </data>
+  <data name="00CN" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="00CS" xml:space="preserve">
+    <value>New unsaved data model</value>
+  </data>
+  <data name="00DN" xml:space="preserve">
+    <value>Edit Symbol</value>
+  </data>
+  <data name="00ES" xml:space="preserve">
+    <value>A: Show All,  U: Show Used,  N: Show Not Used</value>
+  </data>
+  <data name="021N" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="021S" xml:space="preserve">
+    <value>Create a new model</value>
+  </data>
+  <data name="022N" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="022S" xml:space="preserve">
+    <value>Open an existing model</value>
+  </data>
+  <data name="023N" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="023S" xml:space="preserve">
+    <value>Save changes</value>
+  </data>
+  <data name="024N" xml:space="preserve">
+    <value>SaveAs</value>
+  </data>
+  <data name="024S" xml:space="preserve">
+    <value>Save changes in a new file</value>
+  </data>
+  <data name="025N" xml:space="preserve">
+    <value>Relaod</value>
+  </data>
+  <data name="025S" xml:space="preserve">
+    <value>Reload previously saved version</value>
+  </data>
+  <data name="026N" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="026S" xml:space="preserve">
+    <value>Close without saving changes</value>
+  </data>
+  <data name="030N" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="030S" xml:space="preserve">
+    <value>Edit this item</value>
+  </data>
+  <data name="031N" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="031S" xml:space="preserve">
+    <value>Open this item in secondary view</value>
+  </data>
+  <data name="032N" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="032S" xml:space="preserve">
+    <value>Undo the changes listed in this change set. </value>
+  </data>
+  <data name="033N" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="033S" xml:space="preserve">
+    <value>Redo the changes listed in this change set. </value>
+  </data>
+  <data name="034N" xml:space="preserve">
+    <value>Merge</value>
+  </data>
+  <data name="034S" xml:space="preserve">
+    <value>Merge the changes listed with the next change set.</value>
+  </data>
+  <data name="035N" xml:space="preserve">
+    <value>Insert</value>
+  </data>
+  <data name="035S" xml:space="preserve">
+    <value>Insert/Add an item</value>
+  </data>
+  <data name="036N" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="036S" xml:space="preserve">
+    <value>Remove this item</value>
+  </data>
+  <data name="037N" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="037S" xml:space="preserve">
+    <value>Create/Refresh this graph</value>
+  </data>
+  <data name="038N" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="038S" xml:space="preserve">
+    <value>Refresh this view</value>
+  </data>
+  <data name="039N" xml:space="preserve">
+    <value>Expand All</value>
+  </data>
+  <data name="039S" xml:space="preserve">
+    <value>Expand all subtree items</value>
+  </data>
+  <data name="03AN" xml:space="preserve">
+    <value>Make Link Sequence</value>
+  </data>
+  <data name="03AS" xml:space="preserve">
+    <value>Make this a link sequence</value>
+  </data>
+  <data name="03BN" xml:space="preserve">
+    <value>Make Path Sequence</value>
+  </data>
+  <data name="03BS" xml:space="preserve">
+    <value>Make this a path sequence</value>
+  </data>
+  <data name="03CN" xml:space="preserve">
+    <value>Make Group Sequence</value>
+  </data>
+  <data name="03CS" xml:space="preserve">
+    <value>Make this a group sequence</value>
+  </data>
+  <data name="03DN" xml:space="preserve">
+    <value>Make Egress Sequence</value>
+  </data>
+  <data name="03DS" xml:space="preserve">
+    <value>Make this an egress sequence</value>
+  </data>
+  <data name="0E1N" xml:space="preserve">
+    <value>EnumStore</value>
+  </data>
+  <data name="0E2N" xml:space="preserve">
+    <value>ViewStore</value>
+  </data>
+  <data name="0E3N" xml:space="preserve">
+    <value>TableStore</value>
+  </data>
+  <data name="0E4N" xml:space="preserve">
+    <value>GraphStore</value>
+  </data>
+  <data name="0E5N" xml:space="preserve">
+    <value>QueryStore</value>
+  </data>
+  <data name="0E6N" xml:space="preserve">
+    <value>ValueStore</value>
+  </data>
+  <data name="0E7K" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
+  <data name="0E7N" xml:space="preserve">
+    <value>SymbolStore</value>
+  </data>
+  <data name="0E8N" xml:space="preserve">
+    <value>ColumnStore</value>
+  </data>
+  <data name="0E9N" xml:space="preserve">
+    <value>ComputeStore</value>
+  </data>
+  <data name="0EAN" xml:space="preserve">
+    <value>RelationStore</value>
+  </data>
+  <data name="0F0N" xml:space="preserve">
+    <value>PrimeStore</value>
+  </data>
+  <data name="0F1N" xml:space="preserve">
+    <value>EnumZStore</value>
+  </data>
+  <data name="0F2N" xml:space="preserve">
+    <value>ErrorStore</value>
+  </data>
+  <data name="0F3N" xml:space="preserve">
+    <value>GroupStore</value>
+  </data>
+  <data name="0F4N" xml:space="preserve">
+    <value>Internal Properties</value>
+  </data>
+  <data name="0F5N" xml:space="preserve">
+    <value>Internal Relations</value>
+  </data>
+  <data name="0F6N" xml:space="preserve">
+    <value>Internal RelationZ</value>
+  </data>
+  <data name="132N" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="133K" xml:space="preserve">
+    <value>Updated</value>
+  </data>
+  <data name="134K" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="135K" xml:space="preserve">
+    <value>Removed</value>
+  </data>
+  <data name="136K" xml:space="preserve">
+    <value>Linked</value>
+  </data>
+  <data name="137K" xml:space="preserve">
+    <value>Unlinked</value>
+  </data>
+  <data name="138K" xml:space="preserve">
+    <value>Reorder Items</value>
+  </data>
+  <data name="139K" xml:space="preserve">
+    <value>Reordered Child Links</value>
+  </data>
+  <data name="13AK" xml:space="preserve">
+    <value>Reordered Parent Links</value>
+  </data>
+  <data name="141K" xml:space="preserve">
+    <value>Row</value>
+  </data>
+  <data name="142K" xml:space="preserve">
+    <value>Pair</value>
+  </data>
+  <data name="143K" xml:space="preserve">
+    <value>Enum</value>
+  </data>
+  <data name="144K" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="145K" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="146K" xml:space="preserve">
+    <value>Graph</value>
+  </data>
+  <data name="147K" xml:space="preserve">
+    <value>Query</value>
+  </data>
+  <data name="148K" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
+  <data name="149K" xml:space="preserve">
+    <value>Column</value>
+  </data>
+  <data name="14AK" xml:space="preserve">
+    <value>Compute</value>
+  </data>
+  <data name="14BK" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="14CK" xml:space="preserve">
+    <value>Relation</value>
+  </data>
+  <data name="150K" xml:space="preserve">
+    <value>Query Corrupted</value>
+  </data>
+  <data name="151K" xml:space="preserve">
+    <value>Query GraphRoot</value>
+  </data>
+  <data name="152K" xml:space="preserve">
+    <value>Query GraphLink</value>
+  </data>
+  <data name="153K" xml:space="preserve">
+    <value>Query ViewRoot</value>
+  </data>
+  <data name="154K" xml:space="preserve">
+    <value>Query ViewHead</value>
+  </data>
+  <data name="155K" xml:space="preserve">
+    <value>Query ViewLink</value>
+  </data>
+  <data name="156K" xml:space="preserve">
+    <value>Query PathHead</value>
+  </data>
+  <data name="157K" xml:space="preserve">
+    <value>Query PathLink</value>
+  </data>
+  <data name="158K" xml:space="preserve">
+    <value>Query GroupHead</value>
+  </data>
+  <data name="159K" xml:space="preserve">
+    <value>Query GroupLink</value>
+  </data>
+  <data name="15AK" xml:space="preserve">
+    <value>Query SegueHead</value>
+  </data>
+  <data name="15BK" xml:space="preserve">
+    <value>Query SegueLink</value>
+  </data>
+  <data name="15CK" xml:space="preserve">
+    <value>Query ValueRoot</value>
+  </data>
+  <data name="15DK" xml:space="preserve">
+    <value>Query ValueHead</value>
+  </data>
+  <data name="15EK" xml:space="preserve">
+    <value>Query ValueLink</value>
+  </data>
+  <data name="15FK" xml:space="preserve">
+    <value>Query NodeSymbol</value>
+  </data>
+  <data name="161N" xml:space="preserve">
+    <value>Where</value>
+  </data>
+  <data name="162N" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="1E1N" xml:space="preserve">
+    <value>HubNode</value>
+  </data>
+  <data name="1E2N" xml:space="preserve">
+    <value>HupPath</value>
+  </data>
+  <data name="1E3N" xml:space="preserve">
+    <value>QueryPath</value>
+  </data>
+  <data name="1E4N" xml:space="preserve">
+    <value>FlaredPath</value>
+  </data>
+  <data name="1E5N" xml:space="preserve">
+    <value>ForkedPath</value>
+  </data>
+  <data name="1E6N" xml:space="preserve">
+    <value>SeriesPath</value>
+  </data>
+  <data name="1E7N" xml:space="preserve">
+    <value>ParallelPath</value>
+  </data>
+  <data name="1EEK" xml:space="preserve">
+    <value>_Link</value>
+  </data>
+  <data name="1EEN" xml:space="preserve">
+    <value>LinkPath</value>
+  </data>
+  <data name="1EFK" xml:space="preserve">
+    <value>_Radial</value>
+  </data>
+  <data name="1EFN" xml:space="preserve">
+    <value>RadialPath</value>
+  </data>
+  <data name="300K" xml:space="preserve">
+    <value>Relation</value>
+  </data>
+  <data name="300S" xml:space="preserve">
+    <value>Internally defined relation</value>
+  </data>
+  <data name="311N" xml:space="preserve">
+    <value>Enum_Column</value>
+  </data>
+  <data name="312N" xml:space="preserve">
+    <value>Table_Column</value>
+  </data>
+  <data name="313N" xml:space="preserve">
+    <value>Table_NameProperty</value>
+  </data>
+  <data name="314N" xml:space="preserve">
+    <value>Table_SummaryProperty</value>
+  </data>
+  <data name="315N" xml:space="preserve">
+    <value>Table_ChildRelation</value>
+  </data>
+  <data name="316N" xml:space="preserve">
+    <value>Table_ParentRelation</value>
+  </data>
+  <data name="321N" xml:space="preserve">
+    <value>z</value>
+  </data>
+  <data name="322N" xml:space="preserve">
+    <value>z</value>
+  </data>
+  <data name="323N" xml:space="preserve">
+    <value>z</value>
+  </data>
+  <data name="324N" xml:space="preserve">
+    <value>z</value>
+  </data>
+  <data name="325N" xml:space="preserve">
+    <value>z</value>
+  </data>
+  <data name="326N" xml:space="preserve">
+    <value>z</value>
+  </data>
+  <data name="331N" xml:space="preserve">
+    <value>Item_Error</value>
+  </data>
+  <data name="332N" xml:space="preserve">
+    <value>View_View</value>
+  </data>
+  <data name="333N" xml:space="preserve">
+    <value>View_Query</value>
+  </data>
+  <data name="334N" xml:space="preserve">
+    <value>Query_View</value>
+  </data>
+  <data name="335N" xml:space="preserve">
+    <value>Column_View</value>
+  </data>
+  <data name="336N" xml:space="preserve">
+    <value>Relation_View</value>
+  </data>
+  <data name="337N" xml:space="preserve">
+    <value>View_Property</value>
+  </data>
+  <data name="338N" xml:space="preserve">
+    <value>Query_Property</value>
+  </data>
+  <data name="341N" xml:space="preserve">
+    <value>Graph_Symbol</value>
+  </data>
+  <data name="342N" xml:space="preserve">
+    <value>Symbol_Query</value>
+  </data>
+  <data name="343N" xml:space="preserve">
+    <value>Graph_Query</value>
+  </data>
+  <data name="344N" xml:space="preserve">
+    <value>Query_Query</value>
+  </data>
+  <data name="345N" xml:space="preserve">
+    <value>Graph_ColorColumn</value>
+  </data>
+  <data name="346N" xml:space="preserve">
+    <value>Graph_SymbolQuery</value>
+  </data>
+  <data name="351N" xml:space="preserve">
+    <value>Store_Query</value>
+  </data>
+  <data name="352N" xml:space="preserve">
+    <value>Relation_Query</value>
+  </data>
+  <data name="361N" xml:space="preserve">
+    <value>Store_Compute</value>
+  </data>
+  <data name="362N" xml:space="preserve">
+    <value>Compute_Query</value>
+  </data>
+  <data name="3FDN" xml:space="preserve">
+    <value>Store_Property</value>
+  </data>
+  <data name="3FEN" xml:space="preserve">
+    <value>Store_ChildRelation</value>
+  </data>
+  <data name="3FFN" xml:space="preserve">
+    <value>Store_ParentRelation</value>
+  </data>
+  <data name="400K" xml:space="preserve">
+    <value>Property</value>
+  </data>
+  <data name="400S" xml:space="preserve">
+    <value>Internal defined property</value>
+  </data>
+  <data name="401N" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="401S" xml:space="preserve">
+    <value>Name of this view</value>
+  </data>
+  <data name="402N" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="402S" xml:space="preserve">
+    <value>Summary (used in hover over tool tip)</value>
+  </data>
+  <data name="403N" xml:space="preserve">
+    <value>Show Item Index</value>
+  </data>
+  <data name="403S" xml:space="preserve">
+    <value>Include the Item's index in the item's name string</value>
+  </data>
+  <data name="404N" xml:space="preserve">
+    <value>Show Item Hash Code</value>
+  </data>
+  <data name="404S" xml:space="preserve">
+    <value>Include the Item's hash code in the item's name string</value>
+  </data>
+  <data name="411N" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="411S" xml:space="preserve">
+    <value>Name of this enumeration</value>
+  </data>
+  <data name="412N" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="412S" xml:space="preserve">
+    <value>Summary (used in hover over tool tip)</value>
+  </data>
+  <data name="413N" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="413S" xml:space="preserve">
+    <value>Displayed text</value>
+  </data>
+  <data name="414N" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="414S" xml:space="preserve">
+    <value>Actual value</value>
+  </data>
+  <data name="421N" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="421S" xml:space="preserve">
+    <value>Name of this table</value>
+  </data>
+  <data name="422N" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="422S" xml:space="preserve">
+    <value>Summary (used in hover over tool tip)</value>
+  </data>
+  <data name="431N" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="431S" xml:space="preserve">
+    <value>Name of this column</value>
+  </data>
+  <data name="432N" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="432S" xml:space="preserve">
+    <value>Summary (used in hover over tool tip)</value>
+  </data>
+  <data name="433N" xml:space="preserve">
+    <value>Value Type</value>
+  </data>
+  <data name="433S" xml:space="preserve">
+    <value>Column's data value type</value>
+  </data>
+  <data name="434N" xml:space="preserve">
+    <value>Access</value>
+  </data>
+  <data name="434S" xml:space="preserve">
+    <value>Type of access</value>
+  </data>
+  <data name="435N" xml:space="preserve">
+    <value>Initial Value</value>
+  </data>
+  <data name="435S" xml:space="preserve">
+    <value>Column's inital value (for new rows)</value>
+  </data>
+  <data name="436N" xml:space="preserve">
+    <value>Is Select</value>
+  </data>
+  <data name="436S" xml:space="preserve">
+    <value>Include this column in the row's  property list</value>
+  </data>
+  <data name="441N" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="441S" xml:space="preserve">
+    <value>Name of this relation</value>
+  </data>
+  <data name="442N" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="442S" xml:space="preserve">
+    <value>Summary (used in hover over tool tip)</value>
+  </data>
+  <data name="443N" xml:space="preserve">
+    <value>Pairing</value>
+  </data>
+  <data name="443S" xml:space="preserve">
+    <value>Type of relationship</value>
+  </data>
+  <data name="444N" xml:space="preserve">
+    <value>Is Required</value>
+  </data>
+  <data name="444S" xml:space="preserve">
+    <value>When the parent is deleted, delete its dependant children</value>
+  </data>
+  <data name="445N" xml:space="preserve">
+    <value>Is Restricted</value>
+  </data>
+  <data name="445S" xml:space="preserve">
+    <value>Expect a min/max number of occrances</value>
+  </data>
+  <data name="446N" xml:space="preserve">
+    <value>Min Occurance</value>
+  </data>
+  <data name="446S" xml:space="preserve">
+    <value>The minimum number of occrances</value>
+  </data>
+  <data name="447N" xml:space="preserve">
+    <value>Max Occurance</value>
+  </data>
+  <data name="447S" xml:space="preserve">
+    <value>The maximum number of occurances</value>
+  </data>
+  <data name="451N" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="451S" xml:space="preserve">
+    <value>Name of this graph</value>
+  </data>
+  <data name="452N" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="452S" xml:space="preserve">
+    <value>Summary (used in hover over tool tip)</value>
+  </data>
+  <data name="453N" xml:space="preserve">
+    <value>Terminal Length</value>
+  </data>
+  <data name="453S" xml:space="preserve">
+    <value>Length of terminal</value>
+  </data>
+  <data name="454N" xml:space="preserve">
+    <value>Terminal Spacing</value>
+  </data>
+  <data name="454S" xml:space="preserve">
+    <value>Space between terminals</value>
+  </data>
+  <data name="455N" xml:space="preserve">
+    <value>Skewed Angle Offset</value>
+  </data>
+  <data name="455S" xml:space="preserve">
+    <value>Amount of offset in skewed angle connctions (2 is tyical) </value>
+  </data>
+  <data name="460N" xml:space="preserve">
+    <value>Rows Where</value>
+  </data>
+  <data name="460S" xml:space="preserve">
+    <value>Select expresion string</value>
+  </data>
+  <data name="461N" xml:space="preserve">
+    <value>Rows Where</value>
+  </data>
+  <data name="461S" xml:space="preserve">
+    <value>Filter the rows for specific property values</value>
+  </data>
+  <data name="462N" xml:space="preserve">
+    <value>Connect1</value>
+  </data>
+  <data name="462S" xml:space="preserve">
+    <value>Specify allowed connections on head end</value>
+  </data>
+  <data name="463N" xml:space="preserve">
+    <value>Connect2</value>
+  </data>
+  <data name="463S" xml:space="preserve">
+    <value>Specify allowed conntions on tail end</value>
+  </data>
+  <data name="464N" xml:space="preserve">
+    <value>Attach1</value>
+  </data>
+  <data name="464S" xml:space="preserve">
+    <value>Specify the style of the connection on head end</value>
+  </data>
+  <data name="465N" xml:space="preserve">
+    <value>Attach2</value>
+  </data>
+  <data name="465S" xml:space="preserve">
+    <value>Specify the style of the connection on tail end</value>
+  </data>
+  <data name="466N" xml:space="preserve">
+    <value>Relation</value>
+  </data>
+  <data name="466S" xml:space="preserve">
+    <value>Relation referenced by this seque</value>
+  </data>
+  <data name="467N" xml:space="preserve">
+    <value>Is Reversed</value>
+  </data>
+  <data name="467S" xml:space="preserve">
+    <value>Reverse the relation's head/tail traversal</value>
+  </data>
+  <data name="468N" xml:space="preserve">
+    <value>Is Immediate</value>
+  </data>
+  <data name="468S" xml:space="preserve">
+    <value>Allow the existance of an incompleted path</value>
+  </data>
+  <data name="469N" xml:space="preserve">
+    <value>Is Persistent</value>
+  </data>
+  <data name="469S" xml:space="preserve">
+    <value>Keep this path alive even though it may be incomplete</value>
+  </data>
+  <data name="46AN" xml:space="preserve">
+    <value>Is Break Point</value>
+  </data>
+  <data name="46AS" xml:space="preserve">
+    <value>Allow this path to be opened/closed at this point</value>
+  </data>
+  <data name="46BN" xml:space="preserve">
+    <value>Is Exclusive</value>
+  </data>
+  <data name="46BS" xml:space="preserve">
+    <value>Prevent duplicate occrances of this exact path</value>
+  </data>
+  <data name="46CN" xml:space="preserve">
+    <value>Allow Self Loop</value>
+  </data>
+  <data name="46CS" xml:space="preserve">
+    <value>Allow this path loop back upon itself</value>
+  </data>
+  <data name="46DN" xml:space="preserve">
+    <value>Is Path Reversed</value>
+  </data>
+  <data name="46DS" xml:space="preserve">
+    <value>Reverse the head/tail of the entire path</value>
+  </data>
+  <data name="46EN" xml:space="preserve">
+    <value>Full Table Scan</value>
+  </data>
+  <data name="46ES" xml:space="preserve">
+    <value>Make every row of this table a root item</value>
+  </data>
+  <data name="46FN" xml:space="preserve">
+    <value>Facet1</value>
+  </data>
+  <data name="46FS" xml:space="preserve">
+    <value>Path head end facet</value>
+  </data>
+  <data name="470N" xml:space="preserve">
+    <value>Facet2</value>
+  </data>
+  <data name="470S" xml:space="preserve">
+    <value>Path tail end facet</value>
+  </data>
+  <data name="471N" xml:space="preserve">
+    <value>Rows Where</value>
+  </data>
+  <data name="471S" xml:space="preserve">
+    <value>Filter the rows for specific property values</value>
+  </data>
+  <data name="472N" xml:space="preserve">
+    <value>Row Select</value>
+  </data>
+  <data name="472S" xml:space="preserve">
+    <value>Select expresion string</value>
+  </data>
+  <data name="473N" xml:space="preserve">
+    <value>Is Reversed</value>
+  </data>
+  <data name="473S" xml:space="preserve">
+    <value>Reverse the relation's head/tail traversal</value>
+  </data>
+  <data name="474N" xml:space="preserve">
+    <value>Result Type</value>
+  </data>
+  <data name="474S" xml:space="preserve">
+    <value>Resulting value type</value>
+  </data>
+  <data name="475N" xml:space="preserve">
+    <value>Line Style</value>
+  </data>
+  <data name="475S" xml:space="preserve">
+    <value>Specify the line's style</value>
+  </data>
+  <data name="476N" xml:space="preserve">
+    <value>Dash Style</value>
+  </data>
+  <data name="476S" xml:space="preserve">
+    <value>Specify the line's dash style</value>
+  </data>
+  <data name="477N" xml:space="preserve">
+    <value>Line Color</value>
+  </data>
+  <data name="477S" xml:space="preserve">
+    <value>Forced line color (ARGB code, e.g.  #FF008000)</value>
+  </data>
+  <data name="481N" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="481S" xml:space="preserve">
+    <value>Name of this symbol</value>
+  </data>
+  <data name="482N" xml:space="preserve">
+    <value>Top Contact</value>
+  </data>
+  <data name="482S" xml:space="preserve">
+    <value>Allow connections on the top</value>
+  </data>
+  <data name="483N" xml:space="preserve">
+    <value>Left Contact</value>
+  </data>
+  <data name="483S" xml:space="preserve">
+    <value>Allow connections on the left side</value>
+  </data>
+  <data name="484N" xml:space="preserve">
+    <value>Right Contact</value>
+  </data>
+  <data name="484S" xml:space="preserve">
+    <value>Allow connection on the right side</value>
+  </data>
+  <data name="485N" xml:space="preserve">
+    <value>Bottom Contact</value>
+  </data>
+  <data name="485S" xml:space="preserve">
+    <value>Allow connection on the bottom</value>
+  </data>
+  <data name="491N" xml:space="preserve">
+    <value>Center (X, Y)</value>
+  </data>
+  <data name="491S" xml:space="preserve">
+    <value>Node's center X, Y coordinates</value>
+  </data>
+  <data name="492N" xml:space="preserve">
+    <value>Size (W, H)</value>
+  </data>
+  <data name="492S" xml:space="preserve">
+    <value>Node's (width, height) size</value>
+  </data>
+  <data name="493N" xml:space="preserve">
+    <value>Labeling</value>
+  </data>
+  <data name="493S" xml:space="preserve">
+    <value>Placement of the node's identity lable</value>
+  </data>
+  <data name="494N" xml:space="preserve">
+    <value>Resizing</value>
+  </data>
+  <data name="494S" xml:space="preserve">
+    <value>Allowed resizing</value>
+  </data>
+  <data name="495N" xml:space="preserve">
+    <value>Bar Width</value>
+  </data>
+  <data name="495S" xml:space="preserve">
+    <value>Width of node's  bus bar representation </value>
+  </data>
+  <data name="496N" xml:space="preserve">
+    <value>Orientation</value>
+  </data>
+  <data name="496S" xml:space="preserve">
+    <value>Nodes orientation</value>
+  </data>
+  <data name="497N" xml:space="preserve">
+    <value>Flip Rotate</value>
+  </data>
+  <data name="497S" xml:space="preserve">
+    <value>Node symbol's flip/rotate state</value>
+  </data>
+  <data name="4A1N" xml:space="preserve">
+    <value>Face1</value>
+  </data>
+  <data name="4A1S" xml:space="preserve">
+    <value>Face1</value>
+  </data>
+  <data name="4A2N" xml:space="preserve">
+    <value>Face2</value>
+  </data>
+  <data name="4A2S" xml:space="preserve">
+    <value>Face2</value>
+  </data>
+  <data name="4A3N" xml:space="preserve">
+    <value>Facet1</value>
+  </data>
+  <data name="4A3S" xml:space="preserve">
+    <value>Facet1</value>
+  </data>
+  <data name="4A4N" xml:space="preserve">
+    <value>Facet2</value>
+  </data>
+  <data name="4A4S" xml:space="preserve">
+    <value>Facet2</value>
+  </data>
+  <data name="4A5N" xml:space="preserve">
+    <value>Connect1</value>
+  </data>
+  <data name="4A5S" xml:space="preserve">
+    <value>Connect1</value>
+  </data>
+  <data name="4A6N" xml:space="preserve">
+    <value>Connect2</value>
+  </data>
+  <data name="4A6S" xml:space="preserve">
+    <value>Connect2</value>
+  </data>
+  <data name="4B1N" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="4B1S" xml:space="preserve">
+    <value>Name of the Computed Value</value>
+  </data>
+  <data name="4B2N" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="4B2S" xml:space="preserve">
+    <value>Summary (used in hover over tool tip)</value>
+  </data>
+  <data name="4B3N" xml:space="preserve">
+    <value>Computing</value>
+  </data>
+  <data name="4B3S" xml:space="preserve">
+    <value>Type of computation</value>
+  </data>
+  <data name="4B4N" xml:space="preserve">
+    <value>Rows Where</value>
+  </data>
+  <data name="4B4S" xml:space="preserve">
+    <value>Filter the rows for specific property values</value>
+  </data>
+  <data name="4B5N" xml:space="preserve">
+    <value>Row Value Select</value>
+  </data>
+  <data name="4B5S" xml:space="preserve">
+    <value>Value select expression</value>
+  </data>
+  <data name="4B6N" xml:space="preserve">
+    <value>Separator</value>
+  </data>
+  <data name="4B6S" xml:space="preserve">
+    <value>Separate the composite value parts with this string</value>
+  </data>
+  <data name="4B7N" xml:space="preserve">
+    <value>Result Type</value>
+  </data>
+  <data name="4B7S" xml:space="preserve">
+    <value>Resulting value type</value>
+  </data>
+  <data name="4B8N" xml:space="preserve">
+    <value>NumericSet</value>
+  </data>
+  <data name="4B8S" xml:space="preserve">
+    <value>Numeric set calculation types</value>
+  </data>
+  <data name="4B9N" xml:space="preserve">
+    <value>Results</value>
+  </data>
+  <data name="4B9S" xml:space="preserve">
+    <value>Query results (scalar / array)?</value>
+  </data>
+  <data name="4BAN" xml:space="preserve">
+    <value>Sorting</value>
+  </data>
+  <data name="4BAS" xml:space="preserve">
+    <value>Chose results sorting method</value>
+  </data>
+  <data name="4BBN" xml:space="preserve">
+    <value>TakeSet</value>
+  </data>
+  <data name="4BBS" xml:space="preserve">
+    <value>Which end of the results set to take from</value>
+  </data>
+  <data name="4BCN" xml:space="preserve">
+    <value>TakeLimit</value>
+  </data>
+  <data name="4BCS" xml:space="preserve">
+    <value>Take a limited number of elements form the full results set</value>
+  </data>
+  <data name="600N" xml:space="preserve">
+    <value>Diagnostic</value>
+  </data>
+  <data name="600S" xml:space="preserve">
+    <value>List of diagnostic options</value>
+  </data>
+  <data name="611N" xml:space="preserve">
+    <value>DataStore</value>
+  </data>
+  <data name="620N" xml:space="preserve">
+    <value>Parm</value>
+  </data>
+  <data name="620S" xml:space="preserve">
+    <value>Model parameters</value>
+  </data>
+  <data name="621N" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="621S" xml:space="preserve">
+    <value>List of errors</value>
+  </data>
+  <data name="622N" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="622S" xml:space="preserve">
+    <value>List of changes</value>
+  </data>
+  <data name="623N" xml:space="preserve">
+    <value>Metadata</value>
+  </data>
+  <data name="623S" xml:space="preserve">
+    <value>Model schema and metadata</value>
+  </data>
+  <data name="624N" xml:space="preserve">
+    <value>Modeling</value>
+  </data>
+  <data name="624S" xml:space="preserve">
+    <value>Modeling data</value>
+  </data>
+  <data name="625N" xml:space="preserve">
+    <value>Metadata Relation</value>
+  </data>
+  <data name="631N" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="631S" xml:space="preserve">
+    <value>List of user defined views</value>
+  </data>
+  <data name="632K" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="63AN" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="63AS" xml:space="preserve">
+    <value>List of views</value>
+  </data>
+  <data name="63DK" xml:space="preserve">
+    <value>Query</value>
+  </data>
+  <data name="642N" xml:space="preserve">
+    <value>Enum</value>
+  </data>
+  <data name="643N" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="643S" xml:space="preserve">
+    <value>List of tables</value>
+  </data>
+  <data name="644N" xml:space="preserve">
+    <value>Graph</value>
+  </data>
+  <data name="645N" xml:space="preserve">
+    <value>Symbols</value>
+  </data>
+  <data name="646N" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="647N" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="647S" xml:space="preserve">
+    <value>List of tables</value>
+  </data>
+  <data name="648N" xml:space="preserve">
+    <value>Graph</value>
+  </data>
+  <data name="648S" xml:space="preserve">
+    <value>List of graphs</value>
+  </data>
+  <data name="661N" xml:space="preserve">
+    <value>Column</value>
+  </data>
+  <data name="661S" xml:space="preserve">
+    <value>List of user defined Columns for this table</value>
+  </data>
+  <data name="662N" xml:space="preserve">
+    <value>Child Relation</value>
+  </data>
+  <data name="662S" xml:space="preserve">
+    <value>List of user defined child relationships for this table</value>
+  </data>
+  <data name="663N" xml:space="preserve">
+    <value>Parent Relation</value>
+  </data>
+  <data name="663S" xml:space="preserve">
+    <value>List of user defined parent relationships for this table</value>
+  </data>
+  <data name="664N" xml:space="preserve">
+    <value>ValuePairs</value>
+  </data>
+  <data name="664S" xml:space="preserve">
+    <value>Displayed text for column value</value>
+  </data>
+  <data name="665N" xml:space="preserve">
+    <value>Columns</value>
+  </data>
+  <data name="665S" xml:space="preserve">
+    <value>Drag a Column and drop it here to assign this enum.</value>
+  </data>
+  <data name="666N" xml:space="preserve">
+    <value>Computed</value>
+  </data>
+  <data name="666S" xml:space="preserve">
+    <value>List of user defined computed values for this table</value>
+  </data>
+  <data name="667K" xml:space="preserve">
+    <value>Column</value>
+  </data>
+  <data name="673N" xml:space="preserve">
+    <value>Item's Name Column</value>
+  </data>
+  <data name="673S" xml:space="preserve">
+    <value>Drag the Column to be use for the item's name and drop it here.</value>
+  </data>
+  <data name="674N" xml:space="preserve">
+    <value>Item's Summary Column</value>
+  </data>
+  <data name="674S" xml:space="preserve">
+    <value>Drag the Column to be use for the item's summary and drop it here.</value>
+  </data>
+  <data name="681N" xml:space="preserve">
+    <value>Coloring</value>
+  </data>
+  <data name="681S" xml:space="preserve">
+    <value>Drag the Color-Column and drop it here.</value>
+  </data>
+  <data name="681V" xml:space="preserve">
+    <value>Node Colors:</value>
+  </data>
+  <data name="682N" xml:space="preserve">
+    <value>Forest</value>
+  </data>
+  <data name="682S" xml:space="preserve">
+    <value>Drag a Root-Table and drop it here.</value>
+  </data>
+  <data name="682V" xml:space="preserve">
+    <value>Root Table:</value>
+  </data>
+  <data name="683N" xml:space="preserve">
+    <value>Nodes</value>
+  </data>
+  <data name="684K" xml:space="preserve">
+    <value>Node Type</value>
+  </data>
+  <data name="685K" xml:space="preserve">
+    <value>Column</value>
+  </data>
+  <data name="691K" xml:space="preserve">
+    <value>RootTable</value>
+  </data>
+  <data name="691V" xml:space="preserve">
+    <value>Root Table:</value>
+  </data>
+  <data name="692K" xml:space="preserve">
+    <value>Link</value>
+  </data>
+  <data name="693K" xml:space="preserve">
+    <value>PathDefinition</value>
+  </data>
+  <data name="694K" xml:space="preserve">
+    <value>PathLink</value>
+  </data>
+  <data name="695K" xml:space="preserve">
+    <value>GroupDefinition</value>
+  </data>
+  <data name="696K" xml:space="preserve">
+    <value>GroupLink</value>
+  </data>
+  <data name="697K" xml:space="preserve">
+    <value>EgressDefinition</value>
+  </data>
+  <data name="698K" xml:space="preserve">
+    <value>EgressLink</value>
+  </data>
+  <data name="699K" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
+  <data name="69DK" xml:space="preserve">
+    <value>ValueRoot</value>
+  </data>
+  <data name="69EK" xml:space="preserve">
+    <value>ValueHead</value>
+  </data>
+  <data name="69FK" xml:space="preserve">
+    <value>ValueLink</value>
+  </data>
+  <data name="6A5K" xml:space="preserve">
+    <value>Graph</value>
+  </data>
+  <data name="6A6K" xml:space="preserve">
+    <value>Graph</value>
+  </data>
+  <data name="6A7K" xml:space="preserve">
+    <value>Relation</value>
+  </data>
+  <data name="6A8K" xml:space="preserve">
+    <value>Relation</value>
+  </data>
+  <data name="6B1N" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="6B2N" xml:space="preserve">
+    <value>Child Relation</value>
+  </data>
+  <data name="6B3N" xml:space="preserve">
+    <value>Parent Relation</value>
+  </data>
+  <data name="6B4N" xml:space="preserve">
+    <value>Default Properties</value>
+  </data>
+  <data name="6B5N" xml:space="preserve">
+    <value>Unused Child Relations</value>
+  </data>
+  <data name="6B6N" xml:space="preserve">
+    <value>Unused Parent Relations</value>
+  </data>
+  <data name="6B7N" xml:space="preserve">
+    <value>Computed</value>
+  </data>
+  <data name="6C1K" xml:space="preserve">
+    <value>(Link) </value>
+  </data>
+  <data name="6C2K" xml:space="preserve">
+    <value>(PathHead)</value>
+  </data>
+  <data name="6C3K" xml:space="preserve">
+    <value>(PathLink)</value>
+  </data>
+  <data name="6C4K" xml:space="preserve">
+    <value>(GroupHead)</value>
+  </data>
+  <data name="6C5K" xml:space="preserve">
+    <value>(GroupLink)</value>
+  </data>
+  <data name="6C6K" xml:space="preserve">
+    <value>(EgressHead)</value>
+  </data>
+  <data name="6C7K" xml:space="preserve">
+    <value>(EgressLink)</value>
+  </data>
+  <data name="6D2K" xml:space="preserve">
+    <value>(PathStep)</value>
+  </data>
+  <data name="6D3K" xml:space="preserve">
+    <value>(PathTail)</value>
+  </data>
+  <data name="6D4K" xml:space="preserve">
+    <value>(GroupStep)</value>
+  </data>
+  <data name="6D5K" xml:space="preserve">
+    <value>(GroupTail)</value>
+  </data>
+  <data name="6D6K" xml:space="preserve">
+    <value>(EgressStep)</value>
+  </data>
+  <data name="6D7K" xml:space="preserve">
+    <value>(EgressTail)</value>
+  </data>
+  <data name="6E2N" xml:space="preserve">
+    <value>Nodes</value>
+  </data>
+  <data name="6E2S" xml:space="preserve">
+    <value>List of all nodes in this graph</value>
+  </data>
+  <data name="6E3N" xml:space="preserve">
+    <value>Edges</value>
+  </data>
+  <data name="6E3S" xml:space="preserve">
+    <value>List of all edges in the graph</value>
+  </data>
+  <data name="6E4N" xml:space="preserve">
+    <value>Forest</value>
+  </data>
+  <data name="6E4S" xml:space="preserve">
+    <value>List of all forest tree roots in this graph</value>
+  </data>
+  <data name="6E5N" xml:space="preserve">
+    <value>Levels</value>
+  </data>
+  <data name="6E5S" xml:space="preserve">
+    <value>Path reduction levels</value>
+  </data>
+  <data name="6E6N" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="6E8K" xml:space="preserve">
+    <value>Edge</value>
+  </data>
+  <data name="6EBN" xml:space="preserve">
+    <value>Opens</value>
+  </data>
+  <data name="6EBS" xml:space="preserve">
+    <value>List of incomplete paths</value>
+  </data>
+  <data name="6F1K" xml:space="preserve">
+    <value>PathCount</value>
+  </data>
+  <data name="6F2K" xml:space="preserve">
+    <value>PathCheck</value>
+  </data>
+  <data name="6F3K" xml:space="preserve">
+    <value>PathComposite</value>
+  </data>
+  <data name="7D0N" xml:space="preserve">
+    <value>Compute</value>
+  </data>
+  <data name="7D0S" xml:space="preserve">
+    <value>Top level computed values</value>
+  </data>
+  <data name="7D1N" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="7D2S" xml:space="preserve">
+    <value>Internal store</value>
+  </data>
+  <data name="7E0N" xml:space="preserve">
+    <value>StoreCommon</value>
+  </data>
+  <data name="7E0S" xml:space="preserve">
+    <value>Common store elements</value>
+  </data>
+  <data name="7E1N" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="7E1S" xml:space="preserve">
+    <value>List of items in this store</value>
+  </data>
+  <data name="7E2N" xml:space="preserve">
+    <value>Compute</value>
+  </data>
+  <data name="7E2S" xml:space="preserve">
+    <value>Computations rooted on this store</value>
+  </data>
+  <data name="7E3S" xml:space="preserve">
+    <value>Relational link (parent --&gt; child)</value>
+  </data>
+  <data name="7F0N" xml:space="preserve">
+    <value>Internal</value>
+  </data>
+  <data name="7F0S" xml:space="preserve">
+    <value>Internal stores (tables)</value>
+  </data>
+  <data name="7F0V" xml:space="preserve">
+    <value>Internal Stores:</value>
+  </data>
+  <data name="7F4N" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="7F4S" xml:space="preserve">
+    <value>Store child items</value>
+  </data>
+  <data name="7F5N" xml:space="preserve">
+    <value>Links</value>
+  </data>
+  <data name="7F5S" xml:space="preserve">
+    <value>Relation links</value>
+  </data>
+  <data name="7F6N" xml:space="preserve">
+    <value>ChildRelations</value>
+  </data>
+  <data name="7F6S" xml:space="preserve">
+    <value>Child relations of this store</value>
+  </data>
+  <data name="7F7N" xml:space="preserve">
+    <value>ParentRelations</value>
+  </data>
+  <data name="7F7S" xml:space="preserve">
+    <value>Parent relations of this store</value>
+  </data>
+  <data name="7F8K" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="7F9K" xml:space="preserve">
+    <value>Link</value>
+  </data>
+  <data name="7FAK" xml:space="preserve">
+    <value>ChildRelation</value>
+  </data>
+  <data name="7FBK" xml:space="preserve">
+    <value>ParentRelation</value>
+  </data>
+  <data name="800N" xml:space="preserve">
+    <value>Bool</value>
+  </data>
+  <data name="801N" xml:space="preserve">
+    <value>BoolArray</value>
+  </data>
+  <data name="802N" xml:space="preserve">
+    <value>Char</value>
+  </data>
+  <data name="803N" xml:space="preserve">
+    <value>CharArray</value>
+  </data>
+  <data name="804N" xml:space="preserve">
+    <value>UInt8</value>
+  </data>
+  <data name="805N" xml:space="preserve">
+    <value>UInt8Array</value>
+  </data>
+  <data name="806N" xml:space="preserve">
+    <value>Int8</value>
+  </data>
+  <data name="807N" xml:space="preserve">
+    <value>Int8Array</value>
+  </data>
+  <data name="808N" xml:space="preserve">
+    <value>Int16</value>
+  </data>
+  <data name="809N" xml:space="preserve">
+    <value>Int16Array</value>
+  </data>
+  <data name="80AN" xml:space="preserve">
+    <value>UInt16</value>
+  </data>
+  <data name="80BN" xml:space="preserve">
+    <value>UInt16Array</value>
+  </data>
+  <data name="80CN" xml:space="preserve">
+    <value>Int32</value>
+  </data>
+  <data name="80DN" xml:space="preserve">
+    <value>Int32Array</value>
+  </data>
+  <data name="80EN" xml:space="preserve">
+    <value>UInt32</value>
+  </data>
+  <data name="80FN" xml:space="preserve">
+    <value>UInt32Array</value>
+  </data>
+  <data name="810N" xml:space="preserve">
+    <value>Int64</value>
+  </data>
+  <data name="811N" xml:space="preserve">
+    <value>Int64Array</value>
+  </data>
+  <data name="812N" xml:space="preserve">
+    <value>UInt64</value>
+  </data>
+  <data name="813N" xml:space="preserve">
+    <value>UInt64Array</value>
+  </data>
+  <data name="814N" xml:space="preserve">
+    <value>Single</value>
+  </data>
+  <data name="815N" xml:space="preserve">
+    <value>SingleArray</value>
+  </data>
+  <data name="816N" xml:space="preserve">
+    <value>Double</value>
+  </data>
+  <data name="817N" xml:space="preserve">
+    <value>DoubleArray</value>
+  </data>
+  <data name="818N" xml:space="preserve">
+    <value>Decimal</value>
+  </data>
+  <data name="819N" xml:space="preserve">
+    <value>DecimalArray</value>
+  </data>
+  <data name="81AN" xml:space="preserve">
+    <value>DateTime</value>
+  </data>
+  <data name="81BN" xml:space="preserve">
+    <value>DateTimeArray</value>
+  </data>
+  <data name="81CN" xml:space="preserve">
+    <value>String</value>
+  </data>
+  <data name="81DN" xml:space="preserve">
+    <value>StringArray</value>
+  </data>
+  <data name="83FN" xml:space="preserve">
+    <value>ValueType</value>
+  </data>
+  <data name="83FS" xml:space="preserve">
+    <value>Data value type</value>
+  </data>
+  <data name="840N" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="841N" xml:space="preserve">
+    <value>Bool</value>
+  </data>
+  <data name="842N" xml:space="preserve">
+    <value>Byte</value>
+  </data>
+  <data name="843N" xml:space="preserve">
+    <value>Int16</value>
+  </data>
+  <data name="844N" xml:space="preserve">
+    <value>Int32</value>
+  </data>
+  <data name="845N" xml:space="preserve">
+    <value>Int64</value>
+  </data>
+  <data name="846N" xml:space="preserve">
+    <value>Double</value>
+  </data>
+  <data name="847N" xml:space="preserve">
+    <value>String</value>
+  </data>
+  <data name="848N" xml:space="preserve">
+    <value>Invalid</value>
+  </data>
+  <data name="87FN" xml:space="preserve">
+    <value>Result Type</value>
+  </data>
+  <data name="87FS" xml:space="preserve">
+    <value>Resulting value type</value>
+  </data>
+  <data name="880N" xml:space="preserve">
+    <value>OneToOne</value>
+  </data>
+  <data name="881N" xml:space="preserve">
+    <value>OneToMany</value>
+  </data>
+  <data name="882N" xml:space="preserve">
+    <value>ManyToMany</value>
+  </data>
+  <data name="8BFN" xml:space="preserve">
+    <value>Pairing</value>
+  </data>
+  <data name="8BFS" xml:space="preserve">
+    <value>Relation pairing</value>
+  </data>
+  <data name="8C0N" xml:space="preserve">
+    <value>Point</value>
+  </data>
+  <data name="8C1N" xml:space="preserve">
+    <value>Central</value>
+  </data>
+  <data name="8C2N" xml:space="preserve">
+    <value>Vertical</value>
+  </data>
+  <data name="8C3N" xml:space="preserve">
+    <value>Horizontal</value>
+  </data>
+  <data name="8FFN" xml:space="preserve">
+    <value>Orientation</value>
+  </data>
+  <data name="8FFS" xml:space="preserve">
+    <value>The node or symbol's orientation</value>
+  </data>
+  <data name="900N" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="901N" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="902N" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="903N" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="904N" xml:space="preserve">
+    <value>Bottom</value>
+  </data>
+  <data name="905N" xml:space="preserve">
+    <value>Center</value>
+  </data>
+  <data name="906N" xml:space="preserve">
+    <value>TopLeft</value>
+  </data>
+  <data name="907N" xml:space="preserve">
+    <value>TopRight</value>
+  </data>
+  <data name="908N" xml:space="preserve">
+    <value>BottomLeft</value>
+  </data>
+  <data name="909N" xml:space="preserve">
+    <value>BottomRight</value>
+  </data>
+  <data name="90AN" xml:space="preserve">
+    <value>TopLeftSide</value>
+  </data>
+  <data name="90BN" xml:space="preserve">
+    <value>TopRightSide</value>
+  </data>
+  <data name="90CN" xml:space="preserve">
+    <value>TopLeftCorner</value>
+  </data>
+  <data name="90DN" xml:space="preserve">
+    <value>TopRightCorner</value>
+  </data>
+  <data name="90EN" xml:space="preserve">
+    <value>BottomLeftSide</value>
+  </data>
+  <data name="90FN" xml:space="preserve">
+    <value>BottomRightSide</value>
+  </data>
+  <data name="910N" xml:space="preserve">
+    <value>BottomLeftCorner</value>
+  </data>
+  <data name="911N" xml:space="preserve">
+    <value>BottomRightCorner</value>
+  </data>
+  <data name="93FN" xml:space="preserve">
+    <value>Labeling</value>
+  </data>
+  <data name="93FS" xml:space="preserve">
+    <value>The type of label placement</value>
+  </data>
+  <data name="940N" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="941N" xml:space="preserve">
+    <value>FlipVertical</value>
+  </data>
+  <data name="942N" xml:space="preserve">
+    <value>FlipHorizontal</value>
+  </data>
+  <data name="943N" xml:space="preserve">
+    <value>FlipBothWays</value>
+  </data>
+  <data name="944N" xml:space="preserve">
+    <value>RotateClockwise</value>
+  </data>
+  <data name="945N" xml:space="preserve">
+    <value>RotateFlipVertical</value>
+  </data>
+  <data name="946N" xml:space="preserve">
+    <value>RotateFlipHorizontal</value>
+  </data>
+  <data name="947N" xml:space="preserve">
+    <value>RotateFlipBothWays</value>
+  </data>
+  <data name="97FN" xml:space="preserve">
+    <value>FlipRotate</value>
+  </data>
+  <data name="97FS" xml:space="preserve">
+    <value>Type of flip/rotation</value>
+  </data>
+  <data name="980N" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="981N" xml:space="preserve">
+    <value>Fixed</value>
+  </data>
+  <data name="982N" xml:space="preserve">
+    <value>Manual</value>
+  </data>
+  <data name="9BFN" xml:space="preserve">
+    <value>Resizing</value>
+  </data>
+  <data name="9BFS" xml:space="preserve">
+    <value>Type of node resizing</value>
+  </data>
+  <data name="9C0N" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="9C1N" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="9C2N" xml:space="preserve">
+    <value>UniqueNumber</value>
+  </data>
+  <data name="9C3N" xml:space="preserve">
+    <value>Alphabetic</value>
+  </data>
+  <data name="9C4N" xml:space="preserve">
+    <value>SubstituteParent</value>
+  </data>
+  <data name="9FFN" xml:space="preserve">
+    <value>Naming</value>
+  </data>
+  <data name="9FFS" xml:space="preserve">
+    <value>Type of automatic name generation when copying nodes</value>
+  </data>
+  <data name="A00N" xml:space="preserve">
+    <value>Thin</value>
+  </data>
+  <data name="A01N" xml:space="preserve">
+    <value>Wide</value>
+  </data>
+  <data name="A02N" xml:space="preserve">
+    <value>Extra Wide</value>
+  </data>
+  <data name="A3FN" xml:space="preserve">
+    <value>BarWidth</value>
+  </data>
+  <data name="A3FS" xml:space="preserve">
+    <value>The style of a node bar</value>
+  </data>
+  <data name="A40N" xml:space="preserve">
+    <value>Any</value>
+  </data>
+  <data name="A41N" xml:space="preserve">
+    <value>One</value>
+  </data>
+  <data name="A42N" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="A7FN" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="A7FS" xml:space="preserve">
+    <value>Type of contact</value>
+  </data>
+  <data name="A80N" xml:space="preserve">
+    <value>Any</value>
+  </data>
+  <data name="A81N" xml:space="preserve">
+    <value>East</value>
+  </data>
+  <data name="A82N" xml:space="preserve">
+    <value>West</value>
+  </data>
+  <data name="A84N" xml:space="preserve">
+    <value>North</value>
+  </data>
+  <data name="A88N" xml:space="preserve">
+    <value>South</value>
+  </data>
+  <data name="ABFN" xml:space="preserve">
+    <value>Side</value>
+  </data>
+  <data name="ABFS" xml:space="preserve">
+    <value>On wich side is the  connection</value>
+  </data>
+  <data name="AC0N" xml:space="preserve">
+    <value>Any</value>
+  </data>
+  <data name="AC1N" xml:space="preserve">
+    <value>East</value>
+  </data>
+  <data name="AC2N" xml:space="preserve">
+    <value>West</value>
+  </data>
+  <data name="AC3N" xml:space="preserve">
+    <value>East_West</value>
+  </data>
+  <data name="AC4N" xml:space="preserve">
+    <value>North</value>
+  </data>
+  <data name="AC5N" xml:space="preserve">
+    <value>North_East</value>
+  </data>
+  <data name="AC6N" xml:space="preserve">
+    <value>North_West</value>
+  </data>
+  <data name="AC7N" xml:space="preserve">
+    <value>North_East_West</value>
+  </data>
+  <data name="AC8N" xml:space="preserve">
+    <value>South</value>
+  </data>
+  <data name="AC9N" xml:space="preserve">
+    <value>South_East</value>
+  </data>
+  <data name="ACAN" xml:space="preserve">
+    <value>South_West</value>
+  </data>
+  <data name="ACBN" xml:space="preserve">
+    <value>South_East_West</value>
+  </data>
+  <data name="ACCN" xml:space="preserve">
+    <value>North_South</value>
+  </data>
+  <data name="ACDN" xml:space="preserve">
+    <value>North_South_East</value>
+  </data>
+  <data name="ACEN" xml:space="preserve">
+    <value>North_South_West</value>
+  </data>
+  <data name="AFFN" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="AFFS" xml:space="preserve">
+    <value>Where is the connection</value>
+  </data>
+  <data name="B00N" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="B01N" xml:space="preserve">
+    <value>Nubby</value>
+  </data>
+  <data name="B02N" xml:space="preserve">
+    <value>Diamond</value>
+  </data>
+  <data name="B03N" xml:space="preserve">
+    <value>InArrow</value>
+  </data>
+  <data name="B20N" xml:space="preserve">
+    <value>Force_None</value>
+  </data>
+  <data name="B21N" xml:space="preserve">
+    <value>Force_Nubby</value>
+  </data>
+  <data name="B22N" xml:space="preserve">
+    <value>Force_Diamond</value>
+  </data>
+  <data name="B23N" xml:space="preserve">
+    <value>Force_InArrow</value>
+  </data>
+  <data name="B37N" xml:space="preserve">
+    <value>FacetOf</value>
+  </data>
+  <data name="B37S" xml:space="preserve">
+    <value>Type of decoration on edge end</value>
+  </data>
+  <data name="B40N" xml:space="preserve">
+    <value>RowValue</value>
+  </data>
+  <data name="B41N" xml:space="preserve">
+    <value>RelatedValue</value>
+  </data>
+  <data name="B42N" xml:space="preserve">
+    <value>NumericValueSet</value>
+  </data>
+  <data name="B43N" xml:space="preserve">
+    <value>CompositeString</value>
+  </data>
+  <data name="B44N" xml:space="preserve">
+    <value>CompositeReversed</value>
+  </data>
+  <data name="B7FN" xml:space="preserve">
+    <value>Computing</value>
+  </data>
+  <data name="B7FS" xml:space="preserve">
+    <value>Type of computation</value>
+  </data>
+  <data name="B80N" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="B81N" xml:space="preserve">
+    <value>Count_Min_Max</value>
+  </data>
+  <data name="B82N" xml:space="preserve">
+    <value>Count_Min_Max_Sum</value>
+  </data>
+  <data name="B83N" xml:space="preserve">
+    <value>Count_Min_Max_Sum_Ave</value>
+  </data>
+  <data name="B84N" xml:space="preserve">
+    <value>Count_Min_Max_Sum_Ave_Std</value>
+  </data>
+  <data name="BBFN" xml:space="preserve">
+    <value>NumericSet</value>
+  </data>
+  <data name="BC0N" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="BC1N" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="BC2N" xml:space="preserve">
+    <value>Max</value>
+  </data>
+  <data name="BC3N" xml:space="preserve">
+    <value>Sum</value>
+  </data>
+  <data name="BC4N" xml:space="preserve">
+    <value>Ave</value>
+  </data>
+  <data name="BC5N" xml:space="preserve">
+    <value>Std</value>
+  </data>
+  <data name="BFFN" xml:space="preserve">
+    <value>NumericTerm</value>
+  </data>
+  <data name="C00N" xml:space="preserve">
+    <value>Start-Flat</value>
+  </data>
+  <data name="C01N" xml:space="preserve">
+    <value>Start-Square</value>
+  </data>
+  <data name="C02N" xml:space="preserve">
+    <value>Start-Round</value>
+  </data>
+  <data name="C03N" xml:space="preserve">
+    <value>Start-Triangle</value>
+  </data>
+  <data name="C3FN" xml:space="preserve">
+    <value>StartLineCap</value>
+  </data>
+  <data name="C3FS" xml:space="preserve">
+    <value>Type of line-start cap</value>
+  </data>
+  <data name="C40N" xml:space="preserve">
+    <value>End-Flat</value>
+  </data>
+  <data name="C41N" xml:space="preserve">
+    <value>End-Square</value>
+  </data>
+  <data name="C42N" xml:space="preserve">
+    <value>End-Round</value>
+  </data>
+  <data name="C43N" xml:space="preserve">
+    <value>End-Triangle</value>
+  </data>
+  <data name="C7FN" xml:space="preserve">
+    <value>EndLineCap</value>
+  </data>
+  <data name="C7FS" xml:space="preserve">
+    <value>Type of line-end cap</value>
+  </data>
+  <data name="C80N" xml:space="preserve">
+    <value>OneValue</value>
+  </data>
+  <data name="C81N" xml:space="preserve">
+    <value>AllValues</value>
+  </data>
+  <data name="C82N" xml:space="preserve">
+    <value>LimitedSet</value>
+  </data>
+  <data name="CBFN" xml:space="preserve">
+    <value>Results</value>
+  </data>
+  <data name="CBFS" xml:space="preserve">
+    <value>Query results (scalar / array)? </value>
+  </data>
+  <data name="CC0N" xml:space="preserve">
+    <value>Unsorted</value>
+  </data>
+  <data name="CC1N" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="CC2N" xml:space="preserve">
+    <value>Descending</value>
+  </data>
+  <data name="CEFN" xml:space="preserve">
+    <value>Sorting</value>
+  </data>
+  <data name="CEFS" xml:space="preserve">
+    <value>Sort the results</value>
+  </data>
+  <data name="D00N" xml:space="preserve">
+    <value>First</value>
+  </data>
+  <data name="D01N" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="D02N" xml:space="preserve">
+    <value>Both</value>
+  </data>
+  <data name="D3FN" xml:space="preserve">
+    <value>TakeSet</value>
+  </data>
+  <data name="D3FS" xml:space="preserve">
+    <value>Take a limited number of result items </value>
+  </data>
+  <data name="D40N" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="D41N" xml:space="preserve">
+    <value>Radial</value>
+  </data>
+  <data name="D42N" xml:space="preserve">
+    <value>Right Angle</value>
+  </data>
+  <data name="D43N" xml:space="preserve">
+    <value>Skewed Angle</value>
+  </data>
+  <data name="D7FN" xml:space="preserve">
+    <value>Connection Style</value>
+  </data>
+  <data name="D7FS" xml:space="preserve">
+    <value>Style of connection</value>
+  </data>
+  <data name="D80N" xml:space="preserve">
+    <value>PointToPoint</value>
+  </data>
+  <data name="D81N" xml:space="preserve">
+    <value>SimpleSpline</value>
+  </data>
+  <data name="D82N" xml:space="preserve">
+    <value>DoubleSpline</value>
+  </data>
+  <data name="DBFN" xml:space="preserve">
+    <value>Line Style</value>
+  </data>
+  <data name="DC0N" xml:space="preserve">
+    <value>Solid</value>
+  </data>
+  <data name="DC1N" xml:space="preserve">
+    <value>Dashed</value>
+  </data>
+  <data name="DC2N" xml:space="preserve">
+    <value>Dotted</value>
+  </data>
+  <data name="DC3N" xml:space="preserve">
+    <value>DashDot</value>
+  </data>
+  <data name="DC4N" xml:space="preserve">
+    <value>DashDotDot</value>
+  </data>
+  <data name="DFFN" xml:space="preserve">
+    <value>Dash Style</value>
+  </data>
+  <data name="U01" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="U02" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="U03" xml:space="preserve">
+    <value>Tree</value>
+  </data>
+  <data name="U04" xml:space="preserve">
+    <value>Graph</value>
+  </data>
+  <data name="U05" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
+  <data name="CompareNav.Content" xml:space="preserve">
+    <value>Compare</value>
+  </data>
+  <data name="HomeNav.Content" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="ModelPage" xml:space="preserve">
+    <value>Model Page</value>
   </data>
 </root>

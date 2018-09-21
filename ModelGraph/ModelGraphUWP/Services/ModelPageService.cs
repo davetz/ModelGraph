@@ -107,7 +107,7 @@ namespace ModelGraphUWP.Services
         #endregion
 
         #region UpdateNavigationPane  =========================================
-        void UpdateNavigationPane(RootModel selectedModed)
+        void UpdateNavigationPane(RootModel selectedModel)
         {
             if (_rootModel == null || _updateNavigationPane == null)
             {
@@ -123,7 +123,7 @@ namespace ModelGraphUWP.Services
                     modelList.Add((e.Key));
                 }
             }
-            _updateNavigationPane(_rootModel, _compareModel, modelList, selectedModed);
+            _updateNavigationPane(_rootModel, _compareModel, modelList, selectedModel);
         }
         #endregion
 

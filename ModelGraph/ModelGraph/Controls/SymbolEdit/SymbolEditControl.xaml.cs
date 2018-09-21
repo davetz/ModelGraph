@@ -10,9 +10,9 @@ using Microsoft.Graphics.Canvas.Geometry;
 using System.Linq;
 using ModelGraphSTD;
 
-namespace ModelGraphUWP
+namespace ModelGraph.Controls
 {
-    public sealed partial class SymbolEditControl : UserControl
+    public sealed partial class SymbolEditControl : UserControl, IModelControl
     {
         private Chef _chef;
         private RootModel _rootModel;
@@ -24,7 +24,6 @@ namespace ModelGraphUWP
             InitializeComponent();
 
             _rootModel = root;
-
             _chef = root.Chef;
             _symbol = root.Item as SymbolX;
             UnpackSymbolData(_symbol.Data);

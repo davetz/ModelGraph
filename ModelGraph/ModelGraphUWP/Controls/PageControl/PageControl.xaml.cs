@@ -50,10 +50,10 @@ namespace ModelGraphUWP
 
         private void PageControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _activeModel?.ModelControl?.SetSize(ControlWidth, ControlHeight);
+            //_activeModel?.ModelControl?.SetSize(ControlWidth, ControlHeight);
         }
 
-        public void SetActualSize() => _activeModel?.ModelControl?.SetSize(ControlWidth, ControlHeight);
+        //public void SetActualSize() => ;//_activeModel?.ModelControl?.SetSize(ControlWidth, ControlHeight);
         double ControlHeight => (ActualHeight - ButtonGrid.ActualHeight);
         double ControlWidth => ActualWidth;
         #endregion
@@ -185,7 +185,7 @@ namespace ModelGraphUWP
                     break;
 
                 case RequestType.Refresh:
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { _activeModel?.ModelControl?.Refresh(); });
+                   // await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { _activeModel?.ModelControl?.Refresh(); });
                     break;
 
                 case RequestType.CreateView:
@@ -197,13 +197,13 @@ namespace ModelGraphUWP
                     break;
 
                 case RequestType.SaveSymbol:
-                        var editor = rq.Root.ModelControl as SymbolEditControl;
-                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.SaveSymbol(); });
+                        //var editor = rq.Root.ModelControl as SymbolEditControl;
+                        //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.SaveSymbol(); });
                     break;
 
                 case RequestType.ReloadSymbol:
-                        editor = rq.Root.ModelControl as SymbolEditControl;
-                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.ReloadSymbol(); });
+                        //editor = rq.Root.ModelControl as SymbolEditControl;
+                        //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.ReloadSymbol(); });
                     break;
             }
         }

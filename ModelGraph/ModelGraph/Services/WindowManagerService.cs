@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModelGraphSTD;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,6 +28,27 @@ namespace ModelGraph.Services
         public int MainViewId { get; private set; }
 
         public CoreDispatcher MainDispatcher { get; private set; }
+
+        #region ModelPageService  =============================================
+        public void CloseRelatedModels(RootModel rootModel)
+        {
+            var views = SecondaryViews.ToArray();
+            foreach (var view in views)
+            {
+                var pageControl = view.PageControl;
+
+                if (pageControl is null) continue;
+                if (pageControl.RootModel is null) continue;
+                if (pageControl.RootModel.Chef != rootModel.Chef) continue;
+
+                view.CloseModel();
+            }
+        }
+        public void TryShowModel(ModelPageControl pageControl)
+        {
+
+        }
+        #endregion
 
         public void Initialize()
         {

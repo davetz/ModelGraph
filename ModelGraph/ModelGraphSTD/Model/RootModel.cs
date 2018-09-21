@@ -14,7 +14,6 @@ namespace ModelGraphSTD
     {
         public Chef Chef { get; private set; }
         public IPageControl PageControl { get; set; } // reference the UI PageControl
-        public IModelControl ModelControl { get; set; }
 
         // used by the ModelTreeControl
         public int ViewCapacity = 10; // updated when the view screen size changes

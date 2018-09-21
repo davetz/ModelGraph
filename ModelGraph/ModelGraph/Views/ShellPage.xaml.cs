@@ -37,6 +37,8 @@ namespace ModelGraph.Views
         {
             NavigationService.Frame = shellFrame;
             NavigationService.Navigated += Frame_Navigated;
+            ModelPageService.InsertModelPage = InsertModelPage;
+            ModelPageService.RemoveModelPage = RemoveModelPage;
             KeyboardAccelerators.Add(ActivationService.AltLeftKeyboardAccelerator);
             KeyboardAccelerators.Add(ActivationService.BackKeyboardAccelerator);
         }
@@ -60,6 +62,66 @@ namespace ModelGraph.Views
             return pageType == sourcePageType;
         }
 
+        #region ModelPageService  =============================================
+        //
+        #region InsertModelPage  ==============================================
+        public void InsertModelPage(ModelPageControl pageControl)
+        {
+            var item = navigationView.MenuItems
+                            .OfType<NavigationViewItemSeparator>()
+                            .FirstOrDefault(menuItem => (menuItem.Name == "AddModelPageHere"));
+
+            if (item is null) return;
+
+            var index = navigationView.MenuItems.IndexOf(item) + 1;
+            var navItem = new NavigationViewItem
+            {
+                Content = "ModelPage".GetLocalized(),
+                Icon = new SymbolIcon(Symbol.AllApps),
+                Tag = pageControl
+            };
+            
+            navItem.Loaded += NavItem_Loaded;
+            navigationView.MenuItems.Insert(index, navItem);
+
+            Selected = navItem;
+            NavigationService.Navigate(typeof(ModelPage), pageControl);
+        }
+
+        private static void NavItem_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is NavigationViewItem navItem)
+            {
+                navItem.Loaded -= NavItem_Loaded;
+                navItem.IsSelected = true;
+            }
+        }
+        #endregion
+        //
+        #region RemoveModelPage  ==============================================
+        public void RemoveModelPage(ModelPageControl pageControl)
+        {
+            var item = navigationView.MenuItems
+                            .OfType<NavigationViewItem>()
+                            .FirstOrDefault(menuItem => (menuItem.Tag == pageControl));
+
+            if (item is null) return;
+            navigationView.MenuItems.Remove(item);
+
+            var home = navigationView.MenuItems
+                            .OfType<NavigationViewItem>()
+                            .FirstOrDefault(menuItem => (menuItem.Name == "Home"));
+
+            if (!(home is null))
+            {
+                home.IsSelected = true;                
+                NavigationService.Navigate(typeof(HomePage));
+            }
+
+        }
+        #endregion
+        #endregion
+
         private void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
             if (args.IsSettingsInvoked)
@@ -71,8 +133,17 @@ namespace ModelGraph.Views
             var item = navigationView.MenuItems
                             .OfType<NavigationViewItem>()
                             .First(menuItem => (string)menuItem.Content == (string)args.InvokedItem);
-            var pageType = item.GetValue(NavHelper.NavigateToProperty) as Type;
-            NavigationService.Navigate(pageType);
+
+
+            if (item.Tag is ModelPageControl pageControl)
+            {
+                NavigationService.Navigate(typeof(ModelPage), item.Tag);
+            }
+            else
+            {
+                var pageType = item.GetValue(NavHelper.NavigateToProperty) as Type;
+                NavigationService.Navigate(pageType);
+            }
         }
 
         private void HideNavViewBackButton()
