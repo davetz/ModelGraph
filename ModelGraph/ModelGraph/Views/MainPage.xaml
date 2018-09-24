@@ -1,0 +1,33 @@
+﻿<Page
+    x:Class="ModelGraph.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Style="{StaticResource PageStyle}"
+    mc:Ignorable="d">
+    <Page.Resources>
+
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
+        </Style>
+
+    </Page.Resources>
+    <Grid
+        x:Name="ContentArea"
+        Margin="{StaticResource MediumLeftRightMargin}">
+        <Grid
+            Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+            <StackPanel>
+                <TextBlock x:Name="AppDescription" x:Uid="_AppDescription" />
+                <StackPanel Margin="5">
+                    <Button Name ="New" Style="{StaticResource ButtonStyle}" x:Uid="_CreateNewModel" Click="NewButton_Click"></Button>
+                    <Button Name ="Open" Style="{StaticResource ButtonStyle}" x:Uid="_OpenModelFile" Click="OpenButton_Click"></Button>
+                </StackPanel>
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+</Page>

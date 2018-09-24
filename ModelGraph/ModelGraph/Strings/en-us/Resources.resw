@@ -117,67 +117,59 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppDisplayName" xml:space="preserve">
-    <value>ModelGraph</value>
-    <comment>Application display name</comment>
-  </data>
-  <data name="AppDescription" xml:space="preserve">
-    <value>ModelGraph</value>
-    <comment>Application description</comment>
-  </data>
-  <data name="Shell_Main.Content" xml:space="preserve">
+  <data name="_Shell_Main.Content" xml:space="preserve">
     <value>Main</value>
     <comment>Navigation view item name for Main</comment>
   </data>
-  <data name="ExceptionSettingsStorageExtensionsFileNameIsNullOrEmpty" xml:space="preserve">
+  <data name="_ExceptionSettingsStorageExtensionsFileNameIsNullOrEmpty" xml:space="preserve">
     <value>File name is null or empty. Specify a valid file name</value>
     <comment>File name is null or empty to save file in settings storage extensions</comment>
   </data>
-  <data name="Settings_Theme.Text" xml:space="preserve">
+  <data name="_Settings_Theme.Text" xml:space="preserve">
     <value>Choose Theme</value>
     <comment>Choose theme text for Settings</comment>
   </data>
-  <data name="Settings_Theme_Dark.Content" xml:space="preserve">
+  <data name="_Settings_Theme_Dark.Content" xml:space="preserve">
     <value>Dark</value>
     <comment>Dark theme text for Settings</comment>
   </data>
-  <data name="Settings_Theme_Default.Content" xml:space="preserve">
+  <data name="_Settings_Theme_Default.Content" xml:space="preserve">
     <value>Windows default</value>
     <comment>Windows default theme text for Settings</comment>
   </data>
-  <data name="Settings_Theme_Light.Content" xml:space="preserve">
+  <data name="_Settings_Theme_Light.Content" xml:space="preserve">
     <value>Light</value>
     <comment>Light theme text for Settings</comment>
   </data>
-  <data name="Settings_About.Text" xml:space="preserve">
+  <data name="_Settings_About.Text" xml:space="preserve">
     <value>About this application</value>
     <comment>About this application title for Settings</comment>
   </data>
-  <data name="Settings_AboutDescription.Text" xml:space="preserve">
+  <data name="_Settings_AboutDescription.Text" xml:space="preserve">
     <value>Settings page placeholder text.  Your app description goes here.</value>
     <comment>About this application description for Settings</comment>
   </data>
-  <data name="Settings_PrivacyTermsLink.Content" xml:space="preserve">
+  <data name="_Settings_PrivacyTermsLink.Content" xml:space="preserve">
     <value>Privacy Statement</value>
     <comment>Privacy Statement link content for Settings</comment>
   </data>
-  <data name="Settings_PrivacyTermsLink.NavigateUri" xml:space="preserve">
+  <data name="_Settings_PrivacyTermsLink.NavigateUri" xml:space="preserve">
     <value>https://YourPrivacyUrlGoesHere/</value>
     <comment>Here is your Privacy Statement url for Settings</comment>
   </data>
-  <data name="Settings_Personalization.Text" xml:space="preserve">
+  <data name="_Settings_Personalization.Text" xml:space="preserve">
     <value>Personalization</value>
     <comment>Personalization text for Settings</comment>
   </data>
-  <data name="ExceptionEnumToBooleanConverterValueMustBeAnEnum" xml:space="preserve">
+  <data name="_ExceptionEnumToBooleanConverterValueMustBeAnEnum" xml:space="preserve">
     <value>value must be an Enum!</value>
     <comment>Value must be an Enum in enum to boolean converter</comment>
   </data>
-  <data name="ExceptionEnumToBooleanConverterParameterMustBeAnEnumName" xml:space="preserve">
+  <data name="_ExceptionEnumToBooleanConverterParameterMustBeAnEnumName" xml:space="preserve">
     <value>parameter must be an Enum name!</value>
     <comment>Parameter must be an Enum name in enum to boolean converter</comment>
   </data>
-  <data name="ExceptionViewLifeTimeControlViewDisposal" xml:space="preserve">
+  <data name="_ExceptionViewLifeTimeControlViewDisposal" xml:space="preserve">
     <value>This view is being disposed.</value>
     <comment>View disposed</comment>
   </data>
@@ -2191,13 +2183,37 @@
   <data name="U05" xml:space="preserve">
     <value>Symbol</value>
   </data>
-  <data name="CompareNav.Content" xml:space="preserve">
+  <data name="_CompareNav.Content" xml:space="preserve">
     <value>Compare</value>
   </data>
-  <data name="HomeNav.Content" xml:space="preserve">
+  <data name="_HomeNav.Content" xml:space="preserve">
     <value>Home</value>
   </data>
-  <data name="ModelPage" xml:space="preserve">
+  <data name="_ModelPage" xml:space="preserve">
     <value>Model Page</value>
+  </data>
+  <data name="_CreateNewModel.Content" xml:space="preserve">
+    <value>Create New Model</value>
+  </data>
+  <data name="_CreateNewModel.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Create a new model</value>
+  </data>
+  <data name="_OpenModelFile.Content" xml:space="preserve">
+    <value>Open Model Data File</value>
+  </data>
+  <data name="_OpenModelFile.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Open a model data file</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Relatational Data Model Graph</value>
+  </data>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>ModelGraph</value>
+  </data>
+  <data name="_AppDescription.Text" xml:space="preserve">
+    <value>This utility makes the creation and maintenance of a relational models easy and fun.
+Use tree view’s Metadata section to create/edit your model’s schema as well define your custom tree and graph views.
+The tree view’s Modeling data section can be to inspect your model’s modeling data and also create a small amount of test data.
+The bulk of your modeling data work is best done in the custom tree and graph views that you create.</value>
   </data>
 </root>

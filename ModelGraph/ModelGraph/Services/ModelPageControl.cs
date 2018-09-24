@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Core;
 
 namespace ModelGraph.Services
 {
@@ -12,6 +13,7 @@ namespace ModelGraph.Services
     {
         public IModelControl ModelControl { get; private set; }
         public RootModel RootModel { get; private set; }
+        public CoreDispatcher Dispatcher { get; set; }
 
         public ModelPageControl(RootModel rootModel)
         {
@@ -19,13 +21,9 @@ namespace ModelGraph.Services
             rootModel.PageControl = this;
         }
 
-        public void Dispatch(UIRequest request)
+        public async void Dispatch(UIRequest rq)
         {
+            await ModelPageService.Current.Dispatch(rq, Dispatcher);
         }
-
-        public void SetActualSize()
-        {
-        }
-
     }
 }

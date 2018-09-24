@@ -39,6 +39,8 @@ namespace ModelGraph.Views
         private void InitializeModel(ModelPageControl pageControl)
         { 
             PageControl = pageControl;
+            PageControl.Dispatcher = Dispatcher;
+
             Button1.Content = "Close";
             Button1.Visibility = Windows.UI.Xaml.Visibility.Visible;
         }

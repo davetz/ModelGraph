@@ -15,16 +15,16 @@
         <StackPanel
             x:Name="ContentArea">
             <TextBlock
-                x:Uid="Settings_Personalization"
+                x:Uid="_Settings_Personalization"
                 Style="{StaticResource SubtitleTextBlockStyle}" />
             <StackPanel Margin="{StaticResource SettingsSubheaderMargin}">
                 <TextBlock
-                    x:Uid="Settings_Theme"
+                    x:Uid="_Settings_Theme"
                     Style="{StaticResource BodyTextStyle}" />
 
                 <StackPanel Margin="{StaticResource EightTopMargin}">
                     <RadioButton 
-                        x:Uid="Settings_Theme_Light" 
+                        x:Uid="_Settings_Theme_Light" 
                         GroupName="AppTheme" 
                         Checked="ThemeChanged_CheckedAsync" 
                         IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}">
@@ -33,7 +33,7 @@
                         </RadioButton.CommandParameter> 
                     </RadioButton>
                     <RadioButton 
-                        x:Uid="Settings_Theme_Dark" 
+                        x:Uid="_Settings_Theme_Dark" 
                         GroupName="AppTheme"
                         Checked="ThemeChanged_CheckedAsync" 
                         IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}">
@@ -42,7 +42,7 @@
                         </RadioButton.CommandParameter>
                     </RadioButton>
                     <RadioButton 
-                        x:Uid="Settings_Theme_Default"
+                        x:Uid="_Settings_Theme_Default"
                         GroupName="AppTheme"
                         Checked="ThemeChanged_CheckedAsync"
                         IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}">
@@ -54,18 +54,18 @@
             </StackPanel>
 
             <TextBlock
-                    x:Uid="Settings_About"
+                    x:Uid="_Settings_About"
                     Style="{StaticResource SubtitleTextBlockStyle}"/>
 
             <StackPanel Margin="{StaticResource EightTopMargin}">
                 <TextBlock
                     Text="{x:Bind VersionDescription, Mode=OneWay}" />
                 <TextBlock
-                    x:Uid="Settings_AboutDescription"
+                    x:Uid="_Settings_AboutDescription"
                     Margin="{StaticResource EightTopMargin}" />
 
                 <HyperlinkButton
-                    x:Uid="Settings_PrivacyTermsLink" 
+                    x:Uid="_Settings_PrivacyTermsLink" 
                     Margin="{StaticResource EightTopMargin}" />
             </StackPanel>
         </StackPanel>

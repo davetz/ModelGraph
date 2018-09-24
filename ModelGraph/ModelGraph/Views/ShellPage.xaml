@@ -18,14 +18,14 @@
 
         Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
         <NavigationView.MenuItems>
-            <NavigationViewItem x:Name="Home" x:Uid="HomeNav" helpers:NavHelper.NavigateTo="views:HomePage">
+            <NavigationViewItem x:Name="Home" x:Uid="_HomeNav" helpers:NavHelper.NavigateTo="views:MainPage">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xE80F;"/>
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
             <NavigationViewItemSeparator/>
-            <NavigationViewItemSeparator x:Name="AddModelPageHere"/>
-            <NavigationViewItem x:Name="Compare" x:Uid="CompareNav" helpers:NavHelper.NavigateTo="views:ComparePage">
+            <NavigationViewItemSeparator x:Name="Seperator"/>
+            <NavigationViewItem x:Name="Compare" x:Uid="_CompareNav" helpers:NavHelper.NavigateTo="views:ComparePage">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xE773;"/>
                 </NavigationViewItem.Icon>

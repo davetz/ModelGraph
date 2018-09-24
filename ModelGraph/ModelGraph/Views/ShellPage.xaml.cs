@@ -68,8 +68,8 @@ namespace ModelGraph.Views
         public void InsertModelPage(ModelPageControl pageControl)
         {
             var item = navigationView.MenuItems
-                            .OfType<NavigationViewItemSeparator>()
-                            .FirstOrDefault(menuItem => (menuItem.Name == "AddModelPageHere"));
+                            .OfType<NavigationViewItem>()
+                            .FirstOrDefault(menuItem => (menuItem.Name == "Home"));
 
             if (item is null) return;
 
@@ -115,7 +115,7 @@ namespace ModelGraph.Views
             if (!(home is null))
             {
                 home.IsSelected = true;                
-                NavigationService.Navigate(typeof(HomePage));
+                NavigationService.Navigate(typeof(MainPage));
             }
 
         }

@@ -8,9 +8,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace ModelGraph.Views
 {
-    public sealed partial class HomePage : Page, INotifyPropertyChanged
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
     {
-        public HomePage()
+        public MainPage()
         {
             InitializeComponent();
         }
@@ -30,7 +30,11 @@ namespace ModelGraph.Views
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private void NewButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void NewButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await ModelPageService.Current.CreateNewModelAsync(Dispatcher);
+        }
+        private void OpenButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             var root = new RootModel();
             var ctrl = new ModelPageControl(root);
