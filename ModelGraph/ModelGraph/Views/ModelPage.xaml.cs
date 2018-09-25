@@ -65,6 +65,7 @@ namespace ModelGraph.Views
                     break;
             }
             pageControl.RootModel.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
+            ModelTitle.Text = pageControl.RootModel.TitleName;
             ControlGrid.Children.Add(pageControl.ModelControl as UserControl);
         }
         #endregion

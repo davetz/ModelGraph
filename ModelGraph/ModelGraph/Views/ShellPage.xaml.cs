@@ -67,6 +67,8 @@ namespace ModelGraph.Views
         #region InsertModelPage  ==============================================
         public void InsertModelPage(ModelPageControl pageControl)
         {
+            pageControl.RootModel.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
+
             var item = navigationView.MenuItems
                             .OfType<NavigationViewItem>()
                             .FirstOrDefault(menuItem => (menuItem.Name == "Home"));
@@ -76,10 +78,11 @@ namespace ModelGraph.Views
             var index = navigationView.MenuItems.IndexOf(item) + 1;
             var navItem = new NavigationViewItem
             {
-                Content = "ModelPage".GetLocalized(),
+                Content = pageControl.RootModel.TitleName,
                 Icon = new SymbolIcon(Symbol.AllApps),
                 Tag = pageControl
             };
+            ToolTipService.SetToolTip(navItem, pageControl.RootModel.TitleSummary);
             
             navItem.Loaded += NavItem_Loaded;
             navigationView.MenuItems.Insert(index, navItem);
@@ -137,7 +140,7 @@ namespace ModelGraph.Views
 
             if (item.Tag is ModelPageControl pageControl)
             {
-                NavigationService.Navigate(typeof(ModelPage), item.Tag);
+                NavigationService.Navigate(typeof(ModelPage), pageControl);
             }
             else
             {

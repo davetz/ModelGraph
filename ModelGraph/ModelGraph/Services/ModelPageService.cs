@@ -85,8 +85,10 @@ namespace ModelGraph.Services
         {
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                var rootModel = new RootModel(AppRootModel);
-                rootModel.ControlType = ControlType.PrimaryTree;
+                var rootModel = new RootModel(AppRootModel)
+                {
+                    ControlType = ControlType.PrimaryTree
+                };
                 var pageControl = new ModelPageControl(rootModel);
                 InsertModelPage(pageControl);
             });

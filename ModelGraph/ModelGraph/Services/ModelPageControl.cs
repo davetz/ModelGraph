@@ -25,5 +25,7 @@ namespace ModelGraph.Services
         {
             await ModelPageService.Current.Dispatch(rq, this);
         }
+
+        public override string ToString() => GetHashCode().ToString();
     }
 }
