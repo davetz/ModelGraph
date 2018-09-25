@@ -1,4 +1,5 @@
-﻿using ModelGraphSTD;
+﻿using ModelGraph.Controls;
+using ModelGraphSTD;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -36,35 +37,35 @@ namespace ModelGraph.Services
         #endregion
 
         #region Dispatch  =====================================================
-        public async Task<bool> Dispatch(UIRequest rq, CoreDispatcher dispatcher)
+        public async Task<bool> Dispatch(UIRequest rq, ModelPageControl ctrl)
         {
             switch (rq.RequestType)
             {
                 case RequestType.Save:
-                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { SaveModel(rq.Root); });
-                    break;
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { SaveModel(rq.Root); });
+                    return true;
 
                 case RequestType.Close:
-                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { CloseModel(rq.Root); });
-                    break;
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { CloseModel(rq.Root); });
+                    return true;
 
                 case RequestType.Reload:
-                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ReloadModel(rq.Root); });
-                    break;
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ReloadModel(rq.Root); });
+                    return true;
 
                 case RequestType.Refresh:
-                    // await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { _activeModel?.ModelControl?.Refresh(); });
-                    break;
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.ModelControl?.Refresh(); });
+                    return true;
 
                 case RequestType.CreateView:
                     //await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InitializeModel(new RootModel(rq)));
-                    break;
+                    return true;
 
                 case RequestType.CreatePage:
                     //await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new RootModel(rq)));
-                    break;
+                    return true;
             }
-            return true;
+            return false;
         }
 
         private void SaveModel(RootModel model)
@@ -85,6 +86,7 @@ namespace ModelGraph.Services
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 var rootModel = new RootModel(AppRootModel);
+                rootModel.ControlType = ControlType.PrimaryTree;
                 var pageControl = new ModelPageControl(rootModel);
                 InsertModelPage(pageControl);
             });

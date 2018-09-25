@@ -28,7 +28,7 @@ namespace ModelGraphSTD
         public ControlType ControlType;
 
         #region Constructors  =================================================
-        // AppRootModel: Created by ModelPageService
+        // App-RootModel: Created by ModelPageService
         public RootModel()
         { 
             Trait = Trait.RootChef_M;
@@ -39,17 +39,17 @@ namespace ModelGraphSTD
             ControlType = ControlType.AppRootChef;
         }
 
-        // PrimaryTree RootModel: Created by ModelPageService
-        public RootModel(RootModel appRootModel)
+        // Primary-RootModel: Created by ModelPageService
+        public RootModel(RootModel appRootModel, IRepository repository = null)
         {
             Trait = Trait.DataChef_M;
-            Item = Chef = new Chef();
+            Item = Chef = new Chef(appRootModel.Chef, repository);
             Get = Chef.DataChef_X;
-            appRootModel.Chef.AddRootModel(this);
 
-            ControlType = ControlType.PartialTree;
+            ControlType = ControlType.PrimaryTree;
+            Chef.AddRootModel(this);
         }
-        // Secondary RootModel: Created by PrimaryRoot
+        // Secondary-RootModel: Created by Primary-RootModel
         public RootModel(UIRequest rq)
             : base(null, rq.Trait, rq.Item, rq.Aux1, rq.Aux2, rq.Get)
         {

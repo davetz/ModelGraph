@@ -11,7 +11,7 @@ namespace ModelGraph.Services
 {
     public sealed class ModelPageControl : IPageControl
     {
-        public IModelControl ModelControl { get; private set; }
+        public IModelControl ModelControl { get; set; }
         public RootModel RootModel { get; private set; }
         public CoreDispatcher Dispatcher { get; set; }
 
@@ -23,7 +23,7 @@ namespace ModelGraph.Services
 
         public async void Dispatch(UIRequest rq)
         {
-            await ModelPageService.Current.Dispatch(rq, Dispatcher);
+            await ModelPageService.Current.Dispatch(rq, this);
         }
     }
 }

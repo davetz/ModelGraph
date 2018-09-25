@@ -1,8 +1,10 @@
-﻿using ModelGraph.Services;
+﻿using ModelGraph.Controls;
+using ModelGraph.Services;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
-
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -25,6 +27,8 @@ namespace ModelGraph.Views
         }
         #endregion
 
+
+        #region OnNavigatedTo  ================================================
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             if (e.Parameter is ModelPageControl pageControl)
@@ -41,11 +45,44 @@ namespace ModelGraph.Views
             PageControl = pageControl;
             PageControl.Dispatcher = Dispatcher;
 
-            Button1.Content = "Close";
-            Button1.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            var item = ControlGrid.Children
+                .FirstOrDefault( (c) => (c.GetType() == typeof(IModelControl)));
+
+            if (item is null)
+            {
+                switch (PageControl.RootModel.ControlType)
+                {
+                    case ModelGraphSTD.ControlType.PrimaryTree:
+                    case ModelGraphSTD.ControlType.PartialTree:
+                        var tc = new ModelTreeControl(pageControl.RootModel);
+                        pageControl.ModelControl = tc;
+                        pageControl.RootModel.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
+
+                        ControlGrid.Children.Add(tc);
+                        break;
+
+                    case ModelGraphSTD.ControlType.SymbolEditor:
+                        var sc = new SymbolEditControl(pageControl.RootModel);
+                        pageControl.ModelControl = sc;
+                        pageControl.RootModel.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
+
+                        ControlGrid.Children.Add(sc);
+                        break;
+
+                    case ModelGraphSTD.ControlType.GraphDisplay:
+                        var gc = new ModelGraphControl(pageControl.RootModel);
+                        pageControl.ModelControl = gc;
+                        pageControl.RootModel.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
+
+                        ControlGrid.Children.Add(gc);
+                        break;
+                }
+            }
         }
+        #endregion
 
 
+        #region Button_Click  =================================================
         private void CloseButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             ModelPageService.RemoveModelPage(PageControl);
@@ -54,9 +91,10 @@ namespace ModelGraph.Views
         {
             ModelPageService.RemoveModelPage(PageControl);
         }
+        #endregion
 
 
-
+        #region PropertyChanged  ==============================================
         public event PropertyChangedEventHandler PropertyChanged;
         private void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
         {
@@ -70,5 +108,6 @@ namespace ModelGraph.Views
         }
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        #endregion
     }
 }
