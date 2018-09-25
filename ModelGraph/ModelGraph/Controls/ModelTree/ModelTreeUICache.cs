@@ -165,8 +165,38 @@ namespace ModelGraph.Controls
 
         #endregion
 
+        #region ClearCache  ===================================================
+        private void ClearCache()
+        {
+            for (int i = 0; i < _cacheSize; i++)
+            {
+                if (_stackPanelCache[i] is null) return; //end of cache
+
+                ClearItemKind(i);
+                ClearItemName(i);
+                ClearItemInfo(i);
+                ClearTotalCount(i);
+                ClearTreeIndent(i);
+                ClearExpandLeft(i);
+                ClearExpandRight(i);
+                ClearSortMode(i);
+                ClearUsageMode(i);
+                ClearFilterMode(i);
+                ClearFilterText(i);
+                ClearFilterCount(i);
+                ClearPropertyName(i);
+                ClearTextProperty(i);
+                ClearCheckProperty(i);
+                ClearComboProperty(i);
+                ClearModelIdentity(i);
+
+                ClearStackPanel(i);
+            }
+        }
+        #endregion
+
         #region ResetCacheDelta  ==============================================
-        void ResetCacheDelta(ItemModel m)
+            void ResetCacheDelta(ItemModel m)
         {
             if (_modelCacheIndex.TryGetValue(m, out int i))
             {
@@ -200,6 +230,22 @@ namespace ModelGraph.Controls
 
             _stackPanelCache[index].Children.Add(obj);
         }
+        void ClearItemKind(int index)
+        {
+            var obj = _itemKindCache[index] = new TextBlock();
+            if (obj != null)
+            {
+                obj.DragStarting -= ItemName_DragStarting;
+                obj.PointerPressed -= ItemName_PointerPressed;
+                obj.PointerReleased -= ItemName_PointerReleased;
+                obj.DragOver -= ItemName_DragOver;
+                obj.Drop -= ItemName_Drop;
+                obj.PointerEntered -= ItemName_PointerEntered;
+                obj.DataContext = null;
+
+                _itemKindCache[index] = null;
+            }
+        }
         #endregion
 
         #region AddItemName  ==================================================
@@ -226,6 +272,22 @@ namespace ModelGraph.Controls
 
             _stackPanelCache[index].Children.Add(obj);
         }
+        private void ClearItemName(int index)
+        {
+            var obj = _itemNameCache[index];
+            if (obj != null)
+            {
+                obj.DragStarting -= ItemName_DragStarting;
+                obj.PointerPressed -= ItemName_PointerPressed;
+                obj.PointerReleased -= ItemName_PointerReleased;
+                obj.DragOver -= ItemName_DragOver;
+                obj.Drop -= ItemName_Drop;
+                obj.PointerEntered -= ItemName_PointerEntered;
+                obj.DataContext = null;
+
+                _itemNameCache[index] = null;
+            }
+        }
         #endregion
 
         #region AddItemInfo  ==================================================
@@ -244,6 +306,16 @@ namespace ModelGraph.Controls
 
             _stackPanelCache[index].Children.Add(obj);
         }
+        private void ClearItemInfo(int index)
+        {
+            var obj = _itemInfoCache[index];
+            if (obj != null)
+            {
+                obj.DataContext = null;
+
+                _itemInfoCache[index] = null;
+            }
+        }
         #endregion
 
         #region AddTotalCount  ================================================
@@ -261,6 +333,14 @@ namespace ModelGraph.Controls
             obj.Text = count.ToString();
 
             _stackPanelCache[index].Children.Add(obj);
+        }
+        void ClearTotalCount(int index)
+        {
+            var obj = _totalCountCache[index];
+            if (obj != null)
+            {
+                _totalCountCache[index] = null;
+            }
         }
         #endregion
 
@@ -281,6 +361,17 @@ namespace ModelGraph.Controls
             obj.MinWidth = model.Depth * _levelIndent;
 
             _stackPanelCache[index].Children.Add(obj);
+        }
+        private void ClearTreeIndent(int index)
+        {
+            var obj = _indentTreeCache[index];
+            if (obj != null)
+            {
+                obj.PointerReleased -= ExpandTree_PointerReleased;
+                obj.DataContext = null;
+
+                _indentTreeCache[index] = null;
+            }
         }
         #endregion
 
@@ -312,7 +403,19 @@ namespace ModelGraph.Controls
 
             _stackPanelCache[index].Children.Add(obj);
         }
+        private void ClearExpandLeft(int index)
+        {
+            var obj = _expandLeftCache[index];
+            if (obj != null)
+            {
+                obj.PointerExited -= TextBlockHightlight_PointerExited;
+                obj.PointerEntered -= TextBlockHighlight_PointerEntered;
+                obj.PointerReleased -= ExpandTree_PointerReleased;
+                obj.DataContext = null;
 
+                _expandLeftCache[index] = null;
+            }
+        }
         #endregion
 
         #region AddExpandRight  ===============================================
@@ -334,6 +437,19 @@ namespace ModelGraph.Controls
             obj.DataContext = model;
 
             _stackPanelCache[index].Children.Add(obj);
+        }
+        private void ClearExpandRight(int index)
+        {
+            var obj = _expandRightCache[index];
+            if (obj != null)
+            {
+                obj.PointerExited -= TextBlockHightlight_PointerExited;
+                obj.PointerEntered -= TextBlockHighlight_PointerEntered;
+                obj.PointerReleased -= ExpandChoice_PointerReleased;
+                obj.DataContext = null;
+
+                _expandRightCache[index] = null;
+            }
         }
         #endregion
 
@@ -365,6 +481,19 @@ namespace ModelGraph.Controls
                 obj.DataContext = null; // needed for "S" keyboard shortcut (TailButton)
             }
         }
+        private void ClearSortMode(int index)
+        {
+            var obj = _sortModeCache[index];
+            if (obj != null)
+            {
+                obj.PointerExited -= TextBlockHightlight_PointerExited;
+                obj.PointerEntered -= TextBlockHighlight_PointerEntered;
+                obj.PointerReleased -= SortMode_PointerReleased;
+                obj.DataContext = null;
+
+                obj = _sortModeCache[index] = null;
+            }
+        }
         #endregion
 
         #region AddUsageMode  ==================================================
@@ -392,6 +521,19 @@ namespace ModelGraph.Controls
             else if (obj != null)
             {
                 obj.DataContext = null; // needed for "U" keyboard shortcut (TailButton)
+            }
+        }
+        private void ClearUsageMode(int index)
+        {
+            var obj = _usageModeCache[index];
+            if (obj != null)
+            {
+                obj.PointerExited -= TextBlockHightlight_PointerExited;
+                obj.PointerEntered -= TextBlockHighlight_PointerEntered;
+                obj.PointerReleased -= UsageMode_PointerReleased;
+                obj.DataContext = null;
+
+                _usageModeCache[index] = null;
             }
         }
         #endregion
@@ -423,6 +565,19 @@ namespace ModelGraph.Controls
                 obj.DataContext = null; // needed for "F" keyboard shortcut (TailButton)
             }
         }
+        private void ClearFilterMode(int index)
+        {
+            var obj = _filterModeCache[index];
+            if (obj != null)
+            {
+                obj.PointerExited -= TextBlockHightlight_PointerExited;
+                obj.PointerEntered -= TextBlockHighlight_PointerEntered;
+                obj.PointerReleased -= FilterMode_PointerReleased;
+                obj.DataContext = null;
+
+                _filterModeCache[index] = null;
+            }
+        }
         #endregion
 
         #region AddFilterText  ================================================
@@ -445,6 +600,18 @@ namespace ModelGraph.Controls
 
             _stackPanelCache[index].Children.Add(obj);
         }
+        private void ClearFilterText(int index)
+        {
+            var obj = _filterTextCache[index];
+            if (obj != null)
+            {
+                obj.KeyDown -= FilterText_KeyDown;
+                obj.Tag = null;
+                obj.DataContext = null;
+
+                _filterTextCache[index] = null;
+            }
+        }
         #endregion
 
         #region AddFilterCount  ===============================================
@@ -462,6 +629,14 @@ namespace ModelGraph.Controls
             obj.Text = model.FilterCount.ToString();
 
             _stackPanelCache[index].Children.Add(obj);
+        }
+        private void ClearFilterCount(int index)
+        {
+            var obj = _filterCountCache[index];
+            if (obj != null)
+            {
+                _filterCountCache[index] = null;
+            }
         }
         #endregion
 
@@ -493,6 +668,21 @@ namespace ModelGraph.Controls
 
             _stackPanelCache[index].Children.Add(bdr);
         }
+        private void ClearPropertyName(int index)
+        {
+            var obj = _propertyNameCache[index];
+            var bdr = _propertyBorderCache[index];
+            if (obj != null)
+            {
+                bdr.PointerEntered -= PropertyBorder_PointerEntered;
+                obj.PointerEntered -= ItemName_PointerEntered;
+                bdr.DataContext = null;
+                obj.DataContext = null;
+
+                _propertyNameCache[index] = null;
+                _propertyBorderCache[index] = null;
+            }
+        }
         #endregion
 
         #region AddTextProperty  ==============================================
@@ -516,6 +706,19 @@ namespace ModelGraph.Controls
 
             _stackPanelCache[index].Children.Add(obj);
         }
+        private void ClearTextProperty(int index)
+        {
+            var obj = _textPropertyCache[index];
+            if (obj != null)
+            {
+                obj.KeyDown -= TextProperty_KeyDown;
+                obj.LostFocus -= TextProperty_LostFocus;
+                obj.Tag = null;
+                obj.DataContext = null;
+
+                _textPropertyCache[index] = null;
+            }
+        }
         #endregion
 
         #region AddCheckProperty  =============================================
@@ -536,6 +739,19 @@ namespace ModelGraph.Controls
             obj.IsChecked = model.BoolValue;
 
             _stackPanelCache[index].Children.Add(obj);
+        }
+        private void ClearCheckProperty(int index)
+        {
+            var obj = _checkPropertyCache[index];
+            if (obj != null)
+            {
+                obj.Checked -= CheckProperty_Checked;
+                obj.Unchecked -= CheckProperty_Checked;
+                obj.KeyDown -= Check_KeyDown;
+                obj.DataContext = null;
+
+                _checkPropertyCache[index] = null;
+            }
         }
         #endregion
 
@@ -558,6 +774,19 @@ namespace ModelGraph.Controls
 
             _stackPanelCache[index].Children.Add(obj);
         }
+        private void ClearComboProperty(int index)
+        {
+            var obj = _comboPropertyCache[index];
+            if (obj != null)
+            {
+                obj.SelectionChanged -= ComboProperty_SelectionChanged;
+                obj.KeyDown -= ComboProperty_KeyDown;
+                obj.DataContext = null;
+                obj.ItemsSource = null;
+
+                _comboPropertyCache[index] = null;
+            }
+        }
         #endregion
 
 
@@ -576,6 +805,17 @@ namespace ModelGraph.Controls
             obj.DataContext = model;
 
             _stackPanelCache[index].Children.Add(obj);
+        }
+        private void ClearModelIdentity(int index)
+        {
+            var obj = _modelIdentityCache[index];
+            if (obj != null)
+            {
+                obj.PointerEntered -= ModelIdentity_PointerEntered;
+                obj.DataContext = null;
+
+                _modelIdentityCache[index] = null;
+            }
         }
         #endregion
 
@@ -665,6 +905,17 @@ namespace ModelGraph.Controls
                         }
                     }
                     break;
+            }
+        }
+        private void ClearStackPanel(int index)
+        {
+            var sp = _stackPanelCache[index];
+            if (sp != null)
+            {
+                sp.Children.Clear();
+                sp.DataContext = null;
+
+                _stackPanelCache[index] = null;
             }
         }
         #endregion

@@ -17,6 +17,7 @@ namespace ModelGraph.Controls
         private Chef _chef;
         private RootModel _rootModel;
         private SymbolX _symbol;
+        public Grid PrevOwner { get; set; }
 
         #region Constructor  ==================================================
         public SymbolEditControl(RootModel root)
@@ -31,6 +32,12 @@ namespace ModelGraph.Controls
             UpdateSymbolSize();
 
             Initialize();
+        }
+        #endregion
+
+        #region Clear  ========================================================
+        public void Clear()
+        {
         }
         #endregion
 

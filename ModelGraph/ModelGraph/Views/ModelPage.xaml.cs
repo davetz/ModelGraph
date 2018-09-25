@@ -41,43 +41,31 @@ namespace ModelGraph.Views
             }
         }
         private void InitializeModel(ModelPageControl pageControl)
-        { 
+        {
             PageControl = pageControl;
             PageControl.Dispatcher = Dispatcher;
 
-            var item = ControlGrid.Children
-                .FirstOrDefault( (c) => (c.GetType() == typeof(IModelControl)));
-
-            if (item is null)
+            if (pageControl.ModelControl is IModelControl ctrl)
             {
-                switch (PageControl.RootModel.ControlType)
-                {
-                    case ModelGraphSTD.ControlType.PrimaryTree:
-                    case ModelGraphSTD.ControlType.PartialTree:
-                        var tc = new ModelTreeControl(pageControl.RootModel);
-                        pageControl.ModelControl = tc;
-                        pageControl.RootModel.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
-
-                        ControlGrid.Children.Add(tc);
-                        break;
-
-                    case ModelGraphSTD.ControlType.SymbolEditor:
-                        var sc = new SymbolEditControl(pageControl.RootModel);
-                        pageControl.ModelControl = sc;
-                        pageControl.RootModel.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
-
-                        ControlGrid.Children.Add(sc);
-                        break;
-
-                    case ModelGraphSTD.ControlType.GraphDisplay:
-                        var gc = new ModelGraphControl(pageControl.RootModel);
-                        pageControl.ModelControl = gc;
-                        pageControl.RootModel.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
-
-                        ControlGrid.Children.Add(gc);
-                        break;
-                }
+                ctrl.Clear();
             }
+            switch (PageControl.RootModel.ControlType)
+            {
+                case ModelGraphSTD.ControlType.PrimaryTree:
+                case ModelGraphSTD.ControlType.PartialTree:
+                    pageControl.ModelControl = new ModelTreeControl(pageControl.RootModel);
+                    break;
+
+                case ModelGraphSTD.ControlType.SymbolEditor:
+                    pageControl.ModelControl = new SymbolEditControl(pageControl.RootModel);
+                    break;
+
+                case ModelGraphSTD.ControlType.GraphDisplay:
+                    pageControl.ModelControl = new ModelGraphControl(pageControl.RootModel);
+                    break;
+            }
+            pageControl.RootModel.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
+            ControlGrid.Children.Add(pageControl.ModelControl as UserControl);
         }
         #endregion
 

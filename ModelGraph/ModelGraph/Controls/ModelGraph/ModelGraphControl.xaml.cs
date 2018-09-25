@@ -11,7 +11,7 @@ namespace ModelGraph.Controls
     {
         private Chef _chef;
         private Graph _graph;
-        private RootModel _model;
+        private RootModel _model;        
 
         public ModelGraphControl(RootModel model)
         {
@@ -59,6 +59,11 @@ namespace ModelGraph.Controls
             DrawCanvas = null;
         }
 
+        #region Clear  ========================================================
+        public void Clear()
+        {
+        }
+        #endregion
 
 
         public void Refresh()

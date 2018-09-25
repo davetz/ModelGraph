@@ -11,6 +11,8 @@ namespace ModelGraph.Controls
 {
     public sealed partial class ModelTreeControl : UserControl, IModelControl
     {
+        public Grid PrevOwner { get; set; }
+
         public ModelTreeControl(RootModel root)
         {
             _root = root;
@@ -125,6 +127,14 @@ namespace ModelGraph.Controls
 
         // position all unused cache elements offScreen
         const int notVisible = 32767;
+        #endregion
+
+        #region Clear  ========================================================
+        public void Clear()
+        {
+            ClearCache();
+            TreeCanvas.Children.Clear();
+        }
         #endregion
 
         #region Close  ========================================================
