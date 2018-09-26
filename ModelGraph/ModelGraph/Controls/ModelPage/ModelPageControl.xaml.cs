@@ -1,0 +1,143 @@
+﻿using ModelGraphSTD;
+using ModelGraph.Services;
+using System;
+using System.Collections.Generic;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using ModelGraph.Helpers;
+using RepositoryUWP;
+
+namespace ModelGraph.Controls
+{
+    public sealed partial class ModelPageControl : Page, IPageControl
+    {
+        public RootModel RootModel { get; private set; }
+        public IModelControl ModelControl { get; set; }
+
+        #region Constructor  ==================================================
+        public ModelPageControl(RootModel rootModel)
+        {
+            InitializeComponent();
+            InitializeModel(rootModel);
+        }
+        #endregion
+
+        #region InitializeModelControl  =======================================
+        internal void InitializeModel(RootModel model)
+        {
+            RootModel = model;
+            model.PageControl = this;
+            model.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
+
+            switch (model.ControlType)
+            {
+                case ControlType.AppRootChef:
+                    break;
+
+                case ControlType.PrimaryTree:
+                case ControlType.PartialTree:
+                    ControlGrid.Children.Add(new ModelTreeControl(model));
+                    break;
+
+                case ControlType.SymbolEditor:
+                    ControlGrid.Children.Add(new SymbolEditControl(model));
+                    break;
+
+                case ControlType.GraphDisplay:
+                    ControlGrid.Children.Add(new ModelGraphControl(model));
+                    break;
+
+                default:
+                    throw new ArgumentException("Unknown ControlType");
+            }
+
+            var buttonCommands = new List<ModelCommand>();
+            model.ButtonComands(buttonCommands);
+
+            var N = buttonCommands.Count;
+            var M = ButtonPanel.Children.Count;
+            for (int i = 0; i < M; i++)
+            {
+                var btn = ButtonPanel.Children[i] as Button;
+                if (i < N)
+                {
+                    var cmd = buttonCommands[i];
+                    btn.Tag = cmd;
+                    btn.Content = cmd.Name;
+                    btn.Visibility = Visibility.Visible;
+                    ToolTipService.SetToolTip(btn, cmd.Summary);
+                }
+                else
+                {
+                    btn.Visibility = Visibility.Collapsed;
+                }
+            }
+            ModelTitle.Text = model.TitleName;
+        }
+        #endregion
+
+        #region AppButton_Click  ==============================================
+        private async void AppButton_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            var cmd = btn.Tag as ModelCommand;
+            if (cmd.IsStorageFileParameter1)
+            {
+                if (cmd.IsSaveAsCommand)
+                {
+                    var savePicker = new FileSavePicker
+                    {
+                        SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                        SuggestedFileName = string.Empty
+                    };
+                    savePicker.FileTypeChoices.Add("DataFile", new List<string>() { ".mgdf" });
+                    StorageFile file = await savePicker.PickSaveFileAsync();
+                    if (file != null)
+                    {
+                        cmd.Parameter1 = new RepositoryStorageFile(file);
+                        cmd.Execute();
+                        //ReloadModelView();
+                    }
+                }
+                else
+                {
+                    var openPicker = new FileOpenPicker
+                    {
+                        ViewMode = PickerViewMode.List,
+                        SuggestedStartLocation = PickerLocationId.DocumentsLibrary
+                    };
+                    openPicker.FileTypeFilter.Add(".mgdf");
+                    StorageFile file = await openPicker.PickSingleFileAsync();
+                    if (file != null)
+                    {
+                        cmd.Parameter1 = new RepositoryStorageFile(file);
+                        cmd.Execute();
+                    }
+                }
+            }
+            else
+            {
+                cmd.Execute();
+            }
+        }
+        #endregion
+
+        #region IPageControl  =================================================
+        public void SetSize(double width, double height)
+        {
+            ModelControl?.SetSize(width, height - ButtonGrid.ActualHeight);
+        }
+
+
+
+        public async void Dispatch(UIRequest rq)
+        {
+            await ModelPageService.Current.Dispatch(rq, this);
+        }
+        #endregion
+    }
+}

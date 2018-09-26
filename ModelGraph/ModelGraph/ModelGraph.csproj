@@ -120,6 +120,9 @@
     <Compile Include="Controls\ModelGraph\ModelGraphControlInputEvents.cs" />
     <Compile Include="Controls\ModelGraph\ModelGraphControlMoveItems.cs" />
     <Compile Include="Controls\ModelGraph\ModelGraphControlVisualAids.cs" />
+    <Compile Include="Controls\ModelPage\ModelPageControl.xaml.cs">
+      <DependentUpon>ModelPageControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ModelTree\ModelTreeControl.xaml.cs">
       <DependentUpon>ModelTreeControl.xaml</DependentUpon>
     </Compile>
@@ -140,7 +143,6 @@
     <Compile Include="Services\DragAndDrop\DropConfiguration.cs" />
     <Compile Include="Services\DragAndDrop\ListViewDropConfiguration.cs" />
     <Compile Include="Services\DragAndDrop\VisualDropConfiguration.cs" />
-    <Compile Include="Services\ModelPageControl.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\ThemeSelectorService.cs" />
     <Compile Include="Services\ViewLifetimeControl.cs" />
@@ -170,6 +172,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\ModelGraph\ModelGraphControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ModelPage\ModelPageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

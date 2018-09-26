@@ -35,11 +35,9 @@ namespace ModelGraph.Views
         {
             await ModelPageService.Current.CreateNewModelAsync(Dispatcher);
         }
-        private void OpenButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void OpenButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            var root = new RootModel();
-            var ctrl = new ModelPageControl(root);
-            ModelPageService.InsertModelPage(ctrl);
+            await ModelPageService.Current.OpenModelDataFileAsync(Dispatcher);
         }
     }
 }

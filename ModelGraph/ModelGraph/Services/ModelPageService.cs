@@ -1,5 +1,7 @@
 ﻿using ModelGraph.Controls;
+using ModelGraph.Views;
 using ModelGraphSTD;
+using RepositoryUWP;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,6 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Windows.ApplicationModel.Core;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -57,11 +61,8 @@ namespace ModelGraph.Services
                     await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.ModelControl?.Refresh(); });
                     return true;
 
-                case RequestType.CreateView:
-                    //await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InitializeModel(new RootModel(rq)));
-                    return true;
-
                 case RequestType.CreatePage:
+                    //await WindowManagerService.Current.TryShowAsStandaloneAsync("blabber-blabber", typeof(ModelPage), new ModelPageControl(new RootModel(rq)));
                     //await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new RootModel(rq)));
                     return true;
             }
@@ -93,6 +94,32 @@ namespace ModelGraph.Services
                 InsertModelPage(pageControl);
             });
 
+            return true;
+        }
+        #endregion
+
+        #region OpenModelDataFile  ============================================\
+        public async Task<bool> OpenModelDataFileAsync(CoreDispatcher dispatcher)
+        {
+            var openPicker = new FileOpenPicker
+            {
+                ViewMode = PickerViewMode.List,
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary
+            };
+            openPicker.FileTypeFilter.Add(".mgdf");
+            StorageFile file = await openPicker.PickSingleFileAsync();
+            if (file != null)
+            {
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    var rootModel = new RootModel(AppRootModel, new RepositoryStorageFile(file))
+                    {
+                        ControlType = ControlType.PrimaryTree
+                    };
+                    var pageControl = new ModelPageControl(rootModel);
+                    InsertModelPage(pageControl);
+                });
+            }
             return true;
         }
         #endregion

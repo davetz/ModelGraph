@@ -5,10 +5,11 @@ namespace ModelGraph.Controls
 {
     public interface IModelControl
     {
-        (int Width, int Height) PreferredMinSize { get; }
-        void SetSize(double width, double height);
-        void Refresh();
+        (int Width, int Height) PreferredSize { get; }
+        void Save();
         void Close();
-        void Clear();
+        void Reload();
+        void Refresh();
+        void SetSize(double width, double height);
     }
 }

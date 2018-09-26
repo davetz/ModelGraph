@@ -23,17 +23,6 @@ namespace ModelGraph.Controls
         }
 
         #region SetSize  ======================================================
-        public (int Width, int Height) PreferredMinSize => (400, 320);
-        public void SetSize(double width, double height)
-        {
-            TreeCanvas.Width = Width = width;
-            TreeCanvas.Height = Height = height;
-
-            _root.ViewCapacity =(int)(Height / _elementHieght);
-            _root.PostRefreshViewList(_select);
-
-            _viewIsReady = true;
-        }
 
         bool ViewIsNotReady()
         {
@@ -129,17 +118,28 @@ namespace ModelGraph.Controls
         const int notVisible = 32767;
         #endregion
 
-        #region Clear  ========================================================
-        public void Clear()
+        #region IModelControl  ================================================
+        public void Save()
+        {
+        }
+        public void Close()
         {
             ClearCache();
             TreeCanvas.Children.Clear();
         }
-        #endregion
-
-        #region Close  ========================================================
-        public void Close()
+        public void Reload()
         {
+        }
+        public (int Width, int Height) PreferredSize => (400, 320);
+        public void SetSize(double width, double height)
+        {
+            TreeCanvas.Width = Width = width;
+            TreeCanvas.Height = Height = height;
+
+            _root.ViewCapacity = (int)(Height / _elementHieght);
+            _root.PostRefreshViewList(_select);
+
+            _viewIsReady = true;
         }
         #endregion
 

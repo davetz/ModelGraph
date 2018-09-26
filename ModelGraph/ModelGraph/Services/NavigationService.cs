@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModelGraph.Views;
+using System;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -15,6 +16,7 @@ namespace ModelGraph.Services
 
         private static Frame _frame;
         private static object _lastParamUsed;
+        public static ModelPage ActiveModelPage;
 
         public static Frame Frame
         {
@@ -59,6 +61,10 @@ namespace ModelGraph.Services
             // Don't open the same page multiple times
             if (Frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParamUsed)))
             {
+                var activePage = ActiveModelPage;
+                ActiveModelPage = null;
+                activePage?.NavigatedFrom();
+
                 var navigationResult = Frame.Navigate(pageType, parameter, infoOverride);
                 if (navigationResult)
                 {

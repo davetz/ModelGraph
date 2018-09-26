@@ -35,8 +35,41 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region Clear  ========================================================
-        public void Clear()
+        #region IModelControl  ================================================
+        public void Save()
+        {
+            _symbol.Data = PackageSymbolData();
+            DrawCanvas.Invalidate();
+        }
+
+        public void Close()
+        {
+            if (DrawCanvas != null)
+            {
+                DrawCanvas.RemoveFromVisualTree();
+                DrawCanvas = null;
+            }
+            if (SelectCanvas != null)
+            {
+                SelectCanvas.RemoveFromVisualTree();
+                SelectCanvas = null;
+            }
+        }
+        public void Reload()
+        {
+            UnpackSymbolData(_symbol.Data);
+            UpdateSymbolSize();
+            UpdataLineStyleUI();
+            _pasteLines.Clear();
+            _selectLines.Clear();
+            DrawCanvas.Invalidate();
+        }
+
+        public void Refresh()
+        {
+        }
+        public (int Width, int Height) PreferredSize => (504, 360);
+        public void SetSize(double width, double hieght)
         {
         }
         #endregion
@@ -938,22 +971,6 @@ namespace ModelGraph.Controls
             }
             DrawCanvas.Invalidate();
         }
-
-        internal void SaveSymbol()
-        {
-            _symbol.Data = PackageSymbolData();
-            DrawCanvas.Invalidate();
-        }
-
-        internal void ReloadSymbol()
-        {
-            UnpackSymbolData(_symbol.Data);
-            UpdateSymbolSize();
-            UpdataLineStyleUI();
-            _pasteLines.Clear();
-            _selectLines.Clear();
-            DrawCanvas.Invalidate();
-        }
         #endregion
 
         #region EventActions  =================================================
@@ -1432,30 +1449,6 @@ namespace ModelGraph.Controls
         #endregion
 
         #region ViewEvents  ===================================================
-        public (int Width, int Height) PreferredMinSize => (504, 360);
-
-
-        public void SetSize(double width, double hieght)
-        {
-        }
-
-        public void Refresh()
-        {
-        }
-
-        public void Close()
-        {
-            if (DrawCanvas != null)
-            {
-                DrawCanvas.RemoveFromVisualTree();
-                DrawCanvas = null;
-            }
-            if (SelectCanvas != null)
-            {
-                SelectCanvas.RemoveFromVisualTree();
-                SelectCanvas = null;
-            }
-        }
 
         private void UserControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {

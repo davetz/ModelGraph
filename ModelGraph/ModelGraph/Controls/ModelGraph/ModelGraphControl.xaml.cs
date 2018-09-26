@@ -41,16 +41,8 @@ namespace ModelGraph.Controls
             Shift = 4,
         }
 
-        public (int Width, int Height) PreferredMinSize => (400, 320);
-
-        public void SetSize(double width, double height)
-        {
-            if (DrawCanvas == null) return;
-
-            RootGrid.Width = RootCanvas.Width = DrawCanvas.Width = this.Width = width;
-            RootGrid.Height = RootCanvas.Height = DrawCanvas.Height = this.Height = height;
-        }
-
+        #region IModelControl  ================================================
+        public void Save() { }
         public void Close()
         {
             if (DrawCanvas == null) return;
@@ -58,21 +50,13 @@ namespace ModelGraph.Controls
             DrawCanvas.RemoveFromVisualTree();
             DrawCanvas = null;
         }
-
-        #region Clear  ========================================================
-        public void Clear()
-        {
-        }
-        #endregion
-
-
+        public void Reload() { }
         public void Refresh()
         {
             if (DrawCanvas == null) return;
 
             DrawCanvas.Invalidate();
         }
-
         // needed because win2D.uwp canvaseControl is implemented in c++ (prevent memory leaks)
         private void ModelGraphControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
@@ -81,6 +65,16 @@ namespace ModelGraph.Controls
             DrawCanvas.RemoveFromVisualTree();
             DrawCanvas = null;
         }
+        public (int Width, int Height) PreferredSize => (400, 320);
+        public void SetSize(double width, double height)
+        {
+            if (DrawCanvas == null) return;
+
+            RootGrid.Width = RootCanvas.Width = DrawCanvas.Width = this.Width = width;
+            RootGrid.Height = RootCanvas.Height = DrawCanvas.Height = this.Height = height;
+        }
+        #endregion
+
 
         //===========================================================================================Debug
         int? currentLevel, wantedLevel;
