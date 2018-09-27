@@ -2216,4 +2216,16 @@ Use tree view’s Metadata section to create/edit your model’s schema as well 
 The tree view’s Modeling data section can be to inspect your model’s modeling data and also create a small amount of test data.
 The bulk of your modeling data work is best done in the custom tree and graph views that you create.</value>
   </data>
+  <data name="62EN" xml:space="preserve">
+    <value>Metadata</value>
+  </data>
+  <data name="62ES" xml:space="preserve">
+    <value>Model schema and metadata</value>
+  </data>
+  <data name="62FN" xml:space="preserve">
+    <value>Modeling</value>
+  </data>
+  <data name="62FS" xml:space="preserve">
+    <value>Modeling data</value>
+  </data>
 </root>

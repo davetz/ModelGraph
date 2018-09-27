@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelGraphUWP", "ModelGraphUWP\ModelGraphUWP.csproj", "{20EE62B0-4559-445F-8316-6E0221E70E9B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelGraphSTD", "ModelGraphSTD\ModelGraphSTD.csproj", "{19B96D9B-6F54-4E86-A23D-DE826B69B798}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryUWP", "RepositoryUWP\RepositoryUWP.csproj", "{22214A1F-4025-45D1-969D-B88190D31BBA}"
@@ -25,27 +23,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|Any CPU.Deploy.0 = Debug|x86
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|ARM.ActiveCfg = Debug|ARM
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|ARM.Build.0 = Debug|ARM
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|ARM.Deploy.0 = Debug|ARM
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|x64.ActiveCfg = Debug|x64
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|x64.Build.0 = Debug|x64
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|x64.Deploy.0 = Debug|x64
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|x86.ActiveCfg = Debug|x86
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|x86.Build.0 = Debug|x86
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Debug|x86.Deploy.0 = Debug|x86
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Release|Any CPU.ActiveCfg = Release|x86
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Release|ARM.ActiveCfg = Release|ARM
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Release|ARM.Build.0 = Release|ARM
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Release|ARM.Deploy.0 = Release|ARM
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Release|x64.ActiveCfg = Release|x64
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Release|x64.Build.0 = Release|x64
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Release|x64.Deploy.0 = Release|x64
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Release|x86.ActiveCfg = Release|x86
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Release|x86.Build.0 = Release|x86
-		{20EE62B0-4559-445F-8316-6E0221E70E9B}.Release|x86.Deploy.0 = Release|x86
 		{19B96D9B-6F54-4E86-A23D-DE826B69B798}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19B96D9B-6F54-4E86-A23D-DE826B69B798}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19B96D9B-6F54-4E86-A23D-DE826B69B798}.Debug|ARM.ActiveCfg = Debug|Any CPU

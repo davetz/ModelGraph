@@ -78,8 +78,9 @@ namespace ModelGraphSTD
 
             //(some time later the worker task completes and signals the ui thread)
 
-            //===> the ui thread returns here and continues executing the following code            
-            foreach (var root in _rootModels) { root.PageDispatch(); }
+            //===> the ui thread returns here and continues executing the following code
+            var rootModels = _rootModels.ToArray(); // get a copy of the root model list
+            foreach (var root in rootModels) { root.PageDispatch(); }
         }
 
         private void ExecuteRequest(ModelRequest request)

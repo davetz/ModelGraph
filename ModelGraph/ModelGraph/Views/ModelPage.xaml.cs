@@ -29,21 +29,27 @@ namespace ModelGraph.Views
 
         #region NavigatedTo/From  =============================================
         protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            NavigationService.ActiveModelPage = this; //enables call to NavigationFrom()
+        {             
+            NavigatedTo(e.Parameter);
+        }
 
-            if (e.Parameter is ModelPageControl pageControl)
+        internal async void NavigatedTo(object parm)
+        {
+            if (parm is ModelPageControl pageControl)
             {
-                ControlGrid.Children.Add(pageControl);
+                NavigationService.ActiveModelPage = this; //enable the call to NavigationFrom()
+                PageControl = pageControl;
+                ControlGrid.Children.Add(PageControl);
             }
-            else if (e.Parameter is ViewLifetimeControl viewControl && !(viewControl.PageControl is null))
+            else if (parm is ViewLifetimeControl viewControl && viewControl.PageControl is null && !(viewControl.RootModel is null))
             {
-                ControlGrid.Children.Add(viewControl.PageControl);
+                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { viewControl.PageControl = new ModelPageControl(viewControl.RootModel); PageControl = viewControl.PageControl;  ControlGrid.Children.Add(viewControl.PageControl); });
             }
         }
         internal void NavigatedFrom()
         {
             ControlGrid.Children.Clear();
+            PageControl = null;
         }
         #endregion
     }

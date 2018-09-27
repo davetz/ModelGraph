@@ -46,7 +46,7 @@ namespace ModelGraphSTD
             return new UIRequest()
             {
                 Root = root,
-                RequestType = RequestType.SaveSymbol
+                RequestType = RequestType.Save
             };
         }
         internal static UIRequest ReloadSymbol(RootModel root)
@@ -54,7 +54,7 @@ namespace ModelGraphSTD
             return new UIRequest()
             {
                 Root = root,
-                RequestType = RequestType.ReloadSymbol
+                RequestType = RequestType.Reload
             };
         }
         internal static UIRequest RefreshModel(RootModel root)

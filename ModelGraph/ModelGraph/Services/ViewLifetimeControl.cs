@@ -1,6 +1,7 @@
 ﻿using System;
 using ModelGraph.Controls;
 using ModelGraph.Helpers;
+using ModelGraphSTD;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 
@@ -31,6 +32,7 @@ namespace ModelGraph.Services
 
         #region ModelPageService  =============================================
         public ModelPageControl PageControl { get; set; }
+        public RootModel RootModel { get; set; }
         public void CloseModel()
         {
             if (PageControl is null) return;

@@ -59,9 +59,9 @@ namespace ModelGraph.Services
 
         // Displays a view as a standalone
         // You can use the resulting ViewLifeTileControl to interact with the new window.
-        public async Task<ViewLifetimeControl> TryShowAsStandaloneAsync(string windowTitle, Type pageType, ModelPageControl ctrl = null)
+        public async Task<ViewLifetimeControl> TryShowAsStandaloneAsync(string windowTitle, Type pageType, RootModel rootModel)
         {
-            ViewLifetimeControl viewControl = await CreateViewLifetimeControlAsync(windowTitle, pageType, ctrl);
+            ViewLifetimeControl viewControl = await CreateViewLifetimeControlAsync(windowTitle, pageType, rootModel);
             SecondaryViews.Add(viewControl);
             viewControl.StartViewInUse();
             var viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(viewControl.Id, ViewSizePreference.Default, ApplicationView.GetForCurrentView().Id, ViewSizePreference.Default);
@@ -80,18 +80,20 @@ namespace ModelGraph.Services
             return viewControl;
         }
 
-        private async Task<ViewLifetimeControl> CreateViewLifetimeControlAsync(string windowTitle, Type pageType, ModelPageControl ctrl = null)
+        private async Task<ViewLifetimeControl> CreateViewLifetimeControlAsync(string windowTitle, Type pageType, RootModel rootModel = null)
         {
             ViewLifetimeControl viewControl = null;
 
             await CoreApplication.CreateNewView().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 viewControl = ViewLifetimeControl.CreateForCurrentView();
-                viewControl.PageControl = ctrl;
                 viewControl.Title = windowTitle;
+                viewControl.RootModel = rootModel;
                 viewControl.StartViewInUse();
-                var frame = new Frame();
-                frame.RequestedTheme = ThemeSelectorService.Theme;
+                var frame = new Frame
+                {
+                    RequestedTheme = ThemeSelectorService.Theme
+                };
                 frame.Navigate(pageType, viewControl);
                 Window.Current.Content = frame;
                 Window.Current.Activate();

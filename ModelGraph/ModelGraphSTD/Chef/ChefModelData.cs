@@ -56,8 +56,8 @@ namespace ModelGraphSTD
             Initer_S_62B_X();
             Initer_S_62C_X();
             Initer_S_62D_X();
-            Initer_S_62E_X();
-            Initer_S_62F_X();
+            Initer_MetadataSubRoot_X();
+            Initer_ModelingSubRoot_X();
 
             Initer_MetaViewXViewList_X();
             Initer_MetaViewView_X();
@@ -1322,44 +1322,7 @@ namespace ModelGraphSTD
                 {
                     return (null, null, 0, ModelType.Default);
                 },
-
-                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-                ButtonCommands = (m, bc) =>
-                {
-                    var root = m.GetRootModel();
-                    switch (root.ControlType)
-                    {
-                        case ControlType.AppRootChef:
-                            bc.Add(new ModelCommand(this, root, Trait.NewCommand, NewModel));
-                            bc.Add(new ModelCommand(this, root, Trait.OpenCommand, OpenModel));
-                            break;
-                    }
-                },
             };
-
-
-            #region ButtonCommands  ===========================================
-            void NewModel(ItemModel model)
-            {
-                var root = model as RootModel;
-                var rootChef = root.Chef;
-                var dataChef = new Chef(rootChef, null);
-
-                root.UIRequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
-                root.UIRequestRefreshModel();
-            }
-            void OpenModel(ItemModel model, Object parm1)
-            {
-                var repo = parm1 as IRepository;
-                var root = model as RootModel;
-                var rootChef = root.Chef;
-                var dataChef = new Chef(rootChef, repo);
-
-                root.UIRequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
-                root.UIRequestRefreshModel();
-            }
-            #endregion
         }
         #endregion
 
@@ -1460,9 +1423,8 @@ namespace ModelGraphSTD
                 {
                     var dataChef = new Chef(rootChef, repo);
 
-                    root.UIRequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
-
                     root.UIRequestCloseModel();
+                    root.UIRequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
                 }
             }
             #endregion
@@ -2137,7 +2099,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondaryMetadataTree(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.PartialTree, m);
+            void CreateSecondaryMetadataTree(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.PartialTree, Trait.MetadataSubRoot_M, m.Item, MetadataSubRoot_X);
         }
         #endregion
 
@@ -2194,7 +2156,7 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondaryModelingTree(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.PartialTree, m);
+            void CreateSecondaryModelingTree(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.PartialTree, Trait.ModelingSubRoot_M, m.Item, ModelingSubRoot_X);
         }
         #endregion
 
@@ -2556,15 +2518,18 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 62E S_62E_X  ==================================================
-        internal ModelAction S_62E_X;
-        void Initer_S_62E_X()
+        #region 62E MetadataSubRoot_X  ========================================
+        internal ModelAction MetadataSubRoot_X;
+        void Initer_MetadataSubRoot_X()
         {
-            S_62E_X = new ModelAction
+            MetadataSubRoot_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
                     var (kind, name) = GetKindName(m);
+
+                    m.CanExpandLeft = true;
+                    m.IsExpandedLeft = true;
 
                     return (kind, name, 0, ModelType.Default);
                 },
@@ -2575,9 +2540,23 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelSummary = (m) => _localize(m.SummaryKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m, prev) =>
                 {
-                    return (false, false);
+                    if (m.ChildModelCount == 5) return (true, false);
+
+                    m.InitChildModels(prev);
+
+                    AddChildModel(prev, m, Trait.MetaViewViewList_M, ViewXStore, null, null, MetaViewXViewList_X);
+                    AddChildModel(prev, m, Trait.MetaEnumList_M, EnumZStore, null, null, MetaEnumList_X);
+                    AddChildModel(prev, m, Trait.MetaTableList_M, TableXStore, null, null, MetaTableList_X);
+                    AddChildModel(prev, m, Trait.MetaGraphList_M, GraphXStore, null, null, MetaGraphList_X);
+                    AddChildModel(prev, m, Trait.InternalStoreList_M, this, null, null, InternalStoreList_X);
+
+                    return (true, true);
                 },
             };
 
@@ -2587,15 +2566,18 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region 62F S_62F_X  ==================================================
-        internal ModelAction S_62F_X;
-        void Initer_S_62F_X()
+        #region 62F ModelingSubRoot_X  ========================================
+        internal ModelAction ModelingSubRoot_X;
+        void Initer_ModelingSubRoot_X()
         {
-            S_62F_X = new ModelAction
+            ModelingSubRoot_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
                     var (kind, name) = GetKindName(m);
+
+                    m.CanExpandLeft = true;
+                    m.IsExpandedLeft = true;
 
                     return (kind, name, 0, ModelType.Default);
                 },
@@ -2606,10 +2588,23 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ModelSummary = (m) => _localize(m.SummaryKey),
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m, prev) =>
                 {
-                    return (false, false);
-                },
+                    if (m.ChildModelCount == 4) return (true, false);
+
+                    m.InitChildModels(prev);
+
+                    AddChildModel(prev, m, Trait.ViewViewList_M, m.Item, null, null, MetaViewXViewList_X);
+                    AddChildModel(prev, m, Trait.TableList_M, m.Item, null, null, TableList_X);
+                    AddChildModel(prev, m, Trait.GraphList_M, m.Item, null, null, GraphList_X);
+                    AddChildModel(prev, m, Trait.PrimeCompute_M, m.Item, null, null, PrimeCompute_X);
+
+                    return (true, true);
+                }
             };
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -8622,7 +8617,7 @@ namespace ModelGraphSTD
 
 
 
-        #region 7F0 InternlStoreList  =========================================
+        #region 7F0 InternalStoreList  ========================================
         ModelAction InternalStoreList_X;
         void Initer_InternalStoreList_X()
         {

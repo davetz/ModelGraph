@@ -407,8 +407,8 @@ namespace ModelGraphSTD
         S_62B_M = 0x62B,
         S_62C_M = 0x62C,
         S_62D_M = 0x62D,
-        S_62E_M = 0x62E,
-        S_62F_M = 0x62F,
+        MetadataSubRoot_M = 0x62E,
+        ModelingSubRoot_M = 0x62F,
 
         //=====================================================================
         S_630_M = 0x630,

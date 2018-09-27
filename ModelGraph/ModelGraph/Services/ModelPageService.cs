@@ -46,37 +46,35 @@ namespace ModelGraph.Services
             switch (rq.RequestType)
             {
                 case RequestType.Save:
-                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { SaveModel(rq.Root); });
-                    return true;
-
-                case RequestType.Close:
-                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { CloseModel(rq.Root); });
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.ModelControl?.Save(); });
                     return true;
 
                 case RequestType.Reload:
-                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ReloadModel(rq.Root); });
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.ModelControl?.Reload(); });
                     return true;
 
                 case RequestType.Refresh:
                     await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.ModelControl?.Refresh(); });
                     return true;
 
+                case RequestType.Close:                   
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { RemoveModelPage(ctrl); ctrl.ModelControl?.Close(); WindowManagerService.Current.CloseRelatedModels(ctrl.RootModel); });                    
+                    return true;
+
+                case RequestType.CreateView:
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InsertModelPage(new ModelPageControl(new RootModel(rq))));
+                    return true;
+
                 case RequestType.CreatePage:
-                    //await WindowManagerService.Current.TryShowAsStandaloneAsync("blabber-blabber", typeof(ModelPage), new ModelPageControl(new RootModel(rq)));
-                    //await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new RootModel(rq)));
+                    var rootModel = new RootModel(rq);
+                    var viewLifetimeControl = await WindowManagerService.Current.TryShowAsStandaloneAsync(rootModel.TitleName, typeof(ModelPage), rootModel);
+                    viewLifetimeControl.Released += ViewLifetimeControl_Released;
                     return true;
             }
             return false;
         }
 
-        private void SaveModel(RootModel model)
-        {
-        }
-        private void ReloadModel(RootModel model)
-        {
-        }
-
-        private void CloseModel(RootModel model)
+        private void ViewLifetimeControl_Released(object sender, EventArgs e)
         {
         }
         #endregion

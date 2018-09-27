@@ -196,15 +196,6 @@ namespace ModelGraphUWP
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _pageService.CreateNewPage(new RootModel(rq)));
                     break;
 
-                case RequestType.SaveSymbol:
-                        //var editor = rq.Root.ModelControl as SymbolEditControl;
-                        //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.SaveSymbol(); });
-                    break;
-
-                case RequestType.ReloadSymbol:
-                        //editor = rq.Root.ModelControl as SymbolEditControl;
-                        //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { editor.ReloadSymbol(); });
-                    break;
             }
         }
 

@@ -40,15 +40,21 @@ namespace ModelGraph.Controls
 
                 case ControlType.PrimaryTree:
                 case ControlType.PartialTree:
-                    ControlGrid.Children.Add(new ModelTreeControl(model));
+                    var tc = new ModelTreeControl(model);
+                    ModelControl = tc;
+                    ControlGrid.Children.Add(tc);
                     break;
 
                 case ControlType.SymbolEditor:
-                    ControlGrid.Children.Add(new SymbolEditControl(model));
+                    var sc =new SymbolEditControl(model);
+                    ModelControl = sc;
+                    ControlGrid.Children.Add(sc);
                     break;
 
                 case ControlType.GraphDisplay:
-                    ControlGrid.Children.Add(new ModelGraphControl(model));
+                    var gc = new ModelGraphControl(model);
+                    ModelControl = gc;
+                    ControlGrid.Children.Add(gc);
                     break;
 
                 default:
