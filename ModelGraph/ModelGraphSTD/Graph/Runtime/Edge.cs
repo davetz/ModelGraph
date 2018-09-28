@@ -156,11 +156,29 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region OtherBend  ====================================================
-        internal (Node other, (int, int) bend) OtherBend(Node n)
+        #region OtherBendAttachHorz  ==========================================
+        internal (Node other, (int, int) bend, Attach atch, bool horz) OtherBendAttachHorz(Node n)
         {
             if (Points == null) Refresh();
-            return (n == Node1) ? (Node2, Points[Bp1]) : (Node1, Points[Bp2]);
+            var l = Points.Length - 1;
+
+            if (n.Aspect == Aspect.Point && (Node1.IsGraphSymbol || Node2.IsGraphSymbol))
+            {
+                var dx1 = Points[0].X - Points[Tm1].X;
+                var dy1 = Points[0].Y - Points[Tm1].Y;
+                var dx2 = Points[l].X - Points[Tm2].X;
+                var dy2 = Points[l].Y - Points[Tm2].Y;
+
+                return (n == Node1) ?
+                    (Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], QueryX.PathParm.Attach1, (dx2 * dx2 > dy2 * dy2)) :
+                    (Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], QueryX.PathParm.Attach2, (dx1 * dx1 > dy1 * dy1));
+            }
+            else
+            {
+                return (n == Node1) ?
+                    (Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], QueryX.PathParm.Attach1, false) :
+                    (Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], QueryX.PathParm.Attach2, false) ;
+            }
         }
         #endregion
 

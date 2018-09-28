@@ -19,6 +19,7 @@ namespace ModelGraphSTD
         public int ViewCapacity = 10; // updated when the view screen size changes
         public ItemModel SelectModel;   // the user selected model
         public List<ItemModel> ViewFlatList = new List<ItemModel>(); // flat list of models visible to the user 
+        internal bool HasFlatList => ControlType == ControlType.PartialTree || ControlType == ControlType.PartialTree;
 
         private readonly ConcurrentQueue<UIRequest> _requestQueue = new ConcurrentQueue<UIRequest>();
 

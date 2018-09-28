@@ -139,6 +139,13 @@ namespace ModelGraphSTD
         // The are many permutations, but these are the rules and cost of assigning connections.
         // We pick the permutation with the cheapest overall cost.
 
+        static (byte, Side)[] _sect0 = new (byte, Side)[]
+        {
+            (0, Side.East),
+            (0, Side.South),
+            (0, Side.North),
+            (0, Side.West),
+        };
         static (byte, Side)[] _sect1 = new (byte, Side)[]
         {
             (0, Side.East),
@@ -197,9 +204,8 @@ namespace ModelGraphSTD
         };
         static (byte cost, Side side)[][] _sectCostSide = new (byte cost, Side side)[][]
         {
-            null, _sect1, _sect2, _sect3, _sect4, _sect5, _sect6, _sect7, _sect8
+            _sect0, _sect1, _sect2, _sect3, _sect4, _sect5, _sect6, _sect7, _sect8
         };
-        private int flipIndex;
         #endregion
 
         private void AdjustSymbol(Node node)
@@ -410,7 +416,7 @@ namespace ModelGraphSTD
 
                             done++;
                             cost += delta;
-                            if (cost > bestCost) break;
+                            //if (cost > bestCost) break;
                         }
                     }
                 }
@@ -428,7 +434,7 @@ namespace ModelGraphSTD
 
                             done++;
                             cost += delta;
-                            if (cost > bestCost) break;
+                            //if (cost > bestCost) break;
                         }
                     }
                 }

@@ -12,7 +12,6 @@ namespace ModelGraphSTD
         private int _newChefNumber;
         public static ItemModel DragDropSource; 
 
-        private object _executionLock = new object(); // only one thread may modify the data
         private bool ShowItemIndex;
 
         #region RootChef  =====================================================

@@ -82,33 +82,19 @@ namespace ModelGraphSTD
             var rootModels = _rootModels.ToArray(); // get a copy of the root model list
             foreach (var root in rootModels) { root.PageDispatch(); }
         }
-
         private void ExecuteRequest(ModelRequest request)
         {
             // the dataAction will likey modify the dataChef's objects, 
             // so we can't have multiple threads stepping on each other
-            lock (_executionLock)
+            lock (this)
             {
                 request.Execute();
+
                 if (!IsRootChef) CheckChanges();
+
                 foreach (var root in _rootModels)
                 {
-                    switch (root.ControlType)
-                    {
-                        case ControlType.AppRootChef:
-                            break;
-
-                        case ControlType.PrimaryTree:
-                        case ControlType.PartialTree:
-                            RefreshViewFlatList(root);
-                            break;
-
-                        case ControlType.SymbolEditor:
-                            break;
-
-                        case ControlType.GraphDisplay:
-                            break;
-                    }
+                    if (root.HasFlatList) RefreshViewFlatList(root);
                     root.UIRequestRefreshModel();
                 }
             }
@@ -127,10 +113,12 @@ namespace ModelGraphSTD
             internal void Execute()
             {/*
                 make sure the requested model action is still valid, because it is posible that
-                a preceeding model action in the queue could have invalidated this model 
+                a preceeding action in the queue could have invalidated this model 
              */
                 if (_model != null && _action != null && _model.Item != null && _model.Item.IsValid) _action();
             }
+
+            internal RootModel RootModel => _model.GetRootModel();
         }
         #endregion
     }

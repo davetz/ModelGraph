@@ -9,7 +9,11 @@ namespace ModelGraphSTD
     {
         public void AdjustGraph()
         {
-            foreach (var node in Nodes) { AdjustNode(node); }
+            for (int i = 0; i < 2; i++)
+            {
+                foreach (var node in Nodes) { if (node.Aspect != Aspect.Point) AdjustNode(node); }
+                foreach (var node in Nodes) { if (node.Aspect == Aspect.Point) AdjustNode(node); }
+            }
             SetExtent();
         }
         public void AdjustGraph(Selector selector)
@@ -29,8 +33,11 @@ namespace ModelGraphSTD
             }
 
             for (int i = 0; i < 2; i++) { ExpandNeighborhood(); }
-
-            foreach (var node in nodes) { AdjustNode(node); }
+            for (int i = 0; i < 2; i++)
+            {
+                foreach (var node in nodes) { if (node.Aspect != Aspect.Point) AdjustNode(node); }
+                foreach (var node in nodes) { if (node.Aspect == Aspect.Point) AdjustNode(node); }
+            }
 
             SetExtent();
 
@@ -72,7 +79,9 @@ namespace ModelGraphSTD
         {
             if (node.IsGraphNode)
             {
-                if (node.IsManualSizing || node.IsFixedSizing)
+                if (node.Aspect == Aspect.Point)
+                    AdjustAutoNode(node);
+                else if (node.IsManualSizing || node.IsFixedSizing)
                     AdjustManualNode(node);
                 else
                     AdjustAutoNode(node);

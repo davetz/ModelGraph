@@ -126,10 +126,41 @@ namespace ModelGraphSTD
             {
                 for (int i = 0; i < count; i++)
                 {
-                    if (E[i].sect == Sect.S8 || E[i].sect == Sect.S1) E[i].edge.SetFace(node, (0,0));
-                    else if (E[i].sect == Sect.S2 || E[i].sect == Sect.S3) E[i].edge.SetFace(node, (0, 0));
-                    else if (E[i].sect == Sect.S4 || E[i].sect == Sect.S5) E[i].edge.SetFace(node, (0, 0));
-                    else if (E[i].sect == Sect.S6 || E[i].sect == Sect.S7) E[i].edge.SetFace(node, (0, 0));
+                    var (bx, by) = E[i].bend;
+                    var dbx = bx - x;
+                    var dby = by - y;
+
+                    if (E[i].atch == Attach.RightAngle)
+                    {
+                        if (E[i].horz)
+                            E[i].edge.SetFace(node, (0, 0), (0, dby));
+                        else
+                            E[i].edge.SetFace(node, (0, 0), (dbx, 0)); 
+                    }
+                    else if (E[i].atch == Attach.SkewedAngle)
+                    {
+                        if (E[i].horz)
+                        {
+                            if (E[i].quad == Quad.Q4 || E[i].quad == Quad.Q1)
+                                E[i].edge.SetFace(node, (0, 0), (4, dby));
+                            else
+                                E[i].edge.SetFace(node, (0, 0), (-4, dby));
+                        }
+                        else
+                        {
+                            if (E[i].quad == Quad.Q2 || E[i].quad == Quad.Q1)
+                                E[i].edge.SetFace(node, (0, 0), (dbx, 4));
+                            else
+                                E[i].edge.SetFace(node, (0, 0), (dbx, -4));
+                        }
+                    }
+                    else
+                    {
+                        if (E[i].sect == Sect.S8 || E[i].sect == Sect.S1) E[i].edge.SetFace(node, (0, 0));
+                        else if (E[i].sect == Sect.S2 || E[i].sect == Sect.S3) E[i].edge.SetFace(node, (0, 0));
+                        else if (E[i].sect == Sect.S4 || E[i].sect == Sect.S5) E[i].edge.SetFace(node, (0, 0));
+                        else if (E[i].sect == Sect.S6 || E[i].sect == Sect.S7) E[i].edge.SetFace(node, (0, 0));
+                    }
                 }
             }
 

@@ -8,7 +8,7 @@ namespace ModelGraphSTD
     internal static class Layout
     {
         #region SortedEdges  ==================================================
-        internal static (int count, int[] nquad, int[] nsect, (Edge edge, Node other, ConnectFlip conf, (int x, int y) bend, double slope, Quad quad, Sect sect)[])
+        internal static (int count, int[] nquad, int[] nsect, (Edge edge, Node other, ConnectFlip conf, (int x, int y) bend, double slope, Quad quad, Sect sect, Attach atch, bool horz)[])
             SortedEdges(Node n1)
         {/*
             Construct an optimumly ordered edge list for the given node.
@@ -31,8 +31,8 @@ namespace ModelGraphSTD
             var nquad = new int[5];
             var nsect = new int[9];
 
-            var E = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect)[count];  // working edge array
-            var F = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, double slope, Quad quad, Sect sect)[count];   // output edge array
+            var E = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect, Attach atch, bool horz)[count];  // working edge array
+            var F = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, double slope, Quad quad, Sect sect, Attach atch, bool horz)[count];   // output edge array
 
             var P = new List<int>(count);  // ordered edge indexes for parralell edges 
             var O = new List<int>(count);  // ordered edge indexes for all non-parrallel edges, but including just one of the parallel edges
@@ -45,10 +45,12 @@ namespace ModelGraphSTD
                 E[i].edge = edge[i];
                 E[i].conf = new ConnectFlip(edge[i].GetConnect(n1));
 
-                var (other, bend) = edge[i].OtherBend(n1);
+                var (other, bend, atch, horz) = edge[i].OtherBendAttachHorz(n1);
                 E[i].ord1 = (short)n1.Graph.Nodes.IndexOf(other);
                 E[i].node = other;
                 E[i].bend = bend;
+                E[i].atch = atch;
+                E[i].horz = horz;
 
                 var (quad, sect, slope) = XYPair.QuadSectSlope(n1.Center, E[i].bend);
                 E[i].quad = quad;
@@ -138,6 +140,8 @@ namespace ModelGraphSTD
                 F[j].bend = E[i].bend;
                 F[j].quad = E[i].quad;
                 F[j].sect = E[i].sect;
+                F[j].atch = E[i].atch;
+                F[j].horz = E[i].horz;
                 F[j].slope = E[i].slope;
             }
             #endregion
