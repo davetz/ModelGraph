@@ -8,7 +8,7 @@ namespace ModelGraphSTD
     public partial class Graph
     {
 
-        #region SymbolFlip  ================================================
+        #region SymbolFlip  ===================================================
         private class SymbolFlip
         {
             private byte n;
@@ -225,175 +225,34 @@ namespace ModelGraphSTD
             int bestFlip = 0;
 
             #region CompareQuadSlope  =========================================
-
             int CompareEastQuadSlope(int i, int j)
             {
-                if (E[i].quad == Quad.Q1)
-                {
-                    if (E[j].quad == Quad.Q2)
-                        return 1;
-                    else if (E[j].quad == Quad.Q3)
-                        return 1;
-                    else if (E[j].quad == Quad.Q4)
-                        return 1;
-                }
-                else if (E[i].quad == Quad.Q2)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return 1;
-                    else if (E[j].quad == Quad.Q3)
-                        return 1;
-                    else if (E[j].quad == Quad.Q4)
-                        return 1;
-                }
-                else if (E[i].quad == Quad.Q3)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return -1;
-                    else if (E[j].quad == Quad.Q2)
-                        return -1;
-                    else if (E[j].quad == Quad.Q4)
-                        return -1;
-                }
-                else if (E[i].quad == Quad.Q4)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return -1;
-                    else if (E[j].quad == Quad.Q2)
-                        return -1;
-                    else if (E[j].quad == Quad.Q3)
-                        return -1;
-                }
-                if (E[i].slope < E[j].slope) return -1;
-                if (E[i].slope > E[j].slope) return +1;
-                return 0;
-            }
-            int CompareSouthQuadSlope(int i, int j)
-            {
-                if (E[i].quad == Quad.Q1)
-                {
-                    if (E[j].quad == Quad.Q2)
-                        return 1;
-                    else if (E[j].quad == Quad.Q3)
-                        return 1;
-                    else if (E[j].quad == Quad.Q4)
-                        return 1;
-                }
-                else if (E[i].quad == Quad.Q2)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return 1;
-                    else if (E[j].quad == Quad.Q3)
-                        return 1;
-                    else if (E[j].quad == Quad.Q4)
-                        return 1;
-                }
-                else if (E[i].quad == Quad.Q3)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return -1;
-                    else if (E[j].quad == Quad.Q2)
-                        return -1;
-                    else if (E[j].quad == Quad.Q4)
-                        return -1;
-                }
-                else if (E[i].quad == Quad.Q4)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return -1;
-                    else if (E[j].quad == Quad.Q2)
-                        return -1;
-                    else if (E[j].quad == Quad.Q3)
-                        return -1;
-                }
-                if (E[i].slope > E[j].slope) return -1;
-                if (E[i].slope < E[j].slope) return +1;
-                return 0;
-            }
-            int CompareWestQuadSlope(int i, int j)
-            {
-                if (E[i].quad == Quad.Q1)
-                {
-                    if (E[j].quad == Quad.Q2)
-                        return 1;
-                    else if (E[j].quad == Quad.Q3)
-                        return 1;
-                    else if (E[j].quad == Quad.Q4)
-                        return 1;
-                }
-                else if (E[i].quad == Quad.Q2)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return 1;
-                    else if (E[j].quad == Quad.Q3)
-                        return 1;
-                    else if (E[j].quad == Quad.Q4)
-                        return 1;
-                }
-                else if (E[i].quad == Quad.Q3)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return -1;
-                    else if (E[j].quad == Quad.Q2)
-                        return -1;
-                    else if (E[j].quad == Quad.Q4)
-                        return -1;
-                }
-                else if (E[i].quad == Quad.Q4)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return -1;
-                    else if (E[j].quad == Quad.Q2)
-                        return -1;
-                    else if (E[j].quad == Quad.Q3)
-                        return -1;
-                }
-                if (E[i].slope > E[j].slope) return -1;
-                if (E[i].slope < E[j].slope) return +1;
-                return 0;
+                var v = QuadTest(i, j);
+                return (v != 0) ? v : SlopeTest1(i, j);
             }
             int CompareNorthQuadSlope(int i, int j)
             {
-                if (E[i].quad == Quad.Q1)
-                {
-                    if (E[j].quad == Quad.Q2)
-                        return 1;
-                    else if (E[j].quad == Quad.Q3)
-                        return 1;
-                    else if (E[j].quad == Quad.Q4)
-                        return 1;
-                }
-                else if (E[i].quad == Quad.Q2)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return 1;
-                    else if (E[j].quad == Quad.Q3)
-                        return 1;
-                    else if (E[j].quad == Quad.Q4)
-                        return 1;
-                }
-                else if (E[i].quad == Quad.Q3)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return -1;
-                    else if (E[j].quad == Quad.Q2)
-                        return -1;
-                    else if (E[j].quad == Quad.Q4)
-                        return -1;
-                }
-                else if (E[i].quad == Quad.Q4)
-                {
-                    if (E[j].quad == Quad.Q1)
-                        return -1;
-                    else if (E[j].quad == Quad.Q2)
-                        return -1;
-                    else if (E[j].quad == Quad.Q3)
-                        return -1;
-                }
-                if (E[i].slope < E[j].slope) return -1;
-                if (E[i].slope > E[j].slope) return +1;
-                return 0;
+                var v = QuadTest(i, j);
+                return (v != 0) ? v : SlopeTest1(i, j);
             }
+
+
+            int CompareSouthQuadSlope(int i, int j)
+            {
+                var v = QuadTest(i, j);
+                return (v != 0) ? v : SlopeTest2(i, j);
+            }
+            int CompareWestQuadSlope(int i, int j)
+            {
+                var v = QuadTest(i, j);
+                return (v != 0) ? v : SlopeTest2(i, j);
+            }
+
+
+            int SlopeTest1(int i, int j) => (E[i].slope < E[j].slope) ? -1 : (E[i].slope > E[j].slope) ? 1 : 0;
+            int SlopeTest2(int i, int j) => (E[i].slope > E[j].slope) ? -1 : (E[i].slope < E[j].slope) ? 1 : 0;
+
+            int QuadTest(int i, int j) => (E[i].quad == Quad.Q1 || E[i].quad == Quad.Q2) ? (E[j].quad == E[i].quad) ? 0 : 1 : (E[j].quad == E[i].quad) ? 0 : -1;
             #endregion
 
             for (int flipI = 0; flipI < 8; flipI++)
@@ -416,7 +275,7 @@ namespace ModelGraphSTD
 
                             done++;
                             cost += delta;
-                            //if (cost > bestCost) break;
+                            if (cost > bestCost) break;
                         }
                     }
                 }
@@ -434,7 +293,7 @@ namespace ModelGraphSTD
 
                             done++;
                             cost += delta;
-                            //if (cost > bestCost) break;
+                            if (cost > bestCost) break;
                         }
                     }
                 }
