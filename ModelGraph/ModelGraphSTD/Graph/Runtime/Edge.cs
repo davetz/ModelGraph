@@ -109,49 +109,37 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region Flip, Rotate  =================================================
-        internal void Rotate(int x, int y)
+        #region RotateFlip  ===================================================
+        internal void RotateFlip((int x, int y) focus, FlipRotate flip)
         {
             var len = Points.Length;
-            for (int i = 0; i < len;)
+            for (int i = 0; i < len; i++)
             {
-                Points[i] = XYPair.Rotate(Points[i], (x, y));
+                Points[i] = XYPair.RotateFlip(Points[i], focus, flip);
             }
 
             len = (Bends == null) ? 0 : Bends.Length;
-            for (int i = 0; i < len;)
+            for (int i = 0; i < len; i++)
             {
-                Bends[i] = XYPair.Rotate(Bends[i], (x, y));
+                Bends[i] = XYPair.RotateFlip(Bends[i], focus, flip);
             }
         }
-
-        internal void VerticalFlip(int y)
+        internal void RotateFlip((int x, int y) focus, FlipRotate flip, int index1, int index2)
         {
-            var len = Points.Length;
-            for (int i = 0; i < len;)
+            if (HasBends)
             {
-                Points[i] = XYPair.VerticalFlip(Points[i], y);
+                for (int i = index1; i < index2; i++)
+                {
+                    var j = i - Tm1 - 1;
+                    if (j >= 0 && j < Bends.Length)
+                    {
+                        Bends[j] = XYPair.RotateFlip(Bends[j], focus, flip);
+                    }
+                }
             }
-
-            len = (Bends == null) ? 0 : Bends.Length;
-            for (int i = 0; i < len;)
+            for (int i = index1; i < index2; i++)
             {
-                Bends[i] = XYPair.VerticalFlip(Bends[i], y);
-            }
-        }
-
-        internal void HorizontalFlip(int x)
-        {
-            var len = Points.Length;
-            for (int i = 0; i < len;)
-            {
-                Points[i] = XYPair.HorizontalFlip(Points[i], x);
-            }
-
-            len = (Bends == null) ? 0 : Bends.Length;
-            for (int i = 0; i < len;)
-            {
-                Bends[i] = XYPair.HorizontalFlip(Bends[i], x);
+                Points[i] = XYPair.RotateFlip(Points[i], focus, flip);
             }
         }
         #endregion

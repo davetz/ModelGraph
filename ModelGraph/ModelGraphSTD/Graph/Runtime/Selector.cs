@@ -298,6 +298,22 @@ namespace ModelGraphSTD
         }
         #endregion
 
+
+        #region FlipRotate  ===================================================
+        public void Rotate() => RotateFlip(FlipRotate.RotateClockWise);
+        public void RotateFlip(FlipRotate flip) => RotateFlip(HitPoint, flip);
+        public void RotateFlip((int X, int Y) focus, FlipRotate flip)
+        {
+            if ((HitLocation & HitLocation.Region) != 0)
+            {
+                foreach (var reg in Regions) { reg.RotateFlip(focus, flip); }
+                foreach (var node in Nodes) { node.RotateFlip(focus, flip); }
+                foreach (var edge in Edges) { edge.RotateFlip(focus, flip); }
+                foreach (var cut in EdgeCuts) { cut.Edge.RotateFlip(focus, flip, cut.Index1, cut.Index2); }
+            }
+        }
+        #endregion
+
         #region Align  ========================================================
         public void AlignVertical()
         {

@@ -99,6 +99,17 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region RotateFlip  ===================================================
+        public void RotateFlip((int X, int Y) focus, FlipRotate flip)
+        {
+            for (int i = 0; i < Points.Count; i++)
+            {
+                Points[i] = XYPair.RotateFlip(Points[i], focus, flip);
+            }
+            Normal.RotateFlip(focus, flip);
+        }
+        #endregion
+
         #region HitTest  ======================================================
         // hit test the point
         public bool HitTest((int X, int Y) p)

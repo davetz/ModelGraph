@@ -324,6 +324,27 @@ namespace ModelGraphSTD
             X = X + delta.X;
             Y = Y + delta.Y;
         }
+        public void RotateFlip((int X, int Y) focus, FlipRotate flip)
+        {
+            FlipRotate = flip;
+
+            var p = XYPair.RotateFlip((X, Y), focus, flip);
+            X = p.X;
+            Y = p.Y;
+
+            switch (flip)
+            {
+                case ModelGraphSTD.FlipRotate.RotateClockWise:
+                case ModelGraphSTD.FlipRotate.RotateFlipVertical:
+                case ModelGraphSTD.FlipRotate.RotateFlipHorizontal:
+                case ModelGraphSTD.FlipRotate.RotateFlipBothWays:
+
+                    var t1 = DX;
+                    DX = DY;
+                    DY = t1; 
+                    break;
+            }
+        }
         public override string ToString() => GetChef().GetIdentity(Item, IdentityStyle.Double);
         #endregion
     }

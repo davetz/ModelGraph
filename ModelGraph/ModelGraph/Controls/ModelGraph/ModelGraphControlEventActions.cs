@@ -369,7 +369,7 @@ namespace ModelGraph.Controls
                 //    case "A": Allign(); break;
                     case "V": _selector.AlignVertical(); PostRefresh(); break;
                     case "H": _selector.AlignHorizontal(); PostRefresh(); break;
-                //    case "R": RegionRotate(); break;
+                    case "R": _selector.Rotate(); PostRefresh();  break;
                 //    case "Delete": DeleteRegionNodes(); break;
                 }
             }
