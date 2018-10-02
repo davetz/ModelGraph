@@ -53,11 +53,14 @@ namespace ModelGraph.Views
 
             Selected = navigationView.MenuItems
                             .OfType<NavigationViewItem>()
-                            .FirstOrDefault(menuItem => IsMenuItemForPageType(menuItem, e.SourcePageType));
+                            .FirstOrDefault(menuItem => IsMenuItemForPageType(menuItem, e.SourcePageType, e.Parameter));
         }
 
-        private bool IsMenuItemForPageType(NavigationViewItem menuItem, Type sourcePageType)
+        private bool IsMenuItemForPageType(NavigationViewItem menuItem, Type sourcePageType, object parameter)
         {
+            if (sourcePageType == typeof(ModelPage) && menuItem.Tag == parameter)
+                return true;
+
             var pageType = menuItem.GetValue(NavHelper.NavigateToProperty) as Type;
             return pageType == sourcePageType;
         }
@@ -96,7 +99,7 @@ namespace ModelGraph.Views
             if (sender is NavigationViewItem navItem)
             {
                 navItem.Loaded -= NavItem_Loaded;
-                navItem.IsSelected = true;
+                navItem.IsSelected = true;                
             }
         }
         #endregion

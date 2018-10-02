@@ -298,6 +298,42 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region Gravity  ======================================================
+        internal void ApplyGravity()
+        {
+            if ((HitLocation & HitLocation.Node) != 0)
+            {
+                var nodeHash = new HashSet<Node>(Nodes); // working copy of node hash
+
+                Node node1 = HitNode;   // focal node
+                Node node2 = null;      // next focal node
+                Edge edge = null;
+                while (TryGetNextNodeEdge())
+                {
+
+                }
+
+                bool TryGetNextNodeEdge()
+                {
+                    if (Graph.Node_Edges.TryGetValue(node1, out List<Edge> list))
+                    {
+                        foreach (var trialEdge in list)
+                        {
+                            if (nodeHash.Contains(edge.Node1) && nodeHash.Contains(edge.Node2))
+                            {
+                                edge = trialEdge; // take only one edge
+                                node2 = (edge.Node1 == node1) ? edge.Node2 : edge.Node1;
+                                nodeHash.Remove(node1); //this node has been traversed, so remove it from the work hash
+                                return true;
+                            }
+                        }
+                    }
+                    nodeHash.Remove(node1); //this node has been traversed, so remove it from the work hash
+                    return false;
+                }
+            }
+        }
+        #endregion
 
         #region FlipRotate  ===================================================
         public void Rotate() => RotateFlip(FlipRotate.RotateClockWise);
