@@ -207,5 +207,12 @@ namespace ModelGraphSTD
             }
         }
         #endregion
+
+        #region ExtendPolygon  ================================================
+        public void ExtendPolygon(IEnumerable<Node> included, IEnumerable<Node> excluded)
+        {
+
+        }
+        #endregion
     }
 }

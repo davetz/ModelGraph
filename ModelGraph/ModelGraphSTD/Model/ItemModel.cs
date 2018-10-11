@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -8,6 +9,7 @@ namespace ModelGraphSTD
  */
     public class ItemModel
     {
+        private static ConcurrentBag<ItemModel> _cache = new ConcurrentBag<ItemModel>();
         public Item Item;
         public Item Aux1;
         public Item Aux2;
@@ -16,7 +18,7 @@ namespace ModelGraphSTD
         public List<ItemModel> ViewModels;   // collection of child models after filter sort
         public string ViewFilter;            // UI imposed Kind/Name filter
         internal ModelAction Get;            // custom actions for this itemModel
-
+       
         internal Trait Trait;
         private State _state;
 
@@ -27,7 +29,7 @@ namespace ModelGraphSTD
 
         #region Constructor  ==================================================
         internal ItemModel() { }
-        internal ItemModel(ItemModel parent, Trait trait, Item item, Item aux1, Item aux2, ModelAction action)
+        private ItemModel(ItemModel parent, Trait trait, Item item, Item aux1, Item aux2, ModelAction action)
         {
             Trait = trait;
             Item = item;
@@ -38,6 +40,45 @@ namespace ModelGraphSTD
 
             if (parent == null) return;
             Depth = (byte)(parent.Depth + 1);
+        }
+        internal static ItemModel Create(ItemModel parent, Trait trait, Item item, Item aux1, Item aux2, ModelAction action)
+        {
+            if (_cache.TryTake(out ItemModel m))
+            {
+                m.Trait = trait;
+                m.Item = item;
+                m.Aux1 = aux1;
+                m.Aux2 = aux2;
+                m.Get = action;
+                m.ParentModel = parent;
+                m.Depth = (byte)((parent == null) ? 0 : parent.Depth + 1);
+                m.ViewModels = m.ChildModels = null;
+                m.ViewFilter = null;
+                m._flags = Flags.None;
+                return m;
+            }
+            else
+            {
+                return new ItemModel(parent, trait, item, aux1, aux2, action);
+            }
+        }
+        internal static void Release(ItemModel m)
+        {
+            if (m is null) return;
+
+            Release(m.ChildModels);
+
+            _cache.Add(m);
+        }
+        internal static void Release(List<ItemModel> childModels)
+        {
+            if (childModels is null) return;
+
+            foreach (var child in childModels)
+            {
+                Release(child);
+            }
+            childModels.Clear();
         }
         #endregion
 
@@ -135,6 +176,7 @@ namespace ModelGraphSTD
         [Flags]
         private enum Flags : byte
         {
+            None = 0,
             CanDrag = 0x01,
             CanSort = 0x02,
             CanFilter = 0x04,

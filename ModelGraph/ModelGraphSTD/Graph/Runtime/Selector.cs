@@ -299,9 +299,13 @@ namespace ModelGraphSTD
         #endregion
 
         #region Gravity  ======================================================
-        internal void ApplyGravity()
+        public void ApplyGravity()
         {
-            if ((HitLocation & HitLocation.Node) != 0)
+            if ((HitLocation & HitLocation.Region) == 0)
+            {
+                
+            }
+            else if ((HitLocation & HitLocation.Node) != 0)
             {
                 var nodeHash = new HashSet<Node>(Nodes); // working copy of node hash
 

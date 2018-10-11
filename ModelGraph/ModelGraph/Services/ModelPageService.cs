@@ -58,7 +58,7 @@ namespace ModelGraph.Services
                     return true;
 
                 case RequestType.Close:                   
-                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { RemoveModelPage(ctrl); ctrl.ModelControl?.Close(); WindowManagerService.Current.CloseRelatedModels(ctrl.RootModel); });                    
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { RemoveModelPage(ctrl); ctrl.ModelControl?.Close(); WindowManagerService.Current.CloseRelatedModels(ctrl.RootModel); ctrl.RootModel.Release(); });                    
                     return true;
 
                 case RequestType.CreateView:
@@ -76,6 +76,10 @@ namespace ModelGraph.Services
 
         private void ViewLifetimeControl_Released(object sender, EventArgs e)
         {
+            if (sender is ViewLifetimeControl ctrl)
+            {
+                ctrl.PageControl?.RootModel?.Release();
+            }
         }
         #endregion
 

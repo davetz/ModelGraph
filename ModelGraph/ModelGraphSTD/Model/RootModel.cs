@@ -52,8 +52,11 @@ namespace ModelGraphSTD
         }
         // Secondary-RootModel: Created by Primary-RootModel
         public RootModel(UIRequest rq)
-            : base(null, rq.Trait, rq.Item, rq.Aux1, rq.Aux2, rq.Get)
         {
+            Trait = rq.Trait;
+            Item = rq.Item;
+            Aux1 = rq.Aux1;
+            Aux2 = rq.Aux2;
             Get = rq.Get;
             Chef = rq.Root.Chef;
             ControlType = rq.Type;
@@ -69,6 +72,8 @@ namespace ModelGraphSTD
         public string TitleName => Chef.GetAppTitleName(this);
         public string TabSummary => Chef.GetAppTabSummary(this);
         public string TitleSummary => Chef.GetAppTitleSummary(this);
+
+        public void Release() => ItemModel.Release(ChildModels);
         #endregion
 
         #region UIRequest  ====================================================

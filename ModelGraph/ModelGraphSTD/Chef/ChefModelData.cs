@@ -210,7 +210,7 @@ namespace ModelGraphSTD
 
                 if (TryCopyPrevious(j)) return true; // I reused the existing model.
             }
-            m.ChildModels.Add(new ItemModel(m, trait, item, aux1, aux2, get));
+            m.ChildModels.Add(ItemModel.Create(m, trait, item, aux1, aux2, get));
             return true; // I had to create a new model
 
             // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -386,6 +386,7 @@ namespace ModelGraphSTD
                     if (start) { if (N > 0) N--; else S--; }
 
                     ValidateModel(m, previous);
+                    ItemModel.Release(previous);
                     modelStack.PushChildren(m);
                 }
                 #endregion
@@ -643,6 +644,8 @@ namespace ModelGraphSTD
             }
             bool WithNoChildren()
             {
+                ItemModel.Release(m.ChildModels);
+
                 m.ChildModels = null;
                 m.ViewModels = null;
                 m.ClearSortUsageMode();

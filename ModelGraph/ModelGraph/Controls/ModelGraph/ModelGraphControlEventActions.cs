@@ -174,14 +174,19 @@ namespace ModelGraph.Controls
         }
         private void IdleOnNodeShortCut()
         {
-            //if (_modifier == Modifier.Zip)
-            //{
-            //    if (_keyName == "V") _hitNode.Node.Aspect = Aspect.Vertical;
-            //    else if (_keyName == "H") _hitNode.Node.Aspect = Aspect.Horizontal;
-            //    else if (_keyName == "C") _hitNode.Node.Aspect = Aspect.Central;
-            //    else if (_keyName == "A") _hitNode.Node.Resizing = Resizing.Auto;
-            //    else if (_keyName == "M") _hitNode.Node.Resizing = Resizing.Manual;
-            //}
+            if (_modifier == Modifier.None)
+            {
+                switch (_keyName)
+                {
+                    //    case "A": Allign(); break;
+                    case "G": _selector.ApplyGravity(); PostRefresh(); break;
+                }
+                //    if (_keyName == "V") _hitNode.Node.Aspect = Aspect.Vertical;
+                //    else if (_keyName == "H") _hitNode.Node.Aspect = Aspect.Horizontal;
+                //    else if (_keyName == "C") _hitNode.Node.Aspect = Aspect.Central;
+                //    else if (_keyName == "A") _hitNode.Node.Resizing = Resizing.Auto;
+                //    else if (_keyName == "M") _hitNode.Node.Resizing = Resizing.Manual;
+            }
             //if (_hitNode.IsModified) Model.PostRefreshGraph();
         }
         #endregion
@@ -366,11 +371,12 @@ namespace ModelGraph.Controls
             {
                 switch (_keyName)
                 {
-                //    case "A": Allign(); break;
+                    //    case "A": Allign(); break;
                     case "V": _selector.AlignVertical(); PostRefresh(); break;
                     case "H": _selector.AlignHorizontal(); PostRefresh(); break;
-                    case "R": _selector.Rotate(); PostRefresh();  break;
-                //    case "Delete": DeleteRegionNodes(); break;
+                    case "R": _selector.Rotate(); PostRefresh(); break;
+                    case "G": _selector.ApplyGravity(); PostRefresh(); break;
+                        //    case "Delete": DeleteRegionNodes(); break;
                 }
             }
         }
