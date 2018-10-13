@@ -42,6 +42,7 @@ namespace ModelGraphSTD
             return focus;
         }
         public static int Diagonal((int dx, int dy) p) => ((p.dx * p.dx) + (p.dy * p.dy));
+        public static int Diagonal((int x, int y) p1, (int x, int y) p2) => Diagonal((p2.x - p1.x, p2.y - p1.y));
         public static (double ux, double uy) OrthoginalUnitVector(int dx, int dy)
         {
             var M = System.Math.Sqrt(dx * dx + dy * dy);

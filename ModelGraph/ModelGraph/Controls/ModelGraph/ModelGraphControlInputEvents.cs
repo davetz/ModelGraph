@@ -87,6 +87,9 @@ namespace ModelGraph.Controls
             _rootRef.Point2 = _rootDelta.Point2 = GridPoint(e);
             _drawRef.Point2 = _drawDelta.Point2 = DrawPoint(e);
 
+            _graph.TestHit(_drawRef.Point2);
+
+
             if (EndAction != null)
             {
                 _selector.HitTest(_drawRef.Point2);

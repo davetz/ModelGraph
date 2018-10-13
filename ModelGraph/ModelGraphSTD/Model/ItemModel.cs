@@ -28,7 +28,7 @@ namespace ModelGraphSTD
         
 
         #region Constructor  ==================================================
-        internal ItemModel() { }
+        internal ItemModel() { } // supports RootModel constructor
         private ItemModel(ItemModel parent, Trait trait, Item item, Item aux1, Item aux2, ModelAction action)
         {
             Trait = trait;
@@ -51,7 +51,7 @@ namespace ModelGraphSTD
                 m.Aux2 = aux2;
                 m.Get = action;
                 m.ParentModel = parent;
-                m.Depth = (byte)((parent == null) ? 0 : parent.Depth + 1);
+                m.Depth = (byte)((parent is null) ? 0 : parent.Depth + 1);
                 m.ViewModels = m.ChildModels = null;
                 m.ViewFilter = null;
                 m._flags = Flags.None;
