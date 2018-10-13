@@ -214,46 +214,54 @@ namespace ModelGraphSTD
                 return;  // we are done;
             }
 
-            // test all nodes
-            foreach (var node in Graph.Nodes)
+            // test near by nodes
+            var nearByNodes = Graph.HitMap.NearByNodes(p, 3);
+            if (nearByNodes != null)
             {
-                // eliminate unqualified nodes
-                if (!node.HitTest(p)) continue;
-
-                // now refine the hit test results
-                // node.RefineHitTest(p, ref HitLocation, ref HitPoint);
-                var (hit, pnt) = node.RefinedHit(p);
-                HitLocation |= hit;
-                HitPoint = pnt;
-
-                HitNode = node;
-                if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> nodeEdges))
+                foreach (var node in nearByNodes)
                 {
-                    var len = nodeEdges.Count;
-                    HitNodeEdgeCuts = new List<EdgeCut>(len);
-                    for (int i = 0; i < len; i++)
+                    // eliminate unqualified nodes
+                    if (!node.HitTest(p)) continue;
+
+                    // now refine the hit test results
+                    // node.RefineHitTest(p, ref HitLocation, ref HitPoint);
+                    var (hit, pnt) = node.RefinedHit(p);
+                    HitLocation |= hit;
+                    HitPoint = pnt;
+
+                    HitNode = node;
+                    if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> nodeEdges))
                     {
-                        var edge = nodeEdges[i];
-                        if (edge.Node1 == node)
-                            HitNodeEdgeCuts.Add(new EdgeCut(edge, 0, edge.Tm1 + 1));
-                        else
-                            HitNodeEdgeCuts.Add(new EdgeCut(edge, edge.Tm2, edge.Points.Length));
+                        var len = nodeEdges.Count;
+                        HitNodeEdgeCuts = new List<EdgeCut>(len);
+                        for (int i = 0; i < len; i++)
+                        {
+                            var edge = nodeEdges[i];
+                            if (edge.Node1 == node)
+                                HitNodeEdgeCuts.Add(new EdgeCut(edge, 0, edge.Tm1 + 1));
+                            else
+                                HitNodeEdgeCuts.Add(new EdgeCut(edge, edge.Tm2, edge.Points.Length));
+                        }
                     }
+                    return;  // we are done;
                 }
-                return;  // we are done;
             }
 
-            // test all edges
-            foreach (var edge in Graph.Edges)
+            // test near by edges
+            var nearByEdges = Graph.HitMap.NearByEdges(p, 3);
+            if (nearByEdges != null)
             {
-                // eliminate unqualified edges
-                if (!edge.HitTest(p)) continue;
+                foreach (var edge in nearByEdges)
+                {
+                    // eliminate unqualified edges
+                    if (!edge.HitTest(p)) continue;
 
-                // now refine the hit test results
-                if (!edge.HitTest(p, ref HitLocation, ref HitBend, ref HitIndex, ref HitPoint)) continue;
+                    // now refine the hit test results
+                    if (!edge.HitTest(p, ref HitLocation, ref HitBend, ref HitIndex, ref HitPoint)) continue;
 
-                HitEdge = edge;
-                return;  // we are done
+                    HitEdge = edge;
+                    return;  // we are done
+                }
             }
         }
         #endregion

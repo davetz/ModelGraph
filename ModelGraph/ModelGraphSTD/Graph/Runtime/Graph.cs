@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ModelGraphSTD
 {/*
@@ -39,19 +40,6 @@ namespace ModelGraphSTD
         #endregion
 
         #region Properties/Methods  ===========================================
-        public void TestHit((int x, int y) p)
-        {
-            var nodeHash = HitMap.NearByNodes(p, 5);
-            if (!(nodeHash is null))
-            {
-                var n = nodeHash.Count;
-            }
-            var edgeHash = HitMap.NearByEdges(p, 2);
-            if (!(edgeHash is null))
-            {
-                var n = edgeHash.Count;
-            }
-        }
         internal (int count, Edge[] edges) ConnectedEdges(Node n) => Node_Edges.TryGetValue(n, out List<Edge> list) ? (list.Count, list.ToArray()) : (0, null);
 
         public void Add(Path path) { Paths.Add(path); }
@@ -123,9 +111,9 @@ namespace ModelGraphSTD
         {
             Extent = new Extent();
             Extent = Extent.SetExtent(Nodes, 16);
-            HitMap.Initialize(3);
-            foreach(var node in Nodes) { HitMap.Add(node); }
-            foreach (var edge in Edges) { HitMap.Add(edge); }
+            HitMap.Initialize(3, 3);
+            foreach(var node in Nodes) { HitMap.AddNode(node); }
+            foreach (var edge in Edges) { HitMap.AddEdge(edge); }
         }
         #endregion
     }
