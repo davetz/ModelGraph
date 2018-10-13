@@ -146,7 +146,6 @@ namespace ModelGraphSTD
                     y1 = y2;
                 }
                 // is the point interior to polygon path
-                // (if count is odd) Yes, (if count is even) No
                 return ((count % 2) != 0);
             }
             else return Normal.Contains(p);
@@ -208,10 +207,33 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region ExtendPolygon  ================================================
-        public void ExtendPolygon(IEnumerable<Node> included, IEnumerable<Node> excluded)
+        #region ConstructPolygon  =============================================
+        public void ConstructPolygon(HashSet<Node> exclude)
         {
+            var interior = new List<Extent>(Nodes.Count);
 
+            var excludeCount = (exclude is null) ? 0 : exclude.Count;
+            var exterior = new List<Extent>(excludeCount);
+
+            var extent = new Extent();
+            extent.SetExtent(Nodes, 5);
+
+            foreach (var node in Nodes)
+            {
+                interior.Add(new Extent(node.Extent, 5));
+            }
+
+            if (excludeCount > 0)
+            {
+                foreach (var node in exclude)
+                {
+                    exterior.Add(new Extent(node.Extent, 5));
+                }
+            }
+            Points = extent.RoundedRectanglePoints();
+
+            _closingLength = 0;
+            _perimeterLength = 2 * (extent.Width + extent.Hieght);            
         }
         #endregion
     }

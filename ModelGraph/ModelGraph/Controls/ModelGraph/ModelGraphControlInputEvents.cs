@@ -158,6 +158,5 @@ namespace ModelGraph.Controls
             _modifier = Modifier.None;
         }
         #endregion
-
     }
 }

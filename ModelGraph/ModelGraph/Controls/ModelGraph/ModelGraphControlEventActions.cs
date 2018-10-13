@@ -440,7 +440,7 @@ namespace ModelGraph.Controls
                 DrawCanvas.Invalidate();
             }
         }
-        private void CloseRegion()
+        private async void CloseRegion()
         {
             if (_traceRegion == null)
             {
@@ -448,7 +448,7 @@ namespace ModelGraph.Controls
             }
 
             _traceRegion.Close(_drawRef.Point2);
-            _selector.TryAddRegion(_traceRegion);
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.TryAddRegion(_traceRegion); });
             _traceRegion = null;
 
             DrawCanvas.Invalidate();

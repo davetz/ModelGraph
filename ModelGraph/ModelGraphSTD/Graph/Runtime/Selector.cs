@@ -64,7 +64,9 @@ namespace ModelGraphSTD
 
         #region TryAddRegion  =================================================
         public void TryAddRegion(Region region)
-        {
+        {/*
+            This method can take a lot of time and it runs asynchronusly
+         */
             if (region.IsViable)
             {
                 region.Nodes.Clear();
@@ -123,6 +125,7 @@ namespace ModelGraphSTD
                             Chops.Remove(edge);
                         }
                     }
+                    region.ConstructPolygon(Graph.HitMap.NearByNodes(region.Nodes, 10));
                 }
             }
         }
@@ -215,7 +218,7 @@ namespace ModelGraphSTD
             }
 
             // test near by nodes
-            var nearByNodes = Graph.HitMap.NearByNodes(p, 3);
+            var nearByNodes = Graph.HitMap.NearByNodes(p, 4);
             if (nearByNodes != null)
             {
                 foreach (var node in nearByNodes)
@@ -248,7 +251,7 @@ namespace ModelGraphSTD
             }
 
             // test near by edges
-            var nearByEdges = Graph.HitMap.NearByEdges(p, 3);
+            var nearByEdges = Graph.HitMap.NearByEdges(p, 8);
             if (nearByEdges != null)
             {
                 foreach (var edge in nearByEdges)

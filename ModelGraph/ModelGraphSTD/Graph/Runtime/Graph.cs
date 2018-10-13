@@ -37,6 +37,7 @@ namespace ModelGraphSTD
 
             owner.Add(this);
         }
+        public GraphX GraphX => Owner as GraphX;
         #endregion
 
         #region Properties/Methods  ===========================================
@@ -45,7 +46,6 @@ namespace ModelGraphSTD
         public void Add(Path path) { Paths.Add(path); }
         public void Add(Level level) { Levels.Add(level); }
 
-        public GraphX GraphX => Owner as GraphX;
         public int QueryCount => (Forest == null) ? 0 : Forest.Length;
         public int OpenPathCount(int index)
         {

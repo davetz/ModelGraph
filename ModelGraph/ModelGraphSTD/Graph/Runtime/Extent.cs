@@ -44,6 +44,14 @@ namespace ModelGraphSTD
             Y2 = y2;
         }
 
+        public Extent((int x1, int y1, int x2, int y2) e, int ds)
+        {
+            X1 = e.x1 - ds;
+            Y1 = e.y1 - ds;
+            X2 = e.x2 + ds;
+            Y2 = e.y2 + ds;
+        }
+
         public Extent((int X, int Y) p, int ds)
         {
             X1 = p.X + 1 - ds;
@@ -281,6 +289,37 @@ namespace ModelGraphSTD
         public (int X, int Y) BottomRight => (Xmax, Ymax);
         #endregion
 
+        #region RoundedRectanglePoints  =======================================
+        internal List<(int X, int Y)> RoundedRectanglePoints()
+        {
+            const int r = 4;
+            const int c = 1;
+            var list = new List<(int X, int Y)>(12);
+            var tl = TopLeft;
+            var tr = TopRight;
+            var bl = BottomLeft;
+            var br = BottomRight;
+
+            list.Add((tl.X, tl.Y + r));
+            list.Add((tl.X + c, tl.Y + c));
+            list.Add((tl.X + r, tl.Y));
+
+            list.Add((tr.X - r, tl.Y));
+            list.Add((tr.X - c, tr.Y + c));
+            list.Add((tr.X, tr.Y + r));
+
+            list.Add((br.X, br.Y - r));
+            list.Add((br.X - c, br.Y - c));
+            list.Add((br.X - r, br.Y));
+
+            list.Add((bl.X + r, bl.Y));
+            list.Add((bl.X + c, bl.Y - c));
+            list.Add((bl.X, bl.Y - r));
+
+            return list;
+        }
+        #endregion
+
         #region Comparison  ===================================================
         public bool IsLessThan(Extent e) => Diagonal < (e.Diagonal);
         public bool IsGreaterThan(Extent e) => Diagonal > (e.Diagonal); 
@@ -303,10 +342,10 @@ namespace ModelGraphSTD
 
         public bool Contains((int X, int Y) p)
         {
-            if (p.X < X1) return false;
-            if (p.Y < Y1) return false;
-            if (p.X > X2) return false;
-            if (p.Y > Y2) return false;
+            if (p.X < X1 && p.X < X2) return false;
+            if (p.Y < Y1 && p.Y < Y2) return false;
+            if (p.X > X2 && p.X > X1) return false;
+            if (p.Y > Y2 && p.Y > Y1) return false;
             return true;
         }
         //public bool Contains(Vector2 p)
