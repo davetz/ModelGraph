@@ -21,7 +21,7 @@ namespace ModelGraphSTD
                 When specifing radius, use the actual expected radius, ignore scale because
                 actually, the callers radius will be scaled before it is used.
                 If radius is too small the hit test may miss valid targes.
-                It it's too large the hit test will take an excessive amount of time.
+                If it's too large the hit test will take an excessive amount of time.
      */
         private int _nodeScale;
         private int _edgeScale;

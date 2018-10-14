@@ -4,12 +4,9 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public class ItemModel
     {
-        private static ConcurrentBag<ItemModel> _cache = new ConcurrentBag<ItemModel>();
         public Item Item;
         public Item Aux1;
         public Item Aux2;
@@ -43,32 +40,10 @@ namespace ModelGraphSTD
         }
         internal static ItemModel Create(ItemModel parent, Trait trait, Item item, Item aux1, Item aux2, ModelAction action)
         {
-            if (_cache.TryTake(out ItemModel m))
-            {
-                m.Trait = trait;
-                m.Item = item;
-                m.Aux1 = aux1;
-                m.Aux2 = aux2;
-                m.Get = action;
-                m.ParentModel = parent;
-                m.Depth = (byte)((parent is null) ? 0 : parent.Depth + 1);
-                m.ViewModels = m.ChildModels = null;
-                m.ViewFilter = null;
-                m._flags = Flags.None;
-                return m;
-            }
-            else
-            {
-                return new ItemModel(parent, trait, item, aux1, aux2, action);
-            }
+            return new ItemModel(parent, trait, item, aux1, aux2, action);
         }
         internal static void Release(ItemModel m)
         {
-            if (m is null) return;
-
-            Release(m.ChildModels);
-
-            _cache.Add(m);
         }
         internal static void Release(List<ItemModel> childModels)
         {
@@ -114,6 +89,7 @@ namespace ModelGraphSTD
         [Flags]
         enum State : ushort
         {
+            None = 0,
             IsReadOnly = 0x8000,
             IsMultiline = 0x4000,
 

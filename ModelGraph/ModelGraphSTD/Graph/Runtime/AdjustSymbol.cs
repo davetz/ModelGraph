@@ -11,18 +11,21 @@ namespace ModelGraphSTD
         #region SymbolFlip  ===================================================
         private class SymbolFlip
         {
-            private byte n;
+            // input - read from SymbolX
+            private byte n; 
             private byte s;
             private byte w;
             private byte e;
 
+            private byte dx;
+            private byte dy;
+
+            // output - writen to Node
             private byte N;
             private byte S;
             private byte W;
             private byte E;
 
-            private byte dx;
-            private byte dy;
             internal byte DX;
             internal byte DY;
 
@@ -79,6 +82,8 @@ namespace ModelGraphSTD
                 r.S = r.n;
                 r.W = r.w;
                 r.E = r.e;
+                r.DX = r.dx;
+                r.DY = r.dy;
             }
             private static void FlipHorizontal(SymbolFlip r)
             {
@@ -86,6 +91,8 @@ namespace ModelGraphSTD
                 r.S = r.s;
                 r.W = r.e;
                 r.E = r.w;
+                r.DX = r.dx;
+                r.DY = r.dy;
             }
             private static void FlipBothWays(SymbolFlip r)
             {
@@ -93,6 +100,8 @@ namespace ModelGraphSTD
                 r.S = r.n;
                 r.W = r.e;
                 r.E = r.w;
+                r.DX = r.dx;
+                r.DY = r.dy;
             }
             private static void RotateClockWise(SymbolFlip r)
             {
@@ -109,6 +118,8 @@ namespace ModelGraphSTD
                 r.S = r.w;
                 r.W = r.s;
                 r.E = r.n;
+                r.DX = r.dy;
+                r.DY = r.dx;
             }
             private static void RotateFlipHorizontal(SymbolFlip r)
             {
@@ -116,6 +127,8 @@ namespace ModelGraphSTD
                 r.S = r.e;
                 r.W = r.n;
                 r.E = r.s;
+                r.DX = r.dy;
+                r.DY = r.dx;
             }
             private static void RotateFlipBothWays(SymbolFlip r)
             {
@@ -123,6 +136,8 @@ namespace ModelGraphSTD
                 r.S = r.w;
                 r.W = r.n;
                 r.E = r.s;
+                r.DX = r.dy;
+                r.DY = r.dx;
             }
             #endregion
         }

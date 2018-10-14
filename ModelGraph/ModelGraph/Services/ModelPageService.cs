@@ -71,6 +71,7 @@ namespace ModelGraph.Services
                     viewLifetimeControl.Released += ViewLifetimeControl_Released;
                     return true;
             }
+            GC.Collect();
             return false;
         }
 
