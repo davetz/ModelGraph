@@ -42,7 +42,7 @@ namespace ModelGraph.Controls
             DrawCanvas.Invalidate();
         }
 
-        public void Close()
+        public void Release()
         {
             if (DrawCanvas != null)
             {

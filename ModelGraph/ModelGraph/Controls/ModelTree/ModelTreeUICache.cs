@@ -192,6 +192,8 @@ namespace ModelGraph.Controls
 
                 ClearStackPanel(i);
             }
+            _modelCacheIndex.Clear();
+            _modelCacheIndex = null;
         }
         #endregion
 

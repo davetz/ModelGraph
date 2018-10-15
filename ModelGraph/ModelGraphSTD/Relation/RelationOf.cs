@@ -34,6 +34,15 @@ namespace ModelGraphSTD
 
             owner.Add(this);
         }
+        internal override void Release()
+        {
+            _parents1 = null;
+            _parents2 = null;
+            _children1 = null;
+            _children2 = null;
+
+            base.Release();
+        }
         #endregion
 
         #region Initialize  ===================================================

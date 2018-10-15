@@ -26,6 +26,15 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        internal void Release()
+        {
+            ModelControl?.Release();
+            ModelControl = null;
+
+            RootModel?.Release();
+            RootModel = null;
+        }
+
         #region InitializeModelControl  =======================================
         internal void InitializeModel(RootModel model)
         {
@@ -106,22 +115,6 @@ namespace ModelGraph.Controls
                     {
                         cmd.Parameter1 = new RepositoryStorageFile(file);
                         cmd.Execute();
-                        //ReloadModelView();
-                    }
-                }
-                else
-                {
-                    var openPicker = new FileOpenPicker
-                    {
-                        ViewMode = PickerViewMode.List,
-                        SuggestedStartLocation = PickerLocationId.DocumentsLibrary
-                    };
-                    openPicker.FileTypeFilter.Add(".mgdf");
-                    StorageFile file = await openPicker.PickSingleFileAsync();
-                    if (file != null)
-                    {
-                        cmd.Parameter1 = new RepositoryStorageFile(file);
-                        cmd.Execute();
                     }
                 }
             }
@@ -137,7 +130,6 @@ namespace ModelGraph.Controls
         {
             ModelControl?.SetSize(width, height - ButtonGrid.ActualHeight);
         }
-
 
 
         public async void Dispatch(UIRequest rq)

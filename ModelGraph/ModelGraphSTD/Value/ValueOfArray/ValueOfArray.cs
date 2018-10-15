@@ -27,5 +27,11 @@ namespace ModelGraphSTD
             }
             return false;
         }
+
+        internal override void Release()
+        {
+            base.Release();
+        }
+
     }
 }

@@ -7,5 +7,11 @@ namespace ModelGraphSTD
 
         internal abstract bool HasItemName { get; }
         internal abstract string GetItemName(Item itm);
+
+        internal override void Release()
+        {
+            Value?.Release();
+            base.Release();
+        }
     }
 }

@@ -7,8 +7,8 @@ namespace ModelGraph.Controls
     {
         (int Width, int Height) PreferredSize { get; }
         void Save();
-        void Close();
         void Reload();
+        void Release();
         void Refresh();
         void SetSize(double width, double height);
     }

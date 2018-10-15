@@ -90,5 +90,34 @@ namespace ModelGraphSTD
             };
         }
         #endregion
+
+        #region ReleaseStores  ================================================
+        private void ReleaseStores()
+        {
+            Dummy = null;
+            QueryXNode = null;
+            ChangeRoot = null;
+            ChangeSet = null;
+
+            PropertyZStore = null;
+            RelationZStore = null;
+            EnumZStore = null;
+            ErrorStore = null;
+
+            PropertyStore = null;
+            RelationStore = null;
+            EnumXStore = null;
+            ViewXStore = null;
+            TableXStore = null;
+            GraphXStore = null;
+            QueryXStore = null;
+            ColumnXStore = null;
+            SymbolStore = null;
+            ComputeXStore = null;
+            RelationXStore = null;
+
+            PrimeStores = null;
+        }
+        #endregion
     }
 }

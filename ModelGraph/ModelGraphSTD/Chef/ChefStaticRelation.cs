@@ -177,5 +177,63 @@ namespace ModelGraphSTD
                 Store_ParentRelation.SetLink(childStore, relation);
         }
         #endregion
+
+        #region ReleaseRelations  =============================================
+        private void ReleaseRelations()
+        {
+            Item_Error  = null;
+            Store_Property  = null;
+            Store_ChildRelation  = null;
+            Store_ParentRelation  = null;
+
+            EnumX_ColumnX  = null;
+
+            TableX_ColumnX  = null;
+
+            TableX_NameProperty  = null;
+
+            TableX_SummaryProperty  = null;
+
+            TableX_ChildRelationX  = null;
+
+            TableX_ParentRelationX  = null;
+
+            Store_ComputeX  = null;
+            ViewX_ViewX  = null;
+
+            QueryX_ViewX  = null;
+
+            ViewX_QueryX  = null;
+
+            Property_ViewX  = null;
+
+            Relation_ViewX  = null;
+
+
+            GraphX_SymbolQueryX  = null;
+
+            GraphX_SymbolX  = null;
+
+            GraphX_ColorColumnX  = null;
+
+            GraphX_QueryX  = null;
+
+            QueryX_QueryX  = null;
+
+            QueryX_Property  = null;
+
+            ViewX_Property  = null;
+
+            Store_QueryX  = null;
+
+
+            SymbolX_QueryX  = null;
+
+            Relation_QueryX  = null;
+
+            ComputeX_QueryX  = null;
+        }
+        #endregion
+
     }
 }

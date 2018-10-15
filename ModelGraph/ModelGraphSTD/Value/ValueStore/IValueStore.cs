@@ -10,5 +10,7 @@ namespace ModelGraphSTD
         void SetOwner(ComputeX cx);
         bool GetVal(Item key, out T val);
         bool SetVal(Item key, T value);
+
+        void Release();
     }
 }

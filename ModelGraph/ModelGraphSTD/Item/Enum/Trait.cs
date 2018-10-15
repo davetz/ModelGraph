@@ -106,7 +106,6 @@ namespace ModelGraphSTD
         Dummy = 0x100,
         NodeParm = 0x101,
 
-        RootChef = 0x111,
         DataChef = 0x112,
 
         //=========================================
@@ -376,9 +375,9 @@ namespace ModelGraphSTD
 
         //=====================================================================
         S_610_M = 0x610,
-        RootChef_M = 0x611,
+        S_611_M = 0x611,
         DataChef_M = 0x612,
-        MockChef_M = 0x613,
+        S_613_M = 0x613,
         TextColumn_M = 0x614,
         CheckColumn_M = 0x615,
         ComboColumn_M = 0x616,

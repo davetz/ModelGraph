@@ -14,5 +14,9 @@ namespace ModelGraphSTD
         internal override void SetOwner(ComputeX cx) => _valueStore.SetOwner(cx);
         protected bool GetVal(Item key, out T val) => _valueStore.GetVal(key, out val);
         protected bool SetVal(Item key, T value) => _valueStore.SetVal(key, value);
+        internal override void Release()
+        {
+            _valueStore.Release();
+        }
     }
 }

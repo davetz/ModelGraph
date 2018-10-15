@@ -44,6 +44,15 @@ namespace ModelGraphSTD
         }
         internal static void Release(ItemModel m)
         {
+            if (m is null) return;
+            Release(m.ChildModels);
+            m.Item = null;
+            m.Aux1 = null;
+            m.Aux2 = null;
+            m.Get = null;
+            m.ParentModel = null;
+            m.ChildModels = null;
+            m.ViewModels = null;
         }
         internal static void Release(List<ItemModel> childModels)
         {
@@ -53,7 +62,7 @@ namespace ModelGraphSTD
             {
                 Release(child);
             }
-            childModels.Clear();
+            childModels.Clear();            
         }
         #endregion
 

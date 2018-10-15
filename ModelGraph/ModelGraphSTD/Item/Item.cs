@@ -15,7 +15,6 @@ namespace ModelGraphSTD
 
         #region Trait  ========================================================
         internal bool IsExternal => (Trait & Trait.IsExternal) != 0;
-        internal bool IsRootChef => (Trait == Trait.RootChef);
         internal bool IsDataChef => (Trait == Trait.DataChef);
         internal bool IsViewX => (Trait == Trait.ViewX);
         internal bool IsPairX => (Trait == Trait.PairX);
@@ -119,7 +118,7 @@ namespace ModelGraphSTD
 
         #region Property/Methods ==============================================
         internal int Index => (Owner is Store st) ? st.IndexOf(this) : -1;
-        internal bool IsInvalid => Owner == null || IsDeleted;
+        internal bool IsInvalid => IsDeleted;
         internal bool IsValid => !IsInvalid;
 
         internal Store Store => Owner as Store;
@@ -131,6 +130,11 @@ namespace ModelGraphSTD
             var item = this;
             while (item != null) { if (item.IsDataChef) return item as Chef; item = item.Owner; }
             throw new Exception("Corrupted item hierarchy"); // I seriously hope this never happens
+        }
+
+        internal virtual void Release()
+        {
+            Owner = null;
         }
         #endregion
     }

@@ -24,9 +24,6 @@ namespace ModelGraph.Services
         public static ModelPageService Current => _current ?? (_current = new ModelPageService());
         private static ModelPageService _current;
 
-        internal RootModel AppRootModel => _appRootModel ?? (_appRootModel = new RootModel());
-        private static RootModel _appRootModel;
-
         #region Constructor  ==================================================
         private ModelPageService()
         {
@@ -58,7 +55,7 @@ namespace ModelGraph.Services
                     return true;
 
                 case RequestType.Close:                   
-                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { RemoveModelPage(ctrl); ctrl.ModelControl?.Close(); WindowManagerService.Current.CloseRelatedModels(ctrl.RootModel); ctrl.RootModel.Release(); });                    
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { RemoveModelPage(ctrl); WindowManagerService.Current.CloseRelatedModels(ctrl.RootModel); ctrl.Release(); });                    
                     return true;
 
                 case RequestType.CreateView:
@@ -79,7 +76,10 @@ namespace ModelGraph.Services
         {
             if (sender is ViewLifetimeControl ctrl)
             {
-                ctrl.PageControl?.RootModel?.Release();
+                ctrl.Released -= ViewLifetimeControl_Released;
+                ctrl.PageControl?.Release();
+                ctrl.PageControl = null;
+                ctrl.RootModel = null;
             }
         }
         #endregion
@@ -89,7 +89,7 @@ namespace ModelGraph.Services
         {
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                var rootModel = new RootModel(AppRootModel)
+                var rootModel = new RootModel()
                 {
                     ControlType = ControlType.PrimaryTree
                 };
@@ -115,7 +115,7 @@ namespace ModelGraph.Services
             {
                 await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    var rootModel = new RootModel(AppRootModel, new RepositoryStorageFile(file))
+                    var rootModel = new RootModel(new RepositoryStorageFile(file))
                     {
                         ControlType = ControlType.PrimaryTree
                     };

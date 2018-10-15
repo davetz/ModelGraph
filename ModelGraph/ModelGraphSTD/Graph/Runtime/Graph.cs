@@ -93,20 +93,6 @@ namespace ModelGraphSTD
         #endregion
 
         #region (GraphRef -> RootModel) Interface  ============================
-        private HashSet<RootModel> _rootModels = new HashSet<RootModel>();
-
-        internal void AddRootModel(RootModel root)
-        {
-            _rootModels.Add(root);
-        }
-        internal void RemoveRootModel(RootModel root)
-        {
-            _rootModels.Remove(root);
-            if (_rootModels.Count == 0)
-            {
-                GraphX.Remove(this);
-            }
-        }
         private void SetExtent()
         {
             Extent = new Extent();

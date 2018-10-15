@@ -90,8 +90,6 @@ namespace ModelGraphSTD
             {
                 request.Execute();
 
-                if (!IsRootChef) CheckChanges();
-
                 foreach (var root in _rootModels)
                 {
                     if (root.HasFlatList) RefreshViewFlatList(root);

@@ -21,6 +21,13 @@ namespace ModelGraphSTD
 
             owner.Add(this);
         }
+        public void Release()
+        {
+            EnumZ = null;
+            GetValFunc = null;
+            SetValFunc = null;
+            GetItemNameFunc = null;
+        }
         #endregion
 
         #region Property  =====================================================

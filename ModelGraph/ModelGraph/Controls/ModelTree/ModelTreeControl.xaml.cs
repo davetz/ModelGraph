@@ -122,11 +122,6 @@ namespace ModelGraph.Controls
         public void Save()
         {
         }
-        public void Close()
-        {
-            ClearCache();
-            TreeCanvas.Children.Clear();
-        }
         public void Reload()
         {
         }
@@ -217,8 +212,40 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        public void Release()
+        {
+            ClearCache();
+
+            TreeCanvas.Children.Clear();
+            TreeCanvas = null;
+
+            _itemIdentityTip.Opened -= ItemIdentityTip_Opened;
+            _modelIdentityTip.Opened -= ModelIdentityTip_Opened;
+
+            foreach (var cmd in _menuCommands)
+            {
+                cmd.Release();
+            }
+            foreach (var cmd in _buttonCommands)
+            {
+                cmd.Release();
+            }
+
+            _root = null;
+            _select = null;
+            _pointerPressModel = null;
+            _viewList = null;
+            _menuCommands.Clear();
+            _menuCommands = null;
+            _buttonCommands.Clear();
+            _buttonCommands = null;
+            _itemIdentityTip = null;
+            _modelIdentityTip = null;
+        }
+
+
         #region PostRefreshViewList  ==========================================
-         void PostRefreshViewList(ItemModel m, int s = 0, ChangeType c = ChangeType.NoChange)
+        void PostRefreshViewList(ItemModel m, int s = 0, ChangeType c = ChangeType.NoChange)
         {
             ResetCacheDelta(m);
             _root.PostRefreshViewList(m, s, c);

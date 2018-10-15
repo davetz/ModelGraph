@@ -14,40 +14,33 @@ namespace ModelGraphSTD
 
         private bool ShowItemIndex;
 
-        #region RootChef  =====================================================
-        internal Chef() : base(null, Trait.RootChef, Guid.Empty, 10)
-        {
-            Owner = this;
-            Initer_RootChef_X();
-        }
-        #endregion
-
         #region DataChef  =====================================================
-        internal Chef(Chef rootChef, IRepository repository = null) : base(rootChef, Trait.DataChef, Guid.Empty, 0)
+        internal Chef(IRepository repository = null) : base(null, Trait.DataChef, Guid.Empty, 0)
         {
             Initialize();
 
             Repository = repository;
-
-            rootChef.Add(this);
-            rootChef.SetLocalizer(this);
 
             if (repository == null)
                 _newChefNumber = (_newChefCount += 1);
             else
                 Repository.Read(this);
         }
-        #endregion
-
-        #region Close  ========================================================
-        public void Close()
+        internal override void Release()
         {
-            if (Owner is Chef rootChef && rootChef != this)
-            {
-                rootChef.Remove(this);
-                rootChef.PrimaryRootModel.PageDispatch();
-                _rootModels.Clear();
-            }
+            Repository = null;
+            GraphParms = null;
+            Property_Enum = null;
+            _itemIdentity = null;
+            _localize = null;
+
+            ReleaseEnums();
+            ReleaseStores();
+            ReleaseRelations();
+            ReleaseProperties();
+            ReleaseModelActions();
+
+            base.Release();
         }
         #endregion
 
@@ -57,13 +50,10 @@ namespace ModelGraphSTD
         internal void AddRootModel(RootModel root)
         {
             if (PrimaryRootModel == null) PrimaryRootModel = root;
-
-            if (root.Item is Graph g) g.AddRootModel(root);
             _rootModels.Add(root);
         }
         internal void RemoveRootModel(RootModel root)
         {
-            if (root.Item is Graph g) g.RemoveRootModel(root);
             _rootModels.Remove(root);
         }
         #endregion
@@ -83,7 +73,7 @@ namespace ModelGraphSTD
 
             InitializeReferences();
 
-            Initialize_ModelActions();
+            InitializeModelActions();
         }
         #endregion
     }

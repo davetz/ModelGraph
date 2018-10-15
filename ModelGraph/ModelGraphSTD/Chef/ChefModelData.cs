@@ -6,8 +6,8 @@ namespace ModelGraphSTD
 {
     public partial class Chef
     {
-        #region Initer_ModelActions  ==========================================
-        void Initialize_ModelActions()
+        #region InitializeModelActions  =======================================
+        void InitializeModelActions()
         {
             Initer_ParmDebugList_X();
             Initer_S_601_X();
@@ -27,7 +27,7 @@ namespace ModelGraphSTD
             Initer_S_60F_X();
 
             Initer_S_610_X();
-            Initer_RootChef_X();
+            Initer_S_611_X();
             Initer_DataChef_X();
             Initer_TextColumn_X();
             Initer_CheckColumn_X();
@@ -180,6 +180,183 @@ namespace ModelGraphSTD
             Initer_StoreChildRelation_X();
             Initer_StoreParentRelation_X();
             Initer_StoreRelatedItem_X();
+        }
+        #endregion
+
+        #region ReleaseModelActions  ==========================================
+        void ReleaseModelActions()
+        {
+            ParmDebugList_X = null;
+            S_601_X = null;
+            S_602_X = null;
+            S_603_X = null;
+            S_604_X = null;
+            S_605_X = null;
+            S_606_X = null;
+            S_607_X = null;
+            S_608_X = null;
+            S_609_X = null;
+            S_60A_X = null;
+            S_60B_X = null;
+            S_60C_X = null;
+            S_60D_X = null;
+            S_60E_X = null;
+            S_60F_X = null;
+
+            S_610_X = null;
+            S_611_X = null;
+            DataChef_X = null;
+            TextColumn_X = null;
+            CheckColumn_X = null;
+            ComboColumn_X = null;
+            TextProperty_X = null;
+            CheckProperty_X = null;
+            ComboProperty_X = null;
+            TextCompute_X = null;
+            S_61B_X = null;
+            S_61C_X = null;
+            S_61D_X = null;
+            S_61E_X = null;
+            S_61F_X = null;
+
+            ParmRoot_X = null;
+            ErrorRoot_X = null;
+            ChangeRoot_X = null;
+            MetadataRoot_X = null;
+            ModelingRoot_X = null;
+            MetaRelationList_X = null;
+            ErrorType_X = null;
+            ErrorText_X = null;
+            ChangeSet_X = null;
+            ItemChanged_X = null;
+            S_62A_X = null;
+            S_62B_X = null;
+            S_62C_X = null;
+            S_62D_X = null;
+            MetadataSubRoot_X = null;
+            ModelingSubRoot_X = null;
+
+            MetaViewXViewList_X = null;
+            MetaViewView_X = null;
+            MetaViewQuery_X = null;
+            MetaViewCommand_X = null;
+            MetaViewProperty_X = null;
+
+            ViewView_X = null;
+            ViewViewM_X = null;
+            ViewItem_X = null;
+            ViewQuery_X = null;
+
+            MetaEnumList_X = null;
+            MetaTableList_X = null;
+            MetaGraphList_X = null;
+            MetaSymbolList_X = null;
+            MetaGraphParmList_X = null;
+            TableList_X = null;
+            GraphList_X = null;
+
+            MetaPair_X = null;
+            MetaEnum_X = null;
+            MetaTable_X = null;
+            MetaGraph_X = null;
+            MetaSymbol_X = null;
+            MetaColumn_X = null;
+            MetaCompute_X = null;
+            SymbolEditor_X = null;
+
+            MetaColumnList_X = null;
+            MetaChildRelationList_X = null;
+            MetaParentRelatationList_X = null;
+            MetaEnumPairList_X = null;
+            MetaEnumColumnList_X = null;
+            MetaComputeList_X = null;
+
+            MetaChildRelation_X = null;
+            MetaParentRelation_X = null;
+            MetaNameColumnRelation_X = null;
+            MetaSummaryColumnRelation_X = null;
+            MetaNameColumn_X = null;
+            MetaSummaryColumn_X = null;
+
+            MetaGraphColoring_X = null;
+            MetaGraphRootList_X = null;
+            MetaGraphNodeList_X = null;
+            MetaGraphNode_X = null;
+            MetaGraphColorColumn_X = null;
+
+            MetaGraphRoot_X = null;
+            MetaGraphLink_X = null;
+            MetaGraphPathHead_X = null;
+            MetaGraphPathLink_X = null;
+            MetaGraphGroupHead_X = null;
+            MetaGraphGroupLink_X = null;
+            MetaGraphEgressHead_X = null;
+            MetaGraphEgressLink_X = null;
+
+            MetaGraphNodeSymbol_X = null;
+
+            ValueHead_X = null;
+            ValueLink_X = null;
+
+            RowX_X = null;
+            View_X = null;
+            Table_X = null;
+            Graph_X = null;
+            RowChildRelation_X = null;
+            RowParentRelation_X = null;
+            RowRelatedChild_X = null;
+            RowRelatedParent_X = null;
+            EnumRelatedColumn_X = null;
+
+            RowPropertyList_X = null;
+            RowChildRelationList_X = null;
+            RowParentRelationList_X = null;
+            RowComputeList_X = null;
+
+            QueryRootLink_X = null;
+            QueryPathHead_X = null;
+            QueryPathLink_X = null;
+            QueryGroupHead_X = null;
+            QueryGroupLink_X = null;
+            QueryEgressHead_X = null;
+            QueryEgressLink_X = null;
+
+            QueryRootItem_X = null;
+            QueryPathStep_X = null;
+            QueryPathTail_X = null;
+            QueryGroupStep_X = null;
+            QueryGroupTail_X = null;
+            QueryEgressStep_X = null;
+            QueryEgressTail_X = null;
+
+            GraphXRef_X = null;
+            GraphRef_X = null;
+            GraphNodeList_X = null;
+            GraphEdgeList_X = null;
+            GraphRootList_X = null;
+            GraphLevelList_X = null;
+            GraphLevel_X = null;
+            GraphPath_X = null;
+            GraphRoot_X = null;
+            GraphNode_X = null;
+            GraphEdge_X = null;
+            GraphOpenList_X = null;
+            GraphOpen_X = null;
+
+            PrimeCompute_X = null;
+            ComputeStore_X = null;
+            InternalStoreList_X = null;
+            InternalStore_X = null;
+            StoreItem_X = null;
+            StoreItemItemList_X = null;
+            StoreRelationLinkList_X = null;
+            StoreChildRelationList_X = null;
+            StoreParentRelationList_X = null;
+            StoreItemItem_X = null;
+            StoreRelationLink_X = null;
+            StoreChildRelation_X = null;
+            StoreParentRelation_X = null;
+            StoreRelatedItem_X = null;
         }
         #endregion
 
@@ -623,7 +800,7 @@ namespace ModelGraphSTD
                         filterList.Add((cm.FilterSortName, cm));
                     }
                 }
-                filterList.Sort(_alphaSort);
+                filterList.Sort(FilterListCompare);
                 if (m.IsSortDescending) filterList.Reverse();
             }
 
@@ -657,11 +834,8 @@ namespace ModelGraphSTD
                 return true;
             }
         }
-        class SortCompare : IComparer<(string, ItemModel)>
-        {
-            public int Compare((string, ItemModel) x, (string, ItemModel) y) => x.Item1.CompareTo(y.Item1);
-        }
-        static SortCompare _alphaSort = new SortCompare();
+
+        int FilterListCompare((string, ItemModel) x, (string, ItemModel) y) => x.Item1.CompareTo(y.Item1);
         #endregion
         #endregion
 
@@ -1314,18 +1488,35 @@ namespace ModelGraphSTD
             (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
-
-        #region 611 RootChef_M  ===============================================
-        internal ModelAction RootChef_X;
-        void Initer_RootChef_X()
+       
+        #region 611 S_611_X  ==================================================
+        internal ModelAction S_611_X;
+        void Initer_S_611_X()
         {
-            RootChef_X = new ModelAction
+            S_611_X = new ModelAction
             {
                 ModelParms = (m) =>
                 {
-                    return (null, null, 0, ModelType.Default);
+                    var (kind, name) = GetKindName(m);
+
+                    return (kind, name, 0, ModelType.Default);
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                ModelKindName = GetKindName,
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+                Validate = (m, prev) =>
+                {
+                    return (false, false);
                 },
             };
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
 
@@ -1422,13 +1613,10 @@ namespace ModelGraphSTD
             {
                 var repo = Repository;
                 var root = m.GetRootModel();
-                if (Owner is Chef rootChef && rootChef.IsRootChef)
-                {
-                    var dataChef = new Chef(rootChef, repo);
+                var dataChef = new Chef(repo);
 
-                    root.UIRequestCloseModel();
-                    root.UIRequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
-                }
+                root.UIRequestCloseModel();
+                root.UIRequestCreateView(ControlType.PrimaryTree, Trait.DataChef_M, dataChef, dataChef.DataChef_X);
             }
             #endregion
         }

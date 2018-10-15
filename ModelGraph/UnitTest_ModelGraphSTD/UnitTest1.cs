@@ -8,8 +8,7 @@ namespace ModelGraphSTD
         [TestMethod]
         public void TestMethod1()
         {
-            var rootChef = new Chef();
-            var dataChef = new Chef(rootChef);
+            var dataChef = new Chef();
         }
     }
 }

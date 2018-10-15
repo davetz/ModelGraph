@@ -10,7 +10,6 @@
             Owner = owner;
             Trait = Trait.ChangeRoot;
 
-            if (owner.IsRootChef) return;
             owner.Add(this); // we want to be in the dataChef's item tree hierarchy
         }
         #endregion

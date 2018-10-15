@@ -17,8 +17,19 @@ namespace ModelGraphSTD
             Guid = guid;
             SetCapacity(capacity);
 
-            if (owner == null || owner.IsRootChef) return;
-            owner.Add(this); // we want this store to be in the dataChef's item tree hierarchy
+            owner?.Add(this); // we want this store to be in the dataChef's item tree hierarchy
+        }
+        internal override void Release()
+        {
+            if (Count > 0)
+            {
+                foreach (var item in _items)
+                {
+                    item.Release();
+                }
+                _items = null;
+            }
+            base.Release();
         }
         #endregion
 

@@ -21,7 +21,7 @@ namespace ModelGraphSTD
         public List<ItemModel> ViewFlatList = new List<ItemModel>(); // flat list of models visible to the user 
         internal bool HasFlatList => ControlType == ControlType.PartialTree || ControlType == ControlType.PartialTree;
 
-        private readonly ConcurrentQueue<UIRequest> _requestQueue = new ConcurrentQueue<UIRequest>();
+        private ConcurrentQueue<UIRequest> _requestQueue = new ConcurrentQueue<UIRequest>();
 
         public int MinorDelta;
         public int MajorDelta;
@@ -29,22 +29,12 @@ namespace ModelGraphSTD
         public ControlType ControlType;
 
         #region Constructors  =================================================
-        // App-RootModel: Created by ModelPageService
-        public RootModel()
-        { 
-            Trait = Trait.RootChef_M;
-            Item = Chef = new Chef();
-            Get = Chef.RootChef_X;
-            Chef.AddRootModel(this);
-
-            ControlType = ControlType.AppRootChef;
-        }
 
         // Primary-RootModel: Created by ModelPageService
-        public RootModel(RootModel appRootModel, IRepository repository = null)
+        public RootModel(IRepository repository = null)
         {
             Trait = Trait.DataChef_M;
-            Item = Chef = new Chef(appRootModel.Chef, repository);
+            Item = Chef = new Chef(repository);
             Get = Chef.DataChef_X;
 
             ControlType = ControlType.PrimaryTree;
@@ -65,6 +55,17 @@ namespace ModelGraphSTD
             Chef.AddRootModel(this);
             IsExpandedLeft = true;
         }
+        public void Release()
+        {
+            ItemModel.Release(this);
+            Chef?.Release();
+            ViewFlatList.Clear();
+            ViewFlatList = null;
+            _requestQueue = null;
+            PageControl = null;
+            SelectModel = null;
+            Chef = null;
+        }
         #endregion
 
         #region Properties/Methods  ===========================================
@@ -72,8 +73,6 @@ namespace ModelGraphSTD
         public string TitleName => Chef.GetAppTitleName(this);
         public string TabSummary => Chef.GetAppTabSummary(this);
         public string TitleSummary => Chef.GetAppTitleSummary(this);
-
-        public void Release() => ItemModel.Release(ChildModels);
         #endregion
 
         #region UIRequest  ====================================================

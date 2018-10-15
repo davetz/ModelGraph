@@ -25,6 +25,13 @@ namespace ModelGraphSTD
             Name = chef.GetName(trait);
             Summary = chef.GetSummary(trait); ;
         }
+        public void Release()
+        {
+            Chef = null;
+            Model = null;
+            Action = null;
+            Action1 = null;
+        }
         public ModelCommand(Chef chef, ItemModel model, Trait trait, Action<ItemModel, Object> action)
         {
             Chef = chef;

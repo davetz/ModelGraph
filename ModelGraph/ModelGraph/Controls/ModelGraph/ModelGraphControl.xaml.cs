@@ -43,7 +43,7 @@ namespace ModelGraph.Controls
 
         #region IModelControl  ================================================
         public void Save() { }
-        public void Close()
+        public void Release()
         {
             if (DrawCanvas == null) return;
 

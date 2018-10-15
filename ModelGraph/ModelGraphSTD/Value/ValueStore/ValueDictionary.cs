@@ -15,6 +15,12 @@ namespace ModelGraphSTD
             _default = defaultValue;
             if (capacity > 0) _values = new Dictionary<Item, T>(capacity);
         }
+        public void Release()
+        {
+            _owner = null;
+            Clear();
+            _values = null;
+        }
 
         public int Count => (_values == null) ? 0 : _values.Count;
         public bool IsSpecific(Item key) => (_values == null) ? false :_values.ContainsKey(key);
@@ -82,5 +88,6 @@ namespace ModelGraphSTD
 
         // LoadValue() should only be used by RepositoryRead
         public void LoadValue(Item key, T value) => _values[key] = value;
+
     }
 }

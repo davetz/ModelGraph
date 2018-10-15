@@ -205,5 +205,31 @@
             new PairZ(_computeTakeSetEnum, Trait.TakeSet_Last);
             new PairZ(_computeTakeSetEnum, Trait.TakeSet_Both);
         }
+
+        private void ReleaseEnums()
+        {
+            _valueTypeEnum = null;
+            _pairingEnum = null;
+
+            _orientationEnum = null;
+            _labelingEnum = null;
+            _flipRotateEnum = null;
+            _resizingEnum = null;
+            _barWidthEnum = null;
+
+            _sideEnum = null;
+            _facetEnum = null;
+            _connectEnum = null;
+            _contactEnum = null;
+            _numericSetEnum = null;
+            _numericTermEnum = null;
+            _computeTypeEnum = null;
+            _attatchEnum = null;
+            _lineStyleEnum = null;
+            _dashStyleEnum = null;
+            _computeResultsEnum = null;
+            _computeSortingEnum = null;
+            _computeTakeSetEnum = null;
+        }
     }
 }

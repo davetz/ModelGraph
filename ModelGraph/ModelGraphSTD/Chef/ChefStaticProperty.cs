@@ -627,6 +627,94 @@ namespace ModelGraphSTD
             #endregion
         }
 
+        #region ReleaseProperties  ============================================
+        private void ReleaseProperties()
+        {
+            _showItemIndexProperty = null;
+
+            _viewXNameProperty = null;
+            _viewXSummaryProperty = null;
+
+            _enumXNameProperty = null;
+            _enumXSummaryProperty = null;
+
+            _pairXTextProperty = null;
+            _pairXValueProperty = null;
+
+            _tableXNameProperty = null;
+            _tableXSummaryProperty = null;
+
+            _columnXNameProperty = null;
+            _columnXSummaryProperty = null;
+            _columnXTypeOfProperty = null;
+            _columnXInitialProperty = null;
+            _columnXIsChoiceProperty = null;
+
+            _computeXNameProperty = null;
+            _computeXSummaryProperty = null;
+            _computeXWhereProperty = null;
+            _computeXSelectProperty = null;
+            _computeXSeparatorProperty = null;
+            _computeXCompuTypeProperty = null;
+            _computeXNumericSetProperty = null;
+            _computeXValueTypeProperty = null;
+            _computeXResultsProperty = null;
+            _computeXSortingProperty = null;
+            _computeXTakeSetProperty = null;
+            _computeXTakeLimitProperty = null;
+
+            _relationXNameProperty = null;
+            _relationXSummaryProperty = null;
+            _relationXPairingProperty = null;
+            _relationXIsRequiredProperty = null;
+
+            _graphXNameProperty = null;
+            _graphXSummaryProperty = null;
+
+            _symbolXNameProperty = null;
+            _symbolXTopContactProperty = null;
+            _symbolXLeftContacttProperty = null;
+            _symbolXRightContactProperty = null;
+            _symbolXBottomContactProperty = null;
+
+            _queryXRootWhereProperty = null;
+            _queryXFacet1Property = null;
+            _queryXAttach1Property = null;
+            _queryXConnect1Property = null;
+            _queryXFacet2Property = null;
+            _queryXAttatch2Property = null;
+            _queryXConnect2Property = null;
+            _queryXRelationProperty = null;
+            _queryXIsReversedProperty = null;
+            _queryXIsPersistentProperty = null;
+            _queryXIsBreakPointProperty = null;
+            _queryXExclusiveKeyProperty = null;
+            _queryXWhereProperty = null;
+            _queryXSelectProperty = null;
+            _queryXValueTypeProperty = null;
+            _queryXLineStyleProperty = null;
+            _queryXDashStyleProperty = null;
+            _queryXLineColorProperty = null;
+
+            _nodeCenterXYProperty = null;
+            _nodeSizeWHProperty = null;
+            _nodeLabelingProperty = null;
+            _nodeResizingProperty = null;
+            _nodeBarWidthProperty = null;
+            _nodeOrientationProperty = null;
+            _nodeFlipRotateProperty = null;
+
+            _edgeFacet1Property = null;
+            _edgeFacet2Property = null;
+            _edgeConnect1Property = null;
+            _edgeConnect2Property = null;
+
+            _graphXTerminalLengthProperty = null;
+            _graphXTerminalSpacingProperty = null;
+            _graphXTerminalStretchProperty = null;
+        }
+        #endregion
+
         #region LookUpProperty  ===============================================
         static char[] _dotSplit = ".".ToCharArray();
         internal bool TryLookUpProperty(Store store, string name, out Property prop, out int index)
