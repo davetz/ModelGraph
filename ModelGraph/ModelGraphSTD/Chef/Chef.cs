@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 
 namespace ModelGraphSTD
-{/*
-    Chef is the data coordinator of this application.
-    It is the owner of the data and orchastrates all changes.
- */
+{
     public partial class Chef : StoreOf<Store>
     {
         static int _newChefCount;
@@ -25,23 +22,6 @@ namespace ModelGraphSTD
                 _newChefNumber = (_newChefCount += 1);
             else
                 Repository.Read(this);
-        }
-        internal override void Release()
-        {
-            Repository = null;
-            GraphParms = null;
-            Property_Enum = null;
-            _itemIdentity = null;
-            _localize = null;
-            _rootModels = null;
-
-            ReleaseEnums();
-            ReleaseStores();
-            ReleaseRelations();
-            ReleaseProperties();
-            ReleaseModelActions();
-
-            base.Release();
         }
         #endregion
 
@@ -78,6 +58,26 @@ namespace ModelGraphSTD
             InitializeReferences();
 
             InitializeModelActions();
+        }
+        #endregion
+
+        #region Release  ======================================================
+        internal override void Release()
+        {
+            Repository = null;
+            GraphParms = null;
+            Property_Enum = null;
+            _itemIdentity = null;
+            _localize = null;
+            _rootModels = null;
+
+            ReleaseEnums();
+            ReleaseStores();
+            ReleaseRelations();
+            ReleaseProperties();
+            ReleaseModelActions();
+
+            base.Release();
         }
         #endregion
     }

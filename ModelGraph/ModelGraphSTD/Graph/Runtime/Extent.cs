@@ -160,6 +160,16 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region Clear  ========================================================
+        public void Clear()
+        {
+            X1 = 0;
+            Y1 = 0;
+            X2 = 0;
+            Y2 = 0;
+        }
+        #endregion
+
         #region Diagonal  =====================================================
         public int DX => X2 - X1;
         public int DY => Y2 - Y1;
@@ -216,6 +226,15 @@ namespace ModelGraphSTD
 
         #region SetExtent  ====================================================
         // enforce  (X1 < X2) and  (Y1 < Y2)
+        public void SetExtent(Node node, int margin)
+        {
+            var (x, y, w, h) = node.Values();
+
+            X1 = x - w - margin;
+            Y1 = y - h - margin;
+            X2 = x + w + margin;
+            Y2 = y + h + margin;
+        }
         public Extent SetExtent(IEnumerable<Node> nodeList, int margin)
         {
             X1 = Y1 = int.MaxValue;

@@ -135,22 +135,13 @@ namespace ModelGraph.Controls
             #region DrawRegions  ==============================================
             if (_selector.Regions.Count > 0)
             {
+                pen.Color = Colors.White;
                 foreach (var region in _selector.Regions)
                 {
-                    var points = region.Points;
-                    pen.Color = Colors.LightGray;
-                    if (region.IsPolygon)
+                    pen.DrawRoundedRectangle(region.Extent);
+                    foreach (var e in region.DotExtents)
                     {
-                        pen.Initialize();
-                        for (int i = 0; i < points.Count; i++)
-                        {
-                            pen.DrawLine(points[i]);
-                        }
-                        pen.DrawLine(points[0]);
-                    }
-                    else
-                    {
-                        pen.DrawRectangle(region.Normal);
+                        pen.DrawRoundedRectangle(e, true);
                     }
                 }
             }
@@ -166,6 +157,9 @@ namespace ModelGraph.Controls
             internal float Width;
             internal Color Color;
             internal CanvasStrokeStyle Style;
+            internal CanvasStrokeStyle SolidStyle;
+            internal CanvasStrokeStyle DotStyle;
+
             private CanvasDrawingSession _session;
 
             private float _zoom;
@@ -184,6 +178,20 @@ namespace ModelGraph.Controls
                     DashCap = CanvasCapStyle.Round,
                     StartCap = CanvasCapStyle.Round,
                     DashStyle = CanvasDashStyle.Solid
+                };
+                SolidStyle = new CanvasStrokeStyle
+                {
+                    EndCap = CanvasCapStyle.Round,
+                    DashCap = CanvasCapStyle.Round,
+                    StartCap = CanvasCapStyle.Round,
+                    DashStyle = CanvasDashStyle.Solid
+                };
+                DotStyle = new CanvasStrokeStyle
+                {
+                    EndCap = CanvasCapStyle.Round,
+                    DashCap = CanvasCapStyle.Round,
+                    StartCap = CanvasCapStyle.Round,
+                    DashStyle = CanvasDashStyle.Dot
                 };
             }
 
@@ -242,18 +250,9 @@ namespace ModelGraph.Controls
                 }
 
                 _p1 = p2;
-                //Debug.WriteLine($"{point} => {p2},   O: {_offset} Z: {_zoom}");
             }
-            internal void DrawRectangle(Extent e)
-            {
-                var r = new Rect(e.Xmin, e.Ymin, e.Width, e.Hieght);
-
-                DrawRectangle(new Rect(r.X * _zoom + _offset.X, r.Y * _zoom + _offset.Y, r.Width * _zoom, r.Height * _zoom));
-            }
-            internal void DrawRectangle(Rect rect)
-            {
-                _session.DrawRectangle(rect, Color, Width);
-            }
+            internal void DrawRectangle(Extent e) => _session.DrawRectangle((e.Xmin * _zoom + _offset.X), (e.Ymin * _zoom + _offset.Y), (e.Width * _zoom), (e.Hieght * _zoom), Color, Width, SolidStyle);
+            internal void DrawRoundedRectangle(Extent e, bool dot = false) => _session.DrawRoundedRectangle((e.Xmin * _zoom + _offset.X), (e.Ymin * _zoom + _offset.Y), (e.Width * _zoom), (e.Hieght * _zoom), 4.0f, 4.0f, Color, Width, (dot ? DotStyle : SolidStyle));
 
             internal void DrawPoint(Node nd)
             {

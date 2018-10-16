@@ -16,6 +16,7 @@ namespace ModelGraphSTD
         public Extent Extent;
         public Extent Normal;
         public Extent Closing;
+        public List<Extent> DotExtents = new List<Extent>(0);
 
         public bool AnyHits { get { return (Nodes.Count > 0); } }
         public bool IsPolygon { get { return (Points.Count > 2 && _closingLength < .15 * _perimeterLength); } }
@@ -77,25 +78,13 @@ namespace ModelGraphSTD
         public void Close((int X, int Y) p)
         {
             Add(p);
-            if (IsPolygon) return;
-
-            Points = new List<(int X, int Y)>(2)
-            {
-                Normal.TopLeft,
-                Normal.BottomRight
-            };
-            Extent = Normal;
         }
         #endregion
 
         #region Move  =========================================================
         public void Move((int X, int Y) delta)
         {
-            for (int i = 0; i < Points.Count; i++)
-            {
-                Points[i] = ((Points[i].X + delta.X), (Points[i].Y + delta.Y));
-            }
-            Normal.Move(delta);
+            Extent.Move(delta);
         }
         #endregion
 
@@ -207,33 +196,10 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region ConstructPolygon  =============================================
-        public void ConstructPolygon(HashSet<Node> exclude)
+        #region SetExtent  ====================================================
+        internal void SetExtent()
         {
-            var interior = new List<Extent>(Nodes.Count);
-
-            var excludeCount = (exclude is null) ? 0 : exclude.Count;
-            var exterior = new List<Extent>(excludeCount);
-
-            var extent = new Extent();
-            extent.SetExtent(Nodes, 5);
-
-            foreach (var node in Nodes)
-            {
-                interior.Add(new Extent(node.Extent, 5));
-            }
-
-            if (excludeCount > 0)
-            {
-                foreach (var node in exclude)
-                {
-                    exterior.Add(new Extent(node.Extent, 5));
-                }
-            }
-            Points = extent.RoundedRectanglePoints();
-
-            _closingLength = 0;
-            _perimeterLength = 2 * (extent.Width + extent.Hieght);            
+            Extent.SetExtent(Nodes, 5);
         }
         #endregion
     }

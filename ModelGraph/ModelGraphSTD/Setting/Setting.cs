@@ -12,7 +12,12 @@ namespace ModelGraphSTD
         protected abstract T DefaultValue { get; }
         protected abstract bool IsValid(T value);
 
-        internal T GetValue() => (_hasValue) ? _value : (_parent != null) ? _parent.GetValue() : DefaultValue;
+        internal Setting() { }
+        internal Setting(Setting<T> parent)
+        {
+            _parent = parent;
+        }
+        internal T GetValue() => (_hasValue) ? _value : (_parent is null) ? DefaultValue :  _parent.GetValue();
         internal bool SetValue(T value)
         {
             if (IsValid(value))

@@ -21,7 +21,8 @@ namespace ModelGraphSTD
 
             owner.Add(this);
         }
-        public void Release()
+        void IValueStore<T2>.Release() => Release();
+        override internal void Release()
         {
             EnumZ = null;
             GetValFunc = null;

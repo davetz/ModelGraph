@@ -83,36 +83,6 @@ namespace ModelGraphSTD
         #endregion
 
         #region NearBy<Nodes,Edges>  ==========================================
-        internal HashSet<Node> NearByNodes(HashSet<Node> selectNodes, int radius = 3)
-        {
-            const int N = 4;
-            var cornerPoint = new (int x, int y)[N]; 
-            HashSet<Node> nodeHash = null;
-
-            foreach (var node in selectNodes)
-            {
-                var (x, y, w, h) = node.Values();
-                cornerPoint[0] = (x - w, y - h);
-                cornerPoint[1] = (x - w, y + h);
-                cornerPoint[2] = (x + w, y - h);
-                cornerPoint[3] = (x + w, y + h);
-
-                for (int i = 0; i < N; i++)
-                {
-                    var testHash = NearByNodes(cornerPoint[i], radius);
-                    if (testHash is null) continue;
-
-                    foreach (var tnode in testHash)
-                    {
-                        if (selectNodes.Contains(tnode)) continue;
-
-                        if (nodeHash is null) nodeHash = new HashSet<Node>();
-                        nodeHash.Add(tnode);
-                    }
-                }
-            }
-            return nodeHash;
-        }
         internal HashSet<Node> NearByNodes((int x, int y) testPoint, int radius = 3)
         {
             HashSet<Node> nodeHash = null;

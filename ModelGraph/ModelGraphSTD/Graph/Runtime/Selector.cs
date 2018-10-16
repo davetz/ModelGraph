@@ -125,7 +125,22 @@ namespace ModelGraphSTD
                             Chops.Remove(edge);
                         }
                     }
-                    region.ConstructPolygon(Graph.HitMap.NearByNodes(region.Nodes, 10));
+                    var m = 5;
+                    region.Extent.SetExtent(region.Nodes, m);
+
+                    foreach (var reg in Regions) { reg.DotExtents.Clear(); }
+
+                    var e = new Extent();
+                    foreach (var node in Graph.Nodes)
+                    {
+                        var p = node.Center;
+
+                        foreach (var reg in Regions)
+                        {
+                            if (reg.Nodes.Contains(node)) continue;
+                            if (reg.Extent.Contains(p)) reg.DotExtents.Add(new Extent(node.Extent, m));                            
+                        }
+                    }
                 }
             }
         }
