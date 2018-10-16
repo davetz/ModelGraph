@@ -58,12 +58,13 @@ namespace ModelGraphSTD
         public void Release()
         {
             ItemModel.Release(this);
-            Chef?.Release();
             ViewFlatList.Clear();
             ViewFlatList = null;
             _requestQueue = null;
             PageControl = null;
             SelectModel = null;
+
+            Chef?.RemoveRootModel(this);
             Chef = null;
         }
         #endregion
@@ -76,25 +77,25 @@ namespace ModelGraphSTD
         #endregion
 
         #region UIRequest  ====================================================
-        internal void UIRequestSaveModel() => _requestQueue.Enqueue(UIRequest.SaveModel(this));
-        internal void UIRequestCloseModel() => _requestQueue.Enqueue(UIRequest.CloseModel(this));
-        internal void UIRequestReloadModel() => _requestQueue.Enqueue(UIRequest.ReloadModel(this));
-        internal void UIRequestRefreshModel() => _requestQueue.Enqueue(UIRequest.RefreshModel(this));
+        internal void UIRequestSaveModel() => _requestQueue?.Enqueue(UIRequest.SaveModel(this));
+        internal void UIRequestCloseModel() => _requestQueue?.Enqueue(UIRequest.CloseModel(this));
+        internal void UIRequestReloadModel() => _requestQueue?.Enqueue(UIRequest.ReloadModel(this));
+        internal void UIRequestRefreshModel() => _requestQueue?.Enqueue(UIRequest.RefreshModel(this));
 
         internal void UIRequestCreateView(ControlType type, Trait trait, Item item, ModelAction get) =>
-            _requestQueue.Enqueue(UIRequest.CreateView(this, type, trait, item, get));
+            _requestQueue?.Enqueue(UIRequest.CreateView(this, type, trait, item, get));
 
         internal void UIRequestCreatePage(ControlType type, ItemModel m) =>
-            _requestQueue.Enqueue(UIRequest.CreatePage(this, type, m.Trait, m.Item, m.Aux1, m.Aux2, m.Get));
+            _requestQueue?.Enqueue(UIRequest.CreatePage(this, type, m.Trait, m.Item, m.Aux1, m.Aux2, m.Get));
 
         internal void UIRequestCreatePage(ControlType type, Trait trait, ModelAction get, ItemModel m) =>
-            _requestQueue.Enqueue(UIRequest.CreatePage(this, type, trait, m.Item, m.Aux1, m.Aux2, get));
+            _requestQueue?.Enqueue(UIRequest.CreatePage(this, type, trait, m.Item, m.Aux1, m.Aux2, get));
         internal void UIRequestCreatePage(ControlType type, Trait trait, Item item, ModelAction get) =>
-            _requestQueue.Enqueue(UIRequest.CreatePage(this, type, trait, item, null, null, get));
+            _requestQueue?.Enqueue(UIRequest.CreatePage(this, type, trait, item, null, null, get));
 
 
-        internal void UIRequestSaveSymbol() => _requestQueue.Enqueue(UIRequest.SaveModel(this));
-        internal void UIRequestReloadSymbol() => _requestQueue.Enqueue(UIRequest.ReloadModel(this));
+        internal void UIRequestSaveSymbol() => _requestQueue?.Enqueue(UIRequest.SaveModel(this));
+        internal void UIRequestReloadSymbol() => _requestQueue?.Enqueue(UIRequest.ReloadModel(this));
         #endregion
 
         #region PageDispatch  =================================================

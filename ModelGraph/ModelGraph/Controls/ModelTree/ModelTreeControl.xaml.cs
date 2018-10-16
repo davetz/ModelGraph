@@ -222,14 +222,8 @@ namespace ModelGraph.Controls
             _itemIdentityTip.Opened -= ItemIdentityTip_Opened;
             _modelIdentityTip.Opened -= ModelIdentityTip_Opened;
 
-            foreach (var cmd in _menuCommands)
-            {
-                cmd.Release();
-            }
-            foreach (var cmd in _buttonCommands)
-            {
-                cmd.Release();
-            }
+            foreach (var cmd in _menuCommands) { cmd.Release(); }
+            foreach (var cmd in _buttonCommands) { cmd.Release(); }
 
             _root = null;
             _select = null;

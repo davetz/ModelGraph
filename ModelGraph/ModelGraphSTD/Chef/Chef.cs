@@ -14,7 +14,7 @@ namespace ModelGraphSTD
 
         private bool ShowItemIndex;
 
-        #region DataChef  =====================================================
+        #region Constructor  ==================================================
         internal Chef(IRepository repository = null) : base(null, Trait.DataChef, Guid.Empty, 0)
         {
             Initialize();
@@ -33,6 +33,7 @@ namespace ModelGraphSTD
             Property_Enum = null;
             _itemIdentity = null;
             _localize = null;
+            _rootModels = null;
 
             ReleaseEnums();
             ReleaseStores();
@@ -54,7 +55,10 @@ namespace ModelGraphSTD
         }
         internal void RemoveRootModel(RootModel root)
         {
+            if (_rootModels is null) return;
+
             _rootModels.Remove(root);
+            if (_rootModels.Count == 0) Release();
         }
         #endregion
 
