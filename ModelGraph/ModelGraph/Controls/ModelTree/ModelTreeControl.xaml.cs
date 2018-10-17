@@ -212,6 +212,7 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        #region Release  ======================================================
         public void Release()
         {
             ClearCache();
@@ -236,7 +237,7 @@ namespace ModelGraph.Controls
             _itemIdentityTip = null;
             _modelIdentityTip = null;
         }
-
+        #endregion
 
         #region PostRefreshViewList  ==========================================
         void PostRefreshViewList(ItemModel m, int s = 0, ChangeType c = ChangeType.NoChange)

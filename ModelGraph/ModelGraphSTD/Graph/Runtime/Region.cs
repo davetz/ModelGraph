@@ -95,7 +95,7 @@ namespace ModelGraphSTD
             {
                 Points[i] = XYPair.RotateFlip(Points[i], focus, flip);
             }
-            Normal.RotateFlip(focus, flip);
+            Extent.RotateFlip(focus, flip);
         }
         #endregion
 

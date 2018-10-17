@@ -2,14 +2,7 @@
 using System.Collections.Generic;
 
 namespace ModelGraphSTD
-{/*
-    ModelGraphSTD has no direct knowledge of the UI controls, however, it does 
-    initiates UI action through the interfaces IPageControl and IModelControl.
-
-    The UI controls, on the other hand, do have direct access to the public methods and
-    properties of ModelGraphSTD objects. This is especially important for the case
-    of the ModelGraphControl.
- */
+{
     public class RootModel : ItemModel
     {
         public Chef Chef { get; private set; }
@@ -19,12 +12,9 @@ namespace ModelGraphSTD
         public int ViewCapacity = 10; // updated when the view screen size changes
         public ItemModel SelectModel;   // the user selected model
         public List<ItemModel> ViewFlatList = new List<ItemModel>(); // flat list of models visible to the user 
-        internal bool HasFlatList => ControlType == ControlType.PartialTree || ControlType == ControlType.PartialTree;
+        internal bool HasFlatList => ControlType == ControlType.PrimaryTree || ControlType == ControlType.PartialTree;
 
         private ConcurrentQueue<UIRequest> _requestQueue = new ConcurrentQueue<UIRequest>();
-
-        public int MinorDelta;
-        public int MajorDelta;
 
         public ControlType ControlType;
 
