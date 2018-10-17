@@ -358,7 +358,7 @@ namespace ModelGraph.Controls
             DragAction = null;
             HoverAction = IdleHitTest;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); PostRefresh(); };
+            ArrowAction = () => { _selector.Move(_arrowDelta); UpdateRegionExtents(); PostRefresh(); };
             CancelAction = () => { RemoveSelectors(); SetIdleOnVoid(); };
             Begin1Action = SetMovingRegion;
             Begin3Action = null;
@@ -393,7 +393,7 @@ namespace ModelGraph.Controls
             //Cursor = Cursors.ScrollAll;
             _enableHitTest = false;
 
-            EndAction = () => { SetIdleOnRegion(); PostRefresh(); };
+            EndAction = () => { UpdateRegionExtents(); PostRefresh(); };
             DragAction = () => { _selector.Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
             HoverAction = null;
             WheelAction = null;
@@ -403,6 +403,11 @@ namespace ModelGraph.Controls
             Begin3Action = null;
             ExecuteAction = null;
             ShortCutAction = null;
+        }
+        private async void UpdateRegionExtents()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.UpdateRegionExtents(); });
+            SetIdleOnRegion();
         }
         #endregion
 

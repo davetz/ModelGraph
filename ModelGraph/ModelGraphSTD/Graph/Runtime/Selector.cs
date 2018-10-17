@@ -125,22 +125,26 @@ namespace ModelGraphSTD
                             Chops.Remove(edge);
                         }
                     }
-                    var m = 5;
-                    region.Extent.SetExtent(region.Nodes, m);
+                    UpdateRegionExtents();
+                }
+            }
+        }
+        #endregion
 
-                    foreach (var reg in Regions) { reg.DotExtents.Clear(); }
+        #region UpdateRegionExtents  ==========================================
+        public void UpdateRegionExtents()
+        {
+            var m = 5;
+            foreach (var reg in Regions) { reg.SetExtent(m); }
 
-                    var e = new Extent();
-                    foreach (var node in Graph.Nodes)
-                    {
-                        var p = node.Center;
+            foreach (var node in Graph.Nodes)
+            {
+                var p = node.Center;
 
-                        foreach (var reg in Regions)
-                        {
-                            if (reg.Nodes.Contains(node)) continue;
-                            if (reg.Extent.Contains(p)) reg.DotExtents.Add(new Extent(node.Extent, m));                            
-                        }
-                    }
+                foreach (var reg in Regions)
+                {
+                    if (reg.Nodes.Contains(node)) continue;
+                    if (reg.Extent.Contains(p)) reg.DotExtents.Add(new Extent(node.Extent, m));
                 }
             }
         }

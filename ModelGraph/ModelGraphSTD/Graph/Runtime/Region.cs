@@ -137,7 +137,7 @@ namespace ModelGraphSTD
                 // is the point interior to polygon path
                 return ((count % 2) != 0);
             }
-            else return Normal.Contains(p);
+            else return Extent.Contains(p);
         }
 
         public bool HitTest(Edge edge, out int index1, out int index2, out bool isInterior)
@@ -197,9 +197,16 @@ namespace ModelGraphSTD
         #endregion
 
         #region SetExtent  ====================================================
-        internal void SetExtent()
+        internal void SetExtent(int margin)
         {
-            Extent.SetExtent(Nodes, 5);
+            Extent.SetExtent(Nodes, margin);
+            Points.Clear();
+            DotExtents.Clear();
+            Points.Add(Extent.TopLeft);
+            Points.Add(Extent.TopRight);
+            Points.Add(Extent.BottomRight);
+            Points.Add(Extent.BottomLeft);
+            _closingLength = _perimeterLength = 2 * (Extent.Width + Extent.Hieght);
         }
         #endregion
     }
