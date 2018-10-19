@@ -119,16 +119,8 @@ namespace ModelGraph.Controls
 
             if (_traceRegion != null)
             {
-                pen.Color = (_traceRegion.IsPolygon) ? Colors.DimGray : Colors.LightGray;
+                pen.Color = Colors.LightGray;
                 pen.DrawRectangle(_traceRegion.Normal);
-
-                var points = _traceRegion.Points;
-                pen.Color = (_traceRegion.IsPolygon) ? Colors.LightGray : Colors.DimGray;
-                pen.Initialize();
-                for (int i = 0; i < points.Count; i++)
-                {
-                    pen.DrawLine(points[i]);
-                }
             }
             #endregion
 

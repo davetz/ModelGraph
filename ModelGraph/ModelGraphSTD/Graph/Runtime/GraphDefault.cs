@@ -11,6 +11,7 @@ namespace ModelGraphSTD
         public static int MinNodeSize = 2;
         public static int HitMarginSquared = 12;
         public static int PolygonPointSpacing = 6;
+        public static int RegionExtentMargin = 5;
 
         public static int SurfaceSkew = 2;
         public static int TerminalSkew = 4;

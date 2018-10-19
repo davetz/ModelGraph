@@ -64,15 +64,14 @@ namespace ModelGraphSTD
 
         #region TryAddRegion  =================================================
         public void TryAddRegion(Region region)
-        {/*
-            This method can take a lot of time and it runs asynchronusly
-         */
-            if (region.IsViable)
+        {
+            var extent = region.Extent;
+            if (extent.HasArea)
             {
                 region.Nodes.Clear();
                 foreach (var node in Graph.Nodes)
                 {
-                    if (region.HitTest(node.Center))
+                    if (extent.Contains(node.Center))
                     {
                         Nodes.Add(node);
                         region.Nodes.Add(node);
@@ -82,13 +81,12 @@ namespace ModelGraphSTD
 
                 foreach (var edge in Graph.Edges)
                 {
-                    if (region.HitTest(edge, out int index1, out int index2, out bool isInterior))
+                    var (hitEdge, isInterior, index1, index2) = region.HitTest(edge);
+                    if (hitEdge)
                     {
                         anyHits = true;
                         if (isInterior)
-                        {
                             Edges.Add(edge);
-                        }
                         else
                         {
                             if (Chops.Contains(edge))
@@ -134,8 +132,7 @@ namespace ModelGraphSTD
         #region UpdateRegionExtents  ==========================================
         public void UpdateRegionExtents()
         {
-            var m = 5;
-            foreach (var reg in Regions) { reg.SetExtent(m); }
+            foreach (var reg in Regions) { reg.SetExtent(); }
 
             foreach (var node in Graph.Nodes)
             {
@@ -144,7 +141,7 @@ namespace ModelGraphSTD
                 foreach (var reg in Regions)
                 {
                     if (reg.Nodes.Contains(node)) continue;
-                    if (reg.Extent.Contains(p)) reg.DotExtents.Add(new Extent(node.Extent, m));
+                    if (reg.Extent.Contains(p)) reg.DotExtents.Add(new Extent(node.Extent, GraphDefault.RegionExtentMargin));
                 }
             }
         }
@@ -233,7 +230,7 @@ namespace ModelGraphSTD
                             HitNodeEdgeCuts.Add(new EdgeCut(edge, edge.Tm2, edge.Points.Length));
                     }
                 }
-                return;  // we are done;
+                return;  // we're done;
             }
 
             // test near by nodes
@@ -334,37 +331,21 @@ namespace ModelGraphSTD
         {
             if ((HitLocation & HitLocation.Region) == 0)
             {
-                
-            }
-            else if ((HitLocation & HitLocation.Node) != 0)
-            {
-                var nodeHash = new HashSet<Node>(Nodes); // working copy of node hash
-
-                Node node1 = HitNode;   // focal node
-                Node node2 = null;      // next focal node
-                Edge edge = null;
-                while (TryGetNextNodeEdge())
+                if ((HitLocation & HitLocation.Node) != 0)
                 {
-
+                    HitRegion = new Region(HitNode.Center);
+                    HitRegion.Nodes.Add(HitNode);
+                    HitRegion.SetExtent();
+                    Regions.Add(HitRegion);
                 }
+                HitLocation |= HitLocation.Region;
+            }
 
-                bool TryGetNextNodeEdge()
+            if ((HitLocation & HitLocation.Node) != 0)
+            {
+                if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> edges))
                 {
-                    if (Graph.Node_Edges.TryGetValue(node1, out List<Edge> list))
-                    {
-                        foreach (var trialEdge in list)
-                        {
-                            if (nodeHash.Contains(edge.Node1) && nodeHash.Contains(edge.Node2))
-                            {
-                                edge = trialEdge; // take only one edge
-                                node2 = (edge.Node1 == node1) ? edge.Node2 : edge.Node1;
-                                nodeHash.Remove(node1); //this node has been traversed, so remove it from the work hash
-                                return true;
-                            }
-                        }
-                    }
-                    nodeHash.Remove(node1); //this node has been traversed, so remove it from the work hash
-                    return false;
+                   
                 }
             }
         }
