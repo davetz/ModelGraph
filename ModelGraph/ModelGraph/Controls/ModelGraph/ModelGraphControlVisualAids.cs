@@ -47,7 +47,6 @@ namespace ModelGraph.Controls
         private void RemoveSelectors()
         {
             _selector.Clear();
-            _traceRegion = null;
             DrawCanvas.Invalidate();
         }
         #endregion

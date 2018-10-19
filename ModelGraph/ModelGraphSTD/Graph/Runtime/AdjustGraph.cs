@@ -25,8 +25,9 @@ namespace ModelGraphSTD
             if (selector.HitEdge != null) edges.Add(selector.HitEdge);
             foreach (var node in selector.Nodes) { nodes.Add(node); }
             foreach (var edge in selector.Edges) { edges.Add(edge); }
-            foreach (var edge in selector.Chops)
+            foreach (var e in selector.Points)
             {
+                var edge = e.Key;
                 edges.Add(edge);
                 AddNodeEdges(edge.Node1);
                 AddNodeEdges(edge.Node2);

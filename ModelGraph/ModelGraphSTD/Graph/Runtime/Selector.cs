@@ -8,8 +8,6 @@ namespace ModelGraphSTD
     {
         public Graph Graph;   // reference the graphs Node and Edge lists
 
-        public List<Region> Regions = new List<Region>();
-
         public Node PrevNode;
         public Edge PrevEdge;
         public HitLocation PrevLocation;
@@ -19,14 +17,20 @@ namespace ModelGraphSTD
         public int HitBend;  // index of bend point (relative to edge.bends)
         public int HitIndex; // index of start of the hit segment (relative to edge.point)
         public (int x, int y) HitPoint; // the refined hit point location
-        public Region HitRegion; // hit this specific region
         public HitLocation HitLocation; // hit location details
 
         public Edge BendEdge;     // when bending an edge, remember which edge it is
         public int BendIndex;     // when moving an bend point, remember which point it is
 
-        public List<EdgeCut> HitNodeEdgeCuts;  // edges cut by region(s)
+        public HashSet<Node> Nodes = new HashSet<Node>();   // interior nodes
+        public HashSet<Edge> Edges = new HashSet<Edge>();   // interior edges
+        public Dictionary<Edge, (int I1, int I2)> Points = new Dictionary<Edge, (int I1, int I2)>(); // chopped edge interior points
 
+        public Extent Extent = new Extent(); // selector rectangle
+
+        public List<Extent> Included = new List<Extent>();  // extents of included nodes
+        public List<Extent> Occluded = new List<Extent>();  // extents of occluded nodes
+        
         private bool _enableSnapShot;
 
         #region Constructor  ==================================================
@@ -54,131 +58,93 @@ namespace ModelGraphSTD
         public bool HitNearEnd1 => ((HitLocation & HitLocation.End1) != 0);
         public bool HitNearEnd2 => ((HitLocation & HitLocation.End2) != 0);
         public bool HitBendPoint => ((HitLocation & HitLocation.Bend) != 0);
-
-        // Cached results of GetUnion for efficient repeated access 
-        public HashSet<Node> Nodes = new HashSet<Node>();     // nodes inside the union of regions
-        public HashSet<Edge> Edges = new HashSet<Edge>();     // edges completely inside the union of regions
-        public HashSet<Edge> Chops = new HashSet<Edge>();     // edges with only one end inside the union of regions
-        public List<EdgeCut> EdgeCuts = new List<EdgeCut>();  // cut edge points inside the union of regions
         #endregion
 
-        #region TryAddRegion  =================================================
-        public void TryAddRegion(Region region)
+        #region SelectorRectangle  ============================================
+        public void StartPoint((int X, int Y) p) => Extent.Point1 = Extent.Point2 = p;
+        public void NextPoint((int X, int Y) p) => Extent.Point2 = p;
+        public (int X, int Y, int W, int H) Rectangle => (Extent.Xmin, Extent.Ymin, Extent.Width, Extent.Hieght);
+        #endregion
+
+        #region TryAdd  =======================================================
+        public void TryAdd()
         {
-            var extent = region.Extent;
-            if (extent.HasArea)
+            if (Extent.HasArea)
             {
-                region.Nodes.Clear();
+                var count = Nodes.Count;
                 foreach (var node in Graph.Nodes)
                 {
-                    if (extent.Contains(node.Center))
-                    {
-                        Nodes.Add(node);
-                        region.Nodes.Add(node);
-                    }
+                    if (Nodes.Contains(node)) continue;
+                    if (Extent.Contains(node.Center)) Nodes.Add(node);
                 }
-                var anyHits = (region.Nodes.Count > 0);
-
-                foreach (var edge in Graph.Edges)
+                if (count != Nodes.Count)
                 {
-                    var (hitEdge, isInterior, index1, index2) = region.HitTest(edge);
-                    if (hitEdge)
+                    Edges.Clear();
+
+                    var badBend = new HashSet<Edge>();
+                    foreach (var e in Points)
                     {
-                        anyHits = true;
-                        if (isInterior)
+                        var edge = e.Key;
+                        if (Nodes.Contains(edge.Node1) && Nodes.Contains(edge.Node2)) badBend.Add(edge);
+                        if (!Nodes.Contains(edge.Node1) && !Nodes.Contains(edge.Node2)) badBend.Add(edge);
+                    }
+                    foreach (var edge in badBend) { Points.Remove(edge); }
+
+                    foreach (var edge in Graph.Edges)
+                    {
+                        if (Nodes.Contains(edge.Node1) && Nodes.Contains(edge.Node2))
+                        {
                             Edges.Add(edge);
-                        else
+                        }
+                        else if (edge.HasBends)
                         {
-                            if (Chops.Contains(edge))
+                            if (Nodes.Contains(edge.Node1) || Nodes.Contains(edge.Node2))
                             {
-                                for (int i = 0; i < EdgeCuts.Count; i++)
+                                var j = 0;
+                                var k = 0;
+                                for (int i = edge.Tm1 + 1; i < edge.Tm2; i++)
                                 {
-                                    if (EdgeCuts[i].Edge != edge) continue;
-
-                                    if (index1 < EdgeCuts[i].Index1) EdgeCuts[i] = new EdgeCut(edge, index1, EdgeCuts[i].Index2);
-                                    if (index2 > EdgeCuts[i].Index2) EdgeCuts[i] = new EdgeCut(edge, EdgeCuts[i].Index1, index2);
-                                    break;
+                                    if (Extent.Contains(edge.Points[i]))
+                                    {
+                                        if (j == 0) j = i;
+                                    }
+                                    else
+                                    {
+                                        if (k == 0) k = i;
+                                        break;
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                Chops.Add(edge);
-                                EdgeCuts.Add(new EdgeCut(edge, index1, index2));
+                                if (j > 0 && k > 0) Points.Add(edge, (j, k));                                
                             }
                         }
                     }
-                }
-
-                if (anyHits)
-                {
-                    Regions.Add(region);
-
-                    int last = EdgeCuts.Count - 1;
-                    for (int i = last; i >= 0; i--)
-                    {
-                        var edge = EdgeCuts[i].Edge;
-                        if (Edges.Contains(edge))
-                        {
-                            EdgeCuts.RemoveAt(i);
-                            Chops.Remove(edge);
-                        }
-                    }
-                    UpdateRegionExtents();
+                    UpdateExtents();
                 }
             }
         }
         #endregion
 
-        #region UpdateRegionExtents  ==========================================
-        public void UpdateRegionExtents()
+        #region UpdateExtents  ================================================
+        public void UpdateExtents()
         {
-            foreach (var reg in Regions) { reg.SetExtent(); }
-
-            foreach (var node in Graph.Nodes)
+            Included.Clear();
+            Occluded.Clear();
+            foreach (var node in Nodes)
             {
-                var p = node.Center;
-
-                foreach (var reg in Regions)
+                Included.Add(new Extent(node.Extent, GraphDefault.RegionExtentMargin));
+            }
+            foreach (var e in Points)
+            {
+                var edge = e.Key;
+                var (j, k) = e.Value;
+                var ext = new Extent(edge.Points[j]);
+                for (int i = j + 1; i < k; i++)
                 {
-                    if (reg.Nodes.Contains(node)) continue;
-                    if (reg.Extent.Contains(p)) reg.DotExtents.Add(new Extent(node.Extent, GraphDefault.RegionExtentMargin));
+                    ext.Expand(edge.Points[j]);
                 }
+                ext.Expand(GraphDefault.RegionExtentMargin);
+                Included.Add(ext);
             }
-        }
-        #endregion
-
-        #region GetChangedItems  ==============================================
-        public List<Item> GetChangedItems()
-        {
-            List<Item> items = null;
-            if ((HitLocation & HitLocation.Region) != 0)
-            {
-                items = new List<Item>(Nodes.Count + Edges.Count + Chops.Count);
-                foreach (var item in Nodes) { items.Add(item); }
-                foreach (var item in Edges) { items.Add(item); }
-                foreach (var item in Chops) { items.Add(item); }
-            }
-            else if (HitNode != null)
-            {
-                if (HitNodeEdgeCuts == null)
-                {
-                    items = new List<Item>(1) { HitNode };
-                }
-                else
-                {
-                    items = new List<Item>(1 + HitNodeEdgeCuts.Count) { HitNode };
-                    foreach (var cut in HitNodeEdgeCuts) { items.Add(cut.Edge); }
-                }
-            }
-            else if (HitEdge != null)
-            {
-                items = new List<Item> { HitEdge };
-            }
-            else
-            {
-                items = new List<Item>(0);
-            }
-            return items;
         }
         #endregion
 
@@ -195,19 +161,7 @@ namespace ModelGraphSTD
             HitBend = -1;
             HitIndex = -1;
             HitPoint = p;
-            HitRegion = null;
-            HitNodeEdgeCuts = null;
             HitLocation = HitLocation.Void;
-
-            // test all regions
-            foreach (var region in Regions)
-            {
-                if (!region.HitTest(p)) continue;
-
-                HitRegion = region;
-                HitLocation |= HitLocation.Region;
-                break;
-            }
 
             // test prev node
             if (PrevNode != null && PrevNode.HitTest(p))
@@ -217,19 +171,6 @@ namespace ModelGraphSTD
                 HitPoint = pnt;
 
                 HitNode = PrevNode;
-                if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> nodeEdges))
-                {
-                    var len = nodeEdges.Count;
-                    HitNodeEdgeCuts = new List<EdgeCut>(len);
-                    for (int i = 0; i < len; i++)
-                    {
-                        var edge = nodeEdges[i];
-                        if (edge.Node1 == PrevNode)
-                            HitNodeEdgeCuts.Add(new EdgeCut(edge, 0, edge.Tm1 + 1));
-                        else
-                            HitNodeEdgeCuts.Add(new EdgeCut(edge, edge.Tm2, edge.Points.Length));
-                    }
-                }
                 return;  // we're done;
             }
 
@@ -249,19 +190,6 @@ namespace ModelGraphSTD
                     HitPoint = pnt;
 
                     HitNode = node;
-                    if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> nodeEdges))
-                    {
-                        var len = nodeEdges.Count;
-                        HitNodeEdgeCuts = new List<EdgeCut>(len);
-                        for (int i = 0; i < len; i++)
-                        {
-                            var edge = nodeEdges[i];
-                            if (edge.Node1 == node)
-                                HitNodeEdgeCuts.Add(new EdgeCut(edge, 0, edge.Tm1 + 1));
-                            else
-                                HitNodeEdgeCuts.Add(new EdgeCut(edge, edge.Tm2, edge.Points.Length));
-                        }
-                    }
                     return;  // we are done;
                 }
             }
@@ -290,9 +218,7 @@ namespace ModelGraphSTD
         {
             Nodes.Clear();
             Edges.Clear();
-            Chops.Clear();
-            EdgeCuts.Clear();
-            Regions.Clear();
+            Points.Clear();
         }
         #endregion
 
@@ -305,16 +231,12 @@ namespace ModelGraphSTD
 
                 if ((HitLocation & HitLocation.Region) == 0)
                 {
-                    HitNode?.Move(delta); //BUG - HitNode was Null !
-                    if (HitNodeEdgeCuts != null)
-                        foreach (var cut in HitNodeEdgeCuts) { cut.Edge.Move(delta, cut.Index1, cut.Index2); }
                 }
                 else
                 {
-                    foreach (var reg in Regions) { reg.Move(delta); }
+                    foreach (var ext in Included) { ext.Move(delta); }
                     foreach (var node in Nodes) { node.Move(delta); }
                     foreach (var edge in Edges) { edge.Move(delta); }
-                    foreach (var cut in EdgeCuts) { cut.Edge.Move(delta, cut.Index1, cut.Index2); }
                 }
             }
         }
@@ -333,10 +255,6 @@ namespace ModelGraphSTD
             {
                 if ((HitLocation & HitLocation.Node) != 0)
                 {
-                    HitRegion = new Region(HitNode.Center);
-                    HitRegion.Nodes.Add(HitNode);
-                    HitRegion.SetExtent();
-                    Regions.Add(HitRegion);
                 }
                 HitLocation |= HitLocation.Region;
             }
@@ -358,10 +276,9 @@ namespace ModelGraphSTD
         {
             if ((HitLocation & HitLocation.Region) != 0)
             {
-                foreach (var reg in Regions) { reg.RotateFlip(focus, flip); }
+                foreach (var ext in Included) { ext.RotateFlip(focus, flip); }
                 foreach (var node in Nodes) { node.RotateFlip(focus, flip); }
                 foreach (var edge in Edges) { edge.RotateFlip(focus, flip); }
-                foreach (var cut in EdgeCuts) { cut.Edge.RotateFlip(focus, flip, cut.Index1, cut.Index2); }
             }
         }
         #endregion
@@ -399,7 +316,7 @@ namespace ModelGraphSTD
             _enableSnapShot = false;
 
             var nodeCopy = new List<NodeParm>(Nodes.Count);
-            var edgeCopy = new List<EdgeParm>(Edges.Count + Chops.Count);
+            var edgeCopy = new List<EdgeParm>(Edges.Count + Points.Count);
 
             if (HitEdge != null)
             {
@@ -408,19 +325,11 @@ namespace ModelGraphSTD
             else if (HitNode != null)
             {
                 nodeCopy.Add(new NodeParm(HitNode));
-                if (HitNodeEdgeCuts != null)
-                {
-                    foreach (var cut in HitNodeEdgeCuts)
-                    {
-                        edgeCopy.Add(new EdgeParm(cut.Edge));
-                    }
-                }
             }
             else
             {
                 foreach (var node in Nodes) { nodeCopy.Add(new NodeParm(node)); }
                 foreach (var edge in Edges) { edgeCopy.Add(new EdgeParm(edge)); }
-                foreach (var edge in Chops) { edgeCopy.Add(new EdgeParm(edge)); }
             }
             Graph.PushSnapShot(new ParmCopy(nodeCopy, edgeCopy));
         }

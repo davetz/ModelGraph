@@ -53,7 +53,6 @@ namespace ModelGraph.Controls
         private (int X, int Y) _arrowDelta;
         private int _wheelDelta;
 
-        private Region _traceRegion;
         private Selector _selector;
 
         private Action EndAction;      // mouse button up
@@ -84,7 +83,7 @@ namespace ModelGraph.Controls
             _enableHitTest = true;
 
             EndAction = () => { RemoveSelectors(); };
-            DragAction = () => { if (_drawRef.Length > 3) { _enableHitTest = false; _traceRegion = new Region(_drawRef.Point1); SetTracingRegion(); } };
+            DragAction = () => { if (_drawRef.Length > 3) { _enableHitTest = false; _selector.StartPoint(_drawRef.Point1); SetTracingRegion(); } };
             HoverAction = IdleHitTest;
             WheelAction = WheelPanZoom;
             ArrowAction = null;
@@ -406,7 +405,7 @@ namespace ModelGraph.Controls
         }
         private async void UpdateRegionExtents()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.UpdateRegionExtents(); });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.UpdateExtents(); });
             SetIdleOnRegion();
         }
         #endregion
@@ -423,7 +422,7 @@ namespace ModelGraph.Controls
             _enableHitTest = false;
 
             EndAction = () => { CloseRegion();  };
-            DragAction = () => { _traceRegion?.Add(_drawRef.Point2); };
+            DragAction = () => { _selector.NextPoint(_drawRef.Point2); };
             HoverAction = null;
             WheelAction = null;
             ArrowAction = null;
@@ -435,21 +434,16 @@ namespace ModelGraph.Controls
         }
         private void TraceRegion()
         {
-            if (_traceRegion == null) return;
+            if (_selector.Extent.HasArea) return;
 
-            _traceRegion.Add(_drawRef.Point2);
+            _selector.NextPoint(_drawRef.Point2);
             DrawCanvas.Invalidate();
         }
         private async void CloseRegion()
         {
-            if (_traceRegion == null)
-            {
-                return;
-            }
-
-            _traceRegion.Add(_drawRef.Point2);
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.TryAddRegion(_traceRegion); });
-            _traceRegion = null;
+            _selector.NextPoint(_drawRef.Point2);
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, (Windows.UI.Core.DispatchedHandler)(() => { _selector.TryAdd(); }));
+            _selector.Extent.Clear();
 
             DrawCanvas.Invalidate();
             SetIdleOnVoid();

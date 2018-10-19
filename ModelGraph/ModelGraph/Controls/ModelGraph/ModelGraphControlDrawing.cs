@@ -117,26 +117,19 @@ namespace ModelGraph.Controls
             pen.Width = 2;
             pen.Style.DashStyle = CanvasDashStyle.Dot;
 
-            if (_traceRegion != null)
+            if (_selector.Extent.HasArea)
             {
                 pen.Color = Colors.LightGray;
-                pen.DrawRectangle(_traceRegion.Normal);
+                pen.DrawRectangle(_selector.Extent);
             }
             #endregion
 
             #region DrawRegions  ==============================================
-            if (_selector.Regions.Count > 0)
-            {
                 pen.Color = Colors.White;
-                foreach (var region in _selector.Regions)
+                foreach (var ext in _selector.Included)
                 {
-                    pen.DrawRoundedRectangle(region.Extent);
-                    foreach (var e in region.DotExtents)
-                    {
-                        pen.DrawRoundedRectangle(e, true);
-                    }
+                    pen.DrawRoundedRectangle(ext);
                 }
-            }
             #endregion
         }
 
