@@ -28,7 +28,7 @@ namespace ModelGraphSTD
 
         public Extent Extent = new Extent(); // selector rectangle
 
-        public List<Extent> Included = new List<Extent>();  // extents of included nodes
+        public List<Extent> Regions = new List<Extent>();  // extents of included nodes
         public List<Extent> Occluded = new List<Extent>();  // extents of occluded nodes
         
         private bool _enableSnapShot;
@@ -127,12 +127,122 @@ namespace ModelGraphSTD
         #region UpdateExtents  ================================================
         public void UpdateExtents()
         {
-            Included.Clear();
-            Occluded.Clear();
-            foreach (var node in Nodes)
+            var region = Extent.Create(Nodes, GraphDefault.RegionExtentMargin);
+
+            var dx = int.MinValue;
+            var dy = int.MinValue;
+            var excluded = new List<Node>(Nodes.Count);
+
+            var fullExtents = new List<(int x1, int y1, int x2, int y2, int dx, int dy, Node node)>(Nodes.Count);
+            #region PopulateFullExtents  ======================================
+            foreach (var node in Graph.Nodes)
             {
-                Included.Add(new Extent(node.Extent, GraphDefault.RegionExtentMargin));
+                if (region.Contains(node.Center))
+                {
+                    var fex = node.FullExtent(GraphDefault.RegionExtentMargin);
+                    if (Nodes.Contains(node))
+                    {
+                        fullExtents.Add(fex);
+
+                        if (fex.DX > dx) dx = fex.DX;
+                        if (fex.DY > dy) dy = fex.DY;
+                    }
+                    else
+                        excluded.Add(node);
+                }
             }
+            #endregion
+
+            var nr = 1 + region.Width / dx;
+            int nc = 1 + region.Hieght / dy;
+
+            var grid = new Dictionary<(int r, int c), List<Node>>();
+            #region PopulateGrid  =============================================
+            var x0 = region.Xmin;
+            var y0 = region.Ymin;
+
+            foreach (var fex in fullExtents)
+            {
+                var nd = fex.node;
+                for (int r = 0, xr = x0; r < nr; r++, xr += dx)
+                {
+                    var x = nd.X;
+                    if (x < xr) continue;
+                    if (x > xr + dx) continue;
+                    for (int c = 0, yc = y0; c < nc; c++, yc += dy)
+                    {
+                        var y = nd.Y;
+                        if (y < yc) continue;
+                        if (y > yc + dy) continue;
+
+                        if (grid.TryGetValue((r, c), out List<Node> list))
+                            list.Add(nd);
+                        else
+                            grid[(r, c)] = new List<Node>(2) { nd };
+                    }
+                }
+            }
+            #endregion
+
+            var vertKeys = new List<(int, int)>();
+            var horzKeys = new List<(int, int)>();
+
+            var vertNodes = new List<Node>();
+            var horzNodes = new List<Node>();
+
+            var vert = new List<Node[]>();
+            var horz = new List<Node[]>();
+            #region Populate<vert, horz>  =====================================
+            while (grid.Count > 0)
+            {
+                var bestScore = 0;
+                var bestKey = (0, 0);
+                foreach (var key in grid.Keys)
+                {
+                    var score = VertScan(key) + HorzScan(key);
+
+                    if (score <= bestScore) continue;
+                    bestScore = score;
+                    bestKey = key;                    
+                }
+
+                var vs = VertScan(bestKey);
+                var hs = HorzScan(bestKey);
+                if (hs < vs)
+                {
+                    vert.Add(vertNodes.ToArray());
+                    foreach (var key in vertKeys)
+                    {
+                        grid.Remove(key);
+                    }
+                }
+                else
+                {
+                    horz.Add(horzNodes.ToArray());
+                    foreach (var key in horzKeys)
+                    {
+                        grid.Remove(key);
+                    }
+                }
+            }
+            #endregion
+
+            Regions.Clear();
+            #region PopulateIncluded  =========================================
+            foreach (var h in horz)
+            {
+                Regions.Add(Extent.Create(h, GraphDefault.RegionExtentMargin));
+            }
+            foreach (var v in vert)
+            {
+                Regions.Add(Extent.Create(v, GraphDefault.RegionExtentMargin));
+            }
+            foreach (var g in grid)
+            {
+                if (g.Value.Count == 0) continue;
+                Regions.Add(Extent.Create(g.Value, GraphDefault.RegionExtentMargin));
+            }
+
             foreach (var e in Points)
             {
                 var edge = e.Key;
@@ -143,8 +253,62 @@ namespace ModelGraphSTD
                     ext.Expand(edge.Points[j]);
                 }
                 ext.Expand(GraphDefault.RegionExtentMargin);
-                Included.Add(ext);
+                Regions.Add(ext);
             }
+            #endregion
+
+            Occluded.Clear();
+            #region PopulateOccluded  =========================================
+            foreach (var nd in excluded)
+            {
+                foreach (var ex in Regions)
+                {
+                    if (ex.Contains(nd.Center))
+                        Occluded.Add(new Extent(nd.Extent, GraphDefault.RegionExtentMargin));
+                }
+            }
+            #endregion
+
+            #region VertScan  =================================================
+            int VertScan((int r, int c) key)
+            {
+                var c = key.c;
+
+                vertKeys.Clear();
+                vertNodes.Clear();
+
+                for (int r = 0; r < nr; r++)
+                {
+                    if (grid.TryGetValue((r, c), out List<Node> nodes))
+                    {
+                        vertKeys.Add((r, c));
+                        vertNodes.AddRange(nodes);
+                    }
+                }
+                return vertKeys.Count + vertNodes.Count;
+            }
+            #endregion
+
+            #region HorzScan  =================================================
+            int HorzScan((int r, int c) key)
+            {
+                var r = key.r;
+
+                horzKeys.Clear();
+                horzNodes.Clear();
+
+                for (int c = 0; c < nc; c++)
+                {
+                    if (grid.TryGetValue((r, c), out List<Node> nodes))
+                    {
+                        horzKeys.Add((r, c));
+                        horzNodes.AddRange(nodes);
+                    }
+                }
+                return horzKeys.Count + horzNodes.Count;
+            }
+            #endregion
+
         }
         #endregion
 
@@ -219,6 +383,8 @@ namespace ModelGraphSTD
             Nodes.Clear();
             Edges.Clear();
             Points.Clear();
+            Regions.Clear();
+            Occluded.Clear();
         }
         #endregion
 
@@ -234,7 +400,7 @@ namespace ModelGraphSTD
                 }
                 else
                 {
-                    foreach (var ext in Included) { ext.Move(delta); }
+                    foreach (var ext in Regions) { ext.Move(delta); }
                     foreach (var node in Nodes) { node.Move(delta); }
                     foreach (var edge in Edges) { edge.Move(delta); }
                 }
@@ -276,7 +442,7 @@ namespace ModelGraphSTD
         {
             if ((HitLocation & HitLocation.Region) != 0)
             {
-                foreach (var ext in Included) { ext.RotateFlip(focus, flip); }
+                foreach (var ext in Regions) { ext.RotateFlip(focus, flip); }
                 foreach (var node in Nodes) { node.RotateFlip(focus, flip); }
                 foreach (var edge in Edges) { edge.RotateFlip(focus, flip); }
             }

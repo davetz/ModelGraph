@@ -70,6 +70,16 @@ namespace ModelGraphSTD
         #region Center, Extent, Radius  =======================================
         public (int x, int y) Center => (X, Y);
         public (int X1, int Y1, int X2, int Y2) Extent => (X - DX, Y - DY, X + DX, Y + DY);
+        public (int X1, int Y1, int X2, int Y2, int DX, int DY, Node node) FullExtent(int ds)
+        {
+            var x1 = X - DX - ds;
+            var y1 = Y - DY - ds;
+            var x2 = X + DX + ds;
+            var y2 = Y + DY + ds;
+            var dx = x2 - x1;
+            var dy = y2 - y1;
+            return (x1, y1, x2, y2, dx, dy, this);
+        }
         public int Radius => (DX + DY) / 2;
         #endregion
 

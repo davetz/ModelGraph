@@ -126,10 +126,14 @@ namespace ModelGraph.Controls
 
             #region DrawRegions  ==============================================
                 pen.Color = Colors.White;
-                foreach (var ext in _selector.Included)
+                foreach (var ext in _selector.Regions)
                 {
                     pen.DrawRoundedRectangle(ext);
                 }
+            foreach (var ext in _selector.Occluded)
+            {
+                pen.DrawRoundedRectangle(ext, true);
+            }
             #endregion
         }
 
