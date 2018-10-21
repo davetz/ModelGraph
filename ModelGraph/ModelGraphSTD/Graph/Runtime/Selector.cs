@@ -16,6 +16,7 @@ namespace ModelGraphSTD
         public Edge HitEdge;
         public int HitBend;  // index of bend point (relative to edge.bends)
         public int HitIndex; // index of start of the hit segment (relative to edge.point)
+        public Extent HitRegion;
         public (int x, int y) HitPoint; // the refined hit point location
         public HitLocation HitLocation; // hit location details
 
@@ -336,6 +337,17 @@ namespace ModelGraphSTD
 
                 HitNode = PrevNode;
                 return;  // we're done;
+            }
+
+            //test regions
+            foreach (var r in Regions)
+            {
+                if (r.Contains(p))
+                {
+                    HitRegion = r;
+                    HitLocation |= HitLocation.Region;
+                    break;
+                }
             }
 
             // test near by nodes
