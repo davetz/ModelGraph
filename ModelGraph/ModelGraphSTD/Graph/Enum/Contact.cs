@@ -1,12 +1,12 @@
 ﻿namespace ModelGraphSTD
 {
     /// <summary>
-    /// Allowd connections on each side (top,left,right,bottom) of a symbol
+    /// Allowed connections on the side (top,left,right,bottom) of a symbol
     /// </summary>
     public enum Contact : byte
     {
-        Any = 0,
-        One = 1,
-        None = 2,
+        Any = 0, // allow any number of contacts
+        One = 1, // allow exactly one contact
+        None = 2, // absolutely no connections allowed 
     }
 }

@@ -225,6 +225,11 @@ namespace ModelGraphSTD
 
         private void AdjustSymbol(Node node)
         {
+            const int East = 0;
+            const int South = 1;
+            const int West = 2;
+            const int North = 3;
+
             var (count, nquad, nsect, E) = Layout.SortedEdges(node);
             if (count == 0) return;
 
@@ -270,6 +275,7 @@ namespace ModelGraphSTD
             int QuadTest(int i, int j) => (E[i].quad == Quad.Q1 || E[i].quad == Quad.Q2) ? (E[j].quad == E[i].quad) ? 0 : 1 : (E[j].quad == E[i].quad) ? 0 : -1;
             #endregion
 
+            #region ComputeCost  ==============================================
             for (int flipI = 0; flipI < 8; flipI++)
             {
                 InitializeFlip(flipI);
@@ -303,7 +309,7 @@ namespace ModelGraphSTD
                         {
                             int sideI = (int)side;
                             if (SkipConnect(edgeI, sideI)) continue;
-                            
+
                             sideEdge[sideI].Add(edgeI);
 
                             done++;
@@ -334,6 +340,7 @@ namespace ModelGraphSTD
                     }
                 }
             }
+            #endregion
 
             InitializeFlip(bestFlip);
 
@@ -341,73 +348,63 @@ namespace ModelGraphSTD
             node.DY = symFlip.DY;
             node.FlipRotate = (FlipRotate)bestFlip;
 
-            var d1 = 8;
+            bestSideEdge[East].Sort(CompareEastQuadSlope);
+            bestSideEdge[South].Sort(CompareSouthQuadSlope);
+            bestSideEdge[West].Sort(CompareWestQuadSlope);
+            bestSideEdge[North].Sort(CompareNorthQuadSlope);
+
             var tmSpc = node.Graph.GraphX.TerminalSpacing;
             var tmLen = node.Graph.GraphX.TerminalLength;
 
-            var dx1 = node.DX + 1;
-            var dx2 = dx1 + d1;
-            var dx3 = dx2 + tmLen;
-
-            var dy1 = node.DY + 1;
-            var dy2 = dy1 + d1;
-            var dy3 = dy2 + tmLen;
-
-            var dsx = (double)dx1 / 2;
-            var dsy = (double)dy1 / 2;
-
-            var ds1 = 0;
-            var ds2 = 0;
-
-            bestSideEdge[0].Sort(CompareEastQuadSlope);
-            bestSideEdge[1].Sort(CompareSouthQuadSlope);
-            bestSideEdge[2].Sort(CompareWestQuadSlope);
-            bestSideEdge[3].Sort(CompareNorthQuadSlope);
-
             #region AssignEdgeConnectors  =========================
-            for (var sideI = 0; sideI < 4; sideI++)
+            var n = bestSideEdge[East].Count; // east
+            if (n > 0)
             {
-                var n = bestSideEdge[sideI].Count;
-                if (n == 0) continue;
-                switch (sideI)
+                for (int i = 0; i < n; i++)
                 {
-                    case 0: //east
-                        for (int i = 0; i < n; i++)
-                        {
-                            ds1 = (int)((dsx / n) * Layout.Offset(i, n));
-                            ds2 = tmSpc * Layout.Offset(i, n);
-                            E[bestSideEdge[sideI][i]].edge.SetFace(node, (dx1, ds1), (dx2, ds2), (dx3, ds2));
-                        }
-                        break;
-
-                    case 1: //south
-                        for (int i = 0; i < n; i++)
-                        {
-                            ds1 = (int)((dsx / n) * Layout.Offset(i, n));
-                            ds2 = tmSpc * Layout.Offset(i, n);
-                            E[bestSideEdge[sideI][i]].edge.SetFace(node, (ds1, dy1), (ds2, dy2), (ds2, dy2));
-                        }
-                        break;
-
-                    case 2: //west
-                        for (int i = 0; i < n; i++)
-                        {
-                            ds1 = (int)((dsx / n) * Layout.Offset(i, n));
-                            ds2 = tmSpc * Layout.Offset(i, n);
-                            E[bestSideEdge[sideI][i]].edge.SetFace(node, (-dx1, ds1), (-dx2, ds2), (-dx3, ds2));
-                        }
-                        break;
-
-                    case 3: //north
-                        for (int i = 0; i < n; i++)
-                        {
-                            ds1 = (int)((dsx / n) * Layout.Offset(i, n));
-                            ds2 = tmSpc * Layout.Offset(i, n);
-                            E[bestSideEdge[sideI][i]].edge.SetFace(node, (ds1, -dy1), (ds2, -dy2), (ds2, -dy2));
-                        }
-                        break;
+                    var (dt1, dt2, dt3, ds1, ds2) = LayoutParms(i, node.DX);
+                    E[bestSideEdge[East][i]].edge.SetFace(node, (dt1, ds1), (dt2, ds2), (dt3, ds2));
                 }
             }
+            n = bestSideEdge[South].Count; // south
+            if (n > 0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    var (dt1, dt2, dt3, ds1, ds2) = LayoutParms(i, node.DY);
+                    E[bestSideEdge[South][i]].edge.SetFace(node, (ds1, dt1), (ds2, dt2), (ds2, dt3));
+                }
+            }
+            n = bestSideEdge[West].Count; // west
+            if (n > 0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    var (dt1, dt2, dt3, ds1, ds2) = LayoutParms(i, node.DX);
+                    E[bestSideEdge[West][i]].edge.SetFace(node, (-dt1, ds1), (-dt2, ds2), (-dt3, ds2));
+                }
+            }
+            n = bestSideEdge[North].Count; // north
+            if (n > 0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    var (dt1, dt2, dt3, ds1, ds2) = LayoutParms(i, node.DY);
+                    E[bestSideEdge[North][i]].edge.SetFace(node, (ds1, -dt1), (ds2, -dt2), (ds2, -dt3));
+                }
+            }
+
+            (int dt1, int dt2, int dt3, int ds1, int ds2) LayoutParms(int i, int ds)
+                {
+                    var dt1 = ds + 1;
+                    var dt2 = dt1 + n;
+                    var dt3 = dt2 + tmLen;
+                    var dst = (double)dt1 / 2;
+                    var ds1 = (int)((dst / n) * Layout.Offset(i, n));
+                    var ds2 = tmSpc * Layout.Offset(i, n);
+                    return (dt1, dt2, dt3, ds1, ds2);
+                }
+            
             foreach (var edge in unusedEdge)
             {
                 edge.SetFace(node, (0, 0), (0, 0));

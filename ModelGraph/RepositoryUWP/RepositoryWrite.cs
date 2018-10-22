@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_C;
+            var fileFormat = _fileFormat_D;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -227,16 +227,14 @@ namespace RepositoryUWP
                 if (qx.QueryKind == QueryType.Path && qx.IsHead == true && qx.PathParm != null)
                 {
                     if (qx.PathParm.Facet1 != Facet.None) b |= S5;
-                    if (qx.PathParm.Attach1 != Attach.Normal) b |= S6;
-                    if (qx.PathParm.Connect1 != Connect.Any) b |= S7;
+                    if (qx.PathParm.Connect1 != Connect.Any) b |= S6;
 
-                    if (qx.PathParm.Facet2 != Facet.None) b |= S8;
-                    if (qx.PathParm.Attach2 != Attach.Normal) b |= S9;
-                    if (qx.PathParm.Connect2 != Connect.Any) b |= S10;
+                    if (qx.PathParm.Facet2 != Facet.None) b |= S7;
+                    if (qx.PathParm.Connect2 != Connect.Any) b |= S8;
 
-                    if (qx.PathParm.DashStyle != DashStyle.Solid) b |= S11;
-                    if (qx.PathParm.LineStyle != LineStyle.PointToPoint) b |= S12;
-                    if (!string.IsNullOrWhiteSpace(qx.PathParm.LineColor)) b |= S13;
+                    if (qx.PathParm.DashStyle != DashStyle.Solid) b |= S9;
+                    if (qx.PathParm.LineStyle != LineStyle.PointToPoint) b |= S10;
+                    if (!string.IsNullOrWhiteSpace(qx.PathParm.LineColor)) b |= S11;
                 }
 
                 w.WriteUInt16(b);
@@ -246,16 +244,14 @@ namespace RepositoryUWP
                 if ((b & S4) != 0) w.WriteByte(qx.ExclusiveKey);
 
                 if ((b & S5) != 0) w.WriteByte((byte)qx.PathParm.Facet1);
-                if ((b & S6) != 0) w.WriteByte((byte)qx.PathParm.Attach1);
-                if ((b & S7) != 0) w.WriteByte((byte)qx.PathParm.Connect1);
+                if ((b & S6) != 0) w.WriteByte((byte)qx.PathParm.Connect1);
 
-                if ((b & S8) != 0) w.WriteByte((byte)qx.PathParm.Facet2);
-                if ((b & S9) != 0) w.WriteByte((byte)qx.PathParm.Attach2);
-                if ((b & S10) != 0) w.WriteByte((byte)qx.PathParm.Connect2);
+                if ((b & S7) != 0) w.WriteByte((byte)qx.PathParm.Facet2);
+                if ((b & S8) != 0) w.WriteByte((byte)qx.PathParm.Connect2);
 
-                if ((b & S11) != 0) w.WriteByte((byte)qx.PathParm.DashStyle);
-                if ((b & S12) != 0) w.WriteByte((byte)qx.PathParm.LineStyle);
-                if ((b & S13) != 0) WriteString(w, qx.PathParm.LineColor);
+                if ((b & S9) != 0) w.WriteByte((byte)qx.PathParm.DashStyle);
+                if ((b & S10) != 0) w.WriteByte((byte)qx.PathParm.LineStyle);
+                if ((b & S11) != 0) WriteString(w, qx.PathParm.LineColor);
             }
             w.WriteByte((byte)Mark.QueryXEnding); // itegrity marker
         }
@@ -277,10 +273,11 @@ namespace RepositoryUWP
                 if (!string.IsNullOrWhiteSpace(sx.Summary)) b |= S3;
                 if (!string.IsNullOrWhiteSpace(sx.Description)) b |= S4;
                 if (sx.Data != null && sx.Data.Length > 12) b |= S5;
-                if (sx.TopContact != Contact.Any) b |= S6;
-                if (sx.LeftContact != Contact.Any) b |= S7;
-                if (sx.RightContact != Contact.Any) b |= S8;
-                if (sx.BottomContact != Contact.Any) b |= S9;
+                if (sx.Attach != Attach.Normal) b |= S6;
+                if (sx.TopContact != Contact.Any) b |= S7;
+                if (sx.LeftContact != Contact.Any) b |= S8;
+                if (sx.RightContact != Contact.Any) b |= S9;
+                if (sx.BottomContact != Contact.Any) b |= S10;
 
                 w.WriteUInt16(b);
                 if ((b & S1) != 0) w.WriteUInt16(sx.GetState());
@@ -288,10 +285,11 @@ namespace RepositoryUWP
                 if ((b & S3) != 0) WriteString(w, sx.Summary);
                 if ((b & S4) != 0) WriteString(w, sx.Description);
                 if ((b & S5) != 0) WriteBytes(w, sx.Data);
-                if ((b & S6) != 0) w.WriteByte((byte)sx.TopContact);
-                if ((b & S7) != 0) w.WriteByte((byte)sx.LeftContact);
-                if ((b & S8) != 0) w.WriteByte((byte)sx.RightContact);
-                if ((b & S9) != 0) w.WriteByte((byte)sx.BottomContact);
+                if ((b & S6) != 0) w.WriteByte((byte)sx.Attach);
+                if ((b & S7) != 0) w.WriteByte((byte)sx.TopContact);
+                if ((b & S8) != 0) w.WriteByte((byte)sx.LeftContact);
+                if ((b & S9) != 0) w.WriteByte((byte)sx.RightContact);
+                if ((b & S10) != 0) w.WriteByte((byte)sx.BottomContact);
             }
             w.WriteByte((byte)Mark.SymbolXEnding); // itegrity marker
         }

@@ -178,7 +178,7 @@ namespace ModelGraph.Controls
                 switch (_keyName)
                 {
                     //    case "A": Allign(); break;
-                    case "G": _selector.ApplyGravity(); PostRefresh(); break;
+                    case "G": _selector.ApplyGravity(); _graph.AdjustGraph(_selector); PostRefresh(); break;
                 }
                 //    if (_keyName == "V") _hitNode.Node.Aspect = Aspect.Vertical;
                 //    else if (_keyName == "H") _hitNode.Node.Aspect = Aspect.Horizontal;

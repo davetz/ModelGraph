@@ -11,10 +11,12 @@ namespace ModelGraphSTD
         public string Summary;
         public string Description;
         public byte[] Data;
+        public Attach Attach;
         public Contact TopContact;
         public Contact LeftContact;
         public Contact RightContact;
         public Contact BottomContact;
+
 
         #region Constructors  =================================================
         public SymbolX(Store owner)

@@ -49,16 +49,16 @@ namespace ModelGraphSTD
 
         public bool IsChanged => (PrevNode != HitNode) || (PrevEdge != HitEdge) || (PrevLocation != HitLocation);
 
-        public bool HitTop => ((HitLocation & HitLocation.Top) != 0);
-        public bool HitLeft => ((HitLocation & HitLocation.Left) != 0);
-        public bool HitRignt => ((HitLocation & HitLocation.Right) != 0);
-        public bool HitBottom => ((HitLocation & HitLocation.Bottom) != 0);
-        public bool HitCenter => ((HitLocation & HitLocation.Center) != 0);
-        public bool HitSideOf => ((HitLocation & HitLocation.SideOf) != 0);
+        public bool IsTopHit => ((HitLocation & HitLocation.Top) != 0);
+        public bool IsLeftHit => ((HitLocation & HitLocation.Left) != 0);
+        public bool IsRigntHit => ((HitLocation & HitLocation.Right) != 0);
+        public bool IsBottomHit => ((HitLocation & HitLocation.Bottom) != 0);
+        public bool IsCenterHit => ((HitLocation & HitLocation.Center) != 0);
+        public bool IsSideHit => ((HitLocation & HitLocation.SideOf) != 0);
 
-        public bool HitNearEnd1 => ((HitLocation & HitLocation.End1) != 0);
-        public bool HitNearEnd2 => ((HitLocation & HitLocation.End2) != 0);
-        public bool HitBendPoint => ((HitLocation & HitLocation.Bend) != 0);
+        public bool IsEnd1Hit => ((HitLocation & HitLocation.End1) != 0);
+        public bool IsEnd2Hit => ((HitLocation & HitLocation.End2) != 0);
+        public bool IsBendHit => ((HitLocation & HitLocation.Bend) != 0);
         #endregion
 
         #region SelectorRectangle  ============================================
@@ -328,17 +328,6 @@ namespace ModelGraphSTD
             HitPoint = p;
             HitLocation = HitLocation.Void;
 
-            // test prev node
-            if (PrevNode != null && PrevNode.HitTest(p))
-            {
-                var (hit, pnt) = PrevNode.RefinedHit(p);
-                HitLocation |= hit;
-                HitPoint = pnt;
-
-                HitNode = PrevNode;
-                return;  // we're done;
-            }
-
             //test regions
             foreach (var r in Regions)
             {
@@ -348,6 +337,17 @@ namespace ModelGraphSTD
                     HitLocation |= HitLocation.Region;
                     break;
                 }
+            }
+
+            // test prev node
+            if (PrevNode != null && PrevNode.HitTest(p))
+            {
+                var (hit, pnt) = PrevNode.RefinedHit(p);
+                HitLocation |= hit;
+                HitPoint = pnt;
+
+                HitNode = PrevNode;
+                return;  // we're done;
             }
 
             // test near by nodes
@@ -403,12 +403,13 @@ namespace ModelGraphSTD
         #region Move  =========================================================
         public void Move((int X, int Y) delta)
         {
-            if ((HitLocation & (HitLocation.Region | HitLocation.Node)) != 0)
+            if (IsRegionHit || IsNodeHit)
             {
                 if (_enableSnapShot) TakeSnapShot();
 
-                if ((HitLocation & HitLocation.Region) == 0)
+                if (IsNodeHit)
                 {
+                    HitNode.Move(delta);
                 }
                 else
                 {
@@ -416,6 +417,7 @@ namespace ModelGraphSTD
                     foreach (var node in Nodes) { node.Move(delta); }
                     foreach (var edge in Edges) { edge.Move(delta); }
                 }
+                AdjustGraph();
             }
         }
 
@@ -429,21 +431,48 @@ namespace ModelGraphSTD
         #region Gravity  ======================================================
         public void ApplyGravity()
         {
-            if ((HitLocation & HitLocation.Region) == 0)
+            if (IsNodeHit && !IsRegionHit)
             {
-                if ((HitLocation & HitLocation.Node) != 0)
-                {
-                }
+                var tm = Graph.GraphX.TerminalLength;
+
+                Nodes.Add(HitNode);
                 HitLocation |= HitLocation.Region;
+                if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> edges))
+                {
+                    foreach (var edge in edges)
+                    {
+                        var other = (edge.Node1 == HitNode) ? edge.Node2 : edge.Node1;
+                        if (Nodes.Contains(other)) continue;
+                        if (Graph.Node_Edges.TryGetValue(other, out List<Edge> otherEdges) && otherEdges.Count > 2) continue;
+
+                        var ds = (HitNode.IsSymbolX && other.IsSymbolX) ? 2 * tm : tm;
+                        Nodes.Add(other);
+                        var (x1, y1) = HitNode.Center;
+                        var (x2, y2) = other.Center;
+                        var dx = x2 - x1;
+                        var dy = y2 - y1;
+                        if (dx * dx > dy * dy)
+                        {
+                            other.Y = HitNode.Y;
+                            other.X = (dx > 0) ? HitNode.X + ds + HitNode.DX : HitNode.X - ds - HitNode.DX;
+                        }
+                        else
+                        {
+                            other.X = HitNode.X;
+                            other.Y = (dy > 0) ? HitNode.Y + ds + HitNode.DX: HitNode.Y - ds - HitNode.DY;
+                        } 
+                    }
+                }                
             }
 
-            if ((HitLocation & HitLocation.Node) != 0)
+            if (IsNodeHit && IsRegionHit)
             {
                 if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> edges))
                 {
                    
                 }
             }
+            UpdateExtents();
         }
         #endregion
 
@@ -452,7 +481,7 @@ namespace ModelGraphSTD
         public void RotateFlip(FlipRotate flip) => RotateFlip(HitPoint, flip);
         public void RotateFlip((int X, int Y) focus, FlipRotate flip)
         {
-            if ((HitLocation & HitLocation.Region) != 0)
+            if (IsRegionHit)
             {
                 foreach (var ext in Regions) { ext.RotateFlip(focus, flip); }
                 foreach (var node in Nodes) { node.RotateFlip(focus, flip); }

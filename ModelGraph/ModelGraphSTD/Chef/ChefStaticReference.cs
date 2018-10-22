@@ -30,6 +30,7 @@ namespace ModelGraphSTD
                 { _edgeConnect1Property, _connectEnum },
                 { _edgeConnect2Property, _connectEnum },
 
+                { _symbolXAttachProperty, _attatchEnum },
                 { _symbolXTopContactProperty, _contactEnum },
                 { _symbolXLeftContacttProperty, _contactEnum },
                 { _symbolXRightContactProperty, _contactEnum },
@@ -37,8 +38,6 @@ namespace ModelGraphSTD
 
                 { _queryXFacet1Property, _facetEnum },
                 { _queryXFacet2Property, _facetEnum },
-                { _queryXAttach1Property, _attatchEnum },
-                { _queryXAttatch2Property, _attatchEnum },
                 { _queryXConnect1Property, _connectEnum },
                 { _queryXConnect2Property, _connectEnum },
 

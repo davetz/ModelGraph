@@ -158,14 +158,14 @@ namespace ModelGraphSTD
                 var dy2 = Points[l].Y - Points[Tm2].Y;
 
                 return (node == Node1) ?
-                    (Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], QueryX.PathParm.Attach1, (dx2 * dx2 > dy2 * dy2)) :
-                    (Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], QueryX.PathParm.Attach2, (dx1 * dx1 > dy1 * dy1));
+                    (Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), (dx2 * dx2 > dy2 * dy2)) :
+                    (Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), (dx1 * dx1 > dy1 * dy1));
             }
             else
             {
                 return (node == Node1) ?
-                    (Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], QueryX.PathParm.Attach1, false) :
-                    (Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], QueryX.PathParm.Attach2, false) ;
+                    (Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), false) :
+                    (Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), false) ;
             }
         }
         #endregion

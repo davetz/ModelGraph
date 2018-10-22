@@ -857,17 +857,11 @@
   <data name="463S" xml:space="preserve">
     <value>Specify allowed conntions on tail end</value>
   </data>
-  <data name="464N" xml:space="preserve">
-    <value>Attach1</value>
+  <data name="486N" xml:space="preserve">
+    <value>Attach</value>
   </data>
-  <data name="464S" xml:space="preserve">
-    <value>Specify the style of the connection on head end</value>
-  </data>
-  <data name="465N" xml:space="preserve">
-    <value>Attach2</value>
-  </data>
-  <data name="465S" xml:space="preserve">
-    <value>Specify the style of the connection on tail end</value>
+  <data name="486S" xml:space="preserve">
+    <value>Specify the way an edge attatches to the symbol / point node</value>
   </data>
   <data name="466N" xml:space="preserve">
     <value>Relation</value>

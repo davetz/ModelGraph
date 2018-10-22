@@ -70,6 +70,14 @@ namespace ModelGraphSTD
         public int EdgeCount { get { return (Edges == null) ? 0 : Edges.Count; } }
         public int SymbolCount { get { return (Symbols == null) ? 0 : Symbols.Length; } }
 
+        internal Attach GetAttach(Node node)
+        {
+            var n = node.Symbol - 2;
+            if (n < 0 || n > Symbols.Length) return Attach.Normal;
+
+            return Symbols[n].Attach;
+        }
+
         public void Reset()
         {
             Forest = null;
@@ -89,7 +97,6 @@ namespace ModelGraphSTD
             Item_Node.Clear();
             Node_Edges.Clear();
         }
-
         #endregion
 
         #region (GraphRef -> RootModel) Interface  ============================

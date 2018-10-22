@@ -5,7 +5,7 @@ namespace ModelGraphSTD
     [Flags]
     public enum HitLocation
     {
-        Void = 0x0000, // we hit a void (we are in empty space)
+        Void = 0x0000, // we hit a void (pointer is in an empty space)
 
         Open = 0x1000,
         Node = 0x2000,

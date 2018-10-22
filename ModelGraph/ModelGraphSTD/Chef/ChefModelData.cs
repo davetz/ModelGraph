@@ -4241,6 +4241,7 @@ namespace ModelGraphSTD
                     if (m.IsExpandedLeft)
                     {
                         var gx = m.GraphX;
+                        RefreshGraphX(gx);
                         AddChildModel(prev, m, Trait.MetaGraphColoring_M, gx, null, null, MetaGraphColoring_X);
                         AddChildModel(prev, m, Trait.MetaGraphRootList_M, gx, null, null, MetaGraphRootList_X);
                         AddChildModel(prev, m, Trait.MetaGraphNodeList_M, gx, null, null, MetaGraphNodeList_X);
@@ -4306,6 +4307,7 @@ namespace ModelGraphSTD
                     m.InitChildModels(prev);
 
                     AddProperyModel(prev, m, _symbolXNameProperty);
+                    AddProperyModel(prev, m, _symbolXAttachProperty);
                     AddProperyModel(prev, m, _symbolXTopContactProperty);
                     AddProperyModel(prev, m, _symbolXLeftContacttProperty);
                     AddProperyModel(prev, m, _symbolXRightContactProperty);
@@ -5973,10 +5975,8 @@ namespace ModelGraphSTD
                         anyChange |= AddProperyModel(prev, m, _queryXLineStyleProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXDashStyleProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXFacet1Property);
-                        anyChange |= AddProperyModel(prev, m, _queryXAttach1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXFacet2Property);
-                        anyChange |= AddProperyModel(prev, m, _queryXAttatch2Property);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect2Property);
                     }
 

@@ -48,6 +48,7 @@ namespace ModelGraphSTD
         private PropertyOf<GraphX, string> _graphXSummaryProperty;
 
         private PropertyOf<SymbolX, string> _symbolXNameProperty;
+        private PropertyOf<SymbolX, string> _symbolXAttachProperty;
         private PropertyOf<SymbolX, string> _symbolXTopContactProperty;
         private PropertyOf<SymbolX, string> _symbolXLeftContacttProperty;
         private PropertyOf<SymbolX, string> _symbolXRightContactProperty;
@@ -55,10 +56,8 @@ namespace ModelGraphSTD
 
         private PropertyOf<QueryX, string> _queryXRootWhereProperty;
         private PropertyOf<QueryX, string> _queryXFacet1Property;
-        private PropertyOf<QueryX, string> _queryXAttach1Property;
         private PropertyOf<QueryX, string> _queryXConnect1Property;
         private PropertyOf<QueryX, string> _queryXFacet2Property;
-        private PropertyOf<QueryX, string> _queryXAttatch2Property;
         private PropertyOf<QueryX, string> _queryXConnect2Property;
         private PropertyOf<QueryX, string> _queryXRelationProperty;
         private PropertyOf<QueryX, bool> _queryXIsReversedProperty;
@@ -393,6 +392,13 @@ namespace ModelGraphSTD
                 props.Add(p);
             }
             {
+                var p = _symbolXAttachProperty = new PropertyOf<SymbolX, string>(PropertyStore, Trait.SymbolXAttatch_P, _attatchEnum);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Attach);
+                p.SetValFunc = (item, value) => { p.Cast(item).Attach = (Attach)GetEnumZKey(p.EnumZ, value); return true; };
+                p.Value = new StringValue(p);
+                props.Add(p);
+            }
+            {
                 var p = _symbolXTopContactProperty = new PropertyOf<SymbolX, string>(PropertyStore, Trait.SymbolXTopContact_P, _contactEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).TopContact);
                 p.SetValFunc = (item, value) => TrySetSymbolTopContact(p.Cast(item), GetEnumZKey(p.EnumZ, value));
@@ -441,13 +447,6 @@ namespace ModelGraphSTD
                 props.Add(p);
             }
             {
-                var p = _queryXAttach1Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXAttatch1_P, _attatchEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Attach1);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Attach1 = (Attach)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
-                p.Value = new StringValue(p);
-                props.Add(p);
-            }
-            {
                 var p = _queryXConnect1Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXConnect1_P, _connectEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Connect1);
                 p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Connect1 = (Connect)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
@@ -458,13 +457,6 @@ namespace ModelGraphSTD
                 var p = _queryXFacet2Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXFacet2_P, _facetEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Facet2);
                 p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Facet2 = (Facet)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
-                p.Value = new StringValue(p);
-                props.Add(p);
-            }
-            {
-                var p = _queryXAttatch2Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXAttatch2_P, _attatchEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Attach2);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Attach2 = (Attach)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
@@ -672,6 +664,7 @@ namespace ModelGraphSTD
             _graphXSummaryProperty = null;
 
             _symbolXNameProperty = null;
+            _symbolXAttachProperty = null;
             _symbolXTopContactProperty = null;
             _symbolXLeftContacttProperty = null;
             _symbolXRightContactProperty = null;
@@ -679,10 +672,8 @@ namespace ModelGraphSTD
 
             _queryXRootWhereProperty = null;
             _queryXFacet1Property = null;
-            _queryXAttach1Property = null;
             _queryXConnect1Property = null;
             _queryXFacet2Property = null;
-            _queryXAttatch2Property = null;
             _queryXConnect2Property = null;
             _queryXRelationProperty = null;
             _queryXIsReversedProperty = null;

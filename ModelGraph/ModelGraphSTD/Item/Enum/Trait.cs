@@ -292,8 +292,6 @@ namespace ModelGraphSTD
         QueryXWhere_P = 0x461 | CanMultiline,
         QueryXConnect1_P = 0x462,
         QueryXConnect2_P = 0x463,
-        QueryXAttatch1_P = 0x464,
-        QueryXAttatch2_P = 0x465,
         QueryXRelation_P = 0x466,
         QueryXIsReversed_P = 0x467,
         QueryXIsImmediate_P = 0x468,
@@ -320,6 +318,7 @@ namespace ModelGraphSTD
         SymbolXLeftContactt_P = 0x483,
         SymbolXRightContact_P = 0x484,
         SymbolXBottomContact_P = 0x485,
+        SymbolXAttatch_P = 0x486,
 
         //=========================================
         NodeCenterXY_P = 0x491 | IsCovert,
