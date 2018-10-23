@@ -164,7 +164,7 @@ namespace ModelGraph.Controls
             DragAction = null;
             HoverAction = IdleHitTest;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); PostRefresh(); }; 
+            ArrowAction = () => { Move(_arrowDelta); PostRefresh(); }; 
             CancelAction = null;
             Begin1Action = SetMovingNode;
             Begin3Action = null;
@@ -178,7 +178,7 @@ namespace ModelGraph.Controls
                 switch (_keyName)
                 {
                     //    case "A": Allign(); break;
-                    case "G": _selector.ApplyGravity(); _graph.AdjustGraph(_selector); PostRefresh(); break;
+                    case "G": ApplyGravity(); _graph.AdjustGraph(_selector); PostRefresh(); break;
                 }
                 //    if (_keyName == "V") _hitNode.Node.Aspect = Aspect.Vertical;
                 //    else if (_keyName == "H") _hitNode.Node.Aspect = Aspect.Horizontal;
@@ -247,10 +247,10 @@ namespace ModelGraph.Controls
             _enableHitTest = false;
 
             EndAction = () => { SetIdleOnNode(); PostRefresh(); };
-            DragAction = () => { _selector.Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
+            DragAction = () => { Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
             HoverAction = null;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); PostRefresh(); };
+            ArrowAction = () => { Move(_arrowDelta); PostRefresh(); };
             CancelAction = null;
             Begin1Action = null;
             Begin3Action = null;
@@ -357,7 +357,7 @@ namespace ModelGraph.Controls
             DragAction = null;
             HoverAction = IdleHitTest;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); UpdateRegionExtents(); PostRefresh(); };
+            ArrowAction = () => { Move(_arrowDelta); UpdateRegionExtents(); PostRefresh(); };
             CancelAction = () => { RemoveSelectors(); SetIdleOnVoid(); };
             Begin1Action = SetMovingRegion;
             Begin3Action = null;
@@ -371,10 +371,10 @@ namespace ModelGraph.Controls
                 switch (_keyName)
                 {
                     //    case "A": Allign(); break;
-                    case "V": _selector.AlignVertical(); PostRefresh(); break;
-                    case "H": _selector.AlignHorizontal(); PostRefresh(); break;
-                    case "R": _selector.Rotate(); PostRefresh(); break;
-                    case "G": _selector.ApplyGravity(); PostRefresh(); break;
+                    case "V": AlignVertical(); PostRefresh(); break;
+                    case "H": AlignHorizontal(); PostRefresh(); break;
+                    case "R": Rotate(); PostRefresh(); break;
+                    case "G": ApplyGravity(); PostRefresh(); break;
                         //    case "Delete": DeleteRegionNodes(); break;
                 }
             }
@@ -393,20 +393,15 @@ namespace ModelGraph.Controls
             _enableHitTest = false;
 
             EndAction = () => { UpdateRegionExtents(); PostRefresh(); };
-            DragAction = () => { _selector.Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
+            DragAction = () => { Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
             HoverAction = null;
             WheelAction = null;
-            ArrowAction = () => { _selector.Move(_arrowDelta); };
+            ArrowAction = () => { Move(_arrowDelta); };
             CancelAction = () => { RemoveSelectors(); SetIdleOnRegion(); }; ;
             Begin1Action = null;
             Begin3Action = null;
             ExecuteAction = null;
             ShortCutAction = null;
-        }
-        private async void UpdateRegionExtents()
-        {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.UpdateExtents(); });
-            SetIdleOnRegion();
         }
         #endregion
 
@@ -452,11 +447,42 @@ namespace ModelGraph.Controls
 
         #endregion
 
+        #region SelectorAction  ===============================================
+        private async void Move((int X, int Y) delta)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.Move(delta); });
+        }
+        private async void Rotate()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.Rotate(); });
+        }
+        private async void HitTest((int X, int Y) point)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.HitTest(point); });
+        }
+        private async void ApplyGravity()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.ApplyGravity(); });
+        }
+        private async void AlignVertical()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.AlignVertical(); });
+        }
+        private async void AlignHorizontal()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.AlignHorizontal(); });
+        }
+        private async void UpdateRegionExtents()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.UpdateExtents(); });
+        }
+        #endregion
+
         #region PostRefresh  ==================================================
-        void PostRefresh()
+        async void PostRefresh()
         {
             HideTootlip();
-            _graph.AdjustGraph(_selector);
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _graph.AdjustGraph(_selector); }); 
             _model.PostRefresh();
         }
         #endregion
@@ -819,18 +845,6 @@ namespace ModelGraph.Controls
         internal bool CanCenterInView()
         {
             return true;
-        }
-        //=====================================================================
-        #endregion
-
-        #region ApplyGravity
-        //=====================================================================
-        internal void ApplyGravity()
-        {
-        }
-        internal bool CanApplyGravity()
-        {
-            return false;
         }
         //=====================================================================
         #endregion

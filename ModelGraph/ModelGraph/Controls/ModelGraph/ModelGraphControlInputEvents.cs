@@ -63,14 +63,14 @@ namespace ModelGraph.Controls
                 DragAction?.Invoke();
                 if (_enableHitTest)
                 {
-                    _selector.HitTest(_drawRef.Point2);
+                    HitTest(_drawRef.Point2);
                 }
 
                 DrawCanvas.Invalidate();
             }
             else if (HoverAction != null)
             {
-                _selector.HitTest(_drawRef.Point2);
+                HitTest(_drawRef.Point2);
                 if (_selector.IsChanged)
                 {
                     Debug.WriteLine($"- - - - - - - - - Hit { _selector.HitLocation}");
@@ -89,7 +89,7 @@ namespace ModelGraph.Controls
 
             if (EndAction != null)
             {
-                _selector.HitTest(_drawRef.Point2);
+                HitTest(_drawRef.Point2);
                 EndAction?.Invoke();
             }
         }

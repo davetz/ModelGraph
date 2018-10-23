@@ -1,7 +1,6 @@
 ﻿
 namespace ModelGraphSTD
-{/*
- */
+{
     public partial class Graph
     {
         private void AdjustAutoNode(Node node)
@@ -13,6 +12,8 @@ namespace ModelGraphSTD
             var gx = node.Graph.GraphX;
             var tmSpc = gx.TerminalSpacing / 2;
             var tmLen = gx.TerminalLength;
+            var tmsku = gx.TerminalSkew;
+
             var barSize = ((node.BarWidth == BarWidth.Thin) ? gx.ThinBusSize : (node.BarWidth == BarWidth.Wide) ? gx.WideBusSize : gx.ExtraBusSize) / 2;          
 
             var (x, y, w, h) = node.Values();
@@ -142,16 +143,16 @@ namespace ModelGraphSTD
                         if (E[i].horz)
                         {
                             if (E[i].quad == Quad.Q4 || E[i].quad == Quad.Q1)
-                                E[i].edge.SetFace(node, (0, 0), (4, dby));
+                                E[i].edge.SetFace(node, (0, 0), (tmsku, dby));
                             else
-                                E[i].edge.SetFace(node, (0, 0), (-4, dby));
+                                E[i].edge.SetFace(node, (0, 0), (-tmsku, dby));
                         }
                         else
                         {
                             if (E[i].quad == Quad.Q2 || E[i].quad == Quad.Q1)
-                                E[i].edge.SetFace(node, (0, 0), (dbx, 4));
+                                E[i].edge.SetFace(node, (0, 0), (dbx, tmsku));
                             else
-                                E[i].edge.SetFace(node, (0, 0), (dbx, -4));
+                                E[i].edge.SetFace(node, (0, 0), (dbx, -tmsku));
                         }
                     }
                     else

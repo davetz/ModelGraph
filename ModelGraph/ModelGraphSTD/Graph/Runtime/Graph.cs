@@ -23,7 +23,6 @@ namespace ModelGraphSTD
         public Dictionary<Node, List<Edge>> Node_Edges = new Dictionary<Node, List<Edge>>(); // list of edges for each node
         public Dictionary<Item, Node> Item_Node = new Dictionary<Item, Node>();              // look up item -> node
 
-        internal HitMap HitMap = new HitMap();
         public List<(byte A, byte R, byte G, byte B)> ARGBList => GraphX.ARGBList;
 
         public Extent Extent;  // current x,y extent of this graph
@@ -104,9 +103,6 @@ namespace ModelGraphSTD
         {
             Extent = new Extent();
             Extent = Extent.SetExtent(Nodes, 16);
-            HitMap.Initialize(3, 3);
-            foreach(var node in Nodes) { HitMap.AddNode(node); }
-            foreach (var edge in Edges) { HitMap.AddEdge(edge); }
         }
         #endregion
     }

@@ -350,41 +350,31 @@ namespace ModelGraphSTD
                 return;  // we're done;
             }
 
-            // test near by nodes
-            var nearByNodes = Graph.HitMap.NearByNodes(p, 4);
-            if (nearByNodes != null)
+            foreach (var node in Graph.Nodes)
             {
-                foreach (var node in nearByNodes)
-                {
-                    // eliminate unqualified nodes
-                    if (!node.HitTest(p)) continue;
+                // eliminate unqualified nodes
+                if (!node.HitTest(p)) continue;
 
-                    // now refine the hit test results
-                    // node.RefineHitTest(p, ref HitLocation, ref HitPoint);
-                    var (hit, pnt) = node.RefinedHit(p);
-                    HitLocation |= hit;
-                    HitPoint = pnt;
+                // now refine the hit test results
+                // node.RefineHitTest(p, ref HitLocation, ref HitPoint);
+                var (hit, pnt) = node.RefinedHit(p);
+                HitLocation |= hit;
+                HitPoint = pnt;
 
-                    HitNode = node;
-                    return;  // we are done;
-                }
+                HitNode = node;
+                return;  // we are done;
             }
 
-            // test near by edges
-            var nearByEdges = Graph.HitMap.NearByEdges(p, 8);
-            if (nearByEdges != null)
+            foreach (var edge in Graph.Edges)
             {
-                foreach (var edge in nearByEdges)
-                {
-                    // eliminate unqualified edges
-                    if (!edge.HitTest(p)) continue;
+                // eliminate unqualified edges
+                if (!edge.HitTest(p)) continue;
 
-                    // now refine the hit test results
-                    if (!edge.HitTest(p, ref HitLocation, ref HitBend, ref HitIndex, ref HitPoint)) continue;
+                // now refine the hit test results
+                if (!edge.HitTest(p, ref HitLocation, ref HitBend, ref HitIndex, ref HitPoint)) continue;
 
-                    HitEdge = edge;
-                    return;  // we are done
-                }
+                HitEdge = edge;
+                return;  // we are done
             }
         }
         #endregion
@@ -407,15 +397,17 @@ namespace ModelGraphSTD
             {
                 if (_enableSnapShot) TakeSnapShot();
 
-                if (IsNodeHit)
-                {
-                    HitNode.Move(delta);
-                }
-                else
+                if (IsRegionHit)
                 {
                     foreach (var ext in Regions) { ext.Move(delta); }
                     foreach (var node in Nodes) { node.Move(delta); }
                     foreach (var edge in Edges) { edge.Move(delta); }
+                    UpdateExtents();
+                }
+                else if (IsNodeHit)
+                {
+                    HitNode.Move(delta);
+                    UpdateExtents();
                 }
                 AdjustGraph();
             }
@@ -501,6 +493,7 @@ namespace ModelGraphSTD
                 {
                     node.AlignVertical(x);
                 }
+                UpdateExtents();
             }
         }
         public void AlignHorizontal()
@@ -513,6 +506,7 @@ namespace ModelGraphSTD
                 {
                     node.AlignHorizontal(y);
                 }
+                UpdateExtents();
             }
         }
         #endregion
