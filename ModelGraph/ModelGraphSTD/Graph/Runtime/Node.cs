@@ -6,7 +6,6 @@ namespace ModelGraphSTD
         public Item Item;
         public int OpenPathIndex = -1;
 
-        #region Parms  ========================================================
         public int X;
         public int Y;
         public byte DX;
@@ -19,8 +18,9 @@ namespace ModelGraphSTD
         public FlipRotate FlipRotate;
         public Aspect Aspect;
 
+        #region Snapshot  =====================================================
         internal (int X, int Y, byte DX, byte DY, byte Color, byte Symbol, Labeling Labeling, Sizing Resizing, BarWidth BarWidth, FlipRotate FlipRotate, Aspect Orientation)
-            Parms
+            Snapshot
         {
             get { return (X, Y, DX, DY, Color, Symbol, Labeling, Sizing, BarWidth, FlipRotate, Aspect); }
             set

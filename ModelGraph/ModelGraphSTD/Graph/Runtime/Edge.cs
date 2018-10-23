@@ -6,39 +6,31 @@ namespace ModelGraphSTD
     public class Edge : NodeEdge
     {
         private readonly QueryX _queryX;
-        public Node Node1;
-        public Node Node2;
+        public (int X, int Y)[] Points;
         public Extent Extent = new Extent(); // all points are withing this extent+
 
-        public (int X, int Y)[] Points;
+        public Node Node1;
+        public Node Node2;
+
         public (int X, int Y)[] Bends;
-        
+
+        public (short X, short Y) Delta11; //surface point1
+        public (short X, short Y) Delta12; //surface point2
+        public (short X, short Y) Delta13; //terminal point
+
+        public (short X, short Y) Delta21; //surface point1
+        public (short X, short Y) Delta22; //surface point2
+        public (short X, short Y) Delta23; //terminal point
+
         public short Tm1; // index of terminal point 1
         public short Bp1; // index of closest bend point after Tm1 (to the right) 
         public short Bp2; // index of closest bend point after Tm2 (to the left)
         public short Tm2; // index of terminal point 2
 
-        public DashStyle DashStyle => QueryX.PathParm.DashStyle;
-        public LineStyle LineStyle => QueryX.PathParm.LineStyle;
+        public Facet Facet1;
+        public Facet Facet2;
+
         public byte LineColor;
-
-        #region Parms  ========================================================
-        public Face Face1;
-        public Face Face2;
-
-        internal ((int X, int Y)[] Points, (int X, int Y)[] Bends, Face Face1, Face Face2)
-            Parms
-        {
-            get { return (Points, Bends, Face1, Face2); }
-            set
-            {
-                Points = value.Points;
-                Bends = value.Bends;
-                Face1 = value.Face1;
-                Face2 = value.Face2;
-            }
-        }
-        #endregion
 
 
         #region Constructors  =================================================
@@ -51,6 +43,9 @@ namespace ModelGraphSTD
         #endregion
 
         #region Properties/Methods  ===========================================
+        public DashStyle DashStyle => QueryX.PathParm.DashStyle;
+        public LineStyle LineStyle => QueryX.PathParm.LineStyle;
+
         internal bool HasBends => !HasNoBends;
         internal bool HasNoBends => Bends == null || Bends.Length == 0;
         internal Graph Graph { get { return Owner as Graph; } }
@@ -69,6 +64,32 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region Snapshot  =====================================================
+        internal ((int, int)[] bends, Facet facet1, Facet facet2) Snapshot
+        {
+            get
+            {
+                if (HasBends)
+                {
+                    var bends = new (int, int)[Bends.Length];
+                    Bends.CopyTo(bends, 0);
+                    return (bends, Facet1, Facet2);
+                }
+                else
+                    return (null, Facet1, Facet2);
+            }
+            set
+            {
+                if (value.bends != null)
+                {
+                    Bends = new (int, int)[value.bends.Length];
+                    value.bends.CopyTo(Bends, 0);
+                }
+                Facet1 = value.facet1;
+                Facet2 = value.facet2;
+            }
+        }
+        #endregion
 
         #region Move  =========================================================
         internal void Move((int X, int Y) delta)
@@ -318,51 +339,22 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region Options  ======================================================
-        internal Node OtherNode(Node node) => (node == Node1) ? Node2 : Node1;
-
-        internal void SetFace(Node node, Facet facet)
-        {
-            if (node == Node1)
-                Face1 = new Face(facet, Face1.Delta1, Face1.Delta2, Face1.Delta3);
-            else
-                Face2 = new Face(facet, Face2.Delta1, Face2.Delta2, Face2.Delta3);
-
-            Refresh();
-            NeedsRefresh = false;
-        }
-        internal void SetFace(Node node, (int x, int y) d)
-        {
-            if (node == Node1)
-                Face1 = new Face(Face1.Facet, ((short)d.x, (short)d.y));
-            else
-                Face2 = new Face(Face2.Facet, ((short)d.x, (short)d.y));
-
-            ToggleRefresh();
-        }
-        internal void SetFace(Node node, (int x, int y) d1, (int x, int y) d3)
-        {
-            if (node == Node1)
-                Face1 = new Face(Face1.Facet, ((short)d1.x, (short)d1.y), ((short)d3.x, (short)d3.y));
-            else
-                Face2 = new Face(Face2.Facet, ((short)d1.x, (short)d1.y), ((short)d3.x, (short)d3.y));
-
-            ToggleRefresh();
-        }
+        #region SetFace  ======================================================
+        internal void SetFace(Node node, (int x, int y) d) => SetFace(node, d, d, d);
+        internal void SetFace(Node node, (int x, int y) d1, (int x, int y) d3) => SetFace(node, d1, d1, d3);
         internal void SetFace(Node node, (int x, int y) d1, (int x, int y) d2, (int x, int y) d3)
         {
             if (node == Node1)
-                Face1 = new Face(Face1.Facet, ((short)d1.x, (short)d1.y), ((short)d2.x, (short)d2.y), ((short)d3.x, (short)d3.y));
+            { Delta11 = S(d1); Delta12 = S(d2); Delta13 = S(d3); }
             else
-                Face2 = new Face(Face2.Facet, ((short)d1.x, (short)d1.y), ((short)d2.x, (short)d2.y), ((short)d3.x, (short)d3.y));
+            { Delta21 = S(d1); Delta22 = S(d2); Delta23 = S(d3); }
 
-            ToggleRefresh();
-        }
-        private void ToggleRefresh()
-        {
             // do the refresh after both faces have changed
             if (NeedsRefresh) Refresh();
             NeedsRefresh = !NeedsRefresh;
+
+            // convert (int, int) => (short, short)
+            (short, short) S((int x, int y) p) => ((short)p.x, (short)p.y);
         }
         #endregion
 
@@ -390,8 +382,8 @@ namespace ModelGraphSTD
         /// </remarks>
         internal void Refresh()
         {
-            var facet1 = Node1.IsNodePoint ? NoFacet : Facets[(int)(Face1.Facet & Facet.Mask)];
-            var facet2 = Node2.IsNodePoint ? NoFacet : Facets[(int)(Face2.Facet & Facet.Mask)];
+            var facet1 = Node1.IsNodePoint ? NoFacet : Facets[(int)(Facet1 & Facet.Mask)];
+            var facet2 = Node2.IsNodePoint ? NoFacet : Facets[(int)(Facet2 & Facet.Mask)];
 
             var bendCount = (Bends == null) ? 0 : Bends.Length;
 
@@ -420,12 +412,12 @@ namespace ModelGraphSTD
             (int cx1, int cy1, int w1, int h1) = Node1.Values();
             (int cx2, int cy2, int w2, int h2) = Node2.Values();
 
-            var (dx11, dy11) = Face1.Delta1;
-            var (dx12, dy12) = Face1.Delta2;
-            var (dx13, dy13) = Face1.Delta3;
-            var (dx21, dy21) = Face2.Delta1;
-            var (dx22, dy22) = Face2.Delta2;
-            var (dx23, dy23) = Face2.Delta3;
+            var (dx11, dy11) = Delta11;
+            var (dx12, dy12) = Delta12;
+            var (dx13, dy13) = Delta13;
+            var (dx21, dy21) = Delta21;
+            var (dx22, dy22) = Delta22;
+            var (dx23, dy23) = Delta23;
 
             P[sp1].X = cx1 + dx11;
             P[sp1].Y = cy1 + dy11;

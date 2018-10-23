@@ -516,23 +516,7 @@ namespace ModelGraphSTD
         {
             _enableSnapShot = false;
 
-            var nodeCopy = new List<NodeParm>(Nodes.Count);
-            var edgeCopy = new List<EdgeParm>(Edges.Count + Points.Count);
-
-            if (HitEdge != null)
-            {
-                edgeCopy.Add(new EdgeParm(HitEdge));
-            }
-            else if (HitNode != null)
-            {
-                nodeCopy.Add(new NodeParm(HitNode));
-            }
-            else
-            {
-                foreach (var node in Nodes) { nodeCopy.Add(new NodeParm(node)); }
-                foreach (var edge in Edges) { edgeCopy.Add(new EdgeParm(edge)); }
-            }
-            Graph.PushSnapShot(new ParmCopy(nodeCopy, edgeCopy));
+            Graph.TakeSnapshot(this);
         }
         #endregion
     }

@@ -142,12 +142,22 @@ namespace ModelGraph.Controls
                 case VirtualKey.Left: _arrowDelta = (-1, 0); ArrowAction?.Invoke(); break;
                 case VirtualKey.Right: _arrowDelta = (1, 0); ArrowAction?.Invoke(); break;
                 case VirtualKey.Home: ZoomToExtent(_graph.Extent); break;
-                case VirtualKey.Z: if (_modifier == Modifier.Ctrl) { _graph.TryUndo(); PostRefresh();} break;
-                case VirtualKey.Y: if (_modifier == Modifier.Ctrl) { _graph.TryRedo(); PostRefresh(); } break;
+                case VirtualKey.Z: if (_modifier == Modifier.Ctrl) { TryUndo(); } break;
+                case VirtualKey.Y: if (_modifier == Modifier.Ctrl) { TryRedo(); } break;
                 default: _keyName = e.Key.ToString(); ShortCutAction?.Invoke(); break;
             }
         }
 
+        private async void TryUndo()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _graph.TryUndo(); _graph.AdjustGraph(); });
+            PostRefresh();
+        }
+        private async void TryRedo()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _graph.TryRedo(); _graph.AdjustGraph(); });
+            PostRefresh();
+        }
         private void RootCanvas_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             ExecuteAction?.Invoke();

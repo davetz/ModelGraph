@@ -5,8 +5,13 @@ namespace ModelGraphSTD
  */
     public partial class Graph
     {
-        private Stack<ParmCopy> _undoStack = new Stack<ParmCopy>();
-        private Stack<ParmCopy> _redoStack = new Stack<ParmCopy>();
+        private Stack<Snapshot> _undoStack = new Stack<Snapshot>();
+        private Stack<Snapshot> _redoStack = new Stack<Snapshot>();
+
+        internal void TakeSnapshot(Selector selector)
+        {
+            _undoStack.Push(new Snapshot(selector));
+        }
         private void ClearUndoRedo()
         {
             _undoStack.Clear();
@@ -21,10 +26,9 @@ namespace ModelGraphSTD
         {
             if (CanUndo)
             {
-                var parms = _undoStack.Pop();
-                var redo = parms.GetCurrent();// we need to copy the current values before we restore the saved ones
-                _redoStack.Push(redo);
-                parms.Restore();
+                var snap = _undoStack.Pop();
+                _redoStack.Push(new Snapshot(snap));
+                snap.Restore();
             }
         }
 
@@ -32,18 +36,10 @@ namespace ModelGraphSTD
         {
             if (CanRedo)
             {
-                var parms = _redoStack.Pop();
-                var undo = parms.GetCurrent();// we need to copy the current values before we restore the saved ones
-                _undoStack.Push(undo);
-                parms.Restore();
+                var snap = _redoStack.Pop();
+                _undoStack.Push(new Snapshot(snap));
+                snap.Restore();
             }
-        }
-        #endregion
-
-        #region PushSnapShot  =================================================
-        internal void PushSnapShot(ParmCopy copy)
-        {
-            _undoStack.Push(copy);
         }
         #endregion
     }

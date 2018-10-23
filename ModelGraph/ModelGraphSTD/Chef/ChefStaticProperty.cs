@@ -596,14 +596,14 @@ namespace ModelGraphSTD
             #region Edge  =====================================================
             {
                 var p =  _edgeFacet1Property = new PropertyOf<Edge, string>(PropertyZStore, Trait.EdgeFacet1_P, _facetEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Face1.Facet);
-                p.SetValFunc = (item, value) => { p.Cast(item).Face1.Facet = (Facet)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Facet1);
+                p.SetValFunc = (item, value) => { p.Cast(item).Facet1 = (Facet)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
                 var p = _edgeFacet2Property = new PropertyOf<Edge, string>(PropertyZStore, Trait.EdgeFacet2_P, _facetEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Face2.Facet);
-                p.SetValFunc = (item, value) => { p.Cast(item).Face2.Facet = (Facet)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Facet2);
+                p.SetValFunc = (item, value) => { p.Cast(item).Facet2 = (Facet)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {
