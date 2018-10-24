@@ -684,7 +684,7 @@ namespace ModelGraph.Controls
             }
 
             _select.MenuComands(_menuCommands);
-            _select.ButtonComands(_buttonCommands);
+            _select.PageButtonComands(_buttonCommands);
             
             var cmds = _buttonCommands;
             var len1 = cmds.Count;

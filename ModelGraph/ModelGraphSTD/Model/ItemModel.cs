@@ -258,7 +258,7 @@ namespace ModelGraphSTD
             Get.MenuCommands(this, list);
             return list.Count > 0;
         }
-        public bool ButtonComands(List<ModelCommand> list)
+        public bool PageButtonComands(List<ModelCommand> list)
         {
             list.Clear();
             if (Get.ButtonCommands == null) return false;

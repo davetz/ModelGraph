@@ -11,16 +11,21 @@ namespace ModelGraph.Controls
     {
         private Chef _chef;
         private Graph _graph;
-        private RootModel _model;        
+        private RootModel _model;
+        private StackPanel _controlPannel;
 
-        public ModelGraphControl(RootModel model)
+        public ModelGraphControl(RootModel model, StackPanel controlPanel)
         {
             _chef = model.Chef;
             _model = model;
             _graph = model.Graph;
+            _controlPannel = controlPanel;
+
             _selector = new Selector(_graph);
 
             InitializeComponent();
+            InitializeControlPanel();
+
             Loaded += ModelGraphControl_Loaded;
         }
 

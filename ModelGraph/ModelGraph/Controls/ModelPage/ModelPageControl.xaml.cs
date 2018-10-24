@@ -61,7 +61,7 @@ namespace ModelGraph.Controls
                     break;
 
                 case ControlType.GraphDisplay:
-                    var gc = new ModelGraphControl(model);
+                    var gc = new ModelGraphControl(model, ControlPanel);
                     ModelControl = gc;
                     ControlGrid.Children.Add(gc);
                     break;
@@ -71,24 +71,26 @@ namespace ModelGraph.Controls
             }
 
             var buttonCommands = new List<ModelCommand>();
-            model.ButtonComands(buttonCommands);
+            model.PageButtonComands(buttonCommands);
 
             var N = buttonCommands.Count;
-            var M = ButtonPanel.Children.Count;
+            var M = PageButtonPanel.Children.Count;
             for (int i = 0; i < M; i++)
             {
-                var btn = ButtonPanel.Children[i] as Button;
-                if (i < N)
+                if (PageButtonPanel.Children[i] is Button btn)
                 {
-                    var cmd = buttonCommands[i];
-                    btn.Tag = cmd;
-                    btn.Content = cmd.Name;
-                    btn.Visibility = Visibility.Visible;
-                    ToolTipService.SetToolTip(btn, cmd.Summary);
-                }
-                else
-                {
-                    btn.Visibility = Visibility.Collapsed;
+                    if (i < N)
+                    {
+                        var cmd = buttonCommands[i];
+                        btn.Tag = cmd;
+                        btn.Content = cmd.Name;
+                        btn.Visibility = Visibility.Visible;
+                        ToolTipService.SetToolTip(btn, cmd.Summary);
+                    }
+                    else
+                    {
+                        btn.Visibility = Visibility.Collapsed;
+                    }
                 }
             }
             ModelTitle.Text = model.TitleName;

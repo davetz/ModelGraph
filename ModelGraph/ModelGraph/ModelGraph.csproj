@@ -118,7 +118,7 @@
     <Compile Include="Controls\ModelGraph\ModelGraphControlDrawing.cs" />
     <Compile Include="Controls\ModelGraph\ModelGraphControlEventActions.cs" />
     <Compile Include="Controls\ModelGraph\ModelGraphControlInputEvents.cs" />
-    <Compile Include="Controls\ModelGraph\ModelGraphControlMoveItems.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlPanel.cs" />
     <Compile Include="Controls\ModelGraph\ModelGraphControlVisualAids.cs" />
     <Compile Include="Controls\ModelPage\ModelPageControl.xaml.cs">
       <DependentUpon>ModelPageControl.xaml</DependentUpon>

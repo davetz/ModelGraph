@@ -192,13 +192,13 @@
     <value>Model Graph application</value>
   </data>
   <data name="004N" xml:space="preserve">
-    <value>List of new or open models</value>
+    <value>Undo</value>
   </data>
   <data name="004S" xml:space="preserve">
-    <value>List of new or open models</value>
+    <value>Undo change</value>
   </data>
   <data name="005S" xml:space="preserve">
-    <value>Sort Mode (None, Ascending, Descending)</value>
+    <value>Redo change</value>
   </data>
   <data name="006S" xml:space="preserve">
     <value>Expand/Collapse Tree Level</value>

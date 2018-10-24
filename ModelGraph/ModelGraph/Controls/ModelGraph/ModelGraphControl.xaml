@@ -11,6 +11,18 @@
     Unloaded="ModelGraphControl_Unloaded" >
 
     <UserControl.Resources>
+        <Style x:Key="UndoRedoButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        </Style>
+        
+        <Style x:Key="UndoRedoCountStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="2,0,2,0" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="FontSize" Value="8" />
+        </Style>
+
 
         <Style x:Key="ToolTipBorderStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="4" />
