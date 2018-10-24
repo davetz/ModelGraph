@@ -8,7 +8,9 @@ namespace ModelGraphSTD
         private readonly List<(Node node, (int, int, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipRotate, Aspect) snapshot)> _nodes;
 
         internal Snapshot(Selector selector)
-        {
+        {/*
+            Create a graphic snapshot for the nodes and edges specified in the callers selector
+         */
             if (selector.IsRegionHit)
             {
                 if (selector.Nodes.Count > 0)
@@ -43,26 +45,35 @@ namespace ModelGraphSTD
                 _edges.Add((selector.HitEdge, selector.HitEdge.Snapshot));
             }
         }
-        internal Snapshot(Snapshot orig)
-        {
-            if (orig._nodes != null)
+
+
+
+        internal Snapshot(Snapshot snap)
+        {/*
+            Create a graphic snapshot for the nodes and edges specified by a previous snapshot.
+
+            We have to preserve the current values before they are changed by resoring the previous snapshot
+         */
+            if (snap._nodes != null)
             {
-                _nodes = new List<(Node node, (int, int, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipRotate, Aspect))>(orig._nodes.Count);
-                foreach (var n in orig._nodes)
+                _nodes = new List<(Node node, (int, int, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipRotate, Aspect))>(snap._nodes.Count);
+                foreach (var n in snap._nodes)
                 {
                     _nodes.Add((n.node, n.node.Snapshot));
                 }
 
             }
-            if (orig._edges != null)
+            if (snap._edges != null)
             {
-                _edges = new List<(Edge edge, ((int x, int y)[], Facet, Facet))>(orig._edges.Count);
-                foreach (var e in orig._edges)
+                _edges = new List<(Edge edge, ((int x, int y)[], Facet, Facet))>(snap._edges.Count);
+                foreach (var e in snap._edges)
                 {
                     _edges.Add((e.edge, e.edge.Snapshot));
                 }
             }
         }
+
+
 
         internal void Restore()
         {

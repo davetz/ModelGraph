@@ -178,7 +178,7 @@ namespace ModelGraph.Controls
                 switch (_keyName)
                 {
                     //    case "A": Allign(); break;
-                    case "G": ApplyGravity(); _graph.AdjustGraph(_selector); PostRefresh(); break;
+                    case "G": ApplyGravity(); PostRefresh(); break;
                 }
                 //    if (_keyName == "V") _hitNode.Node.Aspect = Aspect.Vertical;
                 //    else if (_keyName == "H") _hitNode.Node.Aspect = Aspect.Horizontal;
@@ -484,6 +484,7 @@ namespace ModelGraph.Controls
             HideTootlip();
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _graph.AdjustGraph(_selector); }); 
             _model.PostRefresh();
+            _selector.EnableSnapshot();
         }
         #endregion
 

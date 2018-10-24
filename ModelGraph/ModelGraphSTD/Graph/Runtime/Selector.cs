@@ -32,7 +32,7 @@ namespace ModelGraphSTD
         public List<Extent> Regions = new List<Extent>();  // extents of included nodes
         public List<Extent> Occluded = new List<Extent>();  // extents of occluded nodes
         
-        private bool _enableSnapShot;
+        private bool _enableSnapshot = true;
 
         #region Constructor  ==================================================
         public Selector(Graph graph)
@@ -395,7 +395,7 @@ namespace ModelGraphSTD
         {
             if (IsRegionHit || IsNodeHit)
             {
-                if (_enableSnapShot) TakeSnapShot();
+                TakeSnapshot();
 
                 if (IsRegionHit)
                 {
@@ -409,14 +409,8 @@ namespace ModelGraphSTD
                     HitNode.Move(delta);
                     UpdateExtents();
                 }
-                AdjustGraph();
+                Graph.AdjustGraph(this);
             }
-        }
-
-        public void AdjustGraph()
-        {
-            Graph.AdjustGraph(this);
-            _enableSnapShot = true;
         }
         #endregion
 
@@ -488,7 +482,7 @@ namespace ModelGraphSTD
             if (HitNode != null)
             {
                 var x = HitNode.X;
-                TakeSnapShot();
+                TakeSnapshot();
                 foreach (var node in Nodes)
                 {
                     node.AlignVertical(x);
@@ -501,7 +495,7 @@ namespace ModelGraphSTD
             if (HitNode != null)
             {
                 var y = HitNode.Y;
-                TakeSnapShot();
+                TakeSnapshot();
                 foreach (var node in Nodes)
                 {
                     node.AlignHorizontal(y);
@@ -511,12 +505,16 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region TakeSnapShot  =================================================
-        public void TakeSnapShot()
-        {
-            _enableSnapShot = false;
+        #region Snapshot  =====================================================
+        public void EnableSnapshot() => _enableSnapshot = true;
 
-            Graph.TakeSnapshot(this);
+        public void TakeSnapshot()
+        {
+            if (_enableSnapshot)
+            {
+                _enableSnapshot = false;
+                Graph.TakeSnapshot(this);
+            }
         }
         #endregion
     }
