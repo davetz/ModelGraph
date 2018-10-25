@@ -49,6 +49,12 @@ namespace ModelGraph.Controls
             ToolTipService.SetToolTip(_undoButton, _undoTip);
             ToolTipService.SetToolTip(_redoButton, _redoTip);
         }
+        private void ReleaseControlPanel()
+        {
+            _undoButton.Click -= UndoButton_Click;
+            _redoButton.Click -= RedoButton_Click;
+            _controlPannel.Children.Clear();
+        }
 
         private void UndoButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {

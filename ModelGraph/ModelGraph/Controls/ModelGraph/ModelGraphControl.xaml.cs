@@ -52,6 +52,8 @@ namespace ModelGraph.Controls
         {
             if (DrawCanvas == null) return;
 
+            ReleaseControlPanel();
+
             DrawCanvas.RemoveFromVisualTree();
             DrawCanvas = null;
         }

@@ -392,7 +392,7 @@ namespace ModelGraph.Controls
             //Cursor = Cursors.ScrollAll;
             _enableHitTest = false;
 
-            EndAction = () => { UpdateRegionExtents(); PostRefresh(); };
+            EndAction = () => { UpdateRegionExtents(); SetIdleOnRegion(); PostRefresh(); };
             DragAction = () => { Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
             HoverAction = null;
             WheelAction = null;
