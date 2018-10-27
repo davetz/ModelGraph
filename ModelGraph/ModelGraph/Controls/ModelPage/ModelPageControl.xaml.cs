@@ -74,10 +74,10 @@ namespace ModelGraph.Controls
             model.PageButtonComands(buttonCommands);
 
             var N = buttonCommands.Count;
-            var M = PageButtonPanel.Children.Count;
+            var M = ControlPanel.Children.Count;
             for (int i = 0; i < M; i++)
             {
-                if (PageButtonPanel.Children[i] is Button btn)
+                if (ControlPanel.Children[i] is Button btn)
                 {
                     if (i < N)
                     {

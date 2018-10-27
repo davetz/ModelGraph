@@ -2222,4 +2222,25 @@ The bulk of your modeling data work is best done in the custom tree and graph vi
   <data name="62FS" xml:space="preserve">
     <value>Modeling data</value>
   </data>
+  <data name="941X.Text" xml:space="preserve">
+    <value>Flip Vertical</value>
+  </data>
+  <data name="942X.Text" xml:space="preserve">
+    <value>Flip Horizontal</value>
+  </data>
+  <data name="943X.Text" xml:space="preserve">
+    <value>Flip Both Ways</value>
+  </data>
+  <data name="944X.Text" xml:space="preserve">
+    <value>Rotate Clockwise</value>
+  </data>
+  <data name="945X.Text" xml:space="preserve">
+    <value>Rotate Flip Vertical</value>
+  </data>
+  <data name="946X.Text" xml:space="preserve">
+    <value>Rotate Flip Horizontal</value>
+  </data>
+  <data name="947X.Text" xml:space="preserve">
+    <value>Rotate Flip Both Ways</value>
+  </data>
 </root>

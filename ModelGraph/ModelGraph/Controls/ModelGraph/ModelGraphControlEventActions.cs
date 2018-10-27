@@ -65,6 +65,7 @@ namespace ModelGraph.Controls
         private Action Begin3Action;   // mouse button 3 down
         private Action ExecuteAction;  // mouse double click
         private Action ShortCutAction; // keyboard key press A..Z, Insert, Delete,..
+
         #endregion
 
         #region OnVoid  =======================================================

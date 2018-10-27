@@ -44,11 +44,10 @@
 
         <Grid Grid.Row="0" x:Name="ButtonGrid" Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
             <TextBlock x:Name="ModelTitle" Style="{StaticResource TitleStyle}"/>
-            <StackPanel x:Name="PageButtonPanel" Style="{StaticResource PagePanelStyle}">
+            <StackPanel x:Name="ControlPanel" Style="{StaticResource PagePanelStyle}">
                 <Button x:Name="Button1" Style="{StaticResource ButtonStyle}" Click="AppButton_Click"/>
                 <Button x:Name="Button2" Style="{StaticResource ButtonStyle}" Click="AppButton_Click"/>
                 <Button x:Name="Button3" Style="{StaticResource ButtonStyle}" Click="AppButton_Click"/>
-                <StackPanel x:Name="ControlPanel" Style="{StaticResource ControlPanelStyle}"/>
             </StackPanel>
         </Grid>
         

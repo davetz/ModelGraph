@@ -1,0 +1,91 @@
+﻿<UserControl
+    x:Class="ModelGraph.Controls.GraphControlPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="32"
+    d:DesignWidth="400">
+    <UserControl.Resources>
+        
+        <Style x:Key="ControlPanelStyle" TargetType="StackPanel">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
+        </Style>
+
+        <Style x:Key="ActionNameStyle" TargetType="TextBlock" >
+            <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Left"/>
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontStyle" Value="Italic" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="Firebrick"/>
+        </Style>
+
+        <Style x:Key="PinButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="2,0,10,0" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="Content" Value="&#xe718;" />
+            <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
+        </Style>
+
+        <Style x:Key="FlipButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Content" Value="F" />
+            <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
+        </Style>
+
+        <Style x:Key="UndoButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="10,0,0,0" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Content" Value="&#xe7a6;" />
+            <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
+        </Style>
+
+        <Style x:Key="RedoButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Content" Value="&#xe7a7;" />
+            <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
+        </Style>
+
+        <Style x:Key="UndoRedoCountStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="2,0,2,0" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="FontSize" Value="8" />
+        </Style>
+
+    </UserControl.Resources>
+    
+    <StackPanel Style="{StaticResource ControlPanelStyle}" >
+        <TextBlock x:Name="ActionName" Style="{StaticResource ActionNameStyle}" x:Uid="_gcpName"/>
+        <Button x:Name="PinButton" x:Uid="_gcpPin" Style="{StaticResource PinButtonStyle}" Click="PinButton_Click"/>
+
+        <Button x:Name="FlipButton" x:Uid="_gcpFlipButton" Style="{StaticResource FlipButtonStyle}">
+            <Button.Flyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem x:Name="FlipVertical" x:Uid="941X" Click="FlipVertical_Click"/>
+                    <MenuFlyoutItem x:Name="FlipHorizontal" x:Uid="942X" Click="FlipHorizontal_Click"/>
+                    <MenuFlyoutItem x:Name="FlipBothWays" x:Uid="943X" Click="FlipBothWays_Click"/>
+                    <MenuFlyoutItem x:Name="RotateClockwise" x:Uid="944X" Click="RotateClockwise_Click"/>
+                    <MenuFlyoutItem x:Name="RotateFlipVertical" x:Uid="945X" Click="RotateFlipVertical_Click"/>
+                    <MenuFlyoutItem x:Name="RotateFlipHorizontal" x:Uid="946X" Click="RotateFlipHorizontal_Click"/>
+                    <MenuFlyoutItem x:Name="RotateFlipBothWays" x:Uid="947X" Click="RotateFlipBothWays_Click"/>
+                </MenuFlyout>
+            </Button.Flyout>
+        </Button>
+
+
+        <Button x:Name="UndoButton" x:Uid="_gcpUndoButton" Style="{StaticResource UndoButtonStyle}" Click="UndoButton_Click"/>
+        <TextBlock x:Name="UndoCount" x:Uid="_gcpUndoCount" Style="{StaticResource UndoRedoCountStyle}" />
+        <Button x:Name="RedoButton" x:Uid="_gcpRedoButton" Style="{StaticResource RedoButtonStyle}"  Click="RedoButton_Click"/>
+        <TextBlock x:Name="RedoCount" x:Uid="_gcpRedoCount" Style="{StaticResource UndoRedoCountStyle}" />
+    </StackPanel>
+</UserControl>

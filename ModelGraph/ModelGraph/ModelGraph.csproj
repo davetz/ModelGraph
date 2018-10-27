@@ -112,6 +112,9 @@
   <ItemGroup>
     <Compile Include="Activation\ActivationHandler.cs" />
     <Compile Include="Controls\IModelControl.cs" />
+    <Compile Include="Controls\ModelGraph\GraphControlPanel.xaml.cs">
+      <DependentUpon>GraphControlPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ModelGraph\ModelGraphControl.xaml.cs">
       <DependentUpon>ModelGraphControl.xaml</DependentUpon>
     </Compile>
@@ -171,6 +174,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\ModelGraph\GraphControlPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ModelGraph\ModelGraphControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
