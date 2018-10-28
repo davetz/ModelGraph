@@ -1,5 +1,7 @@
 ﻿using ModelGraph.Controls;
+using ModelGraph.Helpers;
 using ModelGraph.Services;
+using ModelGraphSTD;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -12,7 +14,7 @@ namespace ModelGraph.Views
 {
     public sealed partial class ModelPage : Page
     {
-        public ModelPageControl PageControl { get; private set; }
+        public IModelControl ModelControl { get; private set; }
 
         #region Constructor  ==================================================
         public ModelPage()
@@ -23,7 +25,7 @@ namespace ModelGraph.Views
 
         private void ModelPage_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
         {
-            PageControl?.SetSize(ActualWidth, ActualHeight);
+            ModelControl?.SetSize(ActualWidth, ActualHeight);
         }
         #endregion
 
@@ -35,21 +37,47 @@ namespace ModelGraph.Views
 
         internal async void NavigatedTo(object parm)
         {
-            if (parm is ModelPageControl pageControl)
+            if (parm is RootModel model)
             {
-                NavigationService.ActiveModelPage = this; //enable the call to NavigationFrom()
-                PageControl = pageControl;
-                ControlGrid.Children.Add(PageControl);
+                model.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
+
+                switch (model.ControlType)
+                {
+                    case ControlType.AppRootChef:
+                        break;
+
+                    case ControlType.PrimaryTree:
+                    case ControlType.PartialTree:
+                        var tc = new ModelTreeControl(model);
+                        ModelControl = tc;
+                        ControlGrid.Children.Add(tc);
+                        break;
+
+                    case ControlType.SymbolEditor:
+                        var sc = new SymbolEditControl(model);
+                        ModelControl = sc;
+                        ControlGrid.Children.Add(sc);
+                        break;
+
+                    case ControlType.GraphDisplay:
+                        var gc = new ModelGraphControl(model);
+                        ModelControl = gc;
+                        ControlGrid.Children.Add(gc);
+                        break;
+
+                    default:
+                        throw new ArgumentException("Unknown ControlType");
+                }
             }
-            else if (parm is ViewLifetimeControl viewControl && viewControl.PageControl is null && !(viewControl.RootModel is null))
-            {
-                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { viewControl.PageControl = new ModelPageControl(viewControl.RootModel); PageControl = viewControl.PageControl;  ControlGrid.Children.Add(viewControl.PageControl); });
-            }
+            //else if (parm is ViewLifetimeControl viewControl && viewControl.PageControl is null && !(viewControl.RootModel is null))
+            //{
+            //    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { viewControl.PageControl = new IModelControl(viewControl.RootModel); ModelControl = viewControl.PageControl;  ControlGrid.Children.Add(viewControl.PageControl); });
+            //}
         }
         internal void NavigatedFrom()
         {
             ControlGrid.Children.Clear();
-            PageControl = null;
+            ModelControl = null;
         }
         #endregion
     }

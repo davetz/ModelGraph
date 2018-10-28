@@ -23,7 +23,7 @@ namespace ModelGraph.Controls
             
             //HitTest(_drawRef.Point1);
 
-            var cp = e.GetCurrentPoint(RootGrid);
+            var cp = e.GetCurrentPoint(CanvasGrid);
 
             if (cp.Properties.IsLeftButtonPressed && Begin1Action != null)
             {
@@ -98,14 +98,14 @@ namespace ModelGraph.Controls
         {
             e.Handled = true;
 
-            var cp = e.GetCurrentPoint(RootGrid);
+            var cp = e.GetCurrentPoint(CanvasGrid);
 
             _wheelDelta = cp.Properties.MouseWheelDelta;
             WheelAction?.Invoke();
         }
         private (int X, int Y) GridPoint(PointerRoutedEventArgs e)
         {
-            var p = e.GetCurrentPoint(RootGrid).Position;
+            var p = e.GetCurrentPoint(CanvasGrid).Position;
             return ((int)p.X, (int)p.Y);
         }
         private (int X, int Y) DrawPoint(PointerRoutedEventArgs e)

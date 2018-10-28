@@ -1,4 +1,4 @@
-﻿<UserControl
+﻿<Page
     x:Class="ModelGraph.Controls.SymbolEditControl"
     x:Name="ctrl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,7 +7,34 @@
     Width="540" Height="340"
     Unloaded="UserControl_Unloaded">
 
-    <UserControl.Resources>
+    <Page.Resources>
+
+        <Style x:Key="TitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Margin" Value="12,4,0,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="PagePanelStyle" TargetType="StackPanel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+
+        <Style x:Key="ControlPanelStyle" TargetType="StackPanel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Margin" Value="4,0,0,0" />
+        </Style>
+
+        <Style x:Key="AppButtonStyle" TargetType="Button">
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Padding" Value="2,2,2,2" />
+            <Setter Property="Margin" Value="5,0,5,0" />
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
+        </Style>
+
+
         <SolidColorBrush x:Key="ActiveColor" Color="#FFE4BF99" />
         <SolidColorBrush x:Key="InactiveColor" Color="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
 
@@ -74,113 +101,129 @@
             <Setter Property="Margin" Value="0" />
         </Style>
 
+    </Page.Resources>
 
-    </UserControl.Resources>
+    <Grid Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" >
 
-    <Grid x:Name="RootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="32"/>
-            <RowDefinition Height="302"/>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-
-        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
-            <Button x:Name="PenButton" Style="{StaticResource ButtonStyle}" Click="PenButton_Click">
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE70F;"/>
-            </Button>
-            <Button x:Name="CutButton" Style="{StaticResource ButtonStyle}" Click="CutButton_Click">
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE16B;"/>
-            </Button>
-            <Button x:Name="CopyButton" Style="{StaticResource ButtonStyle}" Click="CopyButton_Click">
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE16F;"/>
-            </Button>
-            <Button x:Name="PasteButton" Style="{StaticResource ButtonStyle}" Click="PasteButton_Click">
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE16D;"/>
-            </Button>
-            <Button x:Name="HFlipButton" Style="{StaticResource ButtonStyle}" Click="HFlipButton_Click">
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13C;"/>
-            </Button>
-            <Button x:Name="VFlipButton" Style="{StaticResource ButtonStyle}" Click="VFlipButton_Click">
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13C;" RenderTransformOrigin="0.5,0.5">
-                    <FontIcon.RenderTransform>
-                        <CompositeTransform Rotation="90"/>
-                    </FontIcon.RenderTransform>
-                </FontIcon>
-            </Button>
-            <Button x:Name="RotateButton" Style="{StaticResource ButtonStyle}" Click="RotateButton_Click">
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE14A;"/>
-            </Button>
-        </StackPanel>
-
-        <Grid Grid.Row="1" Grid.Column="3">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="16"/>
-                <RowDefinition Height="32"/>
-                <RowDefinition Height="28"/>
-                <RowDefinition Height="28"/>
-                <RowDefinition Height="28"/>
-                <RowDefinition Height="28"/>
-                <RowDefinition Height="24"/>
-                <RowDefinition Height="24"/>
-                <RowDefinition Height="24"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20"/>
-                <ColumnDefinition Width="100"/>
-            </Grid.ColumnDefinitions>
-
-            <Grid x:Name="ColorSample"  Background="White" Grid.ColumnSpan="2" BorderThickness="1" BorderBrush="Black"/>
-            <TextBox x:Name="ColorHexValue" Grid.Row="1" Grid.ColumnSpan="2" Padding="0,2,0,0" MinWidth="96" />
-
-            <TextBlock Text="A" Grid.Row="2" Grid.Column="0"  HorizontalAlignment="Center"/>
-            <Slider  x:Name="SliderColorA" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="255" Style="{StaticResource SliderStyle}" ValueChanged="SliderColorA_ValueChanged" />
-
-            <TextBlock Text="R" Grid.Row="3" Grid.Column="0"  HorizontalAlignment="Center"/>
-            <Slider x:Name="SliderColorR" Grid.Row="3" Grid.Column="1"  Minimum="0" Maximum="255"  Style="{StaticResource SliderStyle}" ValueChanged="SliderColorR_ValueChanged" />
-
-            <TextBlock Text="G" Grid.Row="4" Grid.Column="0"  HorizontalAlignment="Center"/>
-            <Slider x:Name="SliderColorG"  Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="255"  Style="{StaticResource SliderStyle}" ValueChanged="SliderColorG_ValueChanged" />
-
-            <TextBlock Text="B" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Center"/>
-            <Slider x:Name="SliderColorB"  Grid.Row="5" Grid.Column="1" Minimum="0" Maximum="255"   Style="{StaticResource SliderStyle}" ValueChanged="SliderColorB_ValueChanged" />
-
-            <Canvas x:Name="ColorCanvas" Grid.Row="6" Grid.RowSpan="4" Grid.ColumnSpan="2" Width="120" Height="108" VerticalAlignment="Bottom" Margin="0,0,8.25,-0.375"/>
+        <Grid Grid.Row="0" x:Name="ButtonGrid" >
+            <TextBlock x:Name="ModelTitle" Style="{StaticResource TitleStyle}"/>
+            <StackPanel x:Name="ControlPanel" Style="{StaticResource PagePanelStyle}">
+                <Button x:Name="Button1" Style="{StaticResource AppButtonStyle}" Click="AppButton_Click"/>
+                <Button x:Name="Button2" Style="{StaticResource AppButtonStyle}" Click="AppButton_Click"/>
+                <Button x:Name="Button3" Style="{StaticResource AppButtonStyle}" Click="AppButton_Click"/>
+            </StackPanel>
         </Grid>
 
-        <ScrollViewer Style="{StaticResource SymViewerStyle}">
-            <Grid Style="{StaticResource SymGridStyle}">
-                <canvas:CanvasControl
+        <Grid Grid.Row="1" x:Name="ControlGrid">
+            <Grid x:Name="RootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="302"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+                    <Button x:Name="PenButton" Style="{StaticResource ButtonStyle}" Click="PenButton_Click">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE70F;"/>
+                    </Button>
+                    <Button x:Name="CutButton" Style="{StaticResource ButtonStyle}" Click="CutButton_Click">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE16B;"/>
+                    </Button>
+                    <Button x:Name="CopyButton" Style="{StaticResource ButtonStyle}" Click="CopyButton_Click">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE16F;"/>
+                    </Button>
+                    <Button x:Name="PasteButton" Style="{StaticResource ButtonStyle}" Click="PasteButton_Click">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE16D;"/>
+                    </Button>
+                    <Button x:Name="HFlipButton" Style="{StaticResource ButtonStyle}" Click="HFlipButton_Click">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13C;"/>
+                    </Button>
+                    <Button x:Name="VFlipButton" Style="{StaticResource ButtonStyle}" Click="VFlipButton_Click">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13C;" RenderTransformOrigin="0.5,0.5">
+                            <FontIcon.RenderTransform>
+                                <CompositeTransform Rotation="90"/>
+                            </FontIcon.RenderTransform>
+                        </FontIcon>
+                    </Button>
+                    <Button x:Name="RotateButton" Style="{StaticResource ButtonStyle}" Click="RotateButton_Click">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE14A;"/>
+                    </Button>
+                </StackPanel>
+
+                <Grid Grid.Row="1" Grid.Column="3">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="16"/>
+                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="24"/>
+                        <RowDefinition Height="24"/>
+                        <RowDefinition Height="24"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid x:Name="ColorSample"  Background="White" Grid.ColumnSpan="2" BorderThickness="1" BorderBrush="Black"/>
+                    <TextBox x:Name="ColorHexValue" Grid.Row="1" Grid.ColumnSpan="2" Padding="0,2,0,0" MinWidth="96" />
+
+                    <TextBlock Text="A" Grid.Row="2" Grid.Column="0"  HorizontalAlignment="Center"/>
+                    <Slider  x:Name="SliderColorA" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="255" Style="{StaticResource SliderStyle}" ValueChanged="SliderColorA_ValueChanged" />
+
+                    <TextBlock Text="R" Grid.Row="3" Grid.Column="0"  HorizontalAlignment="Center"/>
+                    <Slider x:Name="SliderColorR" Grid.Row="3" Grid.Column="1"  Minimum="0" Maximum="255"  Style="{StaticResource SliderStyle}" ValueChanged="SliderColorR_ValueChanged" />
+
+                    <TextBlock Text="G" Grid.Row="4" Grid.Column="0"  HorizontalAlignment="Center"/>
+                    <Slider x:Name="SliderColorG"  Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="255"  Style="{StaticResource SliderStyle}" ValueChanged="SliderColorG_ValueChanged" />
+
+                    <TextBlock Text="B" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Center"/>
+                    <Slider x:Name="SliderColorB"  Grid.Row="5" Grid.Column="1" Minimum="0" Maximum="255"   Style="{StaticResource SliderStyle}" ValueChanged="SliderColorB_ValueChanged" />
+
+                    <Canvas x:Name="ColorCanvas" Grid.Row="6" Grid.RowSpan="4" Grid.ColumnSpan="2" Width="120" Height="108" VerticalAlignment="Bottom" Margin="0,0,8.25,-0.375"/>
+                </Grid>
+
+                <ScrollViewer Style="{StaticResource SymViewerStyle}">
+                    <Grid Style="{StaticResource SymGridStyle}">
+                        <canvas:CanvasControl
             x:Name="SelectCanvas" 
             Style="{StaticResource SelectCanvasStyle}"
             Draw="SelectCanvas_Draw" 
             PointerPressed="SelectCanvas_PointerPressed" />
-            </Grid>
-        </ScrollViewer>
+                    </Grid>
+                </ScrollViewer>
 
-        <Grid Grid.Column="2" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="30*"/>
-                <ColumnDefinition Width="30*"/>
-                <ColumnDefinition Width="30*"/>
-            </Grid.ColumnDefinitions>
+                <Grid Grid.Column="2" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30*"/>
+                        <ColumnDefinition Width="30*"/>
+                        <ColumnDefinition Width="30*"/>
+                    </Grid.ColumnDefinitions>
 
-            <ComboBox x:Name="StartCapType"
+                    <ComboBox x:Name="StartCapType"
                       Grid.Column="0"
                       HorizontalAlignment="Left"
                       ItemsSource="{Binding ElementName=ctrl, Path=CapStyles}"  
                       SelectedItem="{Binding StartCap, ElementName=ctrl, Mode=TwoWay}"
                       SelectionChanged="StartCap_SelectionChanged" />
 
-            <Slider x:Name="WidthSlider"
+                    <Slider x:Name="WidthSlider"
                     Grid.Column="1"
                     HorizontalAlignment="Center"
                     Minimum="1"  
@@ -188,18 +231,18 @@
                     Style="{StaticResource SliderStyle}" 
                     ValueChanged="WidthSlider_ValueChanged"/>
 
-            <ComboBox x:Name="EndCapType"
+                    <ComboBox x:Name="EndCapType"
                       Grid.Column="2"
                       HorizontalAlignment="Right"
                       ItemsSource="{Binding ElementName=ctrl, Path=CapStyles}" 
                       SelectedItem="{Binding EndCap, ElementName=ctrl, Mode=TwoWay}"
                       SelectionChanged="EndCap_SelectionChanged" />
 
-        </Grid>
-        <TextBlock x:Name="SymbolSize" Grid.Row="0" Grid.Column="3" Text="(0 x 0)" HorizontalAlignment="Center" />
+                </Grid>
+                <TextBlock x:Name="SymbolSize" Grid.Row="0" Grid.Column="3" Text="(0 x 0)" HorizontalAlignment="Center" />
 
-        <Grid Style="{StaticResource DrawGridStyle}">
-            <canvas:CanvasControl
+                <Grid Style="{StaticResource DrawGridStyle}">
+                    <canvas:CanvasControl
             x:Name="DrawCanvas" 
             Style="{StaticResource DrawCanvasStyle}"
             Draw="DrawCanvas_Draw"
@@ -207,7 +250,11 @@
             PointerMoved="DrawCanvas_PointerMoved"
             PointerPressed="DrawCanvas_PointerPressed"
             PointerReleased="DrawCanvas_PointerReleased" />
-        </Grid>
+                </Grid>
 
+            </Grid>
+        </Grid>
     </Grid>
-</UserControl>
+
+
+</Page>

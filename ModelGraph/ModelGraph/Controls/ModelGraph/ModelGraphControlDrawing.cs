@@ -44,8 +44,8 @@ namespace ModelGraph.Controls
                 Initialize(_graph.Extent);
                 _viewExtent = _graph.Extent;
                 
-                RootGrid.Width = RootCanvas.Width = DrawCanvas.Width = ActualWidth;
-                RootGrid.Height = RootCanvas.Height = DrawCanvas.Height = ActualHeight;
+                CanvasGrid.Width = RootCanvas.Width = DrawCanvas.Width = ActualWidth;
+                CanvasGrid.Height = RootCanvas.Height = DrawCanvas.Height = ActualHeight;
             }
             #endregion
 

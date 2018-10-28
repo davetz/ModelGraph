@@ -6,10 +6,14 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using ModelGraphSTD;
 using ModelGraph.Helpers;
+using Windows.Storage.Pickers;
+using RepositoryUWP;
+using Windows.Storage;
+using ModelGraph.Services;
 
 namespace ModelGraph.Controls
 {
-    public sealed partial class ModelTreeControl : UserControl, IModelControl
+    public sealed partial class ModelTreeControl : Page, IPageControl, IModelControl
     {
         public Grid PrevOwner { get; set; }
 
@@ -209,6 +213,32 @@ namespace ModelGraph.Controls
                 _menuItemTips[i] = tip;
                 ToolTipService.SetToolTip(_menuItems[i], tip);
             }
+
+
+            var buttonCommands = new List<ModelCommand>();
+            _root.PageButtonComands(buttonCommands);
+
+            var N = buttonCommands.Count;
+            var M = ControlPanel.Children.Count;
+            for (int i = 0; i < M; i++)
+            {
+                if (ControlPanel.Children[i] is Button btn)
+                {
+                    if (i < N)
+                    {
+                        var cmd = buttonCommands[i];
+                        btn.Tag = cmd;
+                        btn.Content = cmd.Name;
+                        btn.Visibility = Visibility.Visible;
+                        ToolTipService.SetToolTip(btn, cmd.Summary);
+                    }
+                    else
+                    {
+                        btn.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+            ModelTitle.Text = _root.TitleName;
         }
         #endregion
 
@@ -474,6 +504,36 @@ namespace ModelGraph.Controls
             }
             else
                 ChangeScroll(1);
+        }
+        #endregion
+
+        #region AppButton_Click  ==============================================
+        private async void AppButton_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            var cmd = btn.Tag as ModelCommand;
+            if (cmd.IsStorageFileParameter1)
+            {
+                if (cmd.IsSaveAsCommand)
+                {
+                    var savePicker = new FileSavePicker
+                    {
+                        SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                        SuggestedFileName = string.Empty
+                    };
+                    savePicker.FileTypeChoices.Add("DataFile", new List<string>() { ".mgdf" });
+                    StorageFile file = await savePicker.PickSaveFileAsync();
+                    if (file != null)
+                    {
+                        cmd.Parameter1 = new RepositoryStorageFile(file);
+                        cmd.Execute();
+                    }
+                }
+            }
+            else
+            {
+                cmd.Execute();
+            }
         }
         #endregion
 
@@ -1167,5 +1227,13 @@ namespace ModelGraph.Controls
             KeyButton.Focus(FocusState.Keyboard);
         }
         #endregion
+
+
+        public async void Dispatch(UIRequest rq)
+        {
+            await ModelPageService.Current.Dispatch(rq, this);
+        }
+        public RootModel RootModel => _root;
+
     }
 }

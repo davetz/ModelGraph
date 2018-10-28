@@ -4,22 +4,22 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using ModelGraphSTD;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using ModelGraph.Services;
 
 namespace ModelGraph.Controls
 {
-    public sealed partial class ModelGraphControl : UserControl, IModelControl
+    public sealed partial class ModelGraphControl : Page, IPageControl, IModelControl
     {
         private Chef _chef;
         private Graph _graph;
         private RootModel _model;
-        private StackPanel _controlPannel;
+        public RootModel RootModel => _model;
 
-        public ModelGraphControl(RootModel model, StackPanel controlPanel)
+        public ModelGraphControl(RootModel model)
         {
             _chef = model.Chef;
             _model = model;
             _graph = model.Graph;
-            _controlPannel = controlPanel;
 
             _selector = new Selector(_graph);
 
@@ -77,8 +77,8 @@ namespace ModelGraph.Controls
         {
             if (DrawCanvas == null) return;
 
-            RootGrid.Width = RootCanvas.Width = DrawCanvas.Width = this.Width = width;
-            RootGrid.Height = RootCanvas.Height = DrawCanvas.Height = this.Height = height;
+            CanvasGrid.Width = RootCanvas.Width = DrawCanvas.Width = this.Width = width;
+            CanvasGrid.Height = RootCanvas.Height = DrawCanvas.Height = this.Height = height;
         }
         #endregion
 
@@ -178,6 +178,10 @@ namespace ModelGraph.Controls
             return false;
         }
 
+        public async void Dispatch(UIRequest rq)
+        {
+            await ModelPageService.Current.Dispatch(rq, this);
+        }
     }
 }
 

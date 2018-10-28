@@ -1,5 +1,6 @@
 ﻿using ModelGraph.Helpers;
 using ModelGraphSTD;
+using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -7,33 +8,114 @@ namespace ModelGraph.Controls
 {
     public sealed partial class ModelGraphControl
     {
-        GraphControlPanel _graphControlPanel;
-        bool _isActionPinned;
-        FlipRotate _flipRotate;
 
         private void InitializeControlPanel()
         {
-            _graphControlPanel = new GraphControlPanel();
-
-            _graphControlPanel.UndoAction = TryUndo;
-            _graphControlPanel.RedoAction = TryRedo;
-
-            _controlPannel.Children.Add(_graphControlPanel);
-        }
-
-        internal void SetFlipRotate(FlipRotate value)
-        {
-            _flipRotate = value;
         }
 
         private void ReleaseControlPanel()
         {
         }
 
+
+        #region ActionName  ===================================================
+        const string _pin = "\ue718";
+        const string _pinned = "\ue840";
+        bool _isActionPinned;
+
+
+        private void PinButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateActionPinned(!_isActionPinned);
+            SetIsPinned?.Invoke(_isActionPinned);
+        }
+        internal Action<bool> SetIsPinned;
+
+        internal void ResetActionPinned()
+        {
+            UpdateActionPinned(false);
+        }
+        private void UpdateActionPinned(bool value)
+        {
+            if (value)
+            {
+                _isActionPinned = true;
+                PinButton.Content = _pinned;
+            }
+            else
+            {
+                _isActionPinned = false;
+                PinButton.Content = _pin;
+                ActionName.Text = "";
+            }
+        }
+        #endregion
+
+        #region FlipRotate  ===================================================
+        FlipRotate _flipRotate;
+
+        private void FlipVertical_Click(object sender, RoutedEventArgs e)
+        {
+            SetActionName(sender);
+           _flipRotate = FlipRotate.FlipVertical;
+        }
+
+        private void FlipHorizontal_Click(object sender, RoutedEventArgs e)
+        {
+            SetActionName(sender);
+            _flipRotate = FlipRotate.FlipHorizontal;
+        }
+
+        private void FlipBothWays_Click(object sender, RoutedEventArgs e)
+        {
+            SetActionName(sender);
+            _flipRotate = FlipRotate.FlipBothWays;
+        }
+
+        private void RotateClockwise_Click(object sender, RoutedEventArgs e)
+        {
+            SetActionName(sender);
+            _flipRotate = FlipRotate.RotateClockWise;
+        }
+
+        private void RotateFlipVertical_Click(object sender, RoutedEventArgs e)
+        {
+            SetActionName(sender);
+            _flipRotate = FlipRotate.RotateFlipVertical;
+        }
+
+        private void RotateFlipHorizontal_Click(object sender, RoutedEventArgs e)
+        {
+            SetActionName(sender);
+            _flipRotate = FlipRotate.RotateFlipHorizontal;
+        }
+
+        private void RotateFlipBothWays_Click(object sender, RoutedEventArgs e)
+        {
+            SetActionName(sender);
+            _flipRotate = FlipRotate.RotateFlipBothWays;
+        }
+        void SetActionName(Object obj)
+        {
+            var item = obj as MenuFlyoutItem;
+            ActionName.Text = item.Name;
+        }
+        #endregion
+
+        #region UndoRedo  =====================================================
+        private void UndoButton_Click(object sender, RoutedEventArgs e) => TryUndo();
+        private void RedoButton_Click(object sender, RoutedEventArgs e) => TryRedo();
+
         private void UpdateUndoRedoControls()
         {
             var (canUndo, canRedo, undoCount, redoCount) = _graph.UndoRedoParms;
-            _graphControlPanel.UpdateUndoRedo(canUndo, canRedo, undoCount, redoCount);
+
+            UndoButton.IsEnabled = canUndo;
+            RedoButton.IsEnabled = canRedo;
+            UndoCount.Text = undoCount.ToString();
+            RedoCount.Text = redoCount.ToString();
         }
+        #endregion
+
     }
 }

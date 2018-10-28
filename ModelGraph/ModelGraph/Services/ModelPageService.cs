@@ -38,28 +38,28 @@ namespace ModelGraph.Services
         #endregion
 
         #region Dispatch  =====================================================
-        public async Task<bool> Dispatch(UIRequest rq, ModelPageControl ctrl)
+        public async Task<bool> Dispatch(UIRequest rq, IModelControl ctrl)
         {
             switch (rq.RequestType)
             {
                 case RequestType.Save:
-                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.ModelControl?.Save(); });
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.Save(); });
                     return true;
 
                 case RequestType.Reload:
-                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.ModelControl?.Reload(); });
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.Reload(); });
                     return true;
 
                 case RequestType.Refresh:
-                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.ModelControl?.Refresh(); });
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ctrl.Refresh(); });
                     return true;
 
                 case RequestType.Close:                   
-                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { RemoveModelPage(ctrl); WindowManagerService.Current.CloseRelatedModels(ctrl.RootModel); ctrl.Release(); });                    
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { RemoveModelPage(ctrl.RootModel); WindowManagerService.Current.CloseRelatedModels(ctrl.RootModel); ctrl.Release(); });                    
                     return true;
 
                 case RequestType.CreateView:
-                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InsertModelPage(new ModelPageControl(new RootModel(rq))));
+                    await ctrl.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => InsertModelPage(new RootModel(rq)));
                     return true;
 
                 case RequestType.CreatePage:
@@ -77,9 +77,8 @@ namespace ModelGraph.Services
             if (sender is ViewLifetimeControl ctrl)
             {
                 ctrl.Released -= ViewLifetimeControl_Released;
-                ctrl.PageControl?.Release();
-                ctrl.PageControl = null;
-                ctrl.RootModel = null;
+                var modelControl = ctrl.RootModel?.PageControl as IModelControl;
+                modelControl?.Release();
             }
         }
         #endregion
@@ -93,8 +92,7 @@ namespace ModelGraph.Services
                 {
                     ControlType = ControlType.PrimaryTree
                 };
-                var pageControl = new ModelPageControl(rootModel);
-                InsertModelPage(pageControl);
+                InsertModelPage(rootModel);
             });
 
             return true;
@@ -119,15 +117,14 @@ namespace ModelGraph.Services
                     {
                         ControlType = ControlType.PrimaryTree
                     };
-                    var pageControl = new ModelPageControl(rootModel);
-                    InsertModelPage(pageControl);
+                    InsertModelPage(rootModel);
                 });
             }
             return true;
         }
         #endregion
 
-        public static Action<ModelPageControl> InsertModelPage;
-        public static Action<ModelPageControl> RemoveModelPage;
+        public static Action<RootModel> InsertModelPage;
+        public static Action<RootModel> RemoveModelPage;
     }
 }

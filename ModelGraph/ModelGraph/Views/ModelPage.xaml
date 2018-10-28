@@ -7,7 +7,7 @@
     Style="{StaticResource PageStyle}"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
+    <Grid Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" >
         <Grid x:Name="ControlGrid" />
     </Grid>
 </Page>

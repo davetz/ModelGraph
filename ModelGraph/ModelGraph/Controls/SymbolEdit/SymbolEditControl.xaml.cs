@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.Xaml.Input;
@@ -9,10 +10,12 @@ using System.Collections.Generic;
 using Microsoft.Graphics.Canvas.Geometry;
 using System.Linq;
 using ModelGraphSTD;
+using Windows.Storage.Pickers;
+using ModelGraph.Services;
 
 namespace ModelGraph.Controls
 {
-    public sealed partial class SymbolEditControl : UserControl, IModelControl
+    public sealed partial class SymbolEditControl : Page, IPageControl, IModelControl
     {
         private Chef _chef;
         private RootModel _rootModel;
@@ -433,6 +436,42 @@ namespace ModelGraph.Controls
             hitLineStyle.DashStyle = CanvasDashStyle.Solid;
 
             _resourceLoader = Windows.ApplicationModel.Resources.ResourceLoader.GetForCurrentView();
+
+            var buttonCommands = new List<ModelCommand>();
+            _rootModel.PageButtonComands(buttonCommands);
+
+            var N = buttonCommands.Count;
+            var M = ControlPanel.Children.Count;
+            for (int i = 0; i < M; i++)
+            {
+                if (ControlPanel.Children[i] is Button btn)
+                {
+                    if (i < N)
+                    {
+                        var cmd = buttonCommands[i];
+                        btn.Tag = cmd;
+
+                        btn.Content = cmd.Name;
+                        btn.Visibility = Visibility.Visible;
+                        ToolTipService.SetToolTip(btn, cmd.Summary);
+                    }
+                    else
+                    {
+                        btn.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+            ModelTitle.Text = _rootModel.TitleName;
+
+        }
+        #endregion
+
+        #region AppButton_Click  ==============================================
+        private void AppButton_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            var cmd = btn.Tag as ModelCommand;
+            cmd.Execute();
         }
         #endregion
 
@@ -1869,5 +1908,14 @@ namespace ModelGraph.Controls
             DrawCanvas.Invalidate();
         }
         #endregion
+
+
+        public async void Dispatch(UIRequest rq)
+        {
+            await ModelPageService.Current.Dispatch(rq, this);
+        }
+        public RootModel RootModel => _rootModel;
+
+
     }
 }

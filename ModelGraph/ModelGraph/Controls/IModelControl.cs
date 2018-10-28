@@ -1,4 +1,6 @@
 ﻿
+using ModelGraphSTD;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 
 namespace ModelGraph.Controls
@@ -11,5 +13,8 @@ namespace ModelGraph.Controls
         void Release();
         void Refresh();
         void SetSize(double width, double height);
+
+        CoreDispatcher Dispatcher { get; }
+        RootModel RootModel {get;}
     }
 }

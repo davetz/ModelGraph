@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using ModelGraph.Controls;
 using ModelGraph.Helpers;
 using ModelGraph.Services;
-
+using ModelGraphSTD;
 using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -68,9 +68,9 @@ namespace ModelGraph.Views
         #region ModelPageService  =============================================
         //
         #region InsertModelPage  ==============================================
-        public void InsertModelPage(ModelPageControl pageControl)
+        public void InsertModelPage(RootModel model)
         {
-            pageControl.RootModel.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
+            model.Chef.SetLocalizer(Helpers.ResourceExtensions.GetLocalizer());
 
             var item = navigationView.MenuItems
                             .OfType<NavigationViewItem>()
@@ -81,17 +81,17 @@ namespace ModelGraph.Views
             var index = navigationView.MenuItems.IndexOf(item) + 1;
             var navItem = new NavigationViewItem
             {
-                Content = pageControl.RootModel.TitleName,
+                Content = model.TitleName,
                 Icon = new SymbolIcon(Symbol.AllApps),
-                Tag = pageControl
+                Tag = model
             };
-            ToolTipService.SetToolTip(navItem, pageControl.RootModel.TitleSummary);
+            ToolTipService.SetToolTip(navItem, model.TitleSummary);
             
             navItem.Loaded += NavItem_Loaded;
             navigationView.MenuItems.Insert(index, navItem);
 
             Selected = navItem;
-            NavigationService.Navigate(typeof(ModelPage), pageControl);
+            NavigationService.Navigate(typeof(ModelPage), model);
         }
 
         private static void NavItem_Loaded(object sender, RoutedEventArgs e)
@@ -105,11 +105,11 @@ namespace ModelGraph.Views
         #endregion
         //
         #region RemoveModelPage  ==============================================
-        public void RemoveModelPage(ModelPageControl pageControl)
+        public void RemoveModelPage(RootModel model)
         {
             var item = navigationView.MenuItems
                             .OfType<NavigationViewItem>()
-                            .FirstOrDefault(menuItem => (menuItem.Tag == pageControl));
+                            .FirstOrDefault(menuItem => (menuItem.Tag == model));
 
             if (item is null) return;
             navigationView.MenuItems.Remove(item);
@@ -141,7 +141,7 @@ namespace ModelGraph.Views
                             .First(menuItem => (string)menuItem.Content == (string)args.InvokedItem);
 
 
-            if (item.Tag is ModelPageControl pageControl)
+            if (item.Tag is IModelControl pageControl)
             {
                 NavigationService.Navigate(typeof(ModelPage), pageControl);
             }

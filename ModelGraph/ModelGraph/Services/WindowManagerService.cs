@@ -36,16 +36,15 @@ namespace ModelGraph.Services
             var views = SecondaryViews.ToArray();
             foreach (var view in views)
             {
-                var pageControl = view.PageControl;
+                var model = view.RootModel;
 
-                if (pageControl is null) continue;
-                if (pageControl.RootModel is null) continue;
-                if (pageControl.RootModel.Chef != rootModel.Chef) continue;
+                if (model is null) continue;
+                if (model.Chef != rootModel.Chef) continue;
 
                 view.CloseModel();
             }
         }
-        public void TryShowModel(ModelPageControl pageControl)
+        public void TryShowModel(IModelControl pageControl)
         {
 
         }
