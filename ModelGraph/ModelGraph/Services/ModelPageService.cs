@@ -3,19 +3,12 @@ using ModelGraph.Views;
 using ModelGraphSTD;
 using RepositoryUWP;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
-
-using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
 namespace ModelGraph.Services
 {
@@ -38,7 +31,7 @@ namespace ModelGraph.Services
         #endregion
 
         #region Dispatch  =====================================================
-        public async Task<bool> Dispatch(UIRequest rq, IModelControl ctrl)
+        public async Task<bool> Dispatch(UIRequest rq, IModelPageControl ctrl)
         {
             switch (rq.RequestType)
             {
@@ -77,7 +70,7 @@ namespace ModelGraph.Services
             if (sender is ViewLifetimeControl ctrl)
             {
                 ctrl.Released -= ViewLifetimeControl_Released;
-                var modelControl = ctrl.RootModel?.PageControl as IModelControl;
+                var modelControl = ctrl.RootModel?.PageControl as IModelPageControl;
                 modelControl?.Release();
             }
         }

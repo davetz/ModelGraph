@@ -13,7 +13,7 @@ using ModelGraph.Services;
 
 namespace ModelGraph.Controls
 {
-    public sealed partial class ModelTreeControl : Page, IPageControl, IModelControl
+    public sealed partial class ModelTreeControl : Page, IPageControl, IModelPageControl
     {
         public Grid PrevOwner { get; set; }
 
@@ -22,18 +22,27 @@ namespace ModelGraph.Controls
             _root = root;
 
             InitializeComponent();
-
             Initialize();
         }
 
-        #region SetSize  ======================================================
 
+        #region SetSize  ======================================================
+        public void SetSize(double width, double height)
+        {
+            if (height > 0)
+            {
+                TreeCanvas.Width = Width = width;
+                TreeCanvas.Height = Height = height;
+
+                _root.ViewCapacity = (int)(Height / _elementHieght);
+                _root.PostRefreshViewList(_select);
+
+                _viewIsReady = true;
+            }
+        }
         bool ViewIsNotReady()
         {
             if (_viewIsReady) return false;
-
-//            _root.PageControl.SetActualSize();
-
             return true;
         }
         bool _viewIsReady;
@@ -43,7 +52,6 @@ namespace ModelGraph.Controls
             TreeCanvas.Loaded -= TreeCanvas_Loaded;
             _root.PostRefreshViewList(_select);
         }
-
         #endregion
 
         #region Fields  =======================================================
@@ -130,16 +138,6 @@ namespace ModelGraph.Controls
         {
         }
         public (int Width, int Height) PreferredSize => (400, 320);
-        public void SetSize(double width, double height)
-        {
-            TreeCanvas.Width = Width = width;
-            TreeCanvas.Height = Height = height;
-
-            _root.ViewCapacity = (int)(Height / _elementHieght);
-            _root.PostRefreshViewList(_select);
-
-            _viewIsReady = true;
-        }
         #endregion
 
         #region Initialize  ===================================================
@@ -665,6 +663,7 @@ namespace ModelGraph.Controls
         public void Refresh()
         {
             if (ViewIsNotReady()) return;
+            if (_viewList is null) return;
 
             _viewList.Clear();
             _viewList.AddRange(_root.ViewFlatList);

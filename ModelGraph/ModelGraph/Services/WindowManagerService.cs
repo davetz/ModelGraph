@@ -44,7 +44,7 @@ namespace ModelGraph.Services
                 view.CloseModel();
             }
         }
-        public void TryShowModel(IModelControl pageControl)
+        public void TryShowModel(IModelPageControl pageControl)
         {
 
         }

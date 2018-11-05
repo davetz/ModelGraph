@@ -6,8 +6,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Style="{StaticResource PageStyle}"
     mc:Ignorable="d">
-
-    <Grid Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" >
-        <Grid x:Name="ControlGrid" />
-    </Grid>
+    
+    <Grid x:Name="ControlGrid" Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
 </Page>

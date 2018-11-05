@@ -141,9 +141,9 @@ namespace ModelGraph.Views
                             .First(menuItem => (string)menuItem.Content == (string)args.InvokedItem);
 
 
-            if (item.Tag is IModelControl pageControl)
+            if (item.Tag is RootModel model)
             {
-                NavigationService.Navigate(typeof(ModelPage), pageControl);
+                NavigationService.Navigate(typeof(ModelPage), model);
             }
             else
             {

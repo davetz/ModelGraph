@@ -14,7 +14,7 @@ namespace ModelGraph.Views
 {
     public sealed partial class ModelPage : Page
     {
-        public IModelControl ModelControl { get; private set; }
+        IModelPageControl PageControl;
 
         #region Constructor  ==================================================
         public ModelPage()
@@ -25,7 +25,7 @@ namespace ModelGraph.Views
 
         private void ModelPage_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
         {
-            ModelControl?.SetSize(ActualWidth, ActualHeight);
+            PageControl?.SetSize(ActualWidth, ActualHeight);
         }
         #endregion
 
@@ -35,49 +35,47 @@ namespace ModelGraph.Views
             NavigatedTo(e.Parameter);
         }
 
-        internal async void NavigatedTo(object parm)
+        internal void NavigatedTo(object parm)
         {
-            if (parm is RootModel model)
+            if (parm is RootModel m1)
             {
-                model.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
-
-                switch (model.ControlType)
-                {
-                    case ControlType.AppRootChef:
-                        break;
-
-                    case ControlType.PrimaryTree:
-                    case ControlType.PartialTree:
-                        var tc = new ModelTreeControl(model);
-                        ModelControl = tc;
-                        ControlGrid.Children.Add(tc);
-                        break;
-
-                    case ControlType.SymbolEditor:
-                        var sc = new SymbolEditControl(model);
-                        ModelControl = sc;
-                        ControlGrid.Children.Add(sc);
-                        break;
-
-                    case ControlType.GraphDisplay:
-                        var gc = new ModelGraphControl(model);
-                        ModelControl = gc;
-                        ControlGrid.Children.Add(gc);
-                        break;
-
-                    default:
-                        throw new ArgumentException("Unknown ControlType");
-                }
+                GetModelControl(m1);
+                NavigationService.ActiveModelPage = this;
             }
-            //else if (parm is ViewLifetimeControl viewControl && viewControl.PageControl is null && !(viewControl.RootModel is null))
-            //{
-            //    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { viewControl.PageControl = new IModelControl(viewControl.RootModel); ModelControl = viewControl.PageControl;  ControlGrid.Children.Add(viewControl.PageControl); });
-            //}
+            else if (parm is ViewLifetimeControl viewControl && viewControl.RootModel is RootModel m2)
+            {
+                GetModelControl(m2);
+                //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { viewControl.PageControl = new IModelControl(viewControl.RootModel); ModelControl = viewControl.PageControl;  ControlGrid.Children.Add(viewControl.PageControl); });
+            }
+            ControlGrid.Children.Add(PageControl as UIElement);
+
+
+            void GetModelControl(RootModel m)
+            {
+                if (m.PageControl is null)
+                {
+                    m.Chef.SetLocalizer(ResourceExtensions.GetLocalizer());
+
+                    switch (m.ControlType)
+                    {
+                        case ControlType.PrimaryTree:
+                        case ControlType.PartialTree: m.PageControl = new ModelTreeControl(m); break;
+
+                        case ControlType.SymbolEditor: m.PageControl = new SymbolEditControl(m); break;
+
+                        case ControlType.GraphDisplay: m.PageControl = new ModelGraphControl(m); break;
+
+                        default:
+                            throw new ArgumentException("Unknown ControlType");
+                    }
+                }
+                PageControl = m.PageControl as IModelPageControl;
+            }
         }
         internal void NavigatedFrom()
         {
             ControlGrid.Children.Clear();
-            ModelControl = null;
+            PageControl = null;
         }
         #endregion
     }

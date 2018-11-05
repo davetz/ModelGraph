@@ -8,7 +8,7 @@ using ModelGraph.Services;
 
 namespace ModelGraph.Controls
 {
-    public sealed partial class ModelGraphControl : Page, IPageControl, IModelControl
+    public sealed partial class ModelGraphControl : Page, IPageControl, IModelPageControl
     {
         private Chef _chef;
         private Graph _graph;

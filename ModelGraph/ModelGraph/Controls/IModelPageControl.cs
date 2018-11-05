@@ -5,7 +5,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace ModelGraph.Controls
 {
-    public interface IModelControl
+    public interface IModelPageControl
     {
         (int Width, int Height) PreferredSize { get; }
         void Save();

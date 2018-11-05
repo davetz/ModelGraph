@@ -15,7 +15,7 @@ using ModelGraph.Services;
 
 namespace ModelGraph.Controls
 {
-    public sealed partial class SymbolEditControl : Page, IPageControl, IModelControl
+    public sealed partial class SymbolEditControl : Page, IPageControl, IModelPageControl
     {
         private Chef _chef;
         private RootModel _rootModel;

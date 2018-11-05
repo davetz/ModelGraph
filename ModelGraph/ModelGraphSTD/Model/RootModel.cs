@@ -56,6 +56,7 @@ namespace ModelGraphSTD
 
             Chef?.RemoveRootModel(this);
             Chef = null;
+
         }
         #endregion
 
