@@ -47,6 +47,13 @@
             <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
         </Style>
 
+        <Style x:Key="RotateButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Content" Value="R" />
+            <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
+        </Style>
+
         <Style x:Key="UndoButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="10,0,0,0" />
             <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
@@ -106,6 +113,13 @@
                             <MenuFlyoutItem x:Name="FlipVertical" x:Uid="941X" Click="FlipVertical_Click"/>
                             <MenuFlyoutItem x:Name="FlipHorizontal" x:Uid="942X" Click="FlipHorizontal_Click"/>
                             <MenuFlyoutItem x:Name="FlipBothWays" x:Uid="943X" Click="FlipBothWays_Click"/>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="RotateButton" x:Uid="_gcpRotateButton" Style="{StaticResource RotateButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout>
                             <MenuFlyoutItem x:Name="RotateClockwise" x:Uid="944X" Click="RotateClockwise_Click"/>
                             <MenuFlyoutItem x:Name="RotateFlipVertical" x:Uid="945X" Click="RotateFlipVertical_Click"/>
                             <MenuFlyoutItem x:Name="RotateFlipHorizontal" x:Uid="946X" Click="RotateFlipHorizontal_Click"/>
@@ -113,7 +127,6 @@
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>
-
                 <Button x:Name="UndoButton" x:Uid="_gcpUndoButton" Style="{StaticResource UndoButtonStyle}" Click="UndoButton_Click"/>
                 <TextBlock x:Name="UndoCount" x:Uid="_gcpUndoCount" Style="{StaticResource UndoRedoCountStyle}" />
                 <Button x:Name="RedoButton" x:Uid="_gcpRedoButton" Style="{StaticResource RedoButtonStyle}"  Click="RedoButton_Click"/>

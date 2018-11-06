@@ -2232,15 +2232,15 @@ The bulk of your modeling data work is best done in the custom tree and graph vi
     <value>Flip Both Ways</value>
   </data>
   <data name="944X.Text" xml:space="preserve">
-    <value>Rotate Clockwise</value>
+    <value>Rotate Clockwise 90</value>
   </data>
   <data name="945X.Text" xml:space="preserve">
-    <value>Rotate Flip Vertical</value>
+    <value>Rotate Clockwise 180</value>
   </data>
   <data name="946X.Text" xml:space="preserve">
-    <value>Rotate Flip Horizontal</value>
+    <value>Rotate Counter Clockwise 90</value>
   </data>
   <data name="947X.Text" xml:space="preserve">
-    <value>Rotate Flip Both Ways</value>
+    <value>Rotate Counter Clockwise 180</value>
   </data>
 </root>
