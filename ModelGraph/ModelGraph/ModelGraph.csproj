@@ -116,8 +116,8 @@
       <DependentUpon>ModelGraphControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ModelGraph\ModelGraphControlDrawing.cs" />
-    <Compile Include="Controls\ModelGraph\ModelGraphControlEventActions.cs" />
-    <Compile Include="Controls\ModelGraph\ModelGraphControlInputEvents.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlActions.cs" />
+    <Compile Include="Controls\ModelGraph\ModelGraphControlEvents.cs" />
     <Compile Include="Controls\ModelGraph\ModelGraphControlPanel.cs" />
     <Compile Include="Controls\ModelGraph\ModelGraphControlVisualAids.cs" />
     <Compile Include="Controls\ModelTree\ModelTreeControl.xaml.cs">

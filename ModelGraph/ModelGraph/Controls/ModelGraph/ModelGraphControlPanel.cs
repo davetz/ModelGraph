@@ -51,8 +51,24 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region FlipRotate  ===================================================
+        #region Flipping  =====================================================
         FlipRotate _flipRotate;
+
+        private void CycleFlip()
+        {
+            if (_flipRotate == FlipRotate.FlipVertical)
+            {
+                _flipRotate = FlipRotate.FlipHorizontal;
+            }
+            else if (_flipRotate == FlipRotate.FlipHorizontal)
+            {
+                _flipRotate = FlipRotate.FlipBothWays;
+            }
+            else
+            {
+                _flipRotate = FlipRotate.FlipVertical;
+            }
+        }
 
         private void FlipVertical_Click(object sender, RoutedEventArgs e)
         {
@@ -72,6 +88,24 @@ namespace ModelGraph.Controls
             _flipRotate = FlipRotate.FlipBothWays;
         }
 
+        #endregion
+
+        #region Rotate  =======================================================
+        private void CycleRotate()
+        {
+            if (_flipRotate == FlipRotate.RotateClockWise)
+            {
+                _flipRotate = FlipRotate.FlipBothWays;
+            }
+            else if (_flipRotate == FlipRotate.FlipBothWays)
+            {
+                _flipRotate = FlipRotate.RotateFlipVertical;
+            }
+            else
+            {
+                _flipRotate = FlipRotate.RotateClockWise;
+            }
+        }
         private void RotateClockwise_Click(object sender, RoutedEventArgs e)
         {
             SetActionName(sender);
@@ -100,8 +134,8 @@ namespace ModelGraph.Controls
             var item = obj as MenuFlyoutItem;
             ActionName.Text = item.Name;
         }
-        #endregion
 
+        #endregion
         #region UndoRedo  =====================================================
         private void UndoButton_Click(object sender, RoutedEventArgs e) => TryUndo();
         private void RedoButton_Click(object sender, RoutedEventArgs e) => TryRedo();
