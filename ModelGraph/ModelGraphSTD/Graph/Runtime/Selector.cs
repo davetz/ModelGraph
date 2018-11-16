@@ -17,7 +17,7 @@ namespace ModelGraphSTD
         public int HitBend;  // index of bend point (relative to edge.bends)
         public int HitIndex; // index of start of the hit segment (relative to edge.point)
         public Extent HitRegion;
-        public (int x, int y) HitPoint; // the refined hit point location
+        public (float x, float y) HitPoint; // the refined hit point location
         public HitLocation HitLocation; // hit location details
 
         public Edge BendEdge;     // when bending an edge, remember which edge it is
@@ -62,9 +62,9 @@ namespace ModelGraphSTD
         #endregion
 
         #region SelectorRectangle  ============================================
-        public void StartPoint((int X, int Y) p) => Extent.Point1 = Extent.Point2 = p;
-        public void NextPoint((int X, int Y) p) => Extent.Point2 = p;
-        public (int X, int Y, int W, int H) Rectangle => (Extent.Xmin, Extent.Ymin, Extent.Width, Extent.Hieght);
+        public void StartPoint((float X, float Y) p) => Extent.Point1 = Extent.Point2 = p;
+        public void NextPoint((float X, float Y) p) => Extent.Point2 = p;
+        public (float X, float Y, float W, float H) Rectangle => (Extent.Xmin, Extent.Ymin, Extent.Width, Extent.Hieght);
         #endregion
 
         #region TryAdd  =======================================================
@@ -134,7 +134,7 @@ namespace ModelGraphSTD
             var dy = int.MinValue;
             var excluded = new List<Node>(Nodes.Count);
 
-            var fullExtents = new List<(int x1, int y1, int x2, int y2, int dx, int dy, Node node)>(Nodes.Count);
+            var fullExtents = new List<(float x1, float y1, float x2, float y2, float dx, float dy, Node node)>(Nodes.Count);
             #region PopulateFullExtents  ======================================
             foreach (var node in Graph.Nodes)
             {
@@ -145,8 +145,8 @@ namespace ModelGraphSTD
                     {
                         fullExtents.Add(fex);
 
-                        if (fex.DX > dx) dx = fex.DX;
-                        if (fex.DY > dy) dy = fex.DY;
+                        if (fex.DX > dx) dx = (int)fex.DX;
+                        if (fex.DY > dy) dy = (int)fex.DY;
                     }
                     else
                         excluded.Add(node);
@@ -154,13 +154,13 @@ namespace ModelGraphSTD
             }
             #endregion
 
-            var nr = 1 + region.Width / dx;
-            int nc = 1 + region.Hieght / dy;
+            var nr = (int)(1 + region.Width / dx);
+            var nc = (int)(1 + region.Hieght / dy);
 
             var grid = new Dictionary<(int r, int c), List<Node>>();
             #region PopulateGrid  =============================================
-            var x0 = region.Xmin;
-            var y0 = region.Ymin;
+            var x0 = (int)region.Xmin;
+            var y0 = (int)region.Ymin;
 
             foreach (var fex in fullExtents)
             {
@@ -314,7 +314,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region HitTest  ======================================================
-        public void HitTest((int x, int y) p)
+        public void HitTest((float x, float y) p)
         {
             PrevNode = HitNode;
             PrevEdge = HitEdge;
@@ -391,7 +391,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Move  =========================================================
-        public void Move((int X, int Y) delta)
+        public void Move((float X, float Y) delta)
         {
             if (IsRegionHit || IsNodeHit)
             {
@@ -465,7 +465,7 @@ namespace ModelGraphSTD
         #region FlipRotate  ===================================================
         public void Rotate() => RotateFlip(FlipRotate.RotateClockWise);
         public void RotateFlip(FlipRotate flip) => RotateFlip(HitPoint, flip);
-        public void RotateFlip((int X, int Y) focus, FlipRotate flip)
+        public void RotateFlip((float X, float Y) focus, FlipRotate flip)
         {
             if (IsRegionHit)
             {

@@ -5,7 +5,7 @@
         internal readonly (sbyte X, sbyte Y)[] DXY;
         internal int Length { get { return DXY.Length; } }
 
-        internal FacetDXY((int x, int y)[] dxy)
+        internal FacetDXY((float x, float y)[] dxy)
         {
             var len = (dxy == null) ? 0 : dxy.Length;
 

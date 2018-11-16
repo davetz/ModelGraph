@@ -5,13 +5,12 @@ namespace ModelGraphSTD
     public static class XYPair
     {
         static readonly int _ds = GraphDefault.HitMargin;
-        static readonly int _ds2 = GraphDefault.HitMarginSquared;
 
-        public static (int X, int Y) Move((int x, int y) p, (int dx, int dy) b) => ((p.x + b.dx), (p.y + b.dy));
-        public static (int X, int Y) Rotate((int x, int y) p, (int x, int y) b) => ((b.x - (p.y - b.y)), (b.y + (p.x - b.x)));
-        public static (int X, int Y) VerticalFlip((int x, int y) p, int y) => ((y + (y - p.y)), (p.x));
-        public static (int X, int Y) HorizontalFlip((int x, int y) p, int x) => ((x + (x - p.x)), p.y);
-        public static (int X, int Y) RotateFlip((int x, int y) point, (int x, int y) focus, FlipRotate flip)
+        public static (float X, float Y) Move((float x, float y) p, (float dx, float dy) b) => ((p.x + b.dx), (p.y + b.dy));
+        public static (float X, float Y) Rotate((float x, float y) p, (float x, float y) b) => ((b.x - (p.y - b.y)), (b.y + (p.x - b.x)));
+        public static (float X, float Y) VerticalFlip((float x, float y) p, float y) => ((y + (y - p.y)), (p.x));
+        public static (float X, float Y) HorizontalFlip((float x, float y) p, float x) => ((x + (x - p.x)), p.y);
+        public static (float X, float Y) RotateFlip((float x, float y) point, (float x, float y) focus, FlipRotate flip)
         {
             switch (flip)
             {
@@ -41,19 +40,19 @@ namespace ModelGraphSTD
             }
             return focus;
         }
-        public static int Diagonal((int dx, int dy) p) => ((p.dx * p.dx) + (p.dy * p.dy));
-        public static int Diagonal((int x, int y) p1, (int x, int y) p2) => Diagonal((p2.x - p1.x, p2.y - p1.y));
-        public static (double ux, double uy) OrthoginalUnitVector(int dx, int dy)
+        public static float Diagonal((float dx, float dy) p) => ((p.dx * p.dx) + (p.dy * p.dy));
+        public static float Diagonal((float x, float y) p1, (float x, float y) p2) => Diagonal((p2.x - p1.x, p2.y - p1.y));
+        public static (double ux, double uy) OrthoginalUnitVector(float dx, float dy)
         {
             var M = System.Math.Sqrt(dx * dx + dy * dy);
             return (dy / M, -dx / M);
         }
-        public static (int x, int y) OrthoginalDisplacedPoint(int dx, int dy, int x0, int y0, double ds)
+        public static (float x, float y) OrthoginalDisplacedPoint(float dx, float dy, float x0, float y0, float ds)
         {
             var (ux, uy) = OrthoginalUnitVector(dx, dy);
-            return ((int)(ds * ux + x0), (int)(ds* uy + y0));
+            return ((float)(ds * ux + x0), (float)(ds* uy + y0));
         }
-        public static (Quad quad, Sect sect) QuadSect((int x, int y) p)
+        public static (Quad quad, Sect sect) QuadSect((float x, float y) p)
         {
             if (p.x < 0)
             {
@@ -70,7 +69,7 @@ namespace ModelGraphSTD
                     return (p.x < p.y) ? (Quad.Q1, Sect.S2) : (Quad.Q1, Sect.S1);
             }
         }
-        public static (Quad quad, Sect sect, double slope) QuadSectSlope((int x, int y) p1, (int x, int y) p2)
+        public static (Quad quad, Sect sect, double slope) QuadSectSlope((float x, float y) p1, (float x, float y) p2)
         {
             var x1 = (double)p1.x;
             var y1 = (double)p1.y;

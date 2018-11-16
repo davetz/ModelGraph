@@ -5,10 +5,10 @@ namespace ModelGraphSTD
 {
     public class Extent
     {
-        public int X1;
-        public int Y1;
-        public int X2;
-        public int Y2;
+        public float X1;
+        public float Y1;
+        public float X2;
+        public float Y2;
 
         #region Constructor  ==================================================
         public Extent(int s = 0)
@@ -24,19 +24,19 @@ namespace ModelGraphSTD
         }
         public Extent Clone => new Extent(this);
 
-        public Extent((int X, int Y) p)
+        public Extent((float X, float Y) p)
         {
             X1 = X2 = p.X;
             Y1 = Y2 = p.Y;
         }
 
-        public Extent(int x, int y)
+        public Extent(float x, float y)
         {
             X1 = X2 = x;
             Y1 = Y2 = y;
         }
 
-        public Extent(int x1, int y1, int x2, int y2)
+        public Extent(float x1, float y1, float x2, float y2)
         {
             X1 = x1;
             Y1 = y1;
@@ -44,7 +44,7 @@ namespace ModelGraphSTD
             Y2 = y2;
         }
 
-        public Extent((int x1, int y1, int x2, int y2) e, int ds)
+        public Extent((float x1, float y1, float x2, float y2) e, float ds)
         {
             X1 = e.x1 - ds;
             Y1 = e.y1 - ds;
@@ -52,7 +52,7 @@ namespace ModelGraphSTD
             Y2 = e.y2 + ds;
         }
 
-        public Extent((int X, int Y) p, int ds)
+        public Extent((float X, float Y) p, float ds)
         {
             X1 = p.X + 1 - ds;
             X2 = p.X + 1 + ds;
@@ -65,7 +65,7 @@ namespace ModelGraphSTD
             var e = new Extent();
             return e.SetExtent(nodes, margin);
         }
-        public Extent((int X, int Y) p1, (int X, int Y) p2)
+        public Extent((float X, float Y) p1, (float X, float Y) p2)
         {
             if (p1.X < p2.X)
             {
@@ -91,7 +91,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Move  =========================================================
-        public void Move((int X, int Y) delta)
+        public void Move((float X, float Y) delta)
         {
             X1 += delta.X;
             X2 += delta.X;
@@ -101,7 +101,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region RotateFlip  ===================================================
-        public void RotateFlip((int X, int Y) focus, FlipRotate flip)
+        public void RotateFlip((float X, float Y) focus, FlipRotate flip)
         {
             Point1 = XYPair.RotateFlip(Point1, focus, flip);
             Point2 = XYPair.RotateFlip(Point2, focus, flip);
@@ -119,20 +119,20 @@ namespace ModelGraphSTD
         #endregion
 
         #region Center  =======================================================
-        public int CenterX => (X2 + X1) / 2;
-        public int CenterY => (Y2 + Y1) / 2;
-        public (int X, int Y) Center => (CenterX, CenterY);
+        public float CenterX => (X2 + X1) / 2;
+        public float CenterY => (Y2 + Y1) / 2;
+        public (float X, float Y) Center => (CenterX, CenterY);
         #endregion
 
         #region Points  =======================================================
-        public void Points((int X, int Y) p1, (int X, int Y) p2) { Point1 = p1; Point2 = p2; }
-        public (int X, int Y) Point1 { get { return (X1, Y1); } set { X1 = value.X; Y1 = value.Y; } }
-        public (int X, int Y) Point2 { get { return (X2, Y2); } set { X2 = value.X; Y2 = value.Y; } }
-        public void Record((int X, int Y) p) { Point1 = Point2; Point2 = p; }
+        public void Points((float X, float Y) p1, (float X, float Y) p2) { Point1 = p1; Point2 = p2; }
+        public (float X, float Y) Point1 { get { return (X1, Y1); } set { X1 = value.X; Y1 = value.Y; } }
+        public (float X, float Y) Point2 { get { return (X2, Y2); } set { X2 = value.X; Y2 = value.Y; } }
+        public void Record((float X, float Y) p) { Point1 = Point2; Point2 = p; }
 
-        public void Record((int X, int Y) p, float scale) { Point1 = Point2; SetPoint2(p, scale); }
-        public void SetPoint1((int X, int Y) p, float scale) { X1 = (int)(p.X * scale); Y1 = (int)(p.Y * scale); }
-        public void SetPoint2((int X, int Y) p, float scale) { X2 = (int)(p.X * scale); Y2 = (int)(p.Y * scale); }
+        public void Record((float X, float Y) p, float scale) { Point1 = Point2; SetPoint2(p, scale); }
+        public void SetPoint1((float X, float Y) p, float scale) { X1 = (int)(p.X * scale); Y1 = (int)(p.Y * scale); }
+        public void SetPoint2((float X, float Y) p, float scale) { X2 = (int)(p.X * scale); Y2 = (int)(p.Y * scale); }
         #endregion
 
         #region Expand  =======================================================
@@ -144,14 +144,14 @@ namespace ModelGraphSTD
             Y2 += margin;
         }
 
-        public void Expand(int x, int y)
+        public void Expand(float x, float y)
         {
             if (x < X1) X1 = x;
             if (y < Y1) Y1 = y;
             if (x > X2) X2 = x;
             if (y > Y2) Y2 = y;
         }
-        public void Expand((int X, int Y) p)
+        public void Expand((float X, float Y) p)
         {
             if (p.X < X1) X1 = p.X;
             if (p.Y < Y1) Y1 = p.Y;
@@ -171,14 +171,14 @@ namespace ModelGraphSTD
         #endregion
 
         #region Diagonal  =====================================================
-        public int DX => X2 - X1;
-        public int DY => Y2 - Y1;
-        public (int X, int Y) Delta => (DX, DY);
-        public int Length => (int)Math.Sqrt(Diagonal);
-        public int Diagonal => XYPair.Diagonal(Delta);
-        public (int x, int y) OrthoginalDisplacedPoint(double ds) => XYPair.OrthoginalDisplacedPoint(DX, DY, X2, Y2, ds);
+        public float DX => X2 - X1;
+        public float DY => Y2 - Y1;
+        public (float X, float Y) Delta => (DX, DY);
+        public float Length => (float)Math.Sqrt(Diagonal);
+        public float Diagonal => XYPair.Diagonal(Delta);
+        public (float x, float y) OrthoginalDisplacedPoint(float ds) => XYPair.OrthoginalDisplacedPoint(DX, DY, X2, Y2, ds);
         public (Quad quad, Sect sect, double slope) QuadSectSlope => XYPair.QuadSectSlope((X1, Y1), (X2, Y2));
-        public bool TryGetDelta(out (int X, int Y) delta)
+        public bool TryGetDelta(out (float X, float Y) delta)
         {
             delta = Delta;
             if (X2 == X1 && Y2 == Y1)
@@ -198,7 +198,7 @@ namespace ModelGraphSTD
             Normalize(Point1, Point2);
         }
 
-        public void Normalize((int X, int Y) p1, (int X, int Y) p2)
+        public void Normalize((float X, float Y) p1, (float X, float Y) p2)
         {
             if (p2.X < p1.X)
             {
@@ -265,7 +265,7 @@ namespace ModelGraphSTD
             return this;
         }
 
-        public Extent SetExtent((int X, int Y)[] points, int margin)
+        public Extent SetExtent((float X, float Y)[] points, int margin)
         {
             var N = (points == null) ? 0 : points.Length;
             if (N == 0)
@@ -295,25 +295,25 @@ namespace ModelGraphSTD
 
         #region Rectangle  ====================================================
         // independant of order (x1,y1), (x2,y2)
-        public int Xmin => (X1 < X2) ? X1 : X2;
-        public int Ymin => (Y1 < Y2) ? Y1 : Y2;
-        public int Xmax => (X2 > X1) ? X2 : X1;
-        public int Ymax => (Y2 > Y1) ? Y2 : Y1;
+        public float Xmin => (X1 < X2) ? X1 : X2;
+        public float Ymin => (Y1 < Y2) ? Y1 : Y2;
+        public float Xmax => (X2 > X1) ? X2 : X1;
+        public float Ymax => (Y2 > Y1) ? Y2 : Y1;
 
-        public int Width => (Xmax - Xmin);
-        public int Hieght => (Ymax - Ymin);
-        public (int X, int Y) TopLeft => (Xmin, Ymin);
-        public (int X, int Y) TopRight => (Xmax, Ymin);
-        public (int X, int Y) BottomLeft => (Xmin, Ymax);
-        public (int X, int Y) BottomRight => (Xmax, Ymax);
+        public float Width => (Xmax - Xmin);
+        public float Hieght => (Ymax - Ymin);
+        public (float X, float Y) TopLeft => (Xmin, Ymin);
+        public (float X, float Y) TopRight => (Xmax, Ymin);
+        public (float X, float Y) BottomLeft => (Xmin, Ymax);
+        public (float X, float Y) BottomRight => (Xmax, Ymax);
         #endregion
 
         #region RoundedRectanglePoints  =======================================
-        internal List<(int X, int Y)> RoundedRectanglePoints()
+        internal List<(float X, float Y)> RoundedRectanglePoints()
         {
             const int r = 4;
             const int c = 1;
-            var list = new List<(int X, int Y)>(12);
+            var list = new List<(float X, float Y)>(12);
             var tl = TopLeft;
             var tr = TopRight;
             var bl = BottomLeft;
@@ -345,21 +345,21 @@ namespace ModelGraphSTD
         #endregion
 
         #region Contains  =====================================================
-        public bool ContainsX(int X)
+        public bool ContainsX(float X)
         {
             if (X < X1) return false;
             if (X > X2) return false;
             return true;
         }
 
-        public bool ContainsY(int Y)
+        public bool ContainsY(float Y)
         {
             if (Y < Y1) return false;
             if (Y > Y2) return false;
             return true;
         }
 
-        public bool Contains((int X, int Y) p)
+        public bool Contains((float X, float Y) p)
         {
             if (p.X < X1 && p.X < X2) return false;
             if (p.Y < Y1 && p.Y < Y2) return false;
@@ -401,7 +401,7 @@ namespace ModelGraphSTD
         //                     :      \:
         //                     - - - - o my Point2
         //
-        public bool HitTest(ref (int X, int Y) p, Extent E)
+        public bool HitTest(ref (float X, float Y) p, Extent E)
         {
             if (Intersects(E))  // my extent intersects with E
             {

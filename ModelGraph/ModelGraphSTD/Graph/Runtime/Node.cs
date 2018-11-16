@@ -6,8 +6,8 @@ namespace ModelGraphSTD
         public Item Item;
         public int OpenPathIndex = -1;
 
-        public int X;
-        public int Y;
+        public float X;
+        public float Y;
         public byte DX;
         public byte DY;
         public byte Color;
@@ -19,7 +19,7 @@ namespace ModelGraphSTD
         public Aspect Aspect;
 
         #region Snapshot  =====================================================
-        internal (int X, int Y, byte DX, byte DY, byte Color, byte Symbol, Labeling Labeling, Sizing Resizing, BarWidth BarWidth, FlipRotate FlipRotate, Aspect Orientation)
+        internal (float X, float Y, byte DX, byte DY, byte Color, byte Symbol, Labeling Labeling, Sizing Resizing, BarWidth BarWidth, FlipRotate FlipRotate, Aspect Orientation)
             Snapshot
         {
             get { return (X, Y, DX, DY, Color, Symbol, Labeling, Sizing, BarWidth, FlipRotate, Aspect); }
@@ -68,9 +68,9 @@ namespace ModelGraphSTD
         #endregion
 
         #region Center, Extent, Radius  =======================================
-        public (int x, int y) Center => (X, Y);
-        public (int X1, int Y1, int X2, int Y2) Extent => (X - DX, Y - DY, X + DX, Y + DY);
-        public (int X1, int Y1, int X2, int Y2, int DX, int DY, Node node) FullExtent(int ds)
+        public (float x, float y) Center => (X, Y);
+        public (float X1, float Y1, float X2, float Y2) Extent => (X - DX, Y - DY, X + DX, Y + DY);
+        public (float X1, float Y1, float X2, float Y2, float DX, float DY, Node node) FullExtent(int ds)
         {
             var x1 = X - DX - ds;
             var y1 = Y - DY - ds;
@@ -97,19 +97,19 @@ namespace ModelGraphSTD
         #endregion
 
         #region SetSize, GetValues  ===========================================
-        internal void SetSize(int x, int y)
+        internal void SetSize(float x, float y)
         {
             DX = (byte)((x < _min) ? _min : ((x > _max) ? _max : x));
             DY = (byte)((y < _min) ? _min : ((y > _max) ? _max : y));
         }
-        internal (int x, int y, int w, int h) Values()
+        internal (float x, float y, float w, float h) Values()
         {
             return IsGraphPoint ? (X, Y, 1, 1) : (X, Y, DX, DY);
         }
-        internal (int X, int Y) GetCenter() => (X, Y);
+        internal (float X, float Y) GetCenter() => (X, Y);
         internal int[] CenterXY
         {
-            get { return new int[] { X, Y }; }
+            get { return new int[] { (int)X, (int)Y }; }
             set { if (value != null && value.Length == 2) { X = value[0]; Y = value[1]; } }
         }
 
@@ -127,26 +127,26 @@ namespace ModelGraphSTD
         #endregion
 
         #region Align, Flip  =================================================
-        internal void AlignTop(int y) { Y = y + DY; }
+        internal void AlignTop(float y) { Y = y + DY; }
 
-        internal void AlignLeft(int x) { X = x + DX; }
+        internal void AlignLeft(float x) { X = x + DX; }
 
-        internal void AlignRight(int x) { X = x - DX; }
+        internal void AlignRight(float x) { X = x - DX; }
 
-        internal void AlignBottom(int y) { Y = y - DY; }
+        internal void AlignBottom(float y) { Y = y - DY; }
 
-        internal void AlignVertical(int x) { X = x; }
+        internal void AlignVertical(float x) { X = x; }
 
-        internal void AlignHorizontal(int y) { Y = y; }
+        internal void AlignHorizontal(float y) { Y = y; }
 
-        internal void VerticalFlip(int y) { Y = y + (y - Y); }
+        internal void VerticalFlip(float y) { Y = y + (y - Y); }
 
-        internal void HorizontalFlip(int x) { X = x + (x - X); }
+        internal void HorizontalFlip(float x) { X = x + (x - X); }
         #endregion
 
         #region Move, Resize, Flip, Rotate  ===================================
 
-        internal void Resize((int X, int Y) delta)
+        internal void Resize((float X, float Y) delta)
         {
             var dx = DX + delta.X;
             var dy = DY + delta.Y;
@@ -154,7 +154,7 @@ namespace ModelGraphSTD
             DY = (byte)((dy < _min) ? _min : ((dy > _max) ? _max : dx));
         }
 
-        internal void Rotate((int X, int Y) p, SymbolX sym)
+        internal void Rotate((float X, float Y) p, SymbolX sym)
         {
             var x = X;
             var y = Y;
@@ -267,7 +267,7 @@ namespace ModelGraphSTD
 
 
         // quickly eliminate nodes that don't qaulify
-        public bool HitTest((int X, int Y) p)
+        public bool HitTest((float X, float Y) p)
         {
             var x = p.X + 1;
             if (x < (X - DX - _ds)) return false;
@@ -279,11 +279,11 @@ namespace ModelGraphSTD
             return true;
         }
 
-        public (HitLocation hit, (int X, int Y) pnt) RefinedHit((int X, int Y) p)
+        public (HitLocation hit, (float X, float Y) pnt) RefinedHit((float X, float Y) p)
         {
-            int ds;
-            int x = p.X + 1;
-            int y = p.Y + 1;
+            float ds;
+            var x = p.X + 1;
+            var y = p.Y + 1;
             var hit = HitLocation.Node;
             var pnt = (X, Y);
 
@@ -329,12 +329,12 @@ namespace ModelGraphSTD
         internal bool HasOpenPaths => (OpenPathIndex >= 0);
         internal int OpenPathCount => (Graph == null) ? 0 : Graph.OpenPathCount(OpenPathIndex);
 
-        internal void Move((int X, int Y) delta)
+        internal void Move((float X, float Y) delta)
         {
             X = X + delta.X;
             Y = Y + delta.Y;
         }
-        public void RotateFlip((int X, int Y) focus, FlipRotate flip)
+        public void RotateFlip((float X, float Y) focus, FlipRotate flip)
         {
             FlipRotate = flip;
 

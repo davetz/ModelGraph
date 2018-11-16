@@ -224,7 +224,7 @@ namespace ModelGraph.Controls
                 _firstItteration = true;
                 return index + 9;
             }
-            internal void DrawLine((int X, int Y) pxy) => DrawLine(new Vector2(pxy.X, pxy.Y));
+            internal void DrawLine((float X, float Y) pxy) => DrawLine(new Vector2(pxy.X, pxy.Y));
             internal void DrawLine(Vector2 point)
             {
                 Vector2 p2 = point * _zoom + _offset;
@@ -562,14 +562,14 @@ namespace ModelGraph.Controls
             ZoomToPoint(zoom, p);
         }
 
-        internal void PanToPoint((int X, int Y) p)
+        internal void PanToPoint((float X, float Y) p)
         {
             ZoomToPoint(_zoomFactor, p);
         }
         #endregion
 
         #region Primary  ======================================================
-        void ZoomToPoint(float zoom, (int X, int Y) p)
+        void ZoomToPoint(float zoom, (float X, float Y) p)
         {
             var z = (zoom < maxZoomFactor) ? zoom : maxZoomFactor;
             if (_graph.Extent.Diagonal * z < minZoomDiagonal)

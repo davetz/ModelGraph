@@ -103,17 +103,17 @@ namespace ModelGraph.Controls
             _wheelDelta = cp.Properties.MouseWheelDelta;
             WheelAction?.Invoke();
         }
-        private (int X, int Y) GridPoint(PointerRoutedEventArgs e)
+        private (float X, float Y) GridPoint(PointerRoutedEventArgs e)
         {
             var p = e.GetCurrentPoint(CanvasGrid).Position;
-            return ((int)p.X, (int)p.Y);
+            return ((float)p.X, (float)p.Y);
         }
-        private (int X, int Y) DrawPoint(PointerRoutedEventArgs e)
+        private (float X, float Y) DrawPoint(PointerRoutedEventArgs e)
         {
             var p = e.GetCurrentPoint(DrawCanvas).Position;
             var x = (p.X - _offset.X) / _zoomFactor;
             var y = (p.Y - _offset.Y) / _zoomFactor;
-            return ((int)x, (int)y);
+            return ((float)x, (float)y);
         }
         #endregion
 

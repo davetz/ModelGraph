@@ -6,13 +6,13 @@ namespace ModelGraphSTD
     public class Edge : NodeEdge
     {
         private readonly QueryX _queryX;
-        public (int X, int Y)[] Points;
+        public (float X, float Y)[] Points;
         public Extent Extent = new Extent(); // all points are withing this extent+
 
         public Node Node1;
         public Node Node2;
 
-        public (int X, int Y)[] Bends;
+        public (float X, float Y)[] Bends;
 
         public (short X, short Y) Delta11; //surface point1
         public (short X, short Y) Delta12; //surface point2
@@ -65,13 +65,13 @@ namespace ModelGraphSTD
         #endregion
 
         #region Snapshot  =====================================================
-        internal ((int, int)[] bends, Facet facet1, Facet facet2) Snapshot
+        internal ((float, float)[] bends, Facet facet1, Facet facet2) Snapshot
         {
             get
             {
                 if (HasBends)
                 {
-                    var bends = new (int, int)[Bends.Length];
+                    var bends = new (float, float)[Bends.Length];
                     Bends.CopyTo(bends, 0);
                     return (bends, Facet1, Facet2);
                 }
@@ -82,7 +82,7 @@ namespace ModelGraphSTD
             {
                 if (value.bends != null)
                 {
-                    Bends = new (int, int)[value.bends.Length];
+                    Bends = new (float, float)[value.bends.Length];
                     value.bends.CopyTo(Bends, 0);
                 }
                 Facet1 = value.facet1;
@@ -92,7 +92,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Move  =========================================================
-        internal void Move((int X, int Y) delta)
+        internal void Move((float X, float Y) delta)
         {
             if (HasBends)
             {
@@ -108,7 +108,7 @@ namespace ModelGraphSTD
                 Points[i].Y = Points[i].Y + delta.Y;
             }
         }
-        internal void Move((int X, int Y) delta, int index1, int index2)
+        internal void Move((float X, float Y) delta, int index1, int index2)
         {
             if (HasBends)
             {
@@ -131,7 +131,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region RotateFlip  ===================================================
-        internal void RotateFlip((int x, int y) focus, FlipRotate flip)
+        internal void RotateFlip((float x, float y) focus, FlipRotate flip)
         {
             var len = Points.Length;
             for (int i = 0; i < len; i++)
@@ -145,7 +145,7 @@ namespace ModelGraphSTD
                 Bends[i] = XYPair.RotateFlip(Bends[i], focus, flip);
             }
         }
-        internal void RotateFlip((int x, int y) focus, FlipRotate flip, int index1, int index2)
+        internal void RotateFlip((float x, float y) focus, FlipRotate flip, int index1, int index2)
         {
             if (HasBends)
             {
@@ -166,7 +166,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region OtherBendAttachHorz  ==========================================
-        internal (Node other, (int, int) bend, Attach atch, bool horz) OtherBendAttachHorz(Node node)
+        internal (Node other, (float, float) bend, Attach atch, bool horz) OtherBendAttachHorz(Node node)
         {
             if (Points == null) Refresh();
             var l = Points.Length - 1;
@@ -200,22 +200,22 @@ namespace ModelGraphSTD
         //            Tm1   Bp1         Bp2   Tm2
         static readonly int _ds = GraphDefault.HitMargin;
 
-        internal void SetExtent((int X, int Y)[] points, int margin)
+        internal void SetExtent((float X, float Y)[] points, int margin)
         {
             Extent = Extent.SetExtent(points, margin);
         }
 
 
         // quickly eliminate edges that don't qaulify
-        internal bool HitTest((int X, int Y) p)
+        internal bool HitTest((float X, float Y) p)
         {
             return Extent.Contains(p);
         }
 
-        internal bool HitTest((int X, int Y) p, ref HitLocation hit, ref int hitBend, ref int hitIndex, ref (int X, int Y) hitPoint)
+        internal bool HitTest((float X, float Y) p, ref HitLocation hit, ref int hitBend, ref int hitIndex, ref (float X, float Y) hitPoint)
         {
-            (int X, int Y) p1 = (0, 0); // used for testing line segments
-            (int X, int Y) p2 = (0, 0); // used for testing line segments
+            (float X, float Y) p1 = (0, 0); // used for testing line segments
+            (float X, float Y) p2 = (0, 0); // used for testing line segments
             var E = new Extent(p, _ds); // extent of hit point sensitivity
 
             var gotHit = false;
@@ -340,9 +340,9 @@ namespace ModelGraphSTD
         #endregion
 
         #region SetFace  ======================================================
-        internal void SetFace(Node node, (int x, int y) d) => SetFace(node, d, d, d);
-        internal void SetFace(Node node, (int x, int y) d1, (int x, int y) d3) => SetFace(node, d1, d1, d3);
-        internal void SetFace(Node node, (int x, int y) d1, (int x, int y) d2, (int x, int y) d3)
+        internal void SetFace(Node node, (float x, float y) d) => SetFace(node, d, d, d);
+        internal void SetFace(Node node, (float x, float y) d1, (float x, float y) d3) => SetFace(node, d1, d1, d3);
+        internal void SetFace(Node node, (float x, float y) d1, (float x, float y) d2, (float x, float y) d3)
         {
             if (node == Node1)
             { Delta11 = S(d1); Delta12 = S(d2); Delta13 = S(d3); }
@@ -353,20 +353,20 @@ namespace ModelGraphSTD
             if (NeedsRefresh) Refresh();
             NeedsRefresh = !NeedsRefresh;
 
-            // convert (int, int) => (short, short)
-            (short, short) S((int x, int y) p) => ((short)p.x, (short)p.y);
+            // convert (float, float) => (short, short)
+            (short, short) S((float x, float y) p) => ((short)p.x, (short)p.y);
         }
         #endregion
 
         #region Facets  =======================================================
         static readonly FacetDXY[] Facets =
         {
-            new FacetDXY(new (int,int)[0]),
-            new FacetDXY(new (int,int)[] { (0, 1),    (3,  1),    (6, 0),   (3, -1),   (0, -1),    (0,  0),    (6, 0) }),
-            new FacetDXY(new (int,int)[] { (3, 0),    (7, -4),   (11, 0),   (7,  4),   (3,  0),    (7, -4),   (11, 0) }),
-            new FacetDXY(new (int,int)[] { (2, 0),   (12, -3),    (8, 0),   (12, 3),   (2,  0),   (12,  0) })
+            new FacetDXY(new (float, float)[0]),
+            new FacetDXY(new (float, float)[] { (0, 1),    (3,  1),    (6, 0),   (3, -1),   (0, -1),    (0,  0),    (6, 0) }),
+            new FacetDXY(new (float, float)[] { (3, 0),    (7, -4),   (11, 0),   (7,  4),   (3,  0),    (7, -4),   (11, 0) }),
+            new FacetDXY(new (float, float)[] { (2, 0),   (12, -3),    (8, 0),   (12, 3),   (2,  0),   (12,  0) })
         };
-        static readonly FacetDXY NoFacet = new FacetDXY(new (int, int)[0]);
+        static readonly FacetDXY NoFacet = new FacetDXY(new (float, float)[0]);
         #endregion
 
         #region Refresh  ======================================================
@@ -391,7 +391,7 @@ namespace ModelGraphSTD
             var len2 = facet2.Length;
 
             var len = len1 + bendCount + len2 + 6; // allow for pseudo points sp1 fp1 tp1 tp2 fp2 sp2 (x,y)
-            var P = new(int X, int Y)[len];        // line coordinate values (x,y), (x,y),..
+            var P = new(float X, float Y)[len];        // line coordinate values (x,y), (x,y),..
 
             var sp1 = 0;               // index of surface point 1 value
             var fp1 = 1;               // index of facet point 1 value
@@ -409,8 +409,8 @@ namespace ModelGraphSTD
 
             Points = P;
 
-            (int cx1, int cy1, int w1, int h1) = Node1.Values();
-            (int cx2, int cy2, int w2, int h2) = Node2.Values();
+            (float cx1, float cy1, float w1, float h1) = Node1.Values();
+            (float cx2, float cy2, float w2, float h2) = Node2.Values();
 
             var (dx11, dy11) = Delta11;
             var (dx12, dy12) = Delta12;

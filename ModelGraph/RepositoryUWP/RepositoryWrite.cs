@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_E;
+            var fileFormat = _fileFormat_F;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -530,8 +530,8 @@ namespace RepositoryUWP
                                         var nd = en as Node;
                                         w.WriteInt32(itemIndex[nd.Item]);
 
-                                        w.WriteInt32(nd.X - x0);
-                                        w.WriteInt32(nd.Y - y0);
+                                        w.WriteSingle(nd.X - x0);
+                                        w.WriteSingle(nd.Y - y0);
                                         w.WriteByte(nd.DX);
                                         w.WriteByte(nd.DY);
                                         w.WriteByte((byte)nd.Aspect);
@@ -566,8 +566,8 @@ namespace RepositoryUWP
                                             w.WriteUInt16((ushort)len);
                                             for (int i = 0; i < len; i++)
                                             {
-                                                w.WriteInt32(eg.Bends[i].X - x0);
-                                                w.WriteInt32(eg.Bends[i].Y - y0);
+                                                w.WriteSingle(eg.Bends[i].X - x0);
+                                                w.WriteSingle(eg.Bends[i].Y - y0);
                                             }
                                         }
                                     }
@@ -583,11 +583,11 @@ namespace RepositoryUWP
             }
         }
         #region TryGetOffset  =================================================
-        private (int X0, int Y0) GetCenter(Chef chef, Dictionary<QueryX, List<NodeEdge>> qxParams)
+        private (float X0, float Y0) GetCenter(Chef chef, Dictionary<QueryX, List<NodeEdge>> qxParams)
         {
-            int x1, y1, x2, y2;
-            x1 = y1 = int.MaxValue;
-            x2 = y2 = int.MinValue;
+            float x1, y1, x2, y2;
+            x1 = y1 = float.MaxValue;
+            x2 = y2 = float.MinValue;
             foreach (var e3 in qxParams)
             {
                 if (e3.Key == chef.QueryXNode)
@@ -605,7 +605,7 @@ namespace RepositoryUWP
                     }
                 }
             }
-            return (x1 == int.MaxValue) ? (0, 0) : ((x1 + x2) / 2, (y1 + y2) / 2);
+            return (x1 == float.MaxValue) ? (0, 0) : ((x1 + x2) / 2, (y1 + y2) / 2);
         }
         #endregion
         #endregion

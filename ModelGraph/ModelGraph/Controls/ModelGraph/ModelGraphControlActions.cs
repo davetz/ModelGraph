@@ -50,7 +50,7 @@ namespace ModelGraph.Controls
 
         private Modifier _modifier;
         private string _keyName;
-        private (int X, int Y) _arrowDelta;
+        private (float X, float Y) _arrowDelta;
         private int _wheelDelta;
 
         private Selector _selector;
@@ -449,7 +449,7 @@ namespace ModelGraph.Controls
         #endregion
 
         #region SelectorAction  ===============================================
-        private async void Move((int X, int Y) delta)
+        private async void Move((float X, float Y) delta)
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.Move(delta); });
         }
@@ -457,7 +457,7 @@ namespace ModelGraph.Controls
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.Rotate(); });
         }
-        private async void HitTest((int X, int Y) point)
+        private async void HitTest((float X, float Y) point)
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.HitTest(point); });
         }

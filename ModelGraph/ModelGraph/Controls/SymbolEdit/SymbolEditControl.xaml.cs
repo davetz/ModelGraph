@@ -317,14 +317,14 @@ namespace ModelGraph.Controls
 
             internal int Width { get { return Style.Width; } }
             internal Color Color { get { return Style.Color; } }
-            internal List<(int X, int Y)> Points = new List<(int X, int Y)>();
+            internal List<(float X, float Y)> Points = new List<(float X, float Y)>();
             internal readonly LineStyle Style = new LineStyle();
 
             private int Last { get { return Points.Count - 1; } }
-            internal (int X, int Y) LastPoint { get { return Points[Last]; } }
-            internal (int X, int Y) FirstPoint { get { return Points[0]; } }
+            internal (float X, float Y) LastPoint { get { return Points[Last]; } }
+            internal (float X, float Y) FirstPoint { get { return Points[0]; } }
 
-            internal bool IsSamePoint((int X, int Y) p, (int X, int Y) q) { return (p.X == q.X && p.Y == q.Y); }
+            internal bool IsSamePoint((float X, float Y) p, (float X, float Y) q) { return (p.X == q.X && p.Y == q.Y); }
             internal bool IsClosedPolygon { get { return IsSamePoint(FirstPoint, LastPoint); } }
 
             internal bool TryExtendLine(Extent e, LineStyle s)
@@ -374,7 +374,7 @@ namespace ModelGraph.Controls
                 return false;
             }
 
-            private bool MidPointMatch((int X, int Y) p)
+            private bool MidPointMatch((float X, float Y) p)
             {
                 var n = Last;
                 for (int i = 1; i < n; i++)
@@ -406,7 +406,7 @@ namespace ModelGraph.Controls
         private Action DragAction;
         private Action BeginAction;
 
-        private (int X, int Y) _rawRef;
+        private (float X, float Y) _rawRef;
         private Extent _drawRef = new Extent();
         private bool _pointerIsPressed;
 
@@ -968,7 +968,7 @@ namespace ModelGraph.Controls
             DrawCanvas.Invalidate();
         }
 
-        private (int X, int Y) GetCenter()
+        private (float X, float Y) GetCenter()
         {
             return (12, 12);
         }
@@ -1059,7 +1059,7 @@ namespace ModelGraph.Controls
 
         private void MoveSelectedPoints()
         {
-            if (_drawRef.TryGetDelta(out (int X, int Y) delta) && _selectLines.Count > 0)
+            if (_drawRef.TryGetDelta(out (float X, float Y) delta) && _selectLines.Count > 0)
             {
                 foreach (var line in _selectLines)
                 {
@@ -1076,7 +1076,7 @@ namespace ModelGraph.Controls
         }
         private void MoveSelectedLines()
         {
-            if (_drawRef.TryGetDelta(out (int X, int Y) delta) && _selectLines.Count > 0)
+            if (_drawRef.TryGetDelta(out (float X, float Y) delta) && _selectLines.Count > 0)
             {
                 foreach (var line in _selectLines)
                 {
@@ -1108,7 +1108,7 @@ namespace ModelGraph.Controls
             DrawCanvas.Invalidate();
         }
 
-        private (int X, int Y) _hitPoint;
+        private (float X, float Y) _hitPoint;
         private void HitTest()
         {
             var p = _hitPoint = _drawRef.Point1;
@@ -1274,7 +1274,7 @@ namespace ModelGraph.Controls
             UpdateSymbolSize();
             DrawCanvas.Invalidate();
         }
-        private bool HasSameInteriorPoint(List<(int X, int Y)> p1, List<(int X, int Y)> p2)
+        private bool HasSameInteriorPoint(List<(float X, float Y)> p1, List<(float X, float Y)> p2)
         {
             int i1 = 1;
             int i2 = p1.Count - 1;
@@ -1840,7 +1840,7 @@ namespace ModelGraph.Controls
             EndAction?.Invoke();
         }
 
-        private (int X, int Y) RawPoint(PointerRoutedEventArgs e)
+        private (float X, float Y) RawPoint(PointerRoutedEventArgs e)
         {
             var p = e.GetCurrentPoint(DrawCanvas).Position;
             var x = (p.X - _offset);
@@ -1848,7 +1848,7 @@ namespace ModelGraph.Controls
             return ((int)x, (int)y);
         }
 
-        private (int X, int Y) DrawPoint(PointerRoutedEventArgs e)
+        private (float X, float Y) DrawPoint(PointerRoutedEventArgs e)
         {
             var p = e.GetCurrentPoint(DrawCanvas).Position;
             var x = Round((p.X - _offset) / _zoomFactor);

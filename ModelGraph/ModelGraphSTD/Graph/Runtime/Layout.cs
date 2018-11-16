@@ -8,7 +8,7 @@ namespace ModelGraphSTD
     internal static class Layout
     {
         #region SortedEdges  ==================================================
-        internal static (int count, int[] nquad, int[] nsect, (Edge edge, Node other, ConnectFlip conf, (int x, int y) bend, double slope, Quad quad, Sect sect, Attach atch, bool horz)[])
+        internal static (int count, int[] nquad, int[] nsect, (Edge edge, Node other, ConnectFlip conf, (float x, float y) bend, double slope, Quad quad, Sect sect, Attach atch, bool horz)[])
             SortedEdges(Node n1)
         {/*
             Construct an optimumly ordered edge list for the given node.
@@ -31,8 +31,8 @@ namespace ModelGraphSTD
             var nquad = new int[5];
             var nsect = new int[9];
 
-            var E = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect, Attach atch, bool horz)[count];  // working edge array
-            var F = new (Edge edge, Node node, ConnectFlip conf, (int x, int y) bend, double slope, Quad quad, Sect sect, Attach atch, bool horz)[count];   // output edge array
+            var E = new (Edge edge, Node node, ConnectFlip conf, (float x, float y) bend, double slope, short ord1, short ord2, bool isTuple, bool isFirst, Quad quad, Sect sect, Attach atch, bool horz)[count];  // working edge array
+            var F = new (Edge edge, Node node, ConnectFlip conf, (float x, float y) bend, double slope, Quad quad, Sect sect, Attach atch, bool horz)[count];   // output edge array
 
             var P = new List<int>(count);  // ordered edge indexes for parralell edges 
             var O = new List<int>(count);  // ordered edge indexes for all non-parrallel edges, but including just one of the parallel edges

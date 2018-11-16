@@ -13,7 +13,7 @@ namespace ModelGraphSTD
             var tpSkew = gx.TerminalSkew;
             var tmLen = gx.TerminalLength;
 
-            (int x, int y, int w, int h) = node.Values();
+            (float x, float y, float w, float h) = node.Values();
             var d0 = 2;
             var xE = x + w - d0; // east side
             var xW = x - w + d0; // west side
