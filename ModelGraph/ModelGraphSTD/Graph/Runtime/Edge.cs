@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Numerics;
 
 namespace ModelGraphSTD
 {
@@ -48,6 +49,7 @@ namespace ModelGraphSTD
 
         internal bool HasBends => !HasNoBends;
         internal bool HasNoBends => Bends == null || Bends.Length == 0;
+
         internal Graph Graph { get { return Owner as Graph; } }
         internal GraphX GraphX { get { return (Owner == null) ? null : Owner.Owner as GraphX; } }
         internal QueryX QueryX => _queryX;

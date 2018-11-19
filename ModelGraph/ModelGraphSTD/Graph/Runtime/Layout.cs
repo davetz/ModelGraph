@@ -9,7 +9,7 @@ namespace ModelGraphSTD
     {
         #region SortedEdges  ==================================================
         internal static (int count, int[] nquad, int[] nsect, (Edge edge, Node other, ConnectFlip conf, (float x, float y) bend, double slope, Quad quad, Sect sect, Attach atch, bool horz)[])
-            SortedEdges(Node n1)
+        SortedEdges(Node n1)
         {/*
             Construct an optimumly ordered edge list for the given node.
 
@@ -19,8 +19,8 @@ namespace ModelGraphSTD
             in a clockwise direction. The circle has 8 sectors and 4 qaudrants as
             shown below. Keep track of the number of edges in each quadrant and
             sector.    
-                            sect         quad       side
-                           =======       ====       ======
+                 slice      sect         quad       side
+                =======    =======       ====       ======
                            5\6|7/8        3|4         N
                            ~~~+~~~        ~+~       W + E
                            4/3|2\1        2|1         S

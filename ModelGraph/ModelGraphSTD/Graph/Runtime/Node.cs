@@ -1,4 +1,6 @@
 ﻿
+using System.Numerics;
+
 namespace ModelGraphSTD
 {
     public class Node : NodeEdge
