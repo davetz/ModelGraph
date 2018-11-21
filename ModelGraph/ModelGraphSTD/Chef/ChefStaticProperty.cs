@@ -400,28 +400,28 @@ namespace ModelGraphSTD
             }
             {
                 var p = _symbolXTopContactProperty = new PropertyOf<SymbolX, string>(PropertyStore, Trait.SymbolXTopContact_P, _contactEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).TopContact);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).NorthContact);
                 p.SetValFunc = (item, value) => TrySetSymbolTopContact(p.Cast(item), GetEnumZKey(p.EnumZ, value));
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _symbolXLeftContacttProperty = new PropertyOf<SymbolX, string>(PropertyStore, Trait.SymbolXLeftContactt_P, _contactEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).LeftContact);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).WestContact);
                 p.SetValFunc = (item, value) => TrySetSymbolLeftContact(p.Cast(item), GetEnumZKey(p.EnumZ, value));
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _symbolXRightContactProperty = new PropertyOf<SymbolX, string>(PropertyStore, Trait.SymbolXRightContact_P, _contactEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).RightContact);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).EastContact);
                 p.SetValFunc = (item, value) => TrySetSymbolRightContact(p.Cast(item), GetEnumZKey(p.EnumZ, value));
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
             {
                 var p = _symbolXBottomContactProperty = new PropertyOf<SymbolX, string>(PropertyStore, Trait.SymbolXBottomContact_P, _contactEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).BottomContact);
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).SouthContact);
                 p.SetValFunc = (item, value) => TrySetSymbolBottomContact(p.Cast(item), GetEnumZKey(p.EnumZ, value));
                 p.Value = new StringValue(p);
                 props.Add(p);

@@ -274,10 +274,10 @@ namespace RepositoryUWP
                 if (!string.IsNullOrWhiteSpace(sx.Description)) b |= S4;
                 if (sx.Data != null && sx.Data.Length > 12) b |= S5;
                 if (sx.Attach != Attach.Normal) b |= S6;
-                if (sx.TopContact != Contact.Any) b |= S7;
-                if (sx.LeftContact != Contact.Any) b |= S8;
-                if (sx.RightContact != Contact.Any) b |= S9;
-                if (sx.BottomContact != Contact.Any) b |= S10;
+                if (sx.NorthContact != Contact.Any) b |= S7;
+                if (sx.WestContact != Contact.Any) b |= S8;
+                if (sx.EastContact != Contact.Any) b |= S9;
+                if (sx.SouthContact != Contact.Any) b |= S10;
 
                 w.WriteUInt16(b);
                 if ((b & S1) != 0) w.WriteUInt16(sx.GetState());
@@ -286,10 +286,10 @@ namespace RepositoryUWP
                 if ((b & S4) != 0) WriteString(w, sx.Description);
                 if ((b & S5) != 0) WriteBytes(w, sx.Data);
                 if ((b & S6) != 0) w.WriteByte((byte)sx.Attach);
-                if ((b & S7) != 0) w.WriteByte((byte)sx.TopContact);
-                if ((b & S8) != 0) w.WriteByte((byte)sx.LeftContact);
-                if ((b & S9) != 0) w.WriteByte((byte)sx.RightContact);
-                if ((b & S10) != 0) w.WriteByte((byte)sx.BottomContact);
+                if ((b & S7) != 0) w.WriteByte((byte)sx.NorthContact);
+                if ((b & S8) != 0) w.WriteByte((byte)sx.WestContact);
+                if ((b & S9) != 0) w.WriteByte((byte)sx.EastContact);
+                if ((b & S10) != 0) w.WriteByte((byte)sx.SouthContact);
             }
             w.WriteByte((byte)Mark.SymbolXEnding); // itegrity marker
         }

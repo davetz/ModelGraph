@@ -7,30 +7,33 @@ namespace ModelGraphSTD
     public static class XYVector
     {
         #region Matrix3x2  ====================================================
-        static internal Matrix3x2 Rotation45cw(Vector2 focus) => Matrix3x2.CreateRotation(cw45, focus);
-        static internal Matrix3x2 Rotation90cw(Vector2 focus) => Matrix3x2.CreateRotation(cw90, focus);
-        static internal Matrix3x2 Rotation135cw(Vector2 focus) => Matrix3x2.CreateRotation(cw135, focus);
-        static internal Matrix3x2 Rotation180(Vector2 focus) => Matrix3x2.CreateRotation(cc180, focus);
-        static internal Matrix3x2 Rotation135cc(Vector2 focus) => Matrix3x2.CreateRotation(cc135, focus);
-        static internal Matrix3x2 Rotation90cc(Vector2 focus) => Matrix3x2.CreateRotation(cc90, focus);
-        static internal Matrix3x2 Rotation45cc(Vector2 focus) => Matrix3x2.CreateRotation(cc45, focus);
+
+        static readonly float A45 = (float)(Math.PI / -4.0);
+        static readonly float A90 = (float)(Math.PI / -2.0);
+        static readonly float A135 = (float)(Math.PI * 3.0 / -4.0);
+
+        static internal Matrix3x2 Rotation45(Vector2 focus) => Matrix3x2.CreateRotation(A45, focus);
+        static internal Matrix3x2 Rotation90(Vector2 focus) => Matrix3x2.CreateRotation(A90, focus);
+        static internal Matrix3x2 Rotation135(Vector2 focus) => Matrix3x2.CreateRotation(A135, focus);
+        static internal Matrix3x2 Rotation180(Vector2 focus) => Matrix3x2.CreateScale(-1, -1, focus);
+        static internal Matrix3x2 Rotation225(Vector2 focus) => Matrix3x2.CreateRotation(-A135, focus);
+        static internal Matrix3x2 Rotation270(Vector2 focus) => Matrix3x2.CreateRotation(-A90, focus);
+        static internal Matrix3x2 Rotation315(Vector2 focus) => Matrix3x2.CreateRotation(-A45, focus);
         static internal Matrix3x2 FlipVertical(Vector2 focus) => Matrix3x2.CreateScale(1, -1, focus);
         static internal Matrix3x2 FlipHorizontal(Vector2 focus) => Matrix3x2.CreateScale(-1, 1, focus);
-        static internal Matrix3x2 FlipBothWays(Vector2 focus) => Matrix3x2.CreateScale(-1, -1, focus);
-
-        static readonly float cc45 = (float)(Math.PI / 4.0);
-        static readonly float cc90 = (float)(Math.PI / 2.0);
-        static readonly float cc135 = (float)(Math.PI * 3.0 / 4.0);
-        static readonly float cc180 = (float)(Math.PI);
-        static readonly float cw135 = -cc135;
-        static readonly float cw90 = -cc90;
-        static readonly float cw45 = -cc45;
+        static internal Matrix3x2 FlipRotation45(Vector2 focus) => FlipVertical(focus) * Rotation45(focus);
+        static internal Matrix3x2 FlipRotation90(Vector2 focus) => FlipVertical(focus) * Rotation90(focus);
+        static internal Matrix3x2 FlipRotation135(Vector2 focus) => FlipVertical(focus) * Rotation135(focus);
+        static internal Matrix3x2 FlipRotation180(Vector2 focus) => FlipVertical(focus) * Rotation180(focus);
+        static internal Matrix3x2 FlipRotation225(Vector2 focus) => FlipVertical(focus) * Rotation225(focus);
+        static internal Matrix3x2 FlipRotation270(Vector2 focus) => FlipVertical(focus) * Rotation270(focus);
+        static internal Matrix3x2 FlipRotation315(Vector2 focus) => FlipVertical(focus) * Rotation315(focus);
         #endregion
 
         #region QuadSliceSlope  ===============================================
-        static readonly double slope1 = Math.Tan(Math.PI / 8.0);         // 22.5 degrees
-        static readonly double slope2 = 1.0f;                            // 45.0 degrees
-        static readonly double slope3 = Math.Tan(Math.PI * 3.0 / 8.0);   // 67.5 degrees
+        static readonly double Slope1 = Math.Tan(Math.PI / 8.0);         // 22.5 degrees
+        static readonly double Slope2 = 1.0f;                            // 45.0 degrees
+        static readonly double Slope3 = Math.Tan(Math.PI * 3.0 / 8.0);   // 67.5 degrees
         public static (Quad quad, Slice slice, float slope) QuadSliceSlope((float x, float y) p1, (float x, float y) p2)
         {
             var dx = p2.x - p1.x;
@@ -56,22 +59,22 @@ namespace ModelGraphSTD
                     {
                         if (dy < 0)
                         {//======================================== Quad_3
-                            if (slope > slope3)
+                            if (slope > Slope3)
                                 return (Quad.Q3, Slice.S11, slope);
-                            else if (slope > slope2)
+                            else if (slope > Slope2)
                                 return (Quad.Q3, Slice.S10, slope);
-                            else if (slope > slope1)
+                            else if (slope > Slope1)
                                 return (Quad.Q3, Slice.S9, slope);
                             else
                                 return (Quad.Q3, Slice.S8, slope);
                         }
                         else
                         {//======================================== Quad_2
-                            if (slope < -slope3)
+                            if (slope < -Slope3)
                                 return (Quad.Q2, Slice.S4, slope);
-                            else if (slope < -slope2)
+                            else if (slope < -Slope2)
                                 return (Quad.Q2, Slice.S5, slope);
-                            else if (slope < -slope1)
+                            else if (slope < -Slope1)
                                 return (Quad.Q2, Slice.S6, slope);
                             else
                                 return (Quad.Q2, Slice.S7, slope);
@@ -81,22 +84,22 @@ namespace ModelGraphSTD
                     {
                         if (dy < 0)
                         {//======================================== Quad_4
-                            if (slope < -slope3)
+                            if (slope < -Slope3)
                                 return (Quad.Q4, Slice.S12, slope);
-                            else if (slope < -slope2)
+                            else if (slope < -Slope2)
                                 return (Quad.Q4, Slice.S13, slope);
-                            else if (slope < -slope1)
+                            else if (slope < -Slope1)
                                 return (Quad.Q4, Slice.S14, slope);
                             else
                                 return (Quad.Q4, Slice.S15, slope);
                         }
                         else
                         {//======================================== Quad_1
-                            if (slope > slope3)
+                            if (slope > Slope3)
                                 return (Quad.Q1, Slice.S3, slope);
-                            else if (slope > slope2)
+                            else if (slope > Slope2)
                                 return (Quad.Q1, Slice.S2, slope);
-                            else if (slope > slope1)
+                            else if (slope > Slope1)
                                 return (Quad.Q1, Slice.S1, slope);
                             else
                                 return (Quad.Q1, Slice.S0, slope);

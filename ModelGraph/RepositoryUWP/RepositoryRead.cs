@@ -823,10 +823,10 @@ namespace RepositoryUWP
                 if ((b & B2) != 0) sx.Summary = ReadString(r);
                 if ((b & B3) != 0) sx.Description = ReadString(r);
                 if ((b & B4) != 0) sx.Data = ReadBytes(r);
-                if ((b & B5) != 0) sx.TopContact = (Contact)r.ReadByte();
-                if ((b & B6) != 0) sx.LeftContact = (Contact)r.ReadByte();
-                if ((b & B7) != 0) sx.RightContact = (Contact)r.ReadByte();
-                if ((b & B8) != 0) sx.BottomContact = (Contact)r.ReadByte();
+                if ((b & B5) != 0) sx.NorthContact = (Contact)r.ReadByte();
+                if ((b & B6) != 0) sx.WestContact = (Contact)r.ReadByte();
+                if ((b & B7) != 0) sx.EastContact = (Contact)r.ReadByte();
+                if ((b & B8) != 0) sx.SouthContact = (Contact)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.SymbolXEnding) throw new Exception($"Expected SymbolXEnding marker, instead got {mark}");
@@ -854,10 +854,10 @@ namespace RepositoryUWP
                 if ((b & S3) != 0) sx.Summary = ReadString(r);
                 if ((b & S4) != 0) sx.Description = ReadString(r);
                 if ((b & S5) != 0) sx.Data = ReadBytes(r);
-                if ((b & S6) != 0) sx.TopContact = (Contact)r.ReadByte();
-                if ((b & S7) != 0) sx.LeftContact = (Contact)r.ReadByte();
-                if ((b & S8) != 0) sx.RightContact = (Contact)r.ReadByte();
-                if ((b & S9) != 0) sx.BottomContact = (Contact)r.ReadByte();
+                if ((b & S6) != 0) sx.NorthContact = (Contact)r.ReadByte();
+                if ((b & S7) != 0) sx.WestContact = (Contact)r.ReadByte();
+                if ((b & S8) != 0) sx.EastContact = (Contact)r.ReadByte();
+                if ((b & S9) != 0) sx.SouthContact = (Contact)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.SymbolXEnding) throw new Exception($"Expected SymbolXEnding marker, instead got {mark}");
@@ -886,10 +886,10 @@ namespace RepositoryUWP
                 if ((b & S4) != 0) sx.Description = ReadString(r);
                 if ((b & S5) != 0) sx.Data = ReadBytes(r);
                 if ((b & S6) != 0) sx.Attach = (Attach)r.ReadByte();
-                if ((b & S7) != 0) sx.TopContact = (Contact)r.ReadByte();
-                if ((b & S8) != 0) sx.LeftContact = (Contact)r.ReadByte();
-                if ((b & S9) != 0) sx.RightContact = (Contact)r.ReadByte();
-                if ((b & S10) != 0) sx.BottomContact = (Contact)r.ReadByte();
+                if ((b & S7) != 0) sx.NorthContact = (Contact)r.ReadByte();
+                if ((b & S8) != 0) sx.WestContact = (Contact)r.ReadByte();
+                if ((b & S9) != 0) sx.EastContact = (Contact)r.ReadByte();
+                if ((b & S10) != 0) sx.SouthContact = (Contact)r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.SymbolXEnding) throw new Exception($"Expected SymbolXEnding marker, instead got {mark}");

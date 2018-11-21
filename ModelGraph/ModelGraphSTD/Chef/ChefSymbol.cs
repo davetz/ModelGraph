@@ -8,22 +8,22 @@ namespace ModelGraphSTD
     {
         bool TrySetSymbolTopContact(SymbolX sx, int val)
         {
-            sx.TopContact = (Contact)val;
+            sx.NorthContact = (Contact)val;
             return true;
         }
         bool TrySetSymbolLeftContact(SymbolX sx, int val)
         {
-            sx.LeftContact = (Contact)val;
+            sx.WestContact = (Contact)val;
             return true;
         }
         bool TrySetSymbolRightContact(SymbolX sx, int val)
         {
-            sx.RightContact = (Contact)val;
+            sx.EastContact = (Contact)val;
             return true;
         }
         bool TrySetSymbolBottomContact(SymbolX sx, int val)
         {
-            sx.BottomContact = (Contact)val;
+            sx.SouthContact = (Contact)val;
             return true;
         }
     }

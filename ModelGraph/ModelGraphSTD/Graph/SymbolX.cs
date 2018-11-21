@@ -12,10 +12,15 @@ namespace ModelGraphSTD
         public string Description;
         public byte[] Data;
         public Attach Attach;
-        public Contact TopContact;
-        public Contact LeftContact;
-        public Contact RightContact;
-        public Contact BottomContact;
+        public Graphic Graphic;
+        public Contact NorthContact;
+        public Contact WestContact;
+        public Contact EastContact;
+        public Contact SouthContact;
+        public Contact SouthEastContact;
+        public Contact SouthWestContact;
+        public Contact NorthEastContact;
+        public Contact NorthWestContact;
 
 
         #region Constructors  =================================================
@@ -45,16 +50,6 @@ namespace ModelGraphSTD
         public bool NoData { get { return (Data == null || Data.Length < minData); } }
         public byte Width { get { return NoData ? minSize : Data[0]; } }
         public byte Height { get { return NoData ? minSize : Data[1]; } }
-
-        public byte[] GetOptions()
-        {
-            var options = new byte[4];
-            options[0] = (byte)TopContact;
-            options[1] = (byte)LeftContact;
-            options[2] = (byte)RightContact;
-            options[3] = (byte)BottomContact;
-            return options;
-        }
         #endregion
     }
 }
