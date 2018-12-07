@@ -124,6 +124,8 @@
       <DependentUpon>ModelTreeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ModelTree\ModelTreeUICache.cs" />
+    <Compile Include="Controls\Shapes\Line.cs" />
+    <Compile Include="Controls\Shapes\Shape.cs" />
     <Compile Include="Controls\SymbolEdit\SymbolEditControl.xaml.cs">
       <DependentUpon>SymbolEditControl.xaml</DependentUpon>
     </Compile>
@@ -177,8 +179,8 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\SymbolEdit\SymbolEditControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\Page.xaml">
       <Generator>MSBuild:Compile</Generator>

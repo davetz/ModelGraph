@@ -8,7 +8,7 @@ namespace ModelGraphSTD
     {
         public Item SeedItem;    // seed of query forest 
         public Query[] Forest;   // roots of the query forest
-        public SymbolX[][] Symbols; // referenced by [Node.Symbol][Node.FlipRotate]
+        public SymbolX[] Symbols; // referenced by [Node.Symbol][Node.FlipRotate]
 
         public List<Node> Nodes = new List<Node>();
         public List<Edge> Edges = new List<Edge>();

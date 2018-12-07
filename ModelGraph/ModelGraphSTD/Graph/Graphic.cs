@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+﻿using System.Numerics;
 
 namespace ModelGraphSTD
 {
@@ -9,14 +6,16 @@ namespace ModelGraphSTD
     {
         public static int NSF = 8;                  // number of symbol faces
         public static int NFR = 16;                 // number of FlipRotate states
-        public (float X, float Y) Center;
+        public (float X, float Y) Center;           // geometric center of the graphic
 
-        public (byte A, byte R, byte G, byte B, byte W, byte SC, byte EC, byte DC, byte DS)[] Styles;
+        public (byte A, byte R, byte G, byte B, byte W, byte SC, byte EC, byte DC, byte DS)[] Styles;   // [line]
 
         // NFR version of the symbol's faces and lines, one for each FlipRotate state
-        public Contact[][] Contacts;
-        public (float X1, float Y1, float X2, float Y2)[][] Faces;
-        public (float DX, float DY)[][][] Points;
+        //=====================================================================================
+        public Contact[][] Contacts;                                      // [flipRotate][face]
+        public (float DX1, float DY1, float DX2, float DY2)[][] Faces;    // [flipRotate][face]
+        public (float DX, float DY)[][][] Points;                         // [flipRotate][line][point]
+
         public bool IsInvalid;
         public bool IsValid => !IsInvalid;
 
@@ -24,6 +23,12 @@ namespace ModelGraphSTD
         {
             Initialize(symbol.Data);
         }
+
+        // 
+        // line data:    A,R,G,B,W,SC,EC,DC,DS,PC,X,Y,X,Y,..
+        #region Header  =======================================================
+        
+        #endregion
 
         #region Initialize  ===================================================
         private void Initialize(byte[] data)
@@ -77,7 +82,7 @@ namespace ModelGraphSTD
                 {
                     Contacts[i][j] = Contacts[i - 1][(j + 1) % NSF];
                 }
-
+                var LC = 0;// TEMP FIX LATER
                 var ru = rs[i];
                 for (int j = 0; j < LC; j++)
                 {

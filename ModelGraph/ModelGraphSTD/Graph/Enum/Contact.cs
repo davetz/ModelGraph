@@ -5,8 +5,8 @@
     /// </summary>
     public enum Contact : byte
     {
-        Any = 0, // allow any number of contacts
-        One = 1, // allow exactly one contact
-        None = 2, // absolutely no connections allowed 
+        Any = 0, // allow any number of contacts on this symbol face
+        One = 1, // allow exactly one contact on this symbol face
+        None = 3, // absolutely no connections are allowed on this symbol face
     }
 }
