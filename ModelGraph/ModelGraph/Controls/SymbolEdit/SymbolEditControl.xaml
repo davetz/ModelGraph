@@ -5,11 +5,18 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
-    Width="540" Height="340"
-    mc:Ignorable="d"
-    Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+    Width="860" Height="550"
+    mc:Ignorable="d">
 
     <Page.Resources>
+
+        <Style x:Key="RootGridStyle" TargetType="Grid">
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
+        </Style>
 
         <Style x:Key="TitleStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="16" />
@@ -20,11 +27,6 @@
         <Style x:Key="PagePanelStyle" TargetType="StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
             <Setter Property="HorizontalAlignment" Value="Right" />
-        </Style>
-
-        <Style x:Key="ControlPanelStyle" TargetType="StackPanel">
-            <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="Margin" Value="4,0,0,0" />
         </Style>
 
         <Style x:Key="AppButtonStyle" TargetType="Button">
@@ -56,13 +58,6 @@
             <Setter Property="FontSize" Value="11" />
         </Style>
 
-        <Style x:Key="RootGridStyle" TargetType="Grid">
-            <Setter Property="VerticalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-        </Style>
-
         <Style x:Key="ButtonGridStyle" TargetType="Grid">
             <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}"/>
             <Setter Property="VerticalAlignment" Value="Top" />
@@ -72,30 +67,83 @@
             <Setter Property="Margin" Value="0" />
         </Style>
 
+        <Style x:Key="SelectGridStyle" TargetType="Grid">
+            <Setter Property="Background" Value="DarkSlateGray" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Grid.Column" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,4,0" />
+        </Style>
+
+        <Style x:Key="ShapeGridStyle" TargetType="Grid">
+            <Setter Property="Background" Value="SlateGray" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Grid.Column" Value="2" />
+            <Setter Property="Grid.RowSpan" Value="2" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="4,0,4,0" />
+        </Style>
+
         <Style x:Key="DrawGridStyle" TargetType="Grid">
             <Setter Property="Background" Value="DarkSlateGray" />
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Grid.Row" Value="0" />
+            <Setter Property="Grid.Column" Value="1" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <Style x:Key="PropertyGridStyle" TargetType="Grid">
+            <Setter Property="Grid.Column" Value="1" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <Style x:Key="SelectCanvasStyle" TargetType="canvas:CanvasControl">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="516" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Grid.RowSpan" Value="2" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
 
         <Style x:Key="DrawCanvasStyle" TargetType="canvas:CanvasControl">
-            <Setter Property="Width" Value="512" />
-            <Setter Property="Height" Value="512" />
+            <Setter Property="Width" Value="448" />
+            <Setter Property="Height" Value="448" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="FontFamily" Value="Windows.UI.Xaml.Media.FontFamily" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontStyle" Value="Normal" />
+            <Setter Property="FontWeight" Value="Normal" />
         </Style>
 
+        <Style x:Key="ShapeCanvasStyle" TargetType="canvas:CanvasControl">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="516" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
     </Page.Resources>
 
     <Grid x:Name="RootGrid" Style="{StaticResource RootGridStyle}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Style="{StaticResource ButtonGridStyle}" x:Name="ButtonGrid" >
+        <Grid x:Name="ButtonGrid" Style="{StaticResource ButtonGridStyle}" >
             <TextBlock x:Name="ModelTitle" Style="{StaticResource TitleStyle}"/>
             <StackPanel x:Name="ControlPanel" Style="{StaticResource PagePanelStyle}">
                 <Button x:Name="Button1" Style="{StaticResource AppButtonStyle}" />
@@ -104,12 +152,26 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="1" x:Name="ControlGrid">
+        <Grid x:Name="ControlGrid" Grid.Row="1">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
+
+            <Grid Style="{StaticResource SelectGridStyle}" >
+                <canvas:CanvasControl
+                        x:Name="SelectCanvas" 
+                        Style="{StaticResource SelectCanvasStyle}"
+                        Draw="SelectCanvas_Draw"
+                        PointerMoved="SelectCanvas_PointerMoved"
+                        PointerPressed="SelectCanvas_PointerPressed"
+                        PointerReleased="SelectCanvas_PointerReleased" />
+            </Grid>
+
+            <ColorPicker x:Name="ColorPicker" Grid.Column="3" Grid.RowSpan="2" />
 
             <Grid Style="{StaticResource DrawGridStyle}" >
                 <canvas:CanvasControl
@@ -121,6 +183,40 @@
                         PointerPressed="DrawCanvas_PointerPressed"
                         PointerReleased="DrawCanvas_PointerReleased" />
             </Grid>
+
+            <Grid Style="{StaticResource PropertyGridStyle}" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="25*"/>
+                    <ColumnDefinition Width="25*"/>
+                    <ColumnDefinition Width="25*"/>
+                    <ColumnDefinition Width="25*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Start" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center"/>
+                <ComboBox x:Name="StartCapBox" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center"/>
+                
+                <TextBlock Text="End" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center"/>
+                <ComboBox x:Name="EndCapBox" Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Center"/>
+
+                <TextBlock Text="Radius" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center"/>
+                <TextBox x:Name="TextBox" Grid.Row="1" Grid.Column="2"  HorizontalAlignment="Center"/>
+
+                <TextBlock Text="Fill" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center"/>
+                <ComboBox x:Name="FILLBox" Grid.Row="1" Grid.Column="3"  HorizontalAlignment="Center"/>
+            </Grid>
+
+            <Grid Style="{StaticResource ShapeGridStyle}" >
+                <canvas:CanvasControl
+                        x:Name="ShapeCanvas" 
+                        Style="{StaticResource ShapeCanvasStyle}"
+                        Draw="ShapeCanvas_Draw"
+                        PointerPressed="ShapeCanvas_PointerPressed"
+                        PointerReleased="ShapeCanvas_PointerReleased" />
+            </Grid>
+
         </Grid>
     </Grid>
 </Page>

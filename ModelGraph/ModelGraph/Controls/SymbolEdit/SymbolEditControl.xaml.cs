@@ -5,20 +5,12 @@ using ModelGraph.Services;
 using ModelGraphSTD;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using System.Numerics;
 using Windows.UI;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using Color = Windows.UI.Color;
 
 namespace ModelGraph.Controls
@@ -38,12 +30,15 @@ namespace ModelGraph.Controls
             this.InitializeComponent();
         }
 
+        #region IPageControl  =================================================
         public async void Dispatch(UIRequest rq)
         {
             await ModelPageService.Current.Dispatch(rq, this);
         }
-        public RootModel RootModel => _rootModel;
+        #endregion
+
         #region IModelControl  ================================================
+        public RootModel RootModel => _rootModel;
         public void Save()
         {
 //            _symbol.Data = PackageSymbolData();
@@ -93,8 +88,16 @@ namespace ModelGraph.Controls
         #endregion
 
         #region CanvasDraw  ===================================================
-        #region SelectCanvas_Draw  ===============================================
+
+        #region SelectCanvas_Draw  ============================================
         private void SelectCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
+        {
+            var ds = args.DrawingSession;
+        }
+        #endregion
+
+        #region ShapeCanvas_Draw  =============================================
+        private void ShapeCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
         {
             var ds = args.DrawingSession;
         }
@@ -104,6 +107,7 @@ namespace ModelGraph.Controls
         private void DrawCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
         {
             var ds = args.DrawingSession;
+
             DrawGrid(ds);
             DrawSegment(ds);
             DrawHitLine(ds);
@@ -148,42 +152,67 @@ namespace ModelGraph.Controls
         #endregion
 
         #region DrawGrid  =====================================================
+        private const int _workSize = 400;
+        private const int _workAxis = _workSize / 4;
+        private const int _workGrid = _workSize / 16;
+        private const int _workTick = _workGrid / 2;
+        private const int _workMargin = 24;
+        private const int _workCenter = _workMargin + _workSize / 2;
         private void DrawGrid(CanvasDrawingSession ds)
         {
-            var gridColor = Color.FromArgb(0x80, 0xff, 0xff, 0xff);
-            var axisColor = Color.FromArgb(0xff, 0xff, 0xff, 0xff);
+            var color1 = Color.FromArgb(0xff, 0xff, 0xff, 0xff);
+            var color2 = Color.FromArgb(0xff, 0xff, 0xff, 0x80);
+            var color3 = Color.FromArgb(0x80, 0xff, 0xff, 0x00);
+            var color4 = Color.FromArgb(0x40, 0xff, 0xff, 0xff);
 
-            float d = _offset + _maxSize * _zoomFactor;
-            float o = _offset;
+            var a = _workMargin;
+            var b = a + _workSize;
+            var c = _workCenter;
+            var r = _workSize / 2;
+            var m = _workSize + 2 * _workMargin;
 
-            for (int i = 0; i <= _maxSize; i++)
+            var d = r * Math.Sin(Math.PI / 8);
+            var e = (float) (c - d);
+            var f = (float) (c + d);
+
+            for (int i = 0; i <= _workSize; i += _workGrid)
             {
-                var y = _offset + i * _zoomFactor;
-                var c = (i % 4 == 0) ? axisColor : gridColor;
-                ds.DrawLine(o, y, d, y, c);
+                var z = a + i;
+                ds.DrawLine(z, a, z, b, color3);
+                ds.DrawLine(a, z, b, z, color3);
             }
-            for (int i = 0; i <= _maxSize; i++)
+            ds.DrawLine(a, a, b, b, color1);
+            ds.DrawLine(a, b, b, a, color1);
+
+            ds.DrawLine(a, e, b, f, color4);
+            ds.DrawLine(e, a, f, b, color4);
+
+            ds.DrawLine(a, f, b, e, color4);
+            ds.DrawLine(f, a, e, b, color4);
+
+            ds.DrawCircle(c, c, r, color2);
+            ds.DrawCircle(c, c, r / 2, color4);
+
+            for (int i = 0; i <= _workSize; i += _workAxis)
             {
-                var x = _offset + i * _zoomFactor;
-                var c = (i % 4 == 0) ? axisColor : gridColor;
-                ds.DrawLine(x, o, x, d, c);
+                var z = a + i;
+                ds.DrawLine(z, a, z, b, color1);
+                ds.DrawLine(a, z, b, z, color1);
             }
+            var xC = c - 6;
+            var yN = -2;
+            var yS = b - 3;
+            ds.DrawText("N", xC, yN, color1);
+            ds.DrawText("S", xC, yS, color1);
 
-            float p = _offset + 7 * _zoomFactor;
-            float q = _offset + 17 * _zoomFactor;
-            float r = (_maxSize / 2) * _zoomFactor;
-            float s = _offset + r;
-
-            ds.DrawCircle(new System.Numerics.Vector2(s, s), r, axisColor);
-
-            ds.DrawLine(o, p, d, q, gridColor);
-            ds.DrawLine(p, o, q, d, gridColor);
-            ds.DrawLine(o, q, d, p, gridColor);
-            ds.DrawLine(p, d, q, o, gridColor);
-            ds.DrawLine(o, o, d, d, gridColor);
-            ds.DrawLine(o, d, d, o, gridColor);
+            var xE = b + 3;
+            var xW = 2;
+            var yC = c - 14;
+            ds.DrawText("E", xE, yC, color1);
+            ds.DrawText("W", xW, yC, color1);
         }
         #endregion
+
         #endregion
 
 
@@ -209,6 +238,36 @@ namespace ModelGraph.Controls
         Windows.ApplicationModel.Resources.ResourceLoader _resourceLoader;
 
         private static int _ds = GraphDefault.HitMargin;
+        #endregion
+
+        #region SelectCanvas_PointerEvents  ===================================
+        //                     BeginAction,   DragAction,   EndAction
+        private void SelectCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+        }
+
+        private void SelectCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+        }
+
+        private void SelectCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+        }
+        #endregion
+
+        #region ShapeCanvas_PointerEvents  ====================================
+        //                     BeginAction,   DragAction,   EndAction
+        private void ShapeCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+        }
+
+        private void ShapeCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+        }
+
+        private void ShapeCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+        }
         #endregion
 
         #region DrawCanvas_PointerEvents  =====================================
