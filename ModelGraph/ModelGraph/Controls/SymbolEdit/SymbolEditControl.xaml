@@ -5,16 +5,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
-    Width="860" Height="550"
+    Width="910" Height="600"
     mc:Ignorable="d">
 
     <Page.Resources>
 
         <Style x:Key="RootGridStyle" TargetType="Grid">
-            <Setter Property="VerticalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
             <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
         </Style>
 
@@ -37,7 +33,6 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
         </Style>
-
 
         <SolidColorBrush x:Key="ActiveColor" Color="#FFE4BF99" />
 
@@ -86,27 +81,75 @@
             <Setter Property="Margin" Value="4,0,4,0" />
         </Style>
 
+        <Style x:Key="EditGridStyle" TargetType="Grid">
+            <Setter Property="Grid.Column" Value="1" />
+        </Style>
+
         <Style x:Key="DrawGridStyle" TargetType="Grid">
             <Setter Property="Background" Value="DarkSlateGray" />
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="Grid.Row" Value="0" />
-            <Setter Property="Grid.Column" Value="1" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
         </Style>
 
         <Style x:Key="PropertyGridStyle" TargetType="Grid">
-            <Setter Property="Grid.Column" Value="1" />
-            <Setter Property="VerticalAlignment" Value="Bottom" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
+            <Setter Property="Grid.Row" Value="1" />
+            <Setter Property="Height" Value="114" />
+        </Style>
+
+        <Style x:Key="PropetyHeaderStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+        </Style>
+
+        <Style x:Key="PropetyLabelStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style x:Key="PropetyComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Height" Value="28"/>
+        </Style>
+
+        <Style x:Key="PropetySliderStyle" TargetType="Slider">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Width" Value="300"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Maximum" Value="20"/>
+            <Setter Property="Minimum" Value="1"/>
+            <Setter Property="Value" Value="10"/>
+        </Style>
+
+        <Style x:Key="ColorPickerStyle" TargetType="ColorPicker">
+            <Setter Property="Width" Value="364" />
+            <Setter Property="Grid.Column" Value="3" />
+        </Style>
+        
+        <Style x:Key="ContactPanelStyle" TargetType="StackPanel">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Setter Property="Grid.Row" Value="1" />
+            <Setter Property="Width" Value="300" />
+        </Style>
+
+        <Style x:Key="ContactHeaderStyle" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,4,4" />
+        </Style>
+
+        <Style x:Key="ContactLabelStyle" TargetType="TextBlock">
+            <Setter Property="MinWidth" Value="100" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,0,4,4" />
         </Style>
 
         <Style x:Key="SelectCanvasStyle" TargetType="canvas:CanvasControl">
             <Setter Property="Width" Value="40" />
-            <Setter Property="Height" Value="516" />
+            <Setter Property="Height" Value="564" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
             <Setter Property="Grid.RowSpan" Value="2" />
@@ -114,6 +157,15 @@
             <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
 
+        <Style x:Key="ShapeCanvasStyle" TargetType="canvas:CanvasControl">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="564" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        
         <Style x:Key="DrawCanvasStyle" TargetType="canvas:CanvasControl">
             <Setter Property="Width" Value="448" />
             <Setter Property="Height" Value="448" />
@@ -126,15 +178,6 @@
             <Setter Property="FontStyle" Value="Normal" />
             <Setter Property="FontWeight" Value="Normal" />
         </Style>
-
-        <Style x:Key="ShapeCanvasStyle" TargetType="canvas:CanvasControl">
-            <Setter Property="Width" Value="40" />
-            <Setter Property="Height" Value="516" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-        </Style>
     </Page.Resources>
 
     <Grid x:Name="RootGrid" Style="{StaticResource RootGridStyle}">
@@ -145,14 +188,13 @@
 
         <Grid x:Name="ButtonGrid" Style="{StaticResource ButtonGridStyle}" >
             <TextBlock x:Name="ModelTitle" Style="{StaticResource TitleStyle}"/>
-            <StackPanel x:Name="ControlPanel" Style="{StaticResource PagePanelStyle}">
+            <StackPanel x:Name="ButtonPanel" Style="{StaticResource PagePanelStyle}">
                 <Button x:Name="Button1" Style="{StaticResource AppButtonStyle}" />
                 <Button x:Name="Button2" Style="{StaticResource AppButtonStyle}" />
-                <Button x:Name="Button3" Style="{StaticResource AppButtonStyle}" />
             </StackPanel>
         </Grid>
 
-        <Grid x:Name="ControlGrid" Grid.Row="1">
+        <Grid Grid.Row="1">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -162,61 +204,128 @@
             </Grid.ColumnDefinitions>
 
             <Grid Style="{StaticResource SelectGridStyle}" >
-                <canvas:CanvasControl
-                        x:Name="SelectCanvas" 
-                        Style="{StaticResource SelectCanvasStyle}"
+                <canvas:CanvasControl x:Name="SelectCanvas" Style="{StaticResource SelectCanvasStyle}"
                         Draw="SelectCanvas_Draw"
                         PointerMoved="SelectCanvas_PointerMoved"
                         PointerPressed="SelectCanvas_PointerPressed"
                         PointerReleased="SelectCanvas_PointerReleased" />
             </Grid>
 
-            <ColorPicker x:Name="ColorPicker" Grid.Column="3" Grid.RowSpan="2" />
+            <Grid Style="{StaticResource ShapeGridStyle}" >
+                <canvas:CanvasControl x:Name="ShapeCanvas" Style="{StaticResource ShapeCanvasStyle}"
+                        Draw="ShapeCanvas_Draw"
+                        PointerPressed="ShapeCanvas_PointerPressed"
+                        PointerReleased="ShapeCanvas_PointerReleased"/>
+            </Grid>
 
-            <Grid Style="{StaticResource DrawGridStyle}" >
-                <canvas:CanvasControl
-                        x:Name="DrawCanvas" 
-                        Style="{StaticResource DrawCanvasStyle}"
+            <Grid Style="{StaticResource EditGridStyle}" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid Style="{StaticResource DrawGridStyle}">
+                    <canvas:CanvasControl x:Name="DrawCanvas" Style="{StaticResource DrawCanvasStyle}"
                         Draw="DrawCanvas_Draw"
                         Loaded="DrawCanvas_Loaded" 
                         PointerMoved="DrawCanvas_PointerMoved"
                         PointerPressed="DrawCanvas_PointerPressed"
                         PointerReleased="DrawCanvas_PointerReleased" />
+                </Grid>
+
+
+                <Grid x:Name="LineStyleGrid" Style="{StaticResource PropertyGridStyle}" Visibility="Visible">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20*" />
+                        <RowDefinition Height="40*"/>
+                        <RowDefinition Height="40*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30*"/>
+                        <ColumnDefinition Width="40*"/>
+                        <ColumnDefinition Width="30*"/>
+                        <ColumnDefinition Width="40*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Line Style Property" Style="{StaticResource PropetyHeaderStyle}" Grid.ColumnSpan="4"/>
+
+                    <TextBlock Text="Start Cap" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="0"/>
+                    <ComboBox x:Name="StartCapBox" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="1"/>
+
+                    <TextBlock Text="End Cap" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="2"/>
+                    <ComboBox x:Name="EndCapBox" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="3"/>
+
+                    <TextBlock Text="Stroke Width" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="0"/>
+                    <Slider x:Name="LineStrokeWidth" Style="{StaticResource PropetySliderStyle}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"/>
+                </Grid>
+
+                <Grid x:Name="PolygonGrid" Style="{StaticResource PropertyGridStyle}" Visibility="Collapsed" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20*" />
+                        <RowDefinition Height="40*"/>
+                        <RowDefinition Height="40*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30*"/>
+                        <ColumnDefinition Width="40*"/>
+                        <ColumnDefinition Width="30*"/>
+                        <ColumnDefinition Width="40*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Polygon Property" Style="{StaticResource PropetyHeaderStyle}" Grid.ColumnSpan="4"/>
+
+                    <TextBlock Text="Fill/Stroke" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="0"/>
+                    <ComboBox x:Name="PolygonFill" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="1"/>
+
+                    <TextBlock Text="Number of Sides" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="2"/>
+                    <ComboBox x:Name="PolygonSides" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="3"/>
+
+                    <TextBlock Text="Stroke Width" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="0"/>
+                    <Slider x:Name="PolygonStrokeWidth" Style="{StaticResource PropetySliderStyle}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5"/>
+                </Grid>
+
+                <Grid x:Name="ContactGrid" Style="{StaticResource PropertyGridStyle}" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20*" />
+                        <RowDefinition Height="40*"/>
+                        <RowDefinition Height="40*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="40*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="40*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="40*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="40*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Assign Alowed Face Contacts" Style="{StaticResource PropetyHeaderStyle}" Grid.ColumnSpan="8"/>
+                    
+                    <TextBlock Text="W" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="0"/>
+                    <TextBlock Text="N" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="2"/>
+                    <TextBlock Text="S" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="4"/>
+                    <TextBlock Text="E" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="6"/>
+
+                    <TextBlock Text="NW" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="0"/>
+                    <TextBlock Text="NE" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="2"/>
+                    <TextBlock Text="SW" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="4"/>
+                    <TextBlock Text="SE" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="6"/>
+
+                    <ComboBox x:Name="WestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="1"/>
+                    <ComboBox x:Name="NorthContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="3"/>
+                    <ComboBox x:Name="SouthContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="5"/>
+                    <ComboBox x:Name="EastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="7"/>
+
+                    <ComboBox x:Name="NorthWestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="1"/>
+                    <ComboBox x:Name="NorthEastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="3"/>
+                    <ComboBox x:Name="SouthWestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="5"/>
+                    <ComboBox x:Name="SouthEastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="7"/>
+                </Grid>
             </Grid>
 
-            <Grid Style="{StaticResource PropertyGridStyle}" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="24" />
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="25*"/>
-                    <ColumnDefinition Width="25*"/>
-                    <ColumnDefinition Width="25*"/>
-                    <ColumnDefinition Width="25*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Start" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center"/>
-                <ComboBox x:Name="StartCapBox" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center"/>
-                
-                <TextBlock Text="End" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center"/>
-                <ComboBox x:Name="EndCapBox" Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Center"/>
-
-                <TextBlock Text="Radius" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center"/>
-                <TextBox x:Name="TextBox" Grid.Row="1" Grid.Column="2"  HorizontalAlignment="Center"/>
-
-                <TextBlock Text="Fill" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center"/>
-                <ComboBox x:Name="FILLBox" Grid.Row="1" Grid.Column="3"  HorizontalAlignment="Center"/>
-            </Grid>
-
-            <Grid Style="{StaticResource ShapeGridStyle}" >
-                <canvas:CanvasControl
-                        x:Name="ShapeCanvas" 
-                        Style="{StaticResource ShapeCanvasStyle}"
-                        Draw="ShapeCanvas_Draw"
-                        PointerPressed="ShapeCanvas_PointerPressed"
-                        PointerReleased="ShapeCanvas_PointerReleased" />
-            </Grid>
-
+            <ColorPicker x:Name="ColorPicker" Style="{StaticResource ColorPickerStyle}"/>
         </Grid>
     </Grid>
 </Page>

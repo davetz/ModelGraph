@@ -18,6 +18,15 @@ namespace ModelGraph.Controls
     public sealed partial class SymbolEditControl : Page, IPageControl, IModelPageControl
     {
         private RootModel _rootModel;
+        private List<Shape> _shapeList = new List<Shape>();
+        private Shape _selectedShape;
+        private Func<Vector2, Shape> CreateShapeFunction;
+        private int _shapeIndex = -1;
+        private Vector2 Point1;
+        private Vector2 Point2;
+        private const float WorkSize = 400;
+        private const float WorkMargin = 24;
+        private const float WorkCenter = WorkMargin + WorkSize / 2;
 
         public SymbolEditControl()
         {
@@ -41,7 +50,7 @@ namespace ModelGraph.Controls
         public RootModel RootModel => _rootModel;
         public void Save()
         {
-//            _symbol.Data = PackageSymbolData();
+            //            _symbol.Data = PackageSymbolData();
             DrawCanvas.Invalidate();
         }
 
@@ -87,7 +96,7 @@ namespace ModelGraph.Controls
 
         #endregion
 
-        #region CanvasDraw  ===================================================
+        #region DrawCanvas  ===================================================
 
         #region SelectCanvas_Draw  ============================================
         private void SelectCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
@@ -97,9 +106,22 @@ namespace ModelGraph.Controls
         #endregion
 
         #region ShapeCanvas_Draw  =============================================
+        private List<Shape> _shapes = new List<Shape> { new PolyLine(Vector2.Zero), new Circle(Vector2.Zero) };
         private void ShapeCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
         {
             var ds = args.DrawingSession;
+            var W = (float)ShapeCanvas.Width;
+            var HW = W / 2;
+            var scale = (W - 4) / Shape.FullSize;
+
+            var n = _shapes.Count;
+            for (int i = 0; i < n; i++)
+            {
+                var center = new Vector2(HW, (i * W) + HW);
+                var shape = _shapes[i];
+                var color = shape.Color;
+                shape.Draw(ShapeCanvas, ds, scale, center, _shapeIndex);
+            }
         }
         #endregion
 
@@ -109,8 +131,10 @@ namespace ModelGraph.Controls
             var ds = args.DrawingSession;
 
             DrawGrid(ds);
-            DrawSegment(ds);
-            DrawHitLine(ds);
+            foreach (var shape in _shapeList)
+            {
+                shape.Draw(DrawCanvas, ds, WorkSize / Shape.FullSize, new Vector2(WorkCenter));
+            }
         }
         #endregion
 
@@ -145,19 +169,19 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+
+
         #region DrawSegment  ==================================================
-        private void DrawSegment(CanvasDrawingSession ds)
+        private void DrawSelectedRectangle(CanvasDrawingSession ds)
         {
+            
         }
         #endregion
 
         #region DrawGrid  =====================================================
-        private const int _workSize = 400;
-        private const int _workAxis = _workSize / 4;
-        private const int _workGrid = _workSize / 16;
-        private const int _workTick = _workGrid / 2;
-        private const int _workMargin = 24;
-        private const int _workCenter = _workMargin + _workSize / 2;
+        private const int _workAxis = (int)(WorkSize / 4);
+        private const int _workGrid = (int)(WorkSize / 16);
+        private const int _workTick = (int)(_workGrid / 2);
         private void DrawGrid(CanvasDrawingSession ds)
         {
             var color1 = Color.FromArgb(0xff, 0xff, 0xff, 0xff);
@@ -165,17 +189,17 @@ namespace ModelGraph.Controls
             var color3 = Color.FromArgb(0x80, 0xff, 0xff, 0x00);
             var color4 = Color.FromArgb(0x40, 0xff, 0xff, 0xff);
 
-            var a = _workMargin;
-            var b = a + _workSize;
-            var c = _workCenter;
-            var r = _workSize / 2;
-            var m = _workSize + 2 * _workMargin;
+            var a = WorkMargin;
+            var b = a + WorkSize;
+            var c = WorkCenter;
+            var r = WorkSize / 2;
+            var m = WorkSize + 2 * WorkMargin;
 
             var d = r * Math.Sin(Math.PI / 8);
-            var e = (float) (c - d);
-            var f = (float) (c + d);
+            var e = (float)(c - d);
+            var f = (float)(c + d);
 
-            for (int i = 0; i <= _workSize; i += _workGrid)
+            for (int i = 0; i <= WorkSize; i += _workGrid)
             {
                 var z = a + i;
                 ds.DrawLine(z, a, z, b, color3);
@@ -193,7 +217,7 @@ namespace ModelGraph.Controls
             ds.DrawCircle(c, c, r, color2);
             ds.DrawCircle(c, c, r / 2, color4);
 
-            for (int i = 0; i <= _workSize; i += _workAxis)
+            for (int i = 0; i <= WorkSize; i += _workAxis)
             {
                 var z = a + i;
                 ds.DrawLine(z, a, z, b, color1);
@@ -259,6 +283,9 @@ namespace ModelGraph.Controls
         //                     BeginAction,   DragAction,   EndAction
         private void ShapeCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
+            var index = ShapeIndex(e);
+            _shapeIndex = (index < 0 || index > _shapes.Count) ? -1 : index;
+            ShapeCanvas.Invalidate();
         }
 
         private void ShapeCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
@@ -267,6 +294,20 @@ namespace ModelGraph.Controls
 
         private void ShapeCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
+            var index = ShapeIndex(e);
+            if (index == _shapeIndex)
+            {
+                CreateShapeFunction = _shapes[index].CreateShapeFunction;
+
+                BeginAction = TryAddNewShape;
+                DragAction = DragShape;
+                EndAction = EndDragShape;
+            }
+        }
+        private int ShapeIndex(PointerRoutedEventArgs e)
+        {
+            var p = e.GetCurrentPoint(ShapeCanvas).Position;
+            return (int)(p.Y / ShapeCanvas.Width);
         }
         #endregion
 
@@ -275,15 +316,15 @@ namespace ModelGraph.Controls
         private void DrawCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             _pointerIsPressed = true;
-            _rawRef = RawPoint(e);
-            _drawRef.Point1 = DrawPoint(e);
+            Point1 = DrawPoint(e);
 
             BeginAction?.Invoke();
         }
 
         private void DrawCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            _drawRef.Point2 = DrawPoint(e);
+            Point2 = DrawPoint(e);
+
             if (_pointerIsPressed && DragAction != null)
             {
                 DragAction();
@@ -293,25 +334,15 @@ namespace ModelGraph.Controls
         private void DrawCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _pointerIsPressed = false;
-            _drawRef.Point2 = DrawPoint(e);
 
             EndAction?.Invoke();
         }
 
-        private (float X, float Y) RawPoint(PointerRoutedEventArgs e)
-        {
-            var p = e.GetCurrentPoint(DrawCanvas).Position;
-            var x = (p.X - _offset);
-            var y = (p.Y - _offset);
-            return ((int)x, (int)y);
-        }
 
-        private (float X, float Y) DrawPoint(PointerRoutedEventArgs e)
+        private Vector2 DrawPoint(PointerRoutedEventArgs e)
         {
             var p = e.GetCurrentPoint(DrawCanvas).Position;
-            var x = Round((p.X - _offset) / _zoomFactor);
-            var y = Round((p.Y - _offset) / _zoomFactor);
-            return (x, y);
+            return new Vector2((float)p.X - WorkMargin, (float)p.Y - WorkMargin);
         }
         private int Round(double v)
         {
@@ -321,5 +352,47 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        #region DrawCanvas_Actions  ===========================================
+        private void TryAddNewShape()
+        {
+            if (CreateShapeFunction is null) return;
+
+            var delta = (Point1 - new Vector2(WorkSize / 2)) * (Shape.FullSize / WorkSize);
+            _shapeWasDraged = false;
+            _selectedShape = CreateShapeFunction(delta);
+            
+            _shapeList.Add(_selectedShape);
+
+            ShapeCanvas.Invalidate();
+            DrawCanvas.Invalidate();
+        }
+        private bool _shapeWasDraged;
+        private void DragShape()
+        {
+            if (_selectedShape is null) return;
+
+            var delta = (Point2 - Point1) * (Shape.FullSize / WorkSize);
+            if (delta.LengthSquared() < 1) return;
+
+            BeginAction = null;
+            Point1 = Point2;
+
+            _selectedShape.Move(delta);
+            _shapeWasDraged = true;
+            DrawCanvas.Invalidate();
+        }
+        private void EndDragShape()
+        {
+            if (_shapeWasDraged)
+            {
+                BeginAction = null;
+                DragAction = null;
+                EndAction = null;
+                _selectedShape = null;
+                _shapeIndex = -1;
+                ShapeCanvas.Invalidate();
+            }
+        }
+        #endregion
     }
 }
