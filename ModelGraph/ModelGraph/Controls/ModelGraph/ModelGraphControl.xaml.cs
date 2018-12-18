@@ -50,35 +50,35 @@ namespace ModelGraph.Controls
         public void Save() { }
         public void Release()
         {
-            if (DrawCanvas == null) return;
+            if (EditorCanvas == null) return;
 
             ReleaseControlPanel();
 
-            DrawCanvas.RemoveFromVisualTree();
-            DrawCanvas = null;
+            EditorCanvas.RemoveFromVisualTree();
+            EditorCanvas = null;
         }
         public void Reload() { }
         public void Refresh()
         {
-            if (DrawCanvas == null) return;
+            if (EditorCanvas == null) return;
 
-            DrawCanvas.Invalidate();
+            EditorCanvas.Invalidate();
         }
         // needed because win2D.uwp canvaseControl is implemented in c++ (prevent memory leaks)
         private void ModelGraphControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            if (DrawCanvas == null) return;
+            if (EditorCanvas == null) return;
 
-            DrawCanvas.RemoveFromVisualTree();
-            DrawCanvas = null;
+            EditorCanvas.RemoveFromVisualTree();
+            EditorCanvas = null;
         }
         public (int Width, int Height) PreferredSize => (400, 320);
         public void SetSize(double width, double height)
         {
-            if (DrawCanvas == null) return;
+            if (EditorCanvas == null) return;
 
-            CanvasGrid.Width = RootCanvas.Width = DrawCanvas.Width = this.Width = width;
-            CanvasGrid.Height = RootCanvas.Height = DrawCanvas.Height = this.Height = height;
+            CanvasGrid.Width = RootCanvas.Width = EditorCanvas.Width = this.Width = width;
+            CanvasGrid.Height = RootCanvas.Height = EditorCanvas.Height = this.Height = height;
         }
         #endregion
 
@@ -94,17 +94,17 @@ namespace ModelGraph.Controls
         {
             Debug.Assert(levelLoadTask == null);
             wantedLevel = newLevel;
-//            levelLoadTask = LoadResourcesForLevelAsync(DrawCanvas, newLevel);
+//            levelLoadTask = LoadResourcesForLevelAsync(EditorCanvas, newLevel);
         }
 
-        //async Task LoadResourcesForLevelAsync(DrawCanvas resourceCreator, int level)
+        //async Task LoadResourcesForLevelAsync(EditorCanvas resourceCreator, int level)
         //{
         //    //levelBackground = await CanvasBitmap.LoadAsync(resourceCreator, ...);
         //    //levelThingie = await CanvasBitmap.LoadAsync(resourceCreator, ...);
         //    // etc.
         //}
 
-        private void DrawCanvas_CreateResources(CanvasControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
+        private void EditorCanvas_CreateResources(CanvasControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
         {
             {
                 // Synchronous resource creation, for globally-required resources goes here:

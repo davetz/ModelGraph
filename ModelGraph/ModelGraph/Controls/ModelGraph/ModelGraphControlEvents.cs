@@ -66,7 +66,7 @@ namespace ModelGraph.Controls
                     HitTest(_drawRef.Point2);
                 }
 
-                DrawCanvas.Invalidate();
+                EditorCanvas.Invalidate();
             }
             else if (HoverAction != null)
             {
@@ -110,7 +110,7 @@ namespace ModelGraph.Controls
         }
         private (float X, float Y) DrawPoint(PointerRoutedEventArgs e)
         {
-            var p = e.GetCurrentPoint(DrawCanvas).Position;
+            var p = e.GetCurrentPoint(EditorCanvas).Position;
             var x = (p.X - _offset.X) / _zoomFactor;
             var y = (p.Y - _offset.Y) / _zoomFactor;
             return ((float)x, (float)y);

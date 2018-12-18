@@ -125,6 +125,8 @@
     </Compile>
     <Compile Include="Controls\ModelTree\ModelTreeUICache.cs" />
     <Compile Include="Controls\Shapes\Circle.cs" />
+    <Compile Include="Controls\Shapes\Polygon.cs" />
+    <Compile Include="Controls\Shapes\Line .cs" />
     <Compile Include="Controls\Shapes\PolyLine.cs" />
     <Compile Include="Controls\Shapes\Shape.cs" />
     <Compile Include="Controls\Shapes\ShapeUtils.cs" />

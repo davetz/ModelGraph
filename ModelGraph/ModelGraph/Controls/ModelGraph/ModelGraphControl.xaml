@@ -137,7 +137,7 @@
 
         <Grid x:Name="CanvasGrid"  Grid.Row="1" Background="DarkSlateGray">
 
-            <canvas:CanvasControl x:Name="DrawCanvas" Draw="DrawCanvas_Draw" IsTabStop="False" CreateResources="DrawCanvas_CreateResources" />
+            <canvas:CanvasControl x:Name="EditorCanvas" Draw="EditorCanvas_Draw" IsTabStop="False" CreateResources="EditorCanvas_CreateResources" />
 
             <Canvas x:Name="RootCanvas" Background="Transparent" DoubleTapped="RootCanvas_DoubleTapped">
                 <Button x:Name="RootButton" Width="4" Height="4" PreviewKeyDown="RootButton_KeyDown" KeyUp="RootButton_KeyUp"/>

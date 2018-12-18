@@ -5,33 +5,37 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
-    Width="910" Height="600"
+    Width="940" Height="732"
+    x:Name="control"
     mc:Ignorable="d">
 
     <Page.Resources>
 
-        <Style x:Key="RootGridStyle" TargetType="Grid">
-            <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
-        </Style>
+        <RotateTransform x:Key="Rotate90" Angle="90"  CenterX="8" CenterY="9"/>
+        <ScaleTransform x:Key="FlipHorizontal" ScaleX="1" ScaleY="-1" CenterX="8" CenterY="10"/>
 
-        <Style x:Key="TitleStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="Margin" Value="12,4,0,0" />
+
+        <Style x:Key="LeftButtonStyle" TargetType="Button">
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Padding" Value="2,2,2,2" />
+            <Setter Property="Margin" Value="5,0,5,0" />
+            <Setter Property="Visibility" Value="Visible" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
             <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
         </Style>
 
-        <Style x:Key="PagePanelStyle" TargetType="StackPanel">
-            <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="HorizontalAlignment" Value="Right" />
-        </Style>
-
-        <Style x:Key="AppButtonStyle" TargetType="Button">
+        <Style x:Key="RightButtonStyle" TargetType="Button">
             <Setter Property="IsTabStop" Value="False" />
             <Setter Property="Padding" Value="2,2,2,2" />
             <Setter Property="Margin" Value="5,0,5,0" />
             <Setter Property="Visibility" Value="Collapsed" />
+            <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
+            <Setter Property="FontSize" Value="12" />
         </Style>
 
         <SolidColorBrush x:Key="ActiveColor" Color="#FFE4BF99" />
@@ -41,16 +45,15 @@
             <Setter Property="Margin" Value="4,2,4,2" />
             <Setter Property="Padding" Value="0,0,0,0"/>
             <Setter Property="IsTabStop" Value="False" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
+
 
         <Style x:Key="LabelStyle" TargetType="TextBlock">
             <Setter Property="Padding" Value="2,0,2,0" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="11" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="FontSize" Value="14" />
         </Style>
 
         <Style x:Key="ButtonGridStyle" TargetType="Grid">
@@ -62,39 +65,28 @@
             <Setter Property="Margin" Value="0" />
         </Style>
 
-        <Style x:Key="SelectGridStyle" TargetType="Grid">
-            <Setter Property="Background" Value="DarkSlateGray" />
-            <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="Grid.Column" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0,0,4,0" />
-        </Style>
 
-        <Style x:Key="ShapeGridStyle" TargetType="Grid">
-            <Setter Property="Background" Value="SlateGray" />
+        <Style x:Key="PickerGridStyle" TargetType="Grid">
+            <Setter Property="Background" Value="DarkSlateGray" />
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="Grid.Column" Value="2" />
             <Setter Property="Grid.RowSpan" Value="2" />
-            <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="4,0,4,0" />
+        </Style>
+
+        <Style x:Key="PropertySliderStyle" TargetType="Slider">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="4,4,8,0"/>
+            <Setter Property="Grid.Column" Value="1"/>
         </Style>
 
         <Style x:Key="EditGridStyle" TargetType="Grid">
             <Setter Property="Grid.Column" Value="1" />
         </Style>
 
-        <Style x:Key="DrawGridStyle" TargetType="Grid">
-            <Setter Property="Background" Value="DarkSlateGray" />
-            <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-        </Style>
 
-        <Style x:Key="PropertyGridStyle" TargetType="Grid">
-            <Setter Property="Grid.Row" Value="1" />
-            <Setter Property="Height" Value="114" />
-        </Style>
 
         <Style x:Key="PropetyHeaderStyle" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -102,10 +94,12 @@
             <Setter Property="FontStyle" Value="Italic"/>
         </Style>
 
-        <Style x:Key="PropetyLabelStyle" TargetType="TextBlock">
+
+        <Style x:Key="PropertyLabelStyle" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Right"/>
-            <Setter Property="Margin" Value="0,0,4,0"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,2,0"/>
             <Setter Property="FontSize" Value="14"/>
         </Style>
 
@@ -115,21 +109,7 @@
             <Setter Property="Height" Value="28"/>
         </Style>
 
-        <Style x:Key="PropetySliderStyle" TargetType="Slider">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="Width" Value="300"/>
-            <Setter Property="Height" Value="28"/>
-            <Setter Property="Maximum" Value="20"/>
-            <Setter Property="Minimum" Value="1"/>
-            <Setter Property="Value" Value="10"/>
-        </Style>
 
-        <Style x:Key="ColorPickerStyle" TargetType="ColorPicker">
-            <Setter Property="Width" Value="364" />
-            <Setter Property="Grid.Column" Value="3" />
-        </Style>
-        
         <Style x:Key="ContactPanelStyle" TargetType="StackPanel">
             <Setter Property="Visibility" Value="Collapsed" />
             <Setter Property="Grid.Row" Value="1" />
@@ -147,55 +127,49 @@
             <Setter Property="Margin" Value="0,0,4,4" />
         </Style>
 
-        <Style x:Key="SelectCanvasStyle" TargetType="canvas:CanvasControl">
-            <Setter Property="Width" Value="40" />
-            <Setter Property="Height" Value="564" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Grid.RowSpan" Value="2" />
-            <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-        </Style>
-
-        <Style x:Key="ShapeCanvasStyle" TargetType="canvas:CanvasControl">
-            <Setter Property="Width" Value="40" />
-            <Setter Property="Height" Value="564" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-        </Style>
-        
-        <Style x:Key="DrawCanvasStyle" TargetType="canvas:CanvasControl">
-            <Setter Property="Width" Value="448" />
-            <Setter Property="Height" Value="448" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="FontFamily" Value="Windows.UI.Xaml.Media.FontFamily" />
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="FontStyle" Value="Normal" />
-            <Setter Property="FontWeight" Value="Normal" />
-        </Style>
     </Page.Resources>
 
-    <Grid x:Name="RootGrid" Style="{StaticResource RootGridStyle}">
+    <Grid x:Name="RootGrid" Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" HorizontalAlignment="Stretch" Margin="0,0,0,10" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="ButtonGrid" Style="{StaticResource ButtonGridStyle}" >
-            <TextBlock x:Name="ModelTitle" Style="{StaticResource TitleStyle}"/>
-            <StackPanel x:Name="ButtonPanel" Style="{StaticResource PagePanelStyle}">
-                <Button x:Name="Button1" Style="{StaticResource AppButtonStyle}" />
-                <Button x:Name="Button2" Style="{StaticResource AppButtonStyle}" />
+        <Grid>
+            <StackPanel Height="40" Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button x:Name="CutButton" Style="{StaticResource LeftButtonStyle}" Click="CutButton_Click">
+                    <FontIcon  Glyph="&#xE8C6;" />
+                </Button>
+                <Button x:Name="CopyButton" Style="{StaticResource LeftButtonStyle}" Click="CopyButton_Click" IsEnabled="{x:Bind HasSharedShapes , Mode=OneWay}">
+                    <FontIcon  Glyph="&#xE8C8;" />
+                </Button>
+                <Button x:Name="PasteButton" Style="{StaticResource LeftButtonStyle}" IsEnabled="{x:Bind HasSharedShapes , Mode=OneWay}" >
+                    <FontIcon  Glyph="&#xE77F;" />
+                </Button>
+                <Button x:Name="RotateRightButton" Style="{StaticResource LeftButtonStyle}" >
+                    <FontIcon  Glyph="&#xE7AD;" />
+                </Button>
+                <Button x:Name="RotateLeftButton" Style="{StaticResource LeftButtonStyle}" >
+                    <FontIcon  Glyph="&#xE7AD;" RenderTransform="{StaticResource FlipHorizontal}"/>
+                </Button>
+                <Button x:Name="FlipHorizontalButton" Style="{StaticResource LeftButtonStyle}" >
+                    <FontIcon  Glyph="&#xE8AB;"  />
+                </Button>
+                <Button x:Name="FlipVerticalButton" Style="{StaticResource LeftButtonStyle}" >
+                    <FontIcon  Glyph="&#xE8AB;" RenderTransform="{StaticResource Rotate90}" />
+                </Button>
+                <Button x:Name="RecenterAllButton" Style="{StaticResource LeftButtonStyle}">
+                    <FontIcon  Glyph="&#xF22C;" />
+                </Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="SaveButton" Style="{StaticResource RightButtonStyle}" />
+                <Button x:Name="ReloadButton" Style="{StaticResource RightButtonStyle}" />
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="1">
-
+        <Grid Grid.Row="1" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -203,129 +177,237 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Grid Style="{StaticResource SelectGridStyle}" >
-                <canvas:CanvasControl x:Name="SelectCanvas" Style="{StaticResource SelectCanvasStyle}"
-                        Draw="SelectCanvas_Draw"
-                        PointerMoved="SelectCanvas_PointerMoved"
-                        PointerPressed="SelectCanvas_PointerPressed"
-                        PointerReleased="SelectCanvas_PointerReleased" />
-            </Grid>
-
-            <Grid Style="{StaticResource ShapeGridStyle}" >
-                <canvas:CanvasControl x:Name="ShapeCanvas" Style="{StaticResource ShapeCanvasStyle}"
-                        Draw="ShapeCanvas_Draw"
-                        PointerPressed="ShapeCanvas_PointerPressed"
-                        PointerReleased="ShapeCanvas_PointerReleased"/>
-            </Grid>
-
-            <Grid Style="{StaticResource EditGridStyle}" >
+            <Grid  Grid.Column="0" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Grid Style="{StaticResource DrawGridStyle}">
-                    <canvas:CanvasControl x:Name="DrawCanvas" Style="{StaticResource DrawCanvasStyle}"
-                        Draw="DrawCanvas_Draw"
-                        Loaded="DrawCanvas_Loaded" 
-                        PointerMoved="DrawCanvas_PointerMoved"
-                        PointerPressed="DrawCanvas_PointerPressed"
-                        PointerReleased="DrawCanvas_PointerReleased" />
+                <Grid Grid.Row="0" Background="DarkSlateGray" Margin="0,0,8,8">
+                    <canvas:CanvasControl x:Name="SelectorCanvas0" Width="50" Height="50" 
+                    Draw="SelectorCanvas0_Draw"
+                    PointerPressed="SelectorCanvas0_PointerPressed"
+                    PointerReleased="SelectorCanvas0_PointerReleased" />
                 </Grid>
 
-
-                <Grid x:Name="LineStyleGrid" Style="{StaticResource PropertyGridStyle}" Visibility="Visible">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="20*" />
-                        <RowDefinition Height="40*"/>
-                        <RowDefinition Height="40*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="30*"/>
-                        <ColumnDefinition Width="40*"/>
-                        <ColumnDefinition Width="30*"/>
-                        <ColumnDefinition Width="40*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="Line Style Property" Style="{StaticResource PropetyHeaderStyle}" Grid.ColumnSpan="4"/>
-
-                    <TextBlock Text="Start Cap" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="0"/>
-                    <ComboBox x:Name="StartCapBox" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="1"/>
-
-                    <TextBlock Text="End Cap" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="2"/>
-                    <ComboBox x:Name="EndCapBox" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="3"/>
-
-                    <TextBlock Text="Stroke Width" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="0"/>
-                    <Slider x:Name="LineStrokeWidth" Style="{StaticResource PropetySliderStyle}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"/>
-                </Grid>
-
-                <Grid x:Name="PolygonGrid" Style="{StaticResource PropertyGridStyle}" Visibility="Collapsed" >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="20*" />
-                        <RowDefinition Height="40*"/>
-                        <RowDefinition Height="40*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="30*"/>
-                        <ColumnDefinition Width="40*"/>
-                        <ColumnDefinition Width="30*"/>
-                        <ColumnDefinition Width="40*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="Polygon Property" Style="{StaticResource PropetyHeaderStyle}" Grid.ColumnSpan="4"/>
-
-                    <TextBlock Text="Fill/Stroke" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="0"/>
-                    <ComboBox x:Name="PolygonFill" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="1"/>
-
-                    <TextBlock Text="Number of Sides" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="2"/>
-                    <ComboBox x:Name="PolygonSides" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="3"/>
-
-                    <TextBlock Text="Stroke Width" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="0"/>
-                    <Slider x:Name="PolygonStrokeWidth" Style="{StaticResource PropetySliderStyle}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5"/>
-                </Grid>
-
-                <Grid x:Name="ContactGrid" Style="{StaticResource PropertyGridStyle}" Visibility="Collapsed">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="20*" />
-                        <RowDefinition Height="40*"/>
-                        <RowDefinition Height="40*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="10*"/>
-                        <ColumnDefinition Width="40*"/>
-                        <ColumnDefinition Width="10*"/>
-                        <ColumnDefinition Width="40*"/>
-                        <ColumnDefinition Width="10*"/>
-                        <ColumnDefinition Width="40*"/>
-                        <ColumnDefinition Width="10*"/>
-                        <ColumnDefinition Width="40*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="Assign Alowed Face Contacts" Style="{StaticResource PropetyHeaderStyle}" Grid.ColumnSpan="8"/>
-                    
-                    <TextBlock Text="W" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="0"/>
-                    <TextBlock Text="N" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="2"/>
-                    <TextBlock Text="S" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="4"/>
-                    <TextBlock Text="E" Style="{StaticResource PropetyLabelStyle}" Grid.Row="1" Grid.Column="6"/>
-
-                    <TextBlock Text="NW" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="0"/>
-                    <TextBlock Text="NE" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="2"/>
-                    <TextBlock Text="SW" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="4"/>
-                    <TextBlock Text="SE" Style="{StaticResource PropetyLabelStyle}" Grid.Row="2" Grid.Column="6"/>
-
-                    <ComboBox x:Name="WestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="1"/>
-                    <ComboBox x:Name="NorthContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="3"/>
-                    <ComboBox x:Name="SouthContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="5"/>
-                    <ComboBox x:Name="EastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="7"/>
-
-                    <ComboBox x:Name="NorthWestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="1"/>
-                    <ComboBox x:Name="NorthEastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="3"/>
-                    <ComboBox x:Name="SouthWestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="5"/>
-                    <ComboBox x:Name="SouthEastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="7"/>
+                <Grid Grid.Row="1" Background="DarkSlateGray" Margin="0,0,8,0">
+                    <canvas:CanvasControl x:Name="SelectorCanvas1" Width="50" Height="640" 
+                    Draw="SelectorCanvas1_Draw"
+                        PointerMoved="SelectorCanvas1_PointerMoved"
+                        PointerPressed="SelectorCanvas1_PointerPressed"
+                        PointerReleased="SelectorCanvas1_PointerReleased" />
                 </Grid>
             </Grid>
 
-            <ColorPicker x:Name="ColorPicker" Style="{StaticResource ColorPickerStyle}"/>
+            <Grid Grid.Column="1" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid Background="DarkSlateGray">
+                    <canvas:CanvasControl x:Name="EditorCanvas"  Width="448" Height="456"
+                        Draw="EditorCanvas_Draw"
+                        Loaded="EditorCanvas_Loaded" 
+                        PointerMoved="EditorCanvas_PointerMoved"
+                        PointerPressed="EditorCanvas_PointerPressed"
+                        PointerReleased="EditorCanvas_PointerReleased" />
+                </Grid>
+
+
+                <Grid Grid.Row="1"   Width="448" Height="234" >
+                    <StackPanel x:Name="PropertyPanel" Orientation="Vertical">
+
+                        <Grid Height="40">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock  Grid.Column="0" Text="Start Cap" Style="{StaticResource PropertyLabelStyle}"/>
+                            <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
+                                      SelectedItem="{Binding ElementName=control, Path=StartCap, Mode=TwoWay}"
+                                      SelectionChanged ="Property_SelectionChanged" />
+
+                            <TextBlock  Grid.Column="2" Text="End Cap" Style="{StaticResource PropertyLabelStyle}"/>
+                            <ComboBox  Grid.Column="3" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
+                                      SelectedItem="{Binding ElementName=control, Path=EndCap, Mode=TwoWay}"
+                                      SelectionChanged ="Property_SelectionChanged" />
+                        </Grid>
+
+                        <Grid Height="40">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                            </Grid.ColumnDefinitions>
+
+
+                            <TextBlock Grid.Column="0" Text="Join Miter" Style="{StaticResource PropertyLabelStyle}"/>
+                            <ComboBox  Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=LineJoinList}"
+                                      SelectedItem="{Binding ElementName=control, Path=LineJoin, Mode=TwoWay}"
+                                      SelectionChanged ="Property_SelectionChanged" />
+                        </Grid>
+
+
+                        <Grid Height="40">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="Dash Style" Style="{StaticResource PropertyLabelStyle}" />
+                            <ComboBox  Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=DashStyleList}"
+                                      SelectedItem="{Binding ElementName=control, Path=DashStyle, Mode=TwoWay}"
+                                      SelectionChanged ="Property_SelectionChanged" />
+
+                            <TextBlock Grid.Column="2" Text="Dash Cap" Style="{StaticResource PropertyLabelStyle}"/>
+                            <ComboBox Grid.Column="3" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
+                                      SelectedItem="{Binding ElementName=control, Path=DashCap, Mode=TwoWay}"
+                                      SelectionChanged ="Property_SelectionChanged" />
+                        </Grid>
+
+                        <Grid Height="40" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="30*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock  Grid.Column="0" Text="Fill/Stroke" Style="{StaticResource PropertyLabelStyle}"/>
+                            <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=FillStrokeList}"
+                                      SelectedItem="{Binding ElementName=control, Path=DashCap, Mode=TwoWay}"
+                                      SelectionChanged ="Property_SelectionChanged" />
+
+                            <TextBlock  Grid.Column="2" Text="Polygon Sides" Style="{StaticResource PropertyLabelStyle}"/>
+                            <ComboBox Grid.Column="3" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=PolygonSideList}"
+                                      SelectedItem="{Binding ElementName=control, Path=PolygonSide, Mode=TwoWay}"
+                                      SelectionChanged ="Property_SelectionChanged" />
+
+                        </Grid>
+
+
+                        <Grid x:Name="ContactGrid" Visibility="Collapsed">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40*"/>
+                                <RowDefinition Height="40*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10*"/>
+                                <ColumnDefinition Width="40*"/>
+                                <ColumnDefinition Width="10*"/>
+                                <ColumnDefinition Width="40*"/>
+                                <ColumnDefinition Width="10*"/>
+                                <ColumnDefinition Width="40*"/>
+                                <ColumnDefinition Width="10*"/>
+                                <ColumnDefinition Width="40*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Assign Alowed Face Contacts" Style="{StaticResource PropetyHeaderStyle}" Grid.ColumnSpan="8"/>
+
+                            <TextBlock Text="W" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="0"/>
+                            <TextBlock Text="N" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="2"/>
+                            <TextBlock Text="S" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="4"/>
+                            <TextBlock Text="E" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="6"/>
+
+                            <TextBlock Text="NW" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="0"/>
+                            <TextBlock Text="NE" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="2"/>
+                            <TextBlock Text="SW" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="4"/>
+                            <TextBlock Text="SE" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="6"/>
+
+                            <ComboBox x:Name="WestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="1"/>
+                            <ComboBox x:Name="NorthContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="3"/>
+                            <ComboBox x:Name="SouthContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="5"/>
+                            <ComboBox x:Name="EastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="7"/>
+
+                            <ComboBox x:Name="NorthWestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="1"/>
+                            <ComboBox x:Name="NorthEastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="3"/>
+                            <ComboBox x:Name="SouthWestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="5"/>
+                            <ComboBox x:Name="SouthEastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="7"/>
+                        </Grid>
+
+                        <Grid x:Name="ContactWidthGrid" Height="40" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="24*"/>
+                                <ColumnDefinition Width="68*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Contact Length" Style="{StaticResource PropertyLabelStyle}" Grid.Column="0"/>
+                            <Slider x:Name="ContactSlider" Style="{StaticResource PropertySliderStyle}" Width="300" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Column="2" Background="DarkSlateGray" Margin="8,0,4,0" >
+                <canvas:CanvasControl x:Name="PickerCanvas" Width="42" Height="624" VerticalAlignment="Top" 
+                        Draw="PickerCanvas_Draw"
+                        PointerPressed="PickerCanvas_PointerPressed"
+                        PointerReleased="PickerCanvas_PointerReleased" />
+            </Grid>
+
+            <Grid Grid.Column="3" Width="374" VerticalAlignment="Top"  HorizontalAlignment="Stretch" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <ColorPicker x:Name="ColorPicker" Width="364" Height="550" VerticalAlignment="Top" Color="{x:Bind ShapeColor, Mode=TwoWay}" ColorChanged="ColorPicker_ColorChanged"/>
+
+                <StackPanel Grid.Row="1" Height="140" >
+                    <Grid Height="32">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="58*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Stroke Width"  Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="1"  Width="250" x:Name="StrokeWidthSlider" Value="{x:Bind StrokeWidth, Mode=TwoWay}" Minimum="1" Maximum="20" Style="{StaticResource PropertySliderStyle}" ValueChanged="StrokeWidthSlider_ValueChanged" />
+                    </Grid>
+
+                    <Grid  Height="32">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="58*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Central Size" Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="1"  Width="250" x:Name="CentralSizeSlider"  Value="{x:Bind CentralSize, Mode=TwoWay}" Minimum="5" Maximum="100" Style="{StaticResource PropertySliderStyle}" ValueChanged="CentralSizeSlider_ValueChanged"/>
+                    </Grid>
+
+                    <Grid Height="32">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="58*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Vertical Size" Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="1" Width="250" x:Name="VertucalSizeSlider"  Value="{x:Bind VerticalSize, Mode=TwoWay}" Minimum="5" Maximum="100" Style="{StaticResource PropertySliderStyle}"  ValueChanged="VertucalSizeSlider_ValueChanged"/>
+                    </Grid>
+
+                    <Grid Height="32">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="58*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Horizontal Size" Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="1" Width="250" x:Name="HorizontalSizeSlider" Value="{x:Bind HorizontalSize, Mode=TwoWay}" Minimum="5" Maximum="100" Style="{StaticResource PropertySliderStyle}" ValueChanged="HorizontalSizeSlider_ValueChanged"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,12 +20,19 @@ namespace ModelGraph.Controls
 
         internal Circle(Vector2 delta)
         {
-            Width = 3;
+            StrokeWidth = 2;
             Move(delta);
+        }
+        private Circle(float dx, float dy, float radius)
+        {
+            _dx = dx;
+            _dy = dy;
+            _radius = radius;
         }
 
         #region OverideAbstract  ==============================================
         internal override Func<Vector2, Shape> CreateShapeFunction => (delta) => new Circle(delta);
+        internal override Shape Clone() => CopyToClone(new Circle(_dx, _dy, _radius));
         internal override void Move(Vector2 delta)
         {
             var d = ValideDelta(delta);
@@ -32,20 +40,20 @@ namespace ModelGraph.Controls
             _dy += d.Y;
         }
 
-        internal override CanvasGeometry GetGeometry(ICanvasResourceCreator resourceCreator, float scale, Vector2 center)
+        internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
         {
-            return CanvasGeometry.CreateCircle(resourceCreator, (new Vector2(_dx, _dy) * scale + center), (_radius * scale));
+            ds.DrawCircle(new Vector2(_dx, _dy) * scale + center, _radius * scale, Color, strokeWidth);
         }
         #endregion
 
         #region ValidateDelta  ================================================
         internal override Vector2 ValideDelta(Vector2 delta)
         {
-            var dxmin = HalfSize;
-            var dymin = HalfSize;
+            var dxmin = HALFSIZE;
+            var dymin = HALFSIZE;
 
-            var dxmax = -HalfSize;
-            var dymax = -HalfSize;
+            var dxmax = -HALFSIZE;
+            var dymax = -HALFSIZE;
 
             var dx = _radius + _dx;
             var dy = _radius + _dy;
@@ -55,10 +63,10 @@ namespace ModelGraph.Controls
             if (dy > dymax) dymax = dy;
             if (dy < dymin) dymin = dy;
 
-            dxmin = -(HalfSize + dxmin);
-            dymin = -(HalfSize + dymin);
-            dxmax = (HalfSize - dxmax);
-            dymax = (HalfSize - dymax);
+            dxmin = -(HALFSIZE + dxmin);
+            dymin = -(HALFSIZE + dymin);
+            dxmax = (HALFSIZE - dxmax);
+            dymax = (HALFSIZE - dymax);
             dx = delta.X;
             dy = delta.Y;
             if (dx < dxmin) dx = dxmin;

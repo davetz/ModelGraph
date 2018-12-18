@@ -27,8 +27,8 @@ namespace ModelGraph.Controls
         public List<CanvasLineJoin> LineJoins { get { return GetEnumAsList<CanvasLineJoin>(); } }
         #endregion
 
-        #region DrawCanvas_Draw  ==============================================
-        private void DrawCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
+        #region EditorCanvas_Draw  ==============================================
+        private void EditorCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
         {
             #region RefreshColorList  =========================================
             _colorList.Clear();
@@ -44,8 +44,8 @@ namespace ModelGraph.Controls
                 Initialize(_graph.Extent);
                 _viewExtent = _graph.Extent;
                 
-                CanvasGrid.Width = RootCanvas.Width = DrawCanvas.Width = ActualWidth;
-                CanvasGrid.Height = RootCanvas.Height = DrawCanvas.Height = ActualHeight;
+                CanvasGrid.Width = RootCanvas.Width = EditorCanvas.Width = ActualWidth;
+                CanvasGrid.Height = RootCanvas.Height = EditorCanvas.Height = ActualHeight;
             }
             #endregion
 
@@ -587,18 +587,18 @@ namespace ModelGraph.Controls
             _viewExtent.Y1 = p.Y - (dy / 2);
             _viewExtent.Y2 = _viewExtent.Y1 + dy;
 
-            DrawCanvas.Invalidate();
+            EditorCanvas.Invalidate();
         }
 
         private void ZoomToExtent(int X1, int Y1, int X2, int Y2)
         {
             Initialize(new Extent(X1, Y1, X2, Y2));
-            DrawCanvas.Invalidate();
+            EditorCanvas.Invalidate();
         }
         private void ZoomToExtent(Extent extent)
         {
             Initialize(extent);
-            DrawCanvas.Invalidate();
+            EditorCanvas.Invalidate();
         }
         void Initialize(Extent e)
         {
@@ -633,7 +633,7 @@ namespace ModelGraph.Controls
             var y = (float)(_offset.Y + (dy / _zoomFactor));
             _offset = new Vector2(x, y);
 
-            DrawCanvas.Invalidate(); 
+            EditorCanvas.Invalidate(); 
         }
 
         private void ScrollHorizontalDelta(double dx)
@@ -642,7 +642,7 @@ namespace ModelGraph.Controls
             var y = _offset.Y;
             _offset = new Vector2(x, y);
 
-            DrawCanvas.Invalidate();
+            EditorCanvas.Invalidate();
         }
         #endregion
         #endregion

@@ -42,11 +42,11 @@ namespace ModelGraph.Controls
         private bool _enableHitTest;
 
         private Extent _rootDelta = new Extent(); // rolling point1, point2 delta (RoodCanvas)
-        private Extent _drawDelta = new Extent(); // rolling point1, point2 delta (DrawCanvas)
-        private Extent _dragDelta = new Extent(); // rolling point1, point2 delta (DrawCanvas)
+        private Extent _drawDelta = new Extent(); // rolling point1, point2 delta (EditorCanvas)
+        private Extent _dragDelta = new Extent(); // rolling point1, point2 delta (EditorCanvas)
 
         private Extent _rootRef = new Extent(); // point1 pointerPressed, point2 = poinnterMoved, pointerReleased (RoodCanvas)
-        private Extent _drawRef = new Extent(); // point1 pointerPressed, point2 = poinnterMoved, pointerReleased (DrawCanvas)
+        private Extent _drawRef = new Extent(); // point1 pointerPressed, point2 = poinnterMoved, pointerReleased (EditorCanvas)
 
         private Modifier _modifier;
         private string _keyName;
@@ -433,7 +433,7 @@ namespace ModelGraph.Controls
             if (_selector.Extent.HasArea) return;
 
             _selector.NextPoint(_drawRef.Point2);
-            DrawCanvas.Invalidate();
+            EditorCanvas.Invalidate();
         }
         private async void CloseRegion()
         {
@@ -441,7 +441,7 @@ namespace ModelGraph.Controls
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, (Windows.UI.Core.DispatchedHandler)(() => { _selector.TryAdd(); }));
             _selector.Extent.Clear();
 
-            DrawCanvas.Invalidate();
+            EditorCanvas.Invalidate();
             SetIdleOnVoid();
         }
         #endregion
