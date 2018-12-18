@@ -288,7 +288,7 @@
                             <TextBlock  Grid.Column="0" Text="Fill/Stroke" Style="{StaticResource PropertyLabelStyle}"/>
                             <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
                                       ItemsSource="{Binding ElementName=control, Path=FillStrokeList}"
-                                      SelectedItem="{Binding ElementName=control, Path=DashCap, Mode=TwoWay}"
+                                      SelectedItem="{Binding ElementName=control, Path=FillStroke, Mode=TwoWay}"
                                       SelectionChanged ="Property_SelectionChanged" />
 
                             <TextBlock  Grid.Column="2" Text="Polygon Sides" Style="{StaticResource PropertyLabelStyle}"/>
