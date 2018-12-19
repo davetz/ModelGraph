@@ -230,13 +230,13 @@
                             <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
                                       ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
                                       SelectedItem="{Binding ElementName=control, Path=StartCap, Mode=TwoWay}"
-                                      SelectionChanged ="Property_SelectionChanged" />
+                                      SelectionChanged ="StartCap_SelectionChanged" />
 
                             <TextBlock  Grid.Column="2" Text="End Cap" Style="{StaticResource PropertyLabelStyle}"/>
                             <ComboBox  Grid.Column="3" Style="{StaticResource PropetyComboBoxStyle}"
                                       ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
                                       SelectedItem="{Binding ElementName=control, Path=EndCap, Mode=TwoWay}"
-                                      SelectionChanged ="Property_SelectionChanged" />
+                                      SelectionChanged ="EndCap_SelectionChanged" />
                         </Grid>
 
                         <Grid Height="40">
@@ -252,7 +252,7 @@
                             <ComboBox  Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
                                       ItemsSource="{Binding ElementName=control, Path=LineJoinList}"
                                       SelectedItem="{Binding ElementName=control, Path=LineJoin, Mode=TwoWay}"
-                                      SelectionChanged ="Property_SelectionChanged" />
+                                      SelectionChanged ="LineJoin_SelectionChanged" />
                         </Grid>
 
 
@@ -268,13 +268,13 @@
                             <ComboBox  Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
                                       ItemsSource="{Binding ElementName=control, Path=DashStyleList}"
                                       SelectedItem="{Binding ElementName=control, Path=DashStyle, Mode=TwoWay}"
-                                      SelectionChanged ="Property_SelectionChanged" />
+                                      SelectionChanged ="DashStyle_SelectionChanged" />
 
                             <TextBlock Grid.Column="2" Text="Dash Cap" Style="{StaticResource PropertyLabelStyle}"/>
                             <ComboBox Grid.Column="3" Style="{StaticResource PropetyComboBoxStyle}"
                                       ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
                                       SelectedItem="{Binding ElementName=control, Path=DashCap, Mode=TwoWay}"
-                                      SelectionChanged ="Property_SelectionChanged" />
+                                      SelectionChanged ="DashCap_SelectionChanged" />
                         </Grid>
 
                         <Grid Height="40" >
@@ -289,13 +289,13 @@
                             <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
                                       ItemsSource="{Binding ElementName=control, Path=FillStrokeList}"
                                       SelectedItem="{Binding ElementName=control, Path=FillStroke, Mode=TwoWay}"
-                                      SelectionChanged ="Property_SelectionChanged" />
+                                      SelectionChanged ="FillStroke_SelectionChanged" />
 
                             <TextBlock  Grid.Column="2" Text="Polygon Sides" Style="{StaticResource PropertyLabelStyle}"/>
                             <ComboBox Grid.Column="3" Style="{StaticResource PropetyComboBoxStyle}"
                                       ItemsSource="{Binding ElementName=control, Path=PolygonSideList}"
                                       SelectedItem="{Binding ElementName=control, Path=PolygonSide, Mode=TwoWay}"
-                                      SelectionChanged ="Property_SelectionChanged" />
+                                      SelectionChanged ="PolygonSides_SelectionChanged" />
 
                         </Grid>
 
@@ -394,7 +394,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Text="Vertical Size" Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1" Width="250" x:Name="VertucalSizeSlider"  Value="{x:Bind VerticalSize, Mode=TwoWay}" Minimum="5" Maximum="100" Style="{StaticResource PropertySliderStyle}"  ValueChanged="VertucalSizeSlider_ValueChanged"/>
+                        <Slider Grid.Column="1" Width="250" x:Name="VerticalSizeSlider"  Value="{x:Bind VerticalSize, Mode=TwoWay}" Minimum="5" Maximum="100" Style="{StaticResource PropertySliderStyle}"  ValueChanged="VerticalSizeSlider_ValueChanged" />
                     </Grid>
 
                     <Grid Height="32">

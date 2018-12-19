@@ -16,7 +16,7 @@ namespace ModelGraph.Controls
     {
         internal enum Profile { Line, PolyLine, Polygon}
         private static (float dx, float dy)[] _defaultPoints1 = { (-50, -30), (50, 30) };
-        private static (float dx, float dy)[] _defaultPoints2 = { (-80, -30), (-40, 30), (0, -30), (40, -30), (80, 80) };
+        private static (float dx, float dy)[] _defaultPoints2 = { (-80, -80), (-40, 80), (0, -80), (40, 80), (80, -80) };
         private static (float dx, float dy)[] _defaultPoints3 = { (-50, -50), (-90, -10), (90, 90), (50, 30) };
 
         private List<(float dx, float dy)> _points = new List<(float dx, float dy)> ();

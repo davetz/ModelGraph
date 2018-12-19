@@ -318,7 +318,6 @@ namespace ModelGraph.Controls
         #endregion
 
 
-
         #region SelectorCanvas0_PointerEvents  =================================
         //                     BeginAction,   DragAction,   EndAction
         private int _selector0Index = -1;
@@ -380,8 +379,9 @@ namespace ModelGraph.Controls
                 {
                     foreach (var shape in DefinedShapes) { shape.IsSelected = false; }
                 }
-
-                DefinedShapes[index].IsSelected = true;
+                var targetshape = DefinedShapes[index];
+                targetshape.IsSelected = true;
+                GrtProperty(targetshape);
             }
             PickerShape = null;
             PickerCanvas.Invalidate();
@@ -471,7 +471,6 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-
         #region EditorCanvas_Actions  =========================================
         private void TryAddNewShape()
         {
@@ -488,7 +487,7 @@ namespace ModelGraph.Controls
 
             PickerCanvas.Invalidate();
 
-            SetPropertyValues();
+            SetProperty(ProId.All);
         }
 
         private void DragShape()
@@ -509,54 +508,107 @@ namespace ModelGraph.Controls
         #region PropertyChanged  ==============================================
         private void ColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
         {
-            SetPropertyValues();
-            EditorCanvas.Invalidate();
+            _shapeColor = ColorPicker.Color;
+            SetProperty(ProId.ShapeColor);
         }
         private void StrokeWidthSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-            SetPropertyValues();
-            EditorCanvas.Invalidate();
-        }
-
-        private void PolygonRadius_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            SetPropertyValues();
-            EditorCanvas.Invalidate();
+            _strokeWidth = StrokeWidthSlider.Value;
+            SetProperty(ProId.StrokeWidth);
         }
         private void CentralSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-
+            _centralSize = CentralSizeSlider.Value;
+            SetProperty(ProId.CentralSize);
         }
 
-        private void VertucalSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        private void VerticalSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-
+            _verticalSize = VerticalSizeSlider.Value;
+            SetProperty(ProId.VerticalSize);
         }
 
         private void HorizontalSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-
+            _horizontalSize = HorizontalSizeSlider.Value;
+            SetProperty(ProId.HorizontalSize);
         }
-        private void Property_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void FillStroke_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetPropertyValues();
+            SetProperty(ProId.StartCap);
         }
-        private void SetPropertyValues()
+        private void DashStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SetProperty(ProId.DashStyle);
+        }
+        private void PolygonSides_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SetProperty(ProId.PolygonSide);
+        }
+        private void LineJoin_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SetProperty(ProId.LineJoin);
+        }
+        private void StartCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SetProperty(ProId.StartCap);
+        }
+        private void EndCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SetProperty(ProId.EndCap);
+        }
+        private void DashCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SetProperty(ProId.DashCap);
+        }
+        #endregion
+
+        #region SetGetProperty  ===============================================
+        [Flags]
+        private enum ProId
+        {
+            All = 0xFF,
+            EndCap = 0x01,
+            DashCap = 0x02,
+            StartCap = 0x04,
+            LineJoin = 0x08,
+            DashStyle = 0x10,
+            FillStroke = 0x20,
+            ShapeColor = 0x40,
+            StrokeWidth = 0x80,
+            PolygonSide = 0x100,
+            CentralSize = 0x200,
+            VerticalSize = 0x400,
+            HorizontalSize = 0x800
+        }
+        void SetProperty(ProId id)
         {
             var list = SelectedShapeList();
             foreach (var shape in list)
             {
-                shape.StartCap = StartCap;
-                shape.EndCap = EndCap;
-                shape.LineJoin = LineJoin;
-                shape.DashCap = DashCap;
-                shape.DashStyle = DashStyle;
-                shape.FillStroke = FillStroke;
-                shape.PolygonSide = PolygonSide;
-                shape.ColorCode = ShapeColor.ToString();
-                shape.StrokeWidth = (float)StrokeWidth;
+                if ((id & ProId.EndCap) != 0) shape.EndCap = EndCap;
+                if ((id & ProId.DashCap) != 0) shape.DashCap = DashCap;
+                if ((id & ProId.StartCap) != 0) shape.StartCap = StartCap;
+                if ((id & ProId.LineJoin) != 0) shape.LineJoin = LineJoin;
+                if ((id & ProId.DashStyle) != 0) shape.DashStyle = DashStyle;
+                if ((id & ProId.FillStroke) != 0) shape.FillStroke = FillStroke;
+                if ((id & ProId.ShapeColor) != 0) shape.ColorCode = ShapeColor.ToString();
+                if ((id & ProId.StrokeWidth) != 0) shape.StrokeWidth = (float)StrokeWidth;
+                if ((id & ProId.PolygonSide) != 0) shape.PolygonSide = PolygonSide;
             }
             EditorCanvas.Invalidate();
+        }
+        void GrtProperty(Shape shape)
+        {
+            StartCap = shape.StartCap;
+            EndCap = shape.EndCap;
+            LineJoin = shape.LineJoin;
+            DashCap = shape.DashCap;
+            DashStyle = shape.DashStyle;
+            FillStroke = shape.FillStroke;
+            PolygonSide = shape.PolygonSide;
+            ShapeColor = shape.Color;
+            StrokeWidth = shape.StrokeWidth;
         }
         #endregion
 
