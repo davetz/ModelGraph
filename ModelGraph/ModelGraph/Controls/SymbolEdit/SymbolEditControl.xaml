@@ -15,6 +15,20 @@
         <ScaleTransform x:Key="FlipHorizontal" ScaleX="1" ScaleY="-1" CenterX="8" CenterY="10"/>
 
 
+        <Style x:Key="OneManyButtonStyle" TargetType="Button">
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Visibility" Value="Visible" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Margin" Value="4,0,0,0" />
+        </Style>
+
         <Style x:Key="LeftButtonStyle" TargetType="Button">
             <Setter Property="IsTabStop" Value="False" />
             <Setter Property="Padding" Value="2,2,2,2" />
@@ -137,28 +151,29 @@
 
         <Grid>
             <StackPanel Height="40" Orientation="Horizontal" HorizontalAlignment="Left">
+
                 <Button x:Name="CutButton" Style="{StaticResource LeftButtonStyle}" Click="CutButton_Click">
                     <FontIcon  Glyph="&#xE8C6;" />
                 </Button>
-                <Button x:Name="CopyButton" Style="{StaticResource LeftButtonStyle}" Click="CopyButton_Click" IsEnabled="{x:Bind HasSharedShapes , Mode=OneWay}">
-                    <FontIcon  Glyph="&#xE8C8;" />
-                </Button>
-                <Button x:Name="PasteButton" Style="{StaticResource LeftButtonStyle}" IsEnabled="{x:Bind HasSharedShapes , Mode=OneWay}" >
+                <Button x:Name="CopyButton" Style="{StaticResource LeftButtonStyle}" Click="CopyButton_Click" >
                     <FontIcon  Glyph="&#xE77F;" />
                 </Button>
-                <Button x:Name="RotateRightButton" Style="{StaticResource LeftButtonStyle}" >
+                <Button x:Name="PasteButton" Style="{StaticResource LeftButtonStyle}" Click="PasteButton_Click"  IsEnabled="{x:Bind HasSharedShapes , Mode=OneWay}" >
+                    <FontIcon  Glyph="&#xE8C8;" />
+                </Button>
+                <Button x:Name="RotateRightButton" Style="{StaticResource LeftButtonStyle}" Click="RotateRightButton_Click" >
                     <FontIcon  Glyph="&#xE7AD;" />
                 </Button>
-                <Button x:Name="RotateLeftButton" Style="{StaticResource LeftButtonStyle}" >
+                <Button x:Name="RotateLeftButton" Style="{StaticResource LeftButtonStyle}" Click="RotateLeftButton_Click" >
                     <FontIcon  Glyph="&#xE7AD;" RenderTransform="{StaticResource FlipHorizontal}"/>
                 </Button>
-                <Button x:Name="FlipHorizontalButton" Style="{StaticResource LeftButtonStyle}" >
+                <Button x:Name="FlipHorizontalButton" Style="{StaticResource LeftButtonStyle}" Click="FlipHorizontalButton_Click" >
                     <FontIcon  Glyph="&#xE8AB;"  />
                 </Button>
-                <Button x:Name="FlipVerticalButton" Style="{StaticResource LeftButtonStyle}" >
+                <Button x:Name="FlipVerticalButton" Style="{StaticResource LeftButtonStyle}" Click="FlipVerticalButton_Click" >
                     <FontIcon  Glyph="&#xE8AB;" RenderTransform="{StaticResource Rotate90}" />
                 </Button>
-                <Button x:Name="RecenterAllButton" Style="{StaticResource LeftButtonStyle}">
+                <Button x:Name="RecenterButton" Style="{StaticResource LeftButtonStyle}" Click="RecenterButton_Click">
                     <FontIcon  Glyph="&#xF22C;" />
                 </Button>
             </StackPanel>
@@ -181,17 +196,22 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Background="DarkSlateGray" Margin="0,0,8,8">
+                <Grid Grid.Row="0" Background="DarkSlateGray" Margin="0,0,8,8" >
                     <canvas:CanvasControl x:Name="SelectorCanvas0" Width="50" Height="50" 
                     Draw="SelectorCanvas0_Draw"
                     PointerPressed="SelectorCanvas0_PointerPressed"
                     PointerReleased="SelectorCanvas0_PointerReleased" />
                 </Grid>
 
-                <Grid Grid.Row="1" Background="DarkSlateGray" Margin="0,0,8,0">
-                    <canvas:CanvasControl x:Name="SelectorCanvas1" Width="50" Height="640" 
+                <Grid Grid.Row="1" Margin="0,0,0,4" >
+                    <Button x:Name="OneManyButton" Style="{StaticResource OneManyButtonStyle}" Click="OneManyButton_Click"/>
+                </Grid>
+
+                <Grid Grid.Row="2" Background="DarkSlateGray" Margin="0,0,8,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <canvas:CanvasControl x:Name="SelectorCanvas1" Width="50" Height="600" 
                     Draw="SelectorCanvas1_Draw"
                         PointerMoved="SelectorCanvas1_PointerMoved"
                         PointerPressed="SelectorCanvas1_PointerPressed"
@@ -374,7 +394,7 @@
                             <ColumnDefinition Width="58*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Stroke Width"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1"  Width="250" x:Name="StrokeWidthSlider" Value="{x:Bind StrokeWidth, Mode=TwoWay}" Minimum="1" Maximum="20" Style="{StaticResource PropertySliderStyle}" ValueChanged="StrokeWidthSlider_ValueChanged" />
+                        <Slider Grid.Column="1"  Width="250" x:Name="StrokeWidthSlider" Value="{x:Bind StrokeWidth, Mode=TwoWay}" Minimum="1" Maximum="24" Style="{StaticResource PropertySliderStyle}" ValueChanged="StrokeWidthSlider_ValueChanged" />
                     </Grid>
 
                     <Grid  Height="32">

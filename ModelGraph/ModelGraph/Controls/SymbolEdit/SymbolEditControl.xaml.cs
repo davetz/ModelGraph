@@ -67,6 +67,7 @@ namespace ModelGraph.Controls
             _polygonSide = PolygonSides._3;
             _strokeWidth = 1;
             _shapeColor = Colors.White;
+            ToggleOneManyButton();
         }
 
         #region IPageControl  =================================================
@@ -136,14 +137,7 @@ namespace ModelGraph.Controls
             var W = (float)canvas.Width;
             var HW = W / 2;
             var scale = (W - 2) / Shape.FULLSIZE;
-            var m = 0;
             var n = DefinedShapes.Count;
-
-            for (int i = 0; i < n; i++)
-            {
-                if (DefinedShapes[i].IsSelected) m++;
-            }
-            if (n > 0 && m == n) Shape.HighLight(ds, W, 0);
 
             var center = new Vector2(HW, HW);
             for (int i = 0; i < n; i++)
@@ -323,7 +317,7 @@ namespace ModelGraph.Controls
         private int _selector0Index = -1;
         private void SelectorCanvas0_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            _selector0Index = GetSelector1Index(e);
+            _selector0Index = GetSelector0Index(e);
         }
 
         private void SelectorCanvas0_PointerReleased(object sender, PointerRoutedEventArgs e)
@@ -335,12 +329,10 @@ namespace ModelGraph.Controls
             }
             else
             {
-                if (!e.KeyModifiers.HasFlag(Windows.System.VirtualKeyModifiers.Control))
-                {
-                    foreach (var shape in DefinedShapes) { shape.IsSelected = false; }
-                }
+                var isSelected = false;
+                foreach (var shape in DefinedShapes) { isSelected |= shape.IsSelected; }
 
-                    foreach (var shape in DefinedShapes) { shape.IsSelected = true; }
+                foreach (var shape in DefinedShapes) { shape.IsSelected = !isSelected; }
             }
             PickerShape = null;
             PickerCanvas.Invalidate();
@@ -370,22 +362,27 @@ namespace ModelGraph.Controls
         {
             var index = GetSelector1Index(e);
             if (index < 0 || index != _selector1Index)
-            {
-                foreach (var shape in DefinedShapes) { shape.IsSelected = false; }
-            }
+                ClearIsSelected();
             else
             {
-                if (!e.KeyModifiers.HasFlag(Windows.System.VirtualKeyModifiers.Control))
-                {
-                    foreach (var shape in DefinedShapes) { shape.IsSelected = false; }
-                }
-                var targetshape = DefinedShapes[index];
-                targetshape.IsSelected = true;
-                GrtProperty(targetshape);
+                var shape = DefinedShapes[index];
+                var isSelected = DefinedShapes[index].IsSelected;
+
+                if (!IsSelectOneOrMoreShapeMode)
+                    ClearIsSelected();
+
+                shape.IsSelected = !isSelected;
+
+                GrtProperty(shape);
             }
             PickerShape = null;
             PickerCanvas.Invalidate();
             EditorCanvas.Invalidate();
+
+            void ClearIsSelected()
+            {
+                foreach (var shape in DefinedShapes) { shape.IsSelected = false; }
+            }
         }
         private int GetSelector1Index(PointerRoutedEventArgs e)
         {
@@ -478,7 +475,7 @@ namespace ModelGraph.Controls
 
             var delta = (Point1 - new Vector2(EDITSize / 2)) * (Shape.FULLSIZE / EDITSize);
 
-            var newShape = PickerShape.CreateShapeFunction(delta);
+            var newShape = PickerShape.CreateShape(delta);
             newShape.IsSelected = true;
             foreach (var shape in DefinedShapes) { shape.IsSelected = false; }
             DefinedShapes.Add(newShape);
@@ -614,6 +611,27 @@ namespace ModelGraph.Controls
 
         #region LeftButtonClick  ==============================================
         internal static List<Shape> _sharedShapes = new List<Shape>();
+        private void OneManyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            ToggleOneManyButton();
+        }
+        private void ToggleOneManyButton()
+        {
+            if (IsSelectOneOrMoreShapeMode)
+            {
+                OneManyButton.Content = "\uE8C5";
+                ToolTipService.SetToolTip(OneManyButton, "Select one shape at a time");
+                IsSelectOneOrMoreShapeMode = false;
+            }
+            else
+            {
+                OneManyButton.Content = "\uE8C4";
+                ToolTipService.SetToolTip(OneManyButton, "Select one or more shapes at a time");
+                IsSelectOneOrMoreShapeMode = true;
+            }
+        }
+        private bool IsSelectOneOrMoreShapeMode = true;
+
         private void CutButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             _sharedShapes.Clear();
@@ -632,12 +650,133 @@ namespace ModelGraph.Controls
 
         private void CopyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            _sharedShapes.Clear();
+            var list = SelectedShapeList();
+            foreach (var shape in list)
+            {
+                shape.IsSelected = false;
+                _sharedShapes.Add(shape);
+            }
+            HasSharedShapes = _sharedShapes.Count > 0;
+
+            EditorCanvas.Invalidate();
+        }
+
+        private void PasteButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
             foreach (var shape in _sharedShapes)
-            {                
+            {
                 DefinedShapes.Add(shape.Clone());
             }
             EditorCanvas.Invalidate();
         }
+
+        private void RecenterButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            var list = SelectedShapeList();
+            var N = list.Count;
+            if (N > 0)
+            {
+                var cp = GetCenter(list);
+
+                foreach (var shape in list)
+                {
+                    _getList.Clear();
+                    shape.GetPoints(_getList);
+
+                    _setList.Clear();
+                    foreach (var (dx, dy) in _getList)
+                    {
+                        _setList.Add((dx - cp.dx, dy - cp.dy));
+                    }
+                    shape.SetPoints(_setList);
+                }
+                EditorCanvas.Invalidate();
+            }
+        }
+        private List<(float dx, float dy)> _getList = new List<(float dx, float dy)>();
+        private List<(float dx, float dy)> _setList = new List<(float dx, float dy)>();
+        private (float dx, float dy) GetCenter(List<Shape> list)
+        {
+            var N = list.Count;
+            if (N > 0)
+            {
+                _getList.Clear();
+                foreach (var shape in list)
+                {
+                    shape.GetPoints(_getList);
+                }
+            }
+            return Shape.GetCenter(_getList);
+        }
+
+        private void RotateRightButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => Rotate(Math.PI / 8);
+
+        private void RotateLeftButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => Rotate(Math.PI / -8);
+
+        private void FlipHorizontalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => Scale(new Vector2(-1, 1));
+
+        private void FlipVerticalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => Scale(new Vector2(1, -1));
+
+        private void Rotate(double radians)
+        {
+            var list = SelectedShapeList();
+            var N = list.Count;
+            if (N > 0)
+            {
+                var (cx, cy) = GetCenter(list);
+                var cv = new Vector2(cx, cy);
+
+                var m = Matrix3x2.CreateRotation((float)radians, new Vector2(cx, cy));
+                foreach (var shape in list)
+                {
+                    _getList.Clear();
+                    shape.GetPoints(_getList);
+
+                    _setList.Clear();
+
+                    foreach (var (dx, dy) in _getList)
+                    {
+                        var u = new Vector2(dx, dy);
+                        var v = Vector2.Transform(u, m);
+                        _setList.Add((v.X, v.Y));
+                    }
+                    shape.SetPoints(_setList);
+                }
+
+                EditorCanvas.Invalidate();
+            }
+        }
+        private void Scale(Vector2 scale)
+        {
+            var list = SelectedShapeList();
+            var N = list.Count;
+            if (N > 0)
+            {
+                var (cx, cy) = GetCenter(list);
+                var cv = new Vector2(cx, cy);
+
+                var m = Matrix3x2.CreateScale(scale, new Vector2(cx, cy));
+                foreach (var shape in list)
+                {
+                    _getList.Clear();
+                    shape.GetPoints(_getList);
+
+                    _setList.Clear();
+
+                    foreach (var (dx, dy) in _getList)
+                    {
+                        var u = new Vector2(dx, dy);
+                        var v = Vector2.Transform(u, m);
+                        _setList.Add((v.X, v.Y));
+                    }
+                    shape.SetPoints(_setList);
+                }
+
+                EditorCanvas.Invalidate();
+            }
+        }
+        #endregion
 
         #region SelectedShapeList  ============================================
         private List<Shape> _selectedShapes = new List<Shape>();
@@ -728,8 +867,5 @@ namespace ModelGraph.Controls
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         #endregion
-
-        #endregion
-
     }
 }

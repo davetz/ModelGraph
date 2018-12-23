@@ -14,9 +14,11 @@ namespace ModelGraph.Controls
 {
     internal abstract class Shape
     {
-        internal const float FULLSIZE = 200;
-        internal const float HALFSIZE = 100;
-        private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle();
+        internal const float FULLSIZE = 200;    // full size of the symbol's graphic definition
+        internal const float HALFSIZE = 100;    // half size (radius) of the symbol's graphic definition
+        internal static Vector2 Center = new Vector2(HALFSIZE); // geometric center of symbol's definition
+
+        #region CommonProperties  =============================================
         protected byte A = 255;
         protected byte R = 255;
         protected byte G = 255;
@@ -33,8 +35,7 @@ namespace ModelGraph.Controls
         internal bool IsSelected;
 
         public CanvasStrokeStyle StrokeStyle()
-        {
-            
+        {            
             var ss = _strokeStyle;
             ss.DashStyle = DashStyle;
             ss.StartCap = StartCap;
@@ -43,6 +44,8 @@ namespace ModelGraph.Controls
             ss.LineJoin = LineJoin; ;
             return ss;
         }
+        private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle();
+
         public CanvasDashStyle DashStyle { get { return (CanvasDashStyle)DS; } set { DS = (byte)value; } }
         public CanvasCapStyle StartCap { get { return (CanvasCapStyle)SC; } set { SC = (byte)value; } }
         public CanvasCapStyle EndCap { get { return (CanvasCapStyle)EC; } set { EC = (byte)value; } }
@@ -55,7 +58,7 @@ namespace ModelGraph.Controls
         public float StrokeWidth { get { return SW; } set { SW = (byte)((value < 1) ? 1 : (value > 20) ? 20 : value); } }
         public Color Color => Color.FromArgb(A, R, G, B);
         public string ColorCode { get { return $"#{A}{R}{G}{B}"; } set { SetColor(value); } }
-
+        #endregion
 
         #region SetColor  =====================================================
         private void SetColor(string code)
@@ -91,7 +94,7 @@ namespace ModelGraph.Controls
         const int _argbLength = 9;
         #endregion
 
-        internal abstract Shape Clone();
+        #region CopyToClone  ==================================================
         protected Shape CopyToClone(Shape clone)
         {
             clone.A = A;
@@ -106,11 +109,9 @@ namespace ModelGraph.Controls
             clone.DS = DS;
             return clone;
         }
-        internal abstract Func<Vector2, Shape> CreateShapeFunction { get; }
-        internal abstract void Move(Vector2 delta);
-        internal abstract Vector2 ValideDelta(Vector2 delta);
+        #endregion
 
-        internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth);
+        #region HighLight  ====================================================
         internal static void HighLight(CanvasDrawingSession ds, float width, int index)
         {
             var hw = width / 2;
@@ -118,5 +119,46 @@ namespace ModelGraph.Controls
             var y2 = y1 + width;
             ds.DrawLine(hw, y1, hw, y2, Colors.SlateGray, width);
         }
+        #endregion
+
+        #region GetCenter  ====================================================
+        internal static (float dx, float dy) GetCenter(List<(float dx, float dy)> points)
+        {
+            var N = points.Count;
+            if (N == 0) return (0, 0);
+
+            float dxmin, dxmax, dymin, dymax;
+
+            dxmin = dxmax = points[0].dx;
+            dymin = dymax = points[0].dy;
+            for (int i = 1; i < N; i++)
+            {
+                var (dx, dy) = points[i];
+                if (dx < dxmin) dxmin = dx;
+                if (dy < dymin) dymin = dy;
+
+                if (dx > dxmax) dxmax = dx;
+                if (dy > dymax) dymax = dy;
+            }
+            return ((dxmax + dxmin) / 2, (dymax + dymin) / 2);
+        }
+        internal void ReCenter()
+        {
+
+        }
+        #endregion
+
+        #region RequiredMethods  ==============================================
+        internal abstract Shape Clone();
+        internal abstract Func<Vector2, Shape> CreateShape { get; }
+
+        internal abstract void Move(Vector2 delta);
+        internal abstract Vector2 ValideDelta(Vector2 delta);
+
+        internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth);
+
+        internal abstract void GetPoints(List<(float dx, float dy)> points);
+        internal abstract void SetPoints(List<(float dx, float dy)> points);
+        #endregion
     }
 }

@@ -31,7 +31,7 @@ namespace ModelGraph.Controls
         }
 
         #region OverideAbstract  ==============================================
-        internal override Func<Vector2, Shape> CreateShapeFunction => (delta) => new Circle(delta);
+        internal override Func<Vector2, Shape> CreateShape => (delta) => new Circle(delta);
         internal override Shape Clone() => CopyToClone(new Circle(_dx, _dy, _radius));
         internal override void Move(Vector2 delta)
         {
@@ -44,6 +44,21 @@ namespace ModelGraph.Controls
         {
             ds.DrawCircle(new Vector2(_dx, _dy) * scale + center, _radius * scale, Color, strokeWidth);
         }
+
+        internal override void GetPoints(List<(float dx, float dy)> points)
+        {
+            points.Add((_dx, _dy));
+        }
+        internal override void SetPoints(List<(float dx, float dy)> points)
+        {
+            if (points.Count > 0)
+            {
+                var (dx, dy) = points[0];
+                _dx = dx;
+                _dy = dy;
+            }
+        }
+
         #endregion
 
         #region ValidateDelta  ================================================

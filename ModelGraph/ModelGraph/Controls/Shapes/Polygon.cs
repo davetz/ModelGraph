@@ -15,6 +15,6 @@ namespace ModelGraph.Controls
     {
         internal Polygon(Vector2 delta) : base(delta, Profile.Polygon) { }
  
-        internal override Func<Vector2, Shape> CreateShapeFunction => (delta) => new Polygon(delta);
+        internal override Func<Vector2, Shape> CreateShape => (delta) => new Polygon(delta);
     }
 }

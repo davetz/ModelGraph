@@ -15,6 +15,6 @@ namespace ModelGraph.Controls
     {
         internal Line(Vector2 delta) : base(delta, Profile.Line) { }
  
-        internal override Func<Vector2, Shape> CreateShapeFunction => (delta) => new Line(delta);
+        internal override Func<Vector2, Shape> CreateShape => (delta) => new Line(delta);
     }
 }

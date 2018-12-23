@@ -15,9 +15,9 @@ namespace ModelGraph.Controls
     internal class PolyLine : Shape
     {
         internal enum Profile { Line, PolyLine, Polygon}
-        private static (float dx, float dy)[] _defaultPoints1 = { (-50, -30), (50, 30) };
-        private static (float dx, float dy)[] _defaultPoints2 = { (-80, -80), (-40, 80), (0, -80), (40, 80), (80, -80) };
-        private static (float dx, float dy)[] _defaultPoints3 = { (-50, -50), (-90, -10), (90, 90), (50, 30) };
+        private static (float dx, float dy)[] _defaultPoints1 = { (-50, -0), (50, 0) };
+        private static (float dx, float dy)[] _defaultPoints2 = { (-100, -0), (-75, -0), (-50, -40), (-25, 40), (-0, -40), (25, 40), (50, -40), (75, 0), (100, 0) };
+        private static (float dx, float dy)[] _defaultPoints3 = { (-50, 50), (-50, -50), (50, -50), (50, 50) };
 
         private List<(float dx, float dy)> _points = new List<(float dx, float dy)> ();
         private Profile _profile;
@@ -48,7 +48,7 @@ namespace ModelGraph.Controls
         }
 
         #region OverrideAbstract  =============================================
-        internal override Func<Vector2, Shape> CreateShapeFunction => (delta) => new PolyLine(delta);
+        internal override Func<Vector2, Shape> CreateShape => (delta) => new PolyLine(delta);
         internal override void Move(Vector2 delta)
         {
             var n = _points.Count;
@@ -93,6 +93,15 @@ namespace ModelGraph.Controls
                     }
                 }
             }
+        }
+        internal override void GetPoints(List<(float dx, float dy)> points)
+        {
+            points.AddRange(_points);
+        }
+        internal override void SetPoints(List<(float dx, float dy)> points)
+        {
+            _points.Clear();
+            _points.AddRange(points);
         }
         #endregion
 
