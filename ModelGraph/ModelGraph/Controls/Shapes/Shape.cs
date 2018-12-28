@@ -3,35 +3,59 @@ using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.UI;
 
 namespace ModelGraph.Controls
 {
-    internal abstract class Shape
+    internal abstract partial class Shape
     {
         internal const float FULLSIZE = 200;    // full size of the symbol's graphic definition
         internal const float HALFSIZE = 100;    // half size (radius) of the symbol's graphic definition
-        internal static Vector2 Center = new Vector2(HALFSIZE); // geometric center of symbol's definition
+        internal Shape() { }
+        internal Shape(int I, byte[] data) { ReadData(I, data); }
 
-        #region CommonProperties  =============================================
+        #region Enums  ========================================================
+        internal enum ShapeType : byte
+        {
+            Arc = 0,
+            Line = 1,
+            Spline = 2,
+            Circle = 3,
+            Ellipse = 4,
+            Polygon = 5,
+            Polyline = 6,
+            ClosedPolyline = 7,
+            RoundedRectangle = 8,
+            InvalidShapeType = 9,
+        }
+        #endregion
+
+        #region SerializedData  ===============================================
+        private const int HeaderPointCountIndex = 16;
+        protected byte ST = 0;  // shapte type code
         protected byte A = 255;
         protected byte R = 255;
         protected byte G = 255;
         protected byte B = 255;
-        protected byte SW = 1;  //stroke width
-        protected byte SC = 0;  //startCap
-        protected byte EC = 0;  //endCap
-        protected byte DC = 0;  //dashCap
-        protected byte LJ = 3;  //line join
-        protected byte DS = 0;  //dash style
-        protected byte FS = 0;  //fill stroke
-        protected byte PS = 3;  //polygon sides
+        protected byte SW = 1;  // stroke width
+        protected byte SC = 0;  // startCap
+        protected byte EC = 0;  // endCap
+        protected byte DC = 0;  // dashCap
+        protected byte LJ = 3;  // line join
+        protected byte DS = 0;  // dash style
+        protected byte FS = 0;  // fill stroke
+        protected byte R1 = 0;  // major axis radius
+        protected byte R2 = 0;  // minor axis radius
+        protected byte PS = 3;  // number of polygon sides
+        protected byte RF = 0;  // rotate flip state code
+        protected List<(sbyte dx, sbyte dy)> DXY;  // zero or more points
+        //=====================================================================
+        //working buffer flip rotate drawing points
+        internal List<Vector2> Points = new List<Vector2>();
+        #endregion
 
+        #region CommonProperties  =============================================
         internal bool IsSelected;
 
         public CanvasStrokeStyle StrokeStyle()
@@ -142,23 +166,116 @@ namespace ModelGraph.Controls
             }
             return ((dxmax + dxmin) / 2, (dymax + dymin) / 2);
         }
-        internal void ReCenter()
+        internal static (float dx1, float dy1, float dx2, float dy2, float cdx, float cdy)  GetExtentCenter(IEnumerable<Shape> shapes, List<(float dx, float dy)> points)
         {
+            float dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
 
+            points.Clear();
+            foreach (var shape in shapes)
+            {
+                shape.GetPoints(points);
+            }
+            foreach (var (tx, ty) in points)
+            {
+                if (tx < dx1) dx1 = tx;
+                if (ty < dy1) dy1 = ty;
+
+                if (tx > dx2) dx2 = tx;
+                if (ty > dy2) dy2 = ty;
+            }
+            return (dx1, dy1, dx2, dy2, (dx1 + dx2) / 2, (dy1 + dy2) / 2);
         }
+        internal (float dx, float dy, float cdx, float cdy) ValidateMove(float dx, float dy, IEnumerable<Shape> shapes, List<(float dx, float dy)> points)
+        {
+            var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtentCenter(shapes, points);
+
+            while ((int)dx != 0)
+            {
+                if (dx < 0)
+                {
+                    var d = dx + 1;
+                    if (IsNotValid(MoveTD(dx1, d), MoveTD(dx2, d))) break;
+                    dx = d;
+                }
+                else if (dx > 0)
+                {
+                    var d = dx - 1;
+                    if (IsNotValid(MoveTD(dx1, d), MoveTD(dx2, d))) break;
+                    dx = d;
+                }
+            }
+            while ((int)dy != 0)
+            {
+                if (dy < 0)
+                {
+                    var d = dy + 1;
+                    if (IsNotValid(MoveTD(dy1, d), MoveTD(dy2, d))) break;
+                    dy = d;
+                }
+                else if (dy > 0)
+                {
+                    var d = dy - 1;
+                    if (IsNotValid(MoveTD(dy1, d), MoveTD(dy2, d))) break;
+                    dy = d;
+                }
+            }
+
+            return (dx, dy, cdx, cdy);
+        }
+        internal static (float dx, float dy, float cdx, float cdy) ValidateScale (float dx, float dy, IEnumerable<Shape> shapes, List<(float dx, float dy)> points)
+        {
+            var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtentCenter(shapes, points);
+
+            while ((int)dx != 0 && IsNotValid(ScaleTD(dx1, dx), ScaleTD(dx2, dx)))
+            {
+                if (dx < 0)
+                {
+                    var d = dx + 1;
+                    if (IsNotValid(ScaleTD(dx1, d), ScaleTD(dx2, d))) break;
+                    dx = d;
+                }
+                else if (dx > 0)
+                {
+                    var d = dx - 1;
+                    if (IsNotValid(ScaleTD(dx1, d), ScaleTD(dx2, d))) break;
+                    dx = d;
+                }
+            }
+            while ((int)dy != 0 && IsNotValid(ScaleTD(dy1, dy), ScaleTD(dy2, dy)))
+            {
+                if (dy < 0)
+                {
+                    var d = dy + 1;
+                    if (IsNotValid(ScaleTD(dy1, d), ScaleTD(dy2, d))) break;
+                    dy = d;
+                }
+                else if (dy > 0)
+                {
+                    var d = dy - 1;
+                    if (IsNotValid(ScaleTD(dy1, d), ScaleTD(dy2, d))) break;
+                    dy = d;
+                }
+            }
+            return (dx, dy, cdx, cdy);
+        }
+        protected static bool IsValid(float t1, float t2) => !IsNotValid(t1, t2);
+        protected static bool IsNotValid(float t1, float t2) => (t1 < -HALFSIZE) || (t2 > HALFSIZE) || (t2 - t1) < 1;
+        protected static float ScaleTD(float t, float d) => t < 0 ? t - d : t + d;
+        protected static float MoveTD(float t, float d) => t + d;
+
         #endregion
 
         #region RequiredMethods  ==============================================
         internal abstract Shape Clone();
         internal abstract Func<Vector2, Shape> CreateShape { get; }
 
-        internal abstract void Move(Vector2 delta);
-        internal abstract Vector2 ValideDelta(Vector2 delta);
-
         internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth);
 
         internal abstract void GetPoints(List<(float dx, float dy)> points);
         internal abstract void SetPoints(List<(float dx, float dy)> points);
+
+        internal abstract void Move(float dx, float dy);
+        internal abstract void Scale(float dx, float dy);
         #endregion
     }
 }

@@ -39,7 +39,7 @@ namespace ModelGraph.Controls
                     _points.AddRange(_defaultPoints3);
                     break;
             }
-            Move(delta);
+            Move(delta.X, delta.Y);
         }
         private PolyLine(Profile profile, (float dx, float dy)[] points)
         {
@@ -49,17 +49,7 @@ namespace ModelGraph.Controls
 
         #region OverrideAbstract  =============================================
         internal override Func<Vector2, Shape> CreateShape => (delta) => new PolyLine(delta);
-        internal override void Move(Vector2 delta)
-        {
-            var n = _points.Count;
-            var d = ValideDelta(delta);
 
-            for (int i = 0; i<n; i++)
-            {
-                var (dx, dy) = _points[i];
-                _points[i] = (dx + d.X, dy + d.Y);
-            }
-        }
         internal override Shape Clone() => CopyToClone(new PolyLine(_profile, _points.ToArray()));
 
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
@@ -103,38 +93,25 @@ namespace ModelGraph.Controls
             _points.Clear();
             _points.AddRange(points);
         }
-        #endregion
 
-        #region ValidateDelta  ================================================
-        internal override Vector2 ValideDelta(Vector2 delta)
+        internal override void Move(float dx, float dy)
         {
-            var dxmin = HALFSIZE;
-            var dymin = HALFSIZE;
-
-            var dxmax = -HALFSIZE;
-            var dymax = -HALFSIZE;
-
-            float dx, dy;
-            foreach (var p in _points)
+            var N = _points.Count;
+            for (int i = 0; i < N; i++)
             {
-                dx = p.dx;
-                if (dx > dxmax) dxmax = dx;
-                if (dx < dxmin) dxmin = dx;
-                dy = p.dy;
-                if (dy > dymax) dymax = dy;
-                if (dy < dymin) dymin = dy;
+                var (tx, ty) = _points[i];
+                _points[i] = (tx + dx, ty + dy);
             }
-            dxmin = -(HALFSIZE + dxmin);
-            dymin = -(HALFSIZE + dymin);
-            dxmax = (HALFSIZE - dxmax);
-            dymax = (HALFSIZE - dymax);
-            dx = delta.X;
-            dy = delta.Y;
-            if (dx < dxmin) dx = dxmin;
-            if (dx > dxmax) dx = dxmax;
-            if (dy < dymin) dy = dymin;
-            if (dy > dymax) dy = dymax;
-            return new Vector2(dx, dy);
+        }
+
+        internal override void Scale(float dx, float dy)
+        {
+            var N = _points.Count;
+            for (int i = 0; i < N; i++)
+            {
+                var (tx, ty) = _points[i];
+                _points[i] = (ScaleTD(tx, dx), ScaleTD(ty, dy));
+            }
         }
         #endregion
     }

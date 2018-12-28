@@ -18,10 +18,12 @@ namespace ModelGraph.Controls
         private float _dy;
         private float _radius = 30;
 
-        internal Circle(Vector2 delta)
+        internal Circle(int I, byte[] data) : base(I, data)
         {
-            StrokeWidth = 2;
-            Move(delta);
+        }
+
+        internal Circle()
+        {
         }
         private Circle(float dx, float dy, float radius)
         {
@@ -33,12 +35,6 @@ namespace ModelGraph.Controls
         #region OverideAbstract  ==============================================
         internal override Func<Vector2, Shape> CreateShape => (delta) => new Circle(delta);
         internal override Shape Clone() => CopyToClone(new Circle(_dx, _dy, _radius));
-        internal override void Move(Vector2 delta)
-        {
-            var d = ValideDelta(delta);
-            _dx += d.X;
-            _dy += d.Y;
-        }
 
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
         {
@@ -47,7 +43,8 @@ namespace ModelGraph.Controls
 
         internal override void GetPoints(List<(float dx, float dy)> points)
         {
-            points.Add((_dx, _dy));
+            points.Add((_dx - _radius, _dy - _radius));
+            points.Add((_dx + _radius, _dy + _radius));
         }
         internal override void SetPoints(List<(float dx, float dy)> points)
         {
@@ -59,36 +56,15 @@ namespace ModelGraph.Controls
             }
         }
 
-        #endregion
-
-        #region ValidateDelta  ================================================
-        internal override Vector2 ValideDelta(Vector2 delta)
+        internal override void Move(float dx, float dy)
         {
-            var dxmin = HALFSIZE;
-            var dymin = HALFSIZE;
+            _dx += dx;
+            _dy += dy;
+        }
 
-            var dxmax = -HALFSIZE;
-            var dymax = -HALFSIZE;
-
-            var dx = _radius + _dx;
-            var dy = _radius + _dy;
-
-            if (dx > dxmax) dxmax = dx;
-            if (dx < dxmin) dxmin = dx;
-            if (dy > dymax) dymax = dy;
-            if (dy < dymin) dymin = dy;
-
-            dxmin = -(HALFSIZE + dxmin);
-            dymin = -(HALFSIZE + dymin);
-            dxmax = (HALFSIZE - dxmax);
-            dymax = (HALFSIZE - dymax);
-            dx = delta.X;
-            dy = delta.Y;
-            if (dx < dxmin) dx = dxmin;
-            if (dx > dxmax) dx = dxmax;
-            if (dy < dymin) dy = dymin;
-            if (dy > dymax) dy = dymax;
-            return new Vector2(dx, dy);
+        internal override void Scale(float dx, float dy)
+        {
+            _radius += (dx < dy) ? dx : dy;
         }
         #endregion
     }

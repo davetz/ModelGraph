@@ -18,6 +18,7 @@ using Color = Windows.UI.Color;
 
 namespace ModelGraph.Controls
 {
+    #region Enums  ============================================================
     public enum Fill_Stroke
     {
         Stroke = 0,
@@ -34,6 +35,8 @@ namespace ModelGraph.Controls
         _9 = 9,
         _10 = 10
     }
+    #endregion
+
     public sealed partial class SymbolEditControl : Page, IPageControl, IModelPageControl, INotifyPropertyChanged
     {
         private RootModel _rootModel;
@@ -66,6 +69,7 @@ namespace ModelGraph.Controls
             _fillStroke = Fill_Stroke.Stroke;
             _polygonSide = PolygonSides._3;
             _strokeWidth = 1;
+            _centralSizeMax = _verticalSizeMax = _horizontalSizeMax = 100;
             _shapeColor = Colors.White;
             ToggleOneManyButton();
         }
@@ -109,14 +113,28 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region ViewEvents  ===================================================
-
-        private void UserControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        #region SymbolEditControl_Unloaded  ===================================
+        private void SymbolEditControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            if (SelectorCanvas0 != null)
+            {
+                SelectorCanvas0.RemoveFromVisualTree();
+                SelectorCanvas0 = null;
+            }
+            if (SelectorCanvas1 != null)
+            {
+                SelectorCanvas1.RemoveFromVisualTree();
+                SelectorCanvas1 = null;
+            }
             if (EditorCanvas != null)
             {
                 EditorCanvas.RemoveFromVisualTree();
                 EditorCanvas = null;
+            }
+            if (PickerCanvas != null)
+            {
+                PickerCanvas.RemoveFromVisualTree();
+                PickerCanvas = null;
             }
         }
 
@@ -127,9 +145,7 @@ namespace ModelGraph.Controls
 
         #endregion
 
-
-
-        #region SelectorCanvas0_Draw  ==========================================
+        #region SelectorCanvas0_Draw  =========================================
         private void SelectorCanvas0_Draw(CanvasControl canvas, CanvasDrawEventArgs args)
         {
             var ds = args.DrawingSession;
@@ -150,7 +166,7 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region SelectorCanvas1_Draw  ==========================================
+        #region SelectorCanvas1_Draw  =========================================
         private void SelectorCanvas1_Draw(CanvasControl canvas, CanvasDrawEventArgs args)
         {
             var ds = args.DrawingSession;
@@ -312,7 +328,7 @@ namespace ModelGraph.Controls
         #endregion
 
 
-        #region SelectorCanvas0_PointerEvents  =================================
+        #region SelectorCanvas0_PointerEvents  ================================
         //                     BeginAction,   DragAction,   EndAction
         private int _selector0Index = -1;
         private void SelectorCanvas0_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -346,7 +362,7 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region SelectorCanvas1_PointerEvents  =================================
+        #region SelectorCanvas1_PointerEvents  ================================
         //                     BeginAction,   DragAction,   EndAction
         private int _selector1Index = -1;
         private void SelectorCanvas1_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -376,6 +392,7 @@ namespace ModelGraph.Controls
                 GrtProperty(shape);
             }
             PickerShape = null;
+
             PickerCanvas.Invalidate();
             EditorCanvas.Invalidate();
 
@@ -391,7 +408,6 @@ namespace ModelGraph.Controls
             return (index < 0 || index >= DefinedShapes.Count) ? -1 : index;
         }
         #endregion
-
 
         #region PickerCanvas_PointerEvents  ===================================
         //                     BeginAction,   DragAction,   EndAction
@@ -426,6 +442,7 @@ namespace ModelGraph.Controls
             return (index < 0 || index >= PickerShapes.Count) ? -1 : index;
         }
         #endregion
+
 
         #region EditorCanvas_PointerEvents  ===================================
         //                     BeginAction,   DragAction,   EndAction
@@ -484,7 +501,7 @@ namespace ModelGraph.Controls
 
             PickerCanvas.Invalidate();
 
-            SetProperty(ProId.All);
+            SetProperty(ProertyId.All);
         }
 
         private void DragShape()
@@ -495,74 +512,78 @@ namespace ModelGraph.Controls
             BeginAction = null;
             Point1 = Point2;
 
-            var list = SelectedShapeList();
-            foreach (var shape in list) { shape.Move(delta); }
+            if (TryGetSelectedShapes( _dragList))
+            {
+                var (dx, dy, cdx, cdy) = Shape.ValidateScale(delta.X, delta.Y, _dragList, _getList);
+            }
 
             EditorCanvas.Invalidate();
         }
+        private List<Shape> _dragList = new List<Shape>();
         #endregion
+
 
         #region PropertyChanged  ==============================================
         private void ColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
         {
             _shapeColor = ColorPicker.Color;
-            SetProperty(ProId.ShapeColor);
+            SetProperty(ProertyId.ShapeColor);
         }
         private void StrokeWidthSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
             _strokeWidth = StrokeWidthSlider.Value;
-            SetProperty(ProId.StrokeWidth);
+            SetProperty(ProertyId.StrokeWidth);
         }
         private void CentralSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
             _centralSize = CentralSizeSlider.Value;
-            SetProperty(ProId.CentralSize);
+            SetProperty(ProertyId.CentralSize);
         }
 
         private void VerticalSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
             _verticalSize = VerticalSizeSlider.Value;
-            SetProperty(ProId.VerticalSize);
+            SetProperty(ProertyId.VerticalSize);
         }
 
         private void HorizontalSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
             _horizontalSize = HorizontalSizeSlider.Value;
-            SetProperty(ProId.HorizontalSize);
+            SetProperty(ProertyId.HorizontalSize);
         }
         private void FillStroke_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProId.StartCap);
+            SetProperty(ProertyId.StartCap);
         }
         private void DashStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProId.DashStyle);
+            SetProperty(ProertyId.DashStyle);
         }
         private void PolygonSides_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProId.PolygonSide);
+            SetProperty(ProertyId.PolygonSide);
         }
         private void LineJoin_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProId.LineJoin);
+            SetProperty(ProertyId.LineJoin);
         }
         private void StartCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProId.StartCap);
+            SetProperty(ProertyId.StartCap);
         }
         private void EndCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProId.EndCap);
+            SetProperty(ProertyId.EndCap);
         }
         private void DashCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProId.DashCap);
+            SetProperty(ProertyId.DashCap);
         }
         #endregion
 
         #region SetGetProperty  ===============================================
         [Flags]
-        private enum ProId
+        private enum ProertyId
         {
             All = 0xFF,
             EndCap = 0x01,
@@ -578,35 +599,71 @@ namespace ModelGraph.Controls
             VerticalSize = 0x400,
             HorizontalSize = 0x800
         }
-        void SetProperty(ProId id)
+        void SetProperty(ProertyId pid)
         {
-            var list = SelectedShapeList();
-            foreach (var shape in list)
+            if (TryGetSelectedShapes(_propertyList))
             {
-                if ((id & ProId.EndCap) != 0) shape.EndCap = EndCap;
-                if ((id & ProId.DashCap) != 0) shape.DashCap = DashCap;
-                if ((id & ProId.StartCap) != 0) shape.StartCap = StartCap;
-                if ((id & ProId.LineJoin) != 0) shape.LineJoin = LineJoin;
-                if ((id & ProId.DashStyle) != 0) shape.DashStyle = DashStyle;
-                if ((id & ProId.FillStroke) != 0) shape.FillStroke = FillStroke;
-                if ((id & ProId.ShapeColor) != 0) shape.ColorCode = ShapeColor.ToString();
-                if ((id & ProId.StrokeWidth) != 0) shape.StrokeWidth = (float)StrokeWidth;
-                if ((id & ProId.PolygonSide) != 0) shape.PolygonSide = PolygonSide;
+                foreach (var shape in _propertyList)
+                {
+                    if ((pid & ProertyId.EndCap) != 0) shape.EndCap = ShapeEndCap;
+                    if ((pid & ProertyId.DashCap) != 0) shape.DashCap = ShapeDashCap;
+                    if ((pid & ProertyId.StartCap) != 0) shape.StartCap = ShapeStartCap;
+                    if ((pid & ProertyId.LineJoin) != 0) shape.LineJoin = ShapeLineJoin;
+                    if ((pid & ProertyId.DashStyle) != 0) shape.DashStyle = ShapeDashStyle;
+                    if ((pid & ProertyId.FillStroke) != 0) shape.FillStroke = ShapeFillStroke;
+                    if ((pid & ProertyId.ShapeColor) != 0) shape.ColorCode = ShapeColor.ToString();
+                    if ((pid & ProertyId.StrokeWidth) != 0) shape.StrokeWidth = (float)ShapeStrokeWidth;
+                    if ((pid & ProertyId.PolygonSide) != 0) shape.PolygonSide = ShapePolygonSide;
+                }
+                EditorCanvas.Invalidate();
             }
-            EditorCanvas.Invalidate();
         }
+        private List<Shape> _propertyList = new List<Shape>();
+
         void GrtProperty(Shape shape)
         {
-            StartCap = shape.StartCap;
-            EndCap = shape.EndCap;
-            LineJoin = shape.LineJoin;
-            DashCap = shape.DashCap;
-            DashStyle = shape.DashStyle;
-            FillStroke = shape.FillStroke;
-            PolygonSide = shape.PolygonSide;
+            ShapeStartCap = shape.StartCap;
+            ShapeEndCap = shape.EndCap;
+            ShapeLineJoin = shape.LineJoin;
+            ShapeDashCap = shape.DashCap;
+            ShapeDashStyle = shape.DashStyle;
+            ShapeFillStroke = shape.FillStroke;
+            ShapePolygonSide = shape.PolygonSide;
             ShapeColor = shape.Color;
-            StrokeWidth = shape.StrokeWidth;
+            ShapeStrokeWidth = shape.StrokeWidth;
         }
+        bool _ignoreColorChange;
+        #endregion
+
+        #region ShapeSize  ====================================================
+        private List<Shape> _sizeShapes = new List<Shape>();
+
+        #region CentralSize  ===================================================
+        float _initialCentalSize;
+        void SetShapeCentralSize()
+        {
+            var ds = _initialCentalSize - _centralSize;
+            if (TryGetSelectedShapes(_sizeShapes))
+            {
+                var (dx, dy, cdx, cdy) = Shape.ValidateScale(ds, ds, _buttonList, _getList);
+                foreach (var shape in _buttonList)
+                {
+                    shape.Scale(dx, dy);
+                }
+
+                EditorCanvas.Invalidate();
+            }
+        }
+        #endregion
+
+        #region VerticalSize  =================================================
+        float _initialVerticalSize;
+        #endregion
+
+        #region HorizontalSize  ===============================================
+        float _beginningHorizontallSize;
+        #endregion
+
         #endregion
 
         #region LeftButtonClick  ==============================================
@@ -635,31 +692,35 @@ namespace ModelGraph.Controls
         private void CutButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             _sharedShapes.Clear();
-            var list = SelectedShapeList();
-            foreach (var shape in list)
+            if (TryGetSelectedShapes(_buttonList))
             {
-                shape.IsSelected = false;
-                _sharedShapes.Add(shape);
+                foreach (var shape in _buttonList)
+                {
+                    shape.IsSelected = false;
+                    _sharedShapes.Add(shape);
 
-                DefinedShapes.Remove(shape);
+                    DefinedShapes.Remove(shape);
+                }
+                HasSharedShapes = _sharedShapes.Count > 0;
+
+                EditorCanvas.Invalidate();
             }
-            HasSharedShapes = _sharedShapes.Count > 0;
-
-            EditorCanvas.Invalidate();
         }
 
         private void CopyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             _sharedShapes.Clear();
-            var list = SelectedShapeList();
-            foreach (var shape in list)
+            if (TryGetSelectedShapes(_buttonList))
             {
-                shape.IsSelected = false;
-                _sharedShapes.Add(shape);
-            }
-            HasSharedShapes = _sharedShapes.Count > 0;
+                foreach (var shape in _buttonList)
+                {
+                    shape.IsSelected = false;
+                    _sharedShapes.Add(shape.Clone());
+                }
+                HasSharedShapes = _sharedShapes.Count > 0;
 
-            EditorCanvas.Invalidate();
+                EditorCanvas.Invalidate();
+            }
         }
 
         private void PasteButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -673,13 +734,10 @@ namespace ModelGraph.Controls
 
         private void RecenterButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            var list = SelectedShapeList();
-            var N = list.Count;
-            if (N > 0)
+            if (TryGetSelectedShapes(_buttonList))
             {
-                var cp = GetCenter(list);
-
-                foreach (var shape in list)
+                var cp = GetCenter(_buttonList);
+                foreach (var shape in _buttonList)
                 {
                     _getList.Clear();
                     shape.GetPoints(_getList);
@@ -694,6 +752,18 @@ namespace ModelGraph.Controls
                 EditorCanvas.Invalidate();
             }
         }
+        private void RotateRightButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => RotateSelectedShapes(Math.PI / 8);
+
+        private void RotateLeftButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => RotateSelectedShapes(Math.PI / -8);
+
+        private void FlipHorizontalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => ScaleSelectedShapes(new Vector2(-1, 1));
+
+        private void FlipVerticalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => ScaleSelectedShapes(new Vector2(1, -1));
+
+        private List<Shape> _buttonList = new List<Shape>();
+        #endregion
+
+        #region LeftButtonHelperMethods  ======================================
         private List<(float dx, float dy)> _getList = new List<(float dx, float dy)>();
         private List<(float dx, float dy)> _setList = new List<(float dx, float dy)>();
         private (float dx, float dy) GetCenter(List<Shape> list)
@@ -709,26 +779,13 @@ namespace ModelGraph.Controls
             }
             return Shape.GetCenter(_getList);
         }
-
-        private void RotateRightButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => Rotate(Math.PI / 8);
-
-        private void RotateLeftButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => Rotate(Math.PI / -8);
-
-        private void FlipHorizontalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => Scale(new Vector2(-1, 1));
-
-        private void FlipVerticalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => Scale(new Vector2(1, -1));
-
-        private void Rotate(double radians)
+        private void RotateSelectedShapes(double radians)
         {
-            var list = SelectedShapeList();
-            var N = list.Count;
-            if (N > 0)
+            if (TryGetSelectedShapes(_buttonList))
             {
-                var (cx, cy) = GetCenter(list);
-                var cv = new Vector2(cx, cy);
-
+                var (cx, cy) = GetCenter(_buttonList);
                 var m = Matrix3x2.CreateRotation((float)radians, new Vector2(cx, cy));
-                foreach (var shape in list)
+                foreach (var shape in _buttonList)
                 {
                     _getList.Clear();
                     shape.GetPoints(_getList);
@@ -747,23 +804,20 @@ namespace ModelGraph.Controls
                 EditorCanvas.Invalidate();
             }
         }
-        private void Scale(Vector2 scale)
+        private void ScaleSelectedShapes(Vector2 scale)
         {
-            var list = SelectedShapeList();
-            var N = list.Count;
-            if (N > 0)
+            if (TryGetSelectedShapes(_buttonList))
             {
-                var (cx, cy) = GetCenter(list);
+                var (cx, cy) = GetCenter(_buttonList);
                 var cv = new Vector2(cx, cy);
 
                 var m = Matrix3x2.CreateScale(scale, new Vector2(cx, cy));
-                foreach (var shape in list)
+                foreach (var shape in _buttonList)
                 {
                     _getList.Clear();
                     shape.GetPoints(_getList);
 
                     _setList.Clear();
-
                     foreach (var (dx, dy) in _getList)
                     {
                         var u = new Vector2(dx, dy);
@@ -776,59 +830,88 @@ namespace ModelGraph.Controls
                 EditorCanvas.Invalidate();
             }
         }
-        #endregion
-
-        #region SelectedShapeList  ============================================
-        private List<Shape> _selectedShapes = new List<Shape>();
-        private List<Shape> SelectedShapeList()
+        private bool TryGetSelectedShapes(List<Shape> list)
         {
-            _selectedShapes.Clear();
+            list.Clear();
             foreach (var shape in DefinedShapes)
             {
-                if (shape.IsSelected) _selectedShapes.Add(shape);
+                if (shape.IsSelected) list.Add(shape);
             }
-            return _selectedShapes;
+            return list.Count > 0;
         }
+        #endregion
+
+        #region PropertyChangeHelper  =========================================
+        private void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
+        {
+            if (Equals(storage, value))
+            {
+                return;
+            }
+
+            storage = value;
+            OnPropertyChanged(propertyName);
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         #endregion
 
         #region INotifyPropertyChanged  =======================================
         public bool HasSharedShapes { get { return _hasSharedShapes; } set { Set(ref _hasSharedShapes, value); } }
         private bool _hasSharedShapes;
 
-        public CanvasCapStyle StartCap { get { return _startCap; } set { Set(ref _startCap, value); } }
+        public CanvasCapStyle ShapeStartCap { get { return _startCap; } set { Set(ref _startCap, value); } }
         private CanvasCapStyle _startCap;
 
-        public CanvasCapStyle EndCap { get { return _endCap; } set { Set(ref _endCap, value); } }
+        public CanvasCapStyle ShapeEndCap { get { return _endCap; } set { Set(ref _endCap, value); } }
         private CanvasCapStyle _endCap;
 
-        public CanvasDashStyle DashStyle { get { return _dashStyle; } set { Set(ref _dashStyle, value); } }
+        public CanvasDashStyle ShapeDashStyle { get { return _dashStyle; } set { Set(ref _dashStyle, value); } }
         private CanvasDashStyle _dashStyle;
 
-        public CanvasCapStyle DashCap { get { return _dashCap; } set { Set(ref _dashCap, value); } }
+        public CanvasCapStyle ShapeDashCap { get { return _dashCap; } set { Set(ref _dashCap, value); } }
         private CanvasCapStyle _dashCap;
 
-        public CanvasLineJoin LineJoin { get { return _lineJoin; } set { Set(ref _lineJoin, value); } }
+        public CanvasLineJoin ShapeLineJoin { get { return _lineJoin; } set { Set(ref _lineJoin, value); } }
         private CanvasLineJoin _lineJoin;
 
-        public Fill_Stroke FillStroke { get { return _fillStroke; } set { Set(ref _fillStroke, value); } }
+        public Fill_Stroke ShapeFillStroke { get { return _fillStroke; } set { Set(ref _fillStroke, value); } }
         public Fill_Stroke _fillStroke;
 
-        public PolygonSides PolygonSide { get { return _polygonSide; } set { Set(ref _polygonSide, value); } }
+        public PolygonSides ShapePolygonSide { get { return _polygonSide; } set { Set(ref _polygonSide, value); } }
         private PolygonSides _polygonSide;
+
         public Color ShapeColor { get { return _shapeColor; } set { Set(ref _shapeColor, value); } }
         private Color _shapeColor;
 
-        public double StrokeWidth { get { return _strokeWidth; } set { Set(ref _strokeWidth, value); } }
+        public double ShapeStrokeWidth { get { return _strokeWidth; } set { Set(ref _strokeWidth, value); } }
         public double _strokeWidth;
 
-        public double CentralSize { get { return _centralSize; } set { Set(ref _centralSize, value); } }
+        public double ShapeCentralSize { get { return _centralSize; } set { Set(ref _centralSize, value); } }
         public double _centralSize;
 
-        public double VerticalSize { get { return _verticalSize; } set { Set(ref _verticalSize, value); } }
+        public double ShapeCentralSizeMin { get { return _centralSizeMin; } set { Set(ref _centralSizeMin, value); } }
+        public double _centralSizeMin;
+
+        public double ShapeCentralSizeMax { get { return _centralSizeMax; } set { Set(ref _centralSizeMax, value); } }
+        public double _centralSizeMax;
+        public double ShapeVerticalSize { get { return _verticalSize; } set { Set(ref _verticalSize, value); } }
         public double _verticalSize;
 
-        public double HorizontalSize { get { return _horizontalSize; } set { Set(ref _horizontalSize, value); } }
+        public double ShapeVerticalSizeMin { get { return _verticalSizeMin; } set { Set(ref _verticalSizeMin, value); } }
+        public double _verticalSizeMin;
+
+        public double ShapeVerticalSizeMax { get { return _verticalSizeMax; } set { Set(ref _verticalSizeMax, value); } }
+        public double _verticalSizeMax;
+
+        public double ShapeHorizontalSize { get { return _horizontalSize; } set { Set(ref _horizontalSize, value); } }
         public double _horizontalSize;
+
+        public double ShapeHorizontalSizeMin { get { return _horizontalSizeMin; } set { Set(ref _horizontalSizeMin, value); } }
+        public double _horizontalSizeMin;
+
+        public double ShapeHorizontalSizeMax { get { return _horizontalSizeMax; } set { Set(ref _horizontalSizeMax, value); } }
+        public double _horizontalSizeMax;
 
         public double EastContactSize { get { return _eastContactSize; } set { Set(ref _eastContactSize, value); } }
         public double _eastContactSize;
@@ -853,19 +936,6 @@ namespace ModelGraph.Controls
 
         public double SouthWestContactSize { get { return _southWestContactSize; } set { Set(ref _southWestContactSize, value); } }
         public double _southWestContactSize;
-
-        private void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
-        {
-            if (Equals(storage, value))
-            {
-                return;
-            }
-
-            storage = value;
-            OnPropertyChanged(propertyName);
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         #endregion
     }
 }
