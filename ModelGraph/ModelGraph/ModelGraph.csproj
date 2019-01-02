@@ -124,12 +124,14 @@
       <DependentUpon>ModelTreeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ModelTree\ModelTreeUICache.cs" />
+    <Compile Include="Controls\Shapes\Central.cs" />
+    <Compile Include="Controls\Shapes\Rectangle.cs" />
+    <Compile Include="Controls\Shapes\RoundedRectangle.cs" />
+    <Compile Include="Controls\Shapes\Ellipes.cs" />
     <Compile Include="Controls\Shapes\ShapeRotateFlip.cs" />
     <Compile Include="Controls\Shapes\Circle.cs" />
-    <Compile Include="Controls\Shapes\ShapeSerialier.cs" />
-    <Compile Include="Controls\Shapes\Polygon.cs" />
-    <Compile Include="Controls\Shapes\Line .cs" />
-    <Compile Include="Controls\Shapes\PolyLine.cs" />
+    <Compile Include="Controls\Shapes\ShapeData.cs" />
+    <Compile Include="Controls\Shapes\Polyline.cs" />
     <Compile Include="Controls\Shapes\Shape.cs" />
     <Compile Include="Controls\Shapes\ShapeUtils.cs" />
     <Compile Include="Controls\SymbolEdit\SymbolEditControl.xaml.cs">

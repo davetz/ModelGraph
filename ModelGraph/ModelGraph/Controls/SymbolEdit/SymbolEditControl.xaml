@@ -227,7 +227,7 @@
                 </Grid.RowDefinitions>
 
                 <Grid Background="DarkSlateGray">
-                    <canvas:CanvasControl x:Name="EditorCanvas"  Width="448" Height="456"
+                    <canvas:CanvasControl x:Name="EditorCanvas"  Width="560" Height="560"
                         Draw="EditorCanvas_Draw"
                         Loaded="EditorCanvas_Loaded" 
                         PointerMoved="EditorCanvas_PointerMoved"
@@ -400,7 +400,7 @@
                                 Style="{StaticResource PropertySliderStyle}"
                                 Value="{x:Bind ShapeStrokeWidth, Mode=TwoWay}"
                                 Minimum="1"
-                                Maximum="24"
+                                Maximum="20"
                                 ValueChanged="StrokeWidthSlider_ValueChanged" />
                     </Grid>
 
@@ -410,13 +410,13 @@
                             <ColumnDefinition Width="58*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Central Size" Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1"  Width="250" x:Name="CentralSizeSlider"
+                        <TextBlock Text="Radius" Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="1"  Width="250" x:Name="RadiusSlider"
                                 Style="{StaticResource PropertySliderStyle}"
                                 Value="{x:Bind ShapeCentralSize, Mode=TwoWay}"
                                 Minimum="1"
                                 Maximum="{x:Bind ShapeCentralSizeMax, Mode=OneWay}"
-                                ValueChanged="CentralSizeSlider_ValueChanged"/>
+                                ValueChanged="RadiusSlider_ValueChanged"/>
                     </Grid>
 
                     <Grid Height="32">

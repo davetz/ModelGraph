@@ -31,35 +31,11 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region SerializedData  ===============================================
-        private const int HeaderPointCountIndex = 16;
-        protected byte ST = 0;  // shapte type code
-        protected byte A = 255;
-        protected byte R = 255;
-        protected byte G = 255;
-        protected byte B = 255;
-        protected byte SW = 1;  // stroke width
-        protected byte SC = 0;  // startCap
-        protected byte EC = 0;  // endCap
-        protected byte DC = 0;  // dashCap
-        protected byte LJ = 3;  // line join
-        protected byte DS = 0;  // dash style
-        protected byte FS = 0;  // fill stroke
-        protected byte R1 = 0;  // major axis radius
-        protected byte R2 = 0;  // minor axis radius
-        protected byte PS = 3;  // number of polygon sides
-        protected byte RF = 0;  // rotate flip state code
-        protected List<(sbyte dx, sbyte dy)> DXY;  // zero or more points
-        //=====================================================================
-        //working buffer flip rotate drawing points
-        internal List<Vector2> Points = new List<Vector2>();
-        #endregion
-
         #region CommonProperties  =============================================
         internal bool IsSelected;
 
         public CanvasStrokeStyle StrokeStyle()
-        {            
+        {
             var ss = _strokeStyle;
             ss.DashStyle = DashStyle;
             ss.StartCap = StartCap;
@@ -76,7 +52,7 @@ namespace ModelGraph.Controls
         public CanvasLineJoin LineJoin { get { return (CanvasLineJoin)LJ; } set { LJ = (byte)value; } }
         public CanvasCapStyle DashCap { get { return (CanvasCapStyle)DC; } set { DC = (byte)value; } }
 
-        public  Fill_Stroke FillStroke { get { return (Fill_Stroke)FS; } set { FS = (byte)value; } }
+        public Fill_Stroke FillStroke { get { return (Fill_Stroke)FS; } set { FS = (byte)value; } }
         public PolygonSides PolygonSide { get { return (PolygonSides)PS; } set { PS = (byte)value; } }
 
         public float StrokeWidth { get { return SW; } set { SW = (byte)((value < 1) ? 1 : (value > 20) ? 20 : value); } }
@@ -118,23 +94,6 @@ namespace ModelGraph.Controls
         const int _argbLength = 9;
         #endregion
 
-        #region CopyToClone  ==================================================
-        protected Shape CopyToClone(Shape clone)
-        {
-            clone.A = A;
-            clone.R = R;
-            clone.G = G;
-            clone.B = B;
-            clone.SW = SW;
-            clone.SC = SC;
-            clone.EC = EC;
-            clone.DC = DC;
-            clone.LJ = LJ;
-            clone.DS = DS;
-            return clone;
-        }
-        #endregion
-
         #region HighLight  ====================================================
         internal static void HighLight(CanvasDrawingSession ds, float width, int index)
         {
@@ -145,137 +104,146 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region GetCenter  ====================================================
-        internal static (float dx, float dy) GetCenter(List<(float dx, float dy)> points)
-        {
-            var N = points.Count;
-            if (N == 0) return (0, 0);
+        #region RequiredMethods  ==============================================
+        internal abstract Shape Clone();
+        internal abstract Shape Clone(Vector2 Center);
+        internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth);
 
-            float dxmin, dxmax, dymin, dymax;
+        protected abstract void GetVector(List<Vector2> list);
+        protected abstract void SetVector(List<Vector2> list);
 
-            dxmin = dxmax = points[0].dx;
-            dymin = dymax = points[0].dy;
-            for (int i = 1; i < N; i++)
-            {
-                var (dx, dy) = points[i];
-                if (dx < dxmin) dxmin = dx;
-                if (dy < dymin) dymin = dy;
-
-                if (dx > dxmax) dxmax = dx;
-                if (dy > dymax) dymax = dy;
-            }
-            return ((dxmax + dxmin) / 2, (dymax + dymin) / 2);
-        }
-        internal static (float dx1, float dy1, float dx2, float dy2, float cdx, float cdy)  GetExtentCenter(IEnumerable<Shape> shapes, List<(float dx, float dy)> points)
-        {
-            float dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
-
-            points.Clear();
-            foreach (var shape in shapes)
-            {
-                shape.GetPoints(points);
-            }
-            foreach (var (tx, ty) in points)
-            {
-                if (tx < dx1) dx1 = tx;
-                if (ty < dy1) dy1 = ty;
-
-                if (tx > dx2) dx2 = tx;
-                if (ty > dy2) dy2 = ty;
-            }
-            return (dx1, dy1, dx2, dy2, (dx1 + dx2) / 2, (dy1 + dy2) / 2);
-        }
-        internal (float dx, float dy, float cdx, float cdy) ValidateMove(float dx, float dy, IEnumerable<Shape> shapes, List<(float dx, float dy)> points)
-        {
-            var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtentCenter(shapes, points);
-
-            while ((int)dx != 0)
-            {
-                if (dx < 0)
-                {
-                    var d = dx + 1;
-                    if (IsNotValid(MoveTD(dx1, d), MoveTD(dx2, d))) break;
-                    dx = d;
-                }
-                else if (dx > 0)
-                {
-                    var d = dx - 1;
-                    if (IsNotValid(MoveTD(dx1, d), MoveTD(dx2, d))) break;
-                    dx = d;
-                }
-            }
-            while ((int)dy != 0)
-            {
-                if (dy < 0)
-                {
-                    var d = dy + 1;
-                    if (IsNotValid(MoveTD(dy1, d), MoveTD(dy2, d))) break;
-                    dy = d;
-                }
-                else if (dy > 0)
-                {
-                    var d = dy - 1;
-                    if (IsNotValid(MoveTD(dy1, d), MoveTD(dy2, d))) break;
-                    dy = d;
-                }
-            }
-
-            return (dx, dy, cdx, cdy);
-        }
-        internal static (float dx, float dy, float cdx, float cdy) ValidateScale (float dx, float dy, IEnumerable<Shape> shapes, List<(float dx, float dy)> points)
-        {
-            var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtentCenter(shapes, points);
-
-            while ((int)dx != 0 && IsNotValid(ScaleTD(dx1, dx), ScaleTD(dx2, dx)))
-            {
-                if (dx < 0)
-                {
-                    var d = dx + 1;
-                    if (IsNotValid(ScaleTD(dx1, d), ScaleTD(dx2, d))) break;
-                    dx = d;
-                }
-                else if (dx > 0)
-                {
-                    var d = dx - 1;
-                    if (IsNotValid(ScaleTD(dx1, d), ScaleTD(dx2, d))) break;
-                    dx = d;
-                }
-            }
-            while ((int)dy != 0 && IsNotValid(ScaleTD(dy1, dy), ScaleTD(dy2, dy)))
-            {
-                if (dy < 0)
-                {
-                    var d = dy + 1;
-                    if (IsNotValid(ScaleTD(dy1, d), ScaleTD(dy2, d))) break;
-                    dy = d;
-                }
-                else if (dy > 0)
-                {
-                    var d = dy - 1;
-                    if (IsNotValid(ScaleTD(dy1, d), ScaleTD(dy2, d))) break;
-                    dy = d;
-                }
-            }
-            return (dx, dy, cdx, cdy);
-        }
-        protected static bool IsValid(float t1, float t2) => !IsNotValid(t1, t2);
-        protected static bool IsNotValid(float t1, float t2) => (t1 < -HALFSIZE) || (t2 > HALFSIZE) || (t2 - t1) < 1;
-        protected static float ScaleTD(float t, float d) => t < 0 ? t - d : t + d;
-        protected static float MoveTD(float t, float d) => t + d;
+        protected abstract void GetPoints(List<(float dx, float dy)> list);
+        protected abstract void SetPoints(List<(float dx, float dy)> list);
 
         #endregion
 
-        #region RequiredMethods  ==============================================
-        internal abstract Shape Clone();
-        internal abstract Func<Vector2, Shape> CreateShape { get; }
+        #region StaticMethods  ================================================
+        static float PMIN = sbyte.MinValue;
+        static float PMAX = sbyte.MaxValue;
+        static private int LIM1(float v) => (int)Math.Round(v);
+        static private sbyte LIM2(int v) => (v < sbyte.MinValue) ? sbyte.MinValue : (v > sbyte.MaxValue) ? sbyte.MaxValue : (sbyte)v;
+        static protected (sbyte dx, sbyte dy) Round(float x, float y) => (LIM2(LIM1(x)), LIM2(LIM1(y)));
+        static protected (sbyte dx, sbyte dy) Round((float x, float y) p) => Round(p.x, p.y);
 
-        internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth);
+        static private bool GetAllPoints(IEnumerable<Shape> shapes, List<(float dx, float dy)> points)
+        {
+            foreach (var shape in shapes) { shape.GetPoints(points); }
+            return points.Count > 0;
+        }
+        static private (float dx1, float dy1, float dx2, float dy2, float cdx, float cdy) GetExtent(List<(float dx, float dy)> points)
+        {
+            if (points.Count == 0) return (0, 0, 0, 0, 0, 0);
 
-        internal abstract void GetPoints(List<(float dx, float dy)> points);
-        internal abstract void SetPoints(List<(float dx, float dy)> points);
+            var x1 = PMAX;
+            var y1 = PMAX;
+            var x2 = PMIN;
+            var y2 = PMIN;
 
-        internal abstract void Move(float dx, float dy);
-        internal abstract void Scale(float dx, float dy);
+            foreach (var (dx, dy) in points)
+            {
+                if (dx < x1) x1 = dx;
+                if (dy < y1) y1 = dy;
+
+                if (dx > x2) x2 = dx;
+                if (dy > y2) y2 = dy;
+            }
+            return (x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2);
+        }
+        static internal void SetCenter(IEnumerable<Shape> shapes, Vector2 cp)
+        {
+            var points = new List<(float dx, float dy)>();
+            if (GetAllPoints(shapes, points))
+            {
+                var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtent(points);
+                var ex = cp.X - cdx;
+                var ey = cp.Y - cdy;
+
+                foreach (var shape in shapes)
+                {
+                    points.Clear();
+                    shape.GetPoints(points);
+                    for (int i = 0; i < points.Count; i++)
+                    {
+                        var (tx, ty) = points[i];
+                        points[i] = (tx + ex, ty + ey);
+                    }
+                    shape.SetPoints(points);
+                }
+            }
+        }
+        static internal void MoveCenter(IEnumerable<Shape> shapes, Vector2 dcp)
+        {
+            var points = new List<(float dx, float dy)>();
+            if (GetAllPoints(shapes, points))
+            {
+                var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtent(points);
+                var ex = dcp.X;
+                var ey = dcp.Y;
+
+                foreach (var shape in shapes)
+                {
+                    points.Clear();
+                    shape.GetPoints(points);
+                    for (int i = 0; i < points.Count; i++)
+                    {
+                        var (tx, ty) = points[i];
+                        points[i] = (tx + ex, ty + ey);
+                    }
+                    shape.SetPoints(points);
+                }
+            }
+        }
+
+        #region DrawTargets  ==================================================
+        static internal void DrawTargets(IEnumerable<Shape> shapes, CanvasDrawingSession ds, float scale, Vector2 center)
+        {
+            var points = new List<(float dx, float dy)>();
+            if (GetAllPoints(shapes, points))
+            {
+                var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtent(points);
+
+                Draw(new Vector2(dx1, dy1) * scale + center, true);
+                Draw(new Vector2(dx2, dy2) * scale + center, true);
+                Draw(new Vector2(cdx, cdy) * scale + center, true);
+
+                void Draw(Vector2 cp, bool drawHash = false)
+                {
+                    ds.DrawCircle(cp, 5, Colors.White, 2);
+                    ds.DrawCircle(cp, 7, Colors.Black, 2);
+
+                    if (drawHash)
+                    {
+                        DrawHash(t11, t12, Colors.White);
+                        DrawHash(t13, t14, Colors.Black);
+
+                        DrawHash(-t11, -t12, Colors.White);
+                        DrawHash(-t13, -t14, Colors.Black);
+
+                        DrawHash(t21, t22, Colors.White);
+                        DrawHash(t23, t24, Colors.Black);
+
+                        DrawHash(-t21, -t22, Colors.White);
+                        DrawHash(-t23, -t24, Colors.Black);
+                    }
+
+                    void DrawHash(Vector2 vt1, Vector2 vt2, Color color)
+                    {
+                        ds.DrawLine(cp + vt1, cp + vt2, color, 2);
+                    }
+                }
+            }
+        }
+        private static Vector2 t11 = new Vector2(6, 0);
+        private static Vector2 t12 = new Vector2(12, 0);
+        private static Vector2 t13 = new Vector2(6, 2);
+        private static Vector2 t14 = new Vector2(12, 2);
+
+        private static Vector2 t21 = new Vector2(0, 6);
+        private static Vector2 t22 = new Vector2(0, 12);
+        private static Vector2 t23 = new Vector2(2, 6);
+        private static Vector2 t24 = new Vector2(2, 12);
+        #endregion
+
         #endregion
     }
 }

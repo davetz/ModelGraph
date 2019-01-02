@@ -1,27 +1,29 @@
-﻿
-using System;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace ModelGraph.Controls
 {
     public enum RFCode : byte
     {
-        R0 = 0,     // 0 * (PI / 8) radian
-        R2 = 2,     // 2 * (PI / 8) radian
-        R4 = 4,     // 4 * (PI / 8) radian
-        R6 = 6,     // 6 * (PI / 8) radian
-        R8 = 8,     // 8 * (PI / 8) radian
-        R10 = 10,   //10 * (PI / 8) radian
-        R12 = 12,   //12 * (PI / 8) radian
-        R14 = 14,   //14 * (PI / 8) radian
-        R16 = 16,   //vert flip and 0 * (PI / 8) radian
-        R18 = 18,   //vert flip and 2 * (PI / 8) radian
-        R20 = 20,   //vert flip and 4 * (PI / 8) radian
-        R22 = 22,   //vert flip and 6 * (PI / 8) radian
-        R24 = 24,   //vert flip and 8 * (PI / 8) radian
-        R26 = 26,   //vert flip and 10 * (PI / 8) radian
-        R28 = 28,   //vert flip and 12 * (PI / 8) radian
-        R30 = 30,   //vert flip and 14 * (PI / 8) radian
+        R0 =  0x0,  // rotate  0 * (PI / 8) radians
+        R2 =  0x2,  // rotate  2 * (PI / 8) radians
+        R4 =  0x4,  // rotate  4 * (PI / 8) radians
+        R6 =  0x6,  // rotate  6 * (PI / 8) radians
+        R8 =  0x8,  // rotate  8 * (PI / 8) radians
+        R10 = 0xA,  // rotate 10 * (PI / 8) radians
+        R12 = 0xC,  // rotate 12 * (PI / 8) radians
+        R14 = 0xE,  // rotate 14 * (PI / 8) radians
+
+        Mask = 0x0F, // mask to extract the rotation component
+        Flip = 0x10, // flip vertically
+
+        FR0 = Flip | R0,
+        FR2 = Flip | R2,
+        FR4 = Flip | R4,
+        FR6 = Flip | R6,
+        FR8 = Flip | R8,
+        FR10 = Flip | R10,
+        FR12 = Flip | R12,
+        FR14 = Flip | R14,
     }
     internal partial class Shape
     {
@@ -68,11 +70,9 @@ namespace ModelGraph.Controls
             var f1 = (RF & 0x10) != 0;
             var f2 = ((int)srf & 0x10) != 0;
 
-            Points.Clear();
             foreach  (var (dx, dy) in DXY)
             {
                 var v = new Vector2(dx, dy) * scale + center;
-                Points.Add(v);
             }
         }
     }
