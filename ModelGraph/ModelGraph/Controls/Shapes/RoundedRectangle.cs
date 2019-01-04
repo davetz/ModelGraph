@@ -28,11 +28,9 @@ namespace ModelGraph.Controls
         {
         }
 
-        internal RoundedRectangle(Shape shape, Vector2 center)
+        internal RoundedRectangle(Shape shape)
         {
-            DXY = new List<(sbyte dx, sbyte dy)>(DefaultDXY);
             CopyData(shape);
-            Center = center;
         }
 
         internal RoundedRectangle(Vector2 center)
@@ -42,8 +40,8 @@ namespace ModelGraph.Controls
         }
 
         #region OverideAbstract  ==============================================
-        internal override Shape Clone() =>new RoundedRectangle(this, Vector2.Zero);
-        internal override Shape Clone(Vector2 Center) => new RoundedRectangle(this, Center);
+        internal override Shape Clone() =>new RoundedRectangle(this);
+        internal override Shape Clone(Vector2 Center) => new RoundedRectangle(Center);
 
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
         {

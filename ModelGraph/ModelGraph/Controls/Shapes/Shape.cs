@@ -10,8 +10,6 @@ namespace ModelGraph.Controls
 {
     internal abstract partial class Shape
     {
-        internal const float FULLSIZE = 200;    // full size of the symbol's graphic definition
-        internal const float HALFSIZE = 100;    // half size (radius) of the symbol's graphic definition
         internal Shape() { }
         internal Shape(int I, byte[] data) { ReadData(I, data); }
 
@@ -32,8 +30,6 @@ namespace ModelGraph.Controls
         #endregion
 
         #region CommonProperties  =============================================
-        internal bool IsSelected;
-
         public CanvasStrokeStyle StrokeStyle()
         {
             var ss = _strokeStyle;
@@ -100,7 +96,7 @@ namespace ModelGraph.Controls
             var hw = width / 2;
             var y1 = index * width;
             var y2 = y1 + width;
-            ds.DrawLine(hw, y1, hw, y2, Colors.SlateGray, width);
+            ds.DrawLine(hw, y1, hw, y2, Colors.SlateBlue, width);
         }
         #endregion
 
@@ -114,7 +110,6 @@ namespace ModelGraph.Controls
 
         protected abstract void GetPoints(List<(float dx, float dy)> list);
         protected abstract void SetPoints(List<(float dx, float dy)> list);
-
         #endregion
 
         #region StaticMethods  ================================================
@@ -195,53 +190,60 @@ namespace ModelGraph.Controls
         }
 
         #region DrawTargets  ==================================================
-        static internal void DrawTargets(IEnumerable<Shape> shapes, CanvasDrawingSession ds, float scale, Vector2 center)
+        static internal bool DrawTargets(IEnumerable<Shape> shapes, bool recordTargets, bool recordPointTargets, List<Vector2> targets, CanvasDrawingSession ds, float scale, Vector2 center, Vector2 limit)
         {
             var points = new List<(float dx, float dy)>();
             if (GetAllPoints(shapes, points))
             {
                 var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtent(points);
+                if (recordTargets) targets.Clear();
 
-                Draw(new Vector2(dx1, dy1) * scale + center, true);
-                Draw(new Vector2(dx2, dy2) * scale + center, true);
-                Draw(new Vector2(cdx, cdy) * scale + center, true);
+                var limit1 = center - limit;
+                var limit2 = center + limit;
 
-                void Draw(Vector2 cp, bool drawHash = false)
+                var x1 = dx1 * scale + center.X;
+                var y1 = dy1 * scale + center.Y;
+
+                var x2 = dx2 * scale + center.X;
+                var y2 = dy2 * scale + center.Y;
+
+
+                DrawSliders(new Vector2(x1, limit1.Y), new Vector2(x1, limit2.Y), dsx);
+                DrawSliders(new Vector2(x2, limit1.Y), new Vector2(x2, limit2.Y), dsx);
+
+                DrawSliders(new Vector2(limit1.X, y1), new Vector2(limit2.X, y1), dsy);
+                DrawSliders(new Vector2(limit1.X, y2), new Vector2(limit2.X, y2), dsy);
+
+                DrawTarget(new Vector2(cdx, cdy) * scale + center);
+
+                if (recordPointTargets && recordTargets)
                 {
-                    ds.DrawCircle(cp, 5, Colors.White, 2);
-                    ds.DrawCircle(cp, 7, Colors.Black, 2);
-
-                    if (drawHash)
+                    foreach (var (dx, dy) in points)
                     {
-                        DrawHash(t11, t12, Colors.White);
-                        DrawHash(t13, t14, Colors.Black);
-
-                        DrawHash(-t11, -t12, Colors.White);
-                        DrawHash(-t13, -t14, Colors.Black);
-
-                        DrawHash(t21, t22, Colors.White);
-                        DrawHash(t23, t24, Colors.Black);
-
-                        DrawHash(-t21, -t22, Colors.White);
-                        DrawHash(-t23, -t24, Colors.Black);
-                    }
-
-                    void DrawHash(Vector2 vt1, Vector2 vt2, Color color)
-                    {
-                        ds.DrawLine(cp + vt1, cp + vt2, color, 2);
+                        DrawTarget(new Vector2(dx, dy) * scale + center);
                     }
                 }
-            }
-        }
-        private static Vector2 t11 = new Vector2(6, 0);
-        private static Vector2 t12 = new Vector2(12, 0);
-        private static Vector2 t13 = new Vector2(6, 2);
-        private static Vector2 t14 = new Vector2(12, 2);
+                return true;
 
-        private static Vector2 t21 = new Vector2(0, 6);
-        private static Vector2 t22 = new Vector2(0, 12);
-        private static Vector2 t23 = new Vector2(2, 6);
-        private static Vector2 t24 = new Vector2(2, 12);
+                void DrawTarget(Vector2 c)
+                {
+                    if (recordTargets) targets.Add(c);
+
+                    ds.DrawCircle(c, 5, Colors.White, 2);
+                    ds.DrawCircle(c, 7, Colors.Black, 2);
+                }
+                void DrawSliders(Vector2 p1, Vector2 p2, Vector2 dp)
+                {
+                    ds.DrawLine(p1, p2, Colors.White, 2);
+                    ds.DrawLine(p1 + dp, p2 + dp, Colors.Black, 2);
+                    //DrawTarget(p1);
+                    DrawTarget(p2);
+                }
+            }
+            return false;
+        }
+        private static Vector2 dsx = new Vector2(2, 0);
+        private static Vector2 dsy = new Vector2(0, 2);
         #endregion
 
         #endregion

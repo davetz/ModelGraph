@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     Unloaded="SymbolEditControl_Unloaded"
-    Width="940" Height="732"
+    Width="1050" Height="752"
     x:Name="control"
     mc:Ignorable="d">
 
@@ -148,19 +148,27 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid>
-            <StackPanel Height="40" Orientation="Horizontal" HorizontalAlignment="Left">
+        <Grid Grid.Row="0">
+            <StackPanel Height="50" Orientation="Horizontal" HorizontalAlignment="Left">
+
+                <Grid Grid.Row="0" Background="DarkSlateGray" >
+                    <canvas:CanvasControl x:Name="SelectorCanvas0" Width="50" Height="50" 
+                    Draw="SelectorCanvas0_Draw"
+                    PointerPressed="SelectorCanvas0_PointerPressed"
+                    PointerReleased="SelectorCanvas0_PointerReleased" />
+                </Grid>
 
                 <Button x:Name="CutButton" Style="{StaticResource LeftButtonStyle}" Click="CutButton_Click">
                     <FontIcon  Glyph="&#xE8C6;" />
                 </Button>
+                <Button x:Name="PasteButton" Style="{StaticResource LeftButtonStyle}" Click="PasteButton_Click" >
+                    <FontIcon  Glyph="&#xE8C8;" />
+                </Button>
                 <Button x:Name="CopyButton" Style="{StaticResource LeftButtonStyle}" Click="CopyButton_Click" >
                     <FontIcon  Glyph="&#xE77F;" />
-                </Button>
-                <Button x:Name="PasteButton" Style="{StaticResource LeftButtonStyle}" Click="PasteButton_Click"  IsEnabled="{x:Bind HasSharedShapes , Mode=OneWay}" >
-                    <FontIcon  Glyph="&#xE8C8;" />
                 </Button>
                 <Button x:Name="RotateRightButton" Style="{StaticResource LeftButtonStyle}" Click="RotateRightButton_Click" >
                     <FontIcon  Glyph="&#xE7AD;" />
@@ -193,209 +201,71 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Grid  Grid.Column="0" >
+            <Grid  Grid.Column="0" Width="50" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Background="DarkSlateGray" Margin="0,0,8,8" >
-                    <canvas:CanvasControl x:Name="SelectorCanvas0" Width="50" Height="50" 
-                    Draw="SelectorCanvas0_Draw"
-                    PointerPressed="SelectorCanvas0_PointerPressed"
-                    PointerReleased="SelectorCanvas0_PointerReleased" />
-                </Grid>
+                <Button Grid.Row="0" x:Name="OneManyButton" Style="{StaticResource OneManyButtonStyle}" Click="OneManyButton_Click" Margin="-2,0,0,0" />
 
-                <Grid Grid.Row="1" Margin="0,0,0,4" >
-                    <Button x:Name="OneManyButton" Style="{StaticResource OneManyButtonStyle}" Click="OneManyButton_Click"/>
+                <ScrollViewer Grid.Row="1" Height="524">
+                    <Grid Background="DarkSlateGray" HorizontalAlignment="Left" >
+                        <canvas:CanvasControl x:Name="SelectorCanvas1" Width="40" Height="840" 
+                            Draw="SelectorCanvas1_Draw"
+                            PointerMoved="SelectorCanvas1_PointerMoved"
+                            PointerPressed="SelectorCanvas1_PointerPressed"
+                            PointerReleased="SelectorCanvas1_PointerReleased"
+                         />
                 </Grid>
-
-                <Grid Grid.Row="2" Background="DarkSlateGray" Margin="0,0,8,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <canvas:CanvasControl x:Name="SelectorCanvas1" Width="50" Height="600" 
-                    Draw="SelectorCanvas1_Draw"
-                        PointerMoved="SelectorCanvas1_PointerMoved"
-                        PointerPressed="SelectorCanvas1_PointerPressed"
-                        PointerReleased="SelectorCanvas1_PointerReleased" />
-                </Grid>
+                </ScrollViewer>
             </Grid>
 
-            <Grid Grid.Column="1" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Grid Background="DarkSlateGray">
-                    <canvas:CanvasControl x:Name="EditorCanvas"  Width="560" Height="560"
+            <Grid Grid.Column="1" Background="DarkSlateGray">
+                    <canvas:CanvasControl x:Name="EditorCanvas"  Width="560" Height="560" VerticalAlignment="Top"
                         Draw="EditorCanvas_Draw"
                         Loaded="EditorCanvas_Loaded" 
                         PointerMoved="EditorCanvas_PointerMoved"
                         PointerPressed="EditorCanvas_PointerPressed"
                         PointerReleased="EditorCanvas_PointerReleased" />
-                </Grid>
-
-
-                <Grid Grid.Row="1"   Width="448" Height="234" >
-                    <StackPanel x:Name="PropertyPanel" Orientation="Vertical">
-
-                        <Grid Height="40">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock  Grid.Column="0" Text="Start Cap" Style="{StaticResource PropertyLabelStyle}"/>
-                            <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
-                                      ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
-                                      SelectedItem="{Binding ElementName=control, Path=ShapeStartCap, Mode=TwoWay}"
-                                      SelectionChanged ="StartCap_SelectionChanged" />
-
-                            <TextBlock  Grid.Column="2" Text="End Cap" Style="{StaticResource PropertyLabelStyle}"/>
-                            <ComboBox  Grid.Column="3" Style="{StaticResource PropetyComboBoxStyle}"
-                                      ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
-                                      SelectedItem="{Binding ElementName=control, Path=ShapeEndCap, Mode=TwoWay}"
-                                      SelectionChanged ="EndCap_SelectionChanged" />
-                        </Grid>
-
-                        <Grid Height="40">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                            </Grid.ColumnDefinitions>
-
-
-                            <TextBlock Grid.Column="0" Text="Join Miter" Style="{StaticResource PropertyLabelStyle}"/>
-                            <ComboBox  Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
-                                      ItemsSource="{Binding ElementName=control, Path=LineJoinList}"
-                                      SelectedItem="{Binding ElementName=control, Path=ShapeLineJoin, Mode=TwoWay}"
-                                      SelectionChanged ="LineJoin_SelectionChanged" />
-                        </Grid>
-
-
-                        <Grid Height="40">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Grid.Column="0" Text="Dash Style" Style="{StaticResource PropertyLabelStyle}" />
-                            <ComboBox  Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
-                                      ItemsSource="{Binding ElementName=control, Path=DashStyleList}"
-                                      SelectedItem="{Binding ElementName=control, Path=ShapeDashStyle, Mode=TwoWay}"
-                                      SelectionChanged ="DashStyle_SelectionChanged" />
-
-                            <TextBlock Grid.Column="2" Text="Dash Cap" Style="{StaticResource PropertyLabelStyle}"/>
-                            <ComboBox Grid.Column="3" Style="{StaticResource PropetyComboBoxStyle}"
-                                      ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
-                                      SelectedItem="{Binding ElementName=control, Path=ShapeDashCap, Mode=TwoWay}"
-                                      SelectionChanged ="DashCap_SelectionChanged" />
-                        </Grid>
-
-                        <Grid Height="40" >
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                                <ColumnDefinition Width="30*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock  Grid.Column="0" Text="Fill/Stroke" Style="{StaticResource PropertyLabelStyle}"/>
-                            <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
-                                      ItemsSource="{Binding ElementName=control, Path=FillStrokeList}"
-                                      SelectedItem="{Binding ElementName=control, Path=ShapeFillStroke, Mode=TwoWay}"
-                                      SelectionChanged ="FillStroke_SelectionChanged" />
-
-                            <TextBlock  Grid.Column="2" Text="Polygon Sides" Style="{StaticResource PropertyLabelStyle}"/>
-                            <ComboBox Grid.Column="3" Style="{StaticResource PropetyComboBoxStyle}"
-                                      ItemsSource="{Binding ElementName=control, Path=PolygonSideList}"
-                                      SelectedItem="{Binding ElementName=control, Path=ShapePolygonSide, Mode=TwoWay}"
-                                      SelectionChanged ="PolygonSides_SelectionChanged" />
-
-                        </Grid>
-
-
-                        <Grid x:Name="ContactGrid" Visibility="Collapsed">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="40*"/>
-                                <RowDefinition Height="40*"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="10*"/>
-                                <ColumnDefinition Width="40*"/>
-                                <ColumnDefinition Width="10*"/>
-                                <ColumnDefinition Width="40*"/>
-                                <ColumnDefinition Width="10*"/>
-                                <ColumnDefinition Width="40*"/>
-                                <ColumnDefinition Width="10*"/>
-                                <ColumnDefinition Width="40*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Text="Assign Alowed Face Contacts" Style="{StaticResource PropetyHeaderStyle}" Grid.ColumnSpan="8"/>
-
-                            <TextBlock Text="W" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="0"/>
-                            <TextBlock Text="N" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="2"/>
-                            <TextBlock Text="S" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="4"/>
-                            <TextBlock Text="E" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="6"/>
-
-                            <TextBlock Text="NW" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="0"/>
-                            <TextBlock Text="NE" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="2"/>
-                            <TextBlock Text="SW" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="4"/>
-                            <TextBlock Text="SE" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="6"/>
-
-                            <ComboBox x:Name="WestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="1"/>
-                            <ComboBox x:Name="NorthContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="3"/>
-                            <ComboBox x:Name="SouthContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="5"/>
-                            <ComboBox x:Name="EastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="7"/>
-
-                            <ComboBox x:Name="NorthWestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="1"/>
-                            <ComboBox x:Name="NorthEastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="3"/>
-                            <ComboBox x:Name="SouthWestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="5"/>
-                            <ComboBox x:Name="SouthEastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="7"/>
-                        </Grid>
-
-                        <Grid x:Name="ContactWidthGrid" Height="40" Visibility="Collapsed">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="24*"/>
-                                <ColumnDefinition Width="68*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Text="Contact Length" Style="{StaticResource PropertyLabelStyle}" Grid.Column="0"/>
-                            <Slider x:Name="ContactSlider" Style="{StaticResource PropertySliderStyle}" Width="300" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5"/>
-                        </Grid>
-                    </StackPanel>
-                </Grid>
             </Grid>
 
             <Grid Grid.Column="2" Background="DarkSlateGray" Margin="8,0,4,0" >
-                <canvas:CanvasControl x:Name="PickerCanvas" Width="42" Height="624" VerticalAlignment="Top" 
+                <canvas:CanvasControl x:Name="PickerCanvas" Width="42" Height="560" VerticalAlignment="Top" 
                         Draw="PickerCanvas_Draw"
                         PointerPressed="PickerCanvas_PointerPressed"
                         PointerReleased="PickerCanvas_PointerReleased" />
             </Grid>
 
             <Grid Grid.Column="3" Width="374" VerticalAlignment="Top"  HorizontalAlignment="Stretch" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
                 <ColorPicker x:Name="ColorPicker" Width="364" Height="550" VerticalAlignment="Top" Color="{x:Bind ShapeColor, Mode=TwoWay}" ColorChanged="ColorPicker_ColorChanged"/>
+            </Grid>
+        </Grid>
 
-                <StackPanel Grid.Row="1" Height="140" >
-                    <Grid Height="32">
+        <Grid Grid.Row="2">
+            <StackPanel x:Name="PropertyPanel" Orientation="Vertical">
+                <StackPanel x:Name="StrokePanel" Orientation="Horizontal">
+                    
+                    <Grid Height="40" >
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20*"/>
-                            <ColumnDefinition Width="58*"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
-                        
-                        <TextBlock Text="Stroke Width"  Style="{StaticResource PropertyLabelStyle}" />
+
+                        <TextBlock  Grid.Column="0" Text="Stroke" Style="{StaticResource PropertyLabelStyle}"/>
+                        <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=FillStrokeList}"
+                                      SelectedItem="{Binding ElementName=control, Path=ShapeFillStroke, Mode=TwoWay}"
+                                      SelectionChanged ="FillStroke_SelectionChanged" />
+                    </Grid>
+
+                    <Grid x:Name="StrokeWidthGrid" Height="40">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="270"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Width"  Style="{StaticResource PropertyLabelStyle}" />
                         <Slider Grid.Column="1"  Width="250" x:Name="StrokeWidthSlider"
                                 Style="{StaticResource PropertySliderStyle}"
                                 Value="{x:Bind ShapeStrokeWidth, Mode=TwoWay}"
@@ -403,52 +273,127 @@
                                 Maximum="20"
                                 ValueChanged="StrokeWidthSlider_ValueChanged" />
                     </Grid>
-
-                    <Grid  Height="32">
+                    
+                    <Grid Height="40">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20*"/>
-                            <ColumnDefinition Width="58*"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Radius" Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1"  Width="250" x:Name="RadiusSlider"
-                                Style="{StaticResource PropertySliderStyle}"
-                                Value="{x:Bind ShapeCentralSize, Mode=TwoWay}"
-                                Minimum="1"
-                                Maximum="{x:Bind ShapeCentralSizeMax, Mode=OneWay}"
-                                ValueChanged="RadiusSlider_ValueChanged"/>
+                        <TextBlock  Grid.Column="0" Text="Start Cap" Style="{StaticResource PropertyLabelStyle}"/>
+                        <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
+                                      SelectedItem="{Binding ElementName=control, Path=ShapeStartCap, Mode=TwoWay}"
+                                      SelectionChanged ="StartCap_SelectionChanged" />
+                    </Grid>
+                    
+                    <Grid Height="40">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock  Grid.Column="0" Text="End Cap" Style="{StaticResource PropertyLabelStyle}"/>
+                        <ComboBox  Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=CapStyleList}"
+                                      SelectedItem="{Binding ElementName=control, Path=ShapeEndCap, Mode=TwoWay}"
+                                      SelectionChanged ="EndCap_SelectionChanged" />
                     </Grid>
 
-                    <Grid Height="32">
+                    <Grid Height="40">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20*"/>
-                            <ColumnDefinition Width="58*"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Vertical Size" Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1" Width="250" x:Name="VerticalSizeSlider"
-                                Style="{StaticResource PropertySliderStyle}"
-                                Minimum="1"
-                                Maximum="{x:Bind ShapeVerticalSizeMax, Mode=OneWay}"
-                                ValueChanged="VerticalSizeSlider_ValueChanged" />
+                        <TextBlock Grid.Column="0" Text="Join Miter" Style="{StaticResource PropertyLabelStyle}"/>
+                        <ComboBox  Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=LineJoinList}"
+                                      SelectedItem="{Binding ElementName=control, Path=ShapeLineJoin, Mode=TwoWay}"
+                                      SelectionChanged ="LineJoin_SelectionChanged" />
                     </Grid>
 
-                    <Grid Height="32">
+                    <Grid Height="40">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20*"/>
-                            <ColumnDefinition Width="58*"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Horizontal Size" Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1" Width="250" x:Name="HorizontalSizeSlider"
-                                Style="{StaticResource PropertySliderStyle}"
-                                Value="{x:Bind ShapeHorizontalSize, Mode=TwoWay}"
-                                Minimum="1"
-                                Maximum="{x:Bind ShapeHorizontalSizeMax, Mode=OneWay}"
-                                ValueChanged="HorizontalSizeSlider_ValueChanged"/>
+                        <TextBlock Grid.Column="0" Text="Dash" Style="{StaticResource PropertyLabelStyle}" />
+                        <ComboBox  Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=DashStyleList}"
+                                      SelectedItem="{Binding ElementName=control, Path=ShapeDashStyle, Mode=TwoWay}"
+                                      SelectionChanged ="DashStyle_SelectionChanged" />
                     </Grid>
                 </StackPanel>
-            </Grid>
+
+                <StackPanel x:Name="PolygonPanel" Orientation="Horizontal">
+                    <Grid Height="40" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock  Grid.Column="0" Text="Polygon" Style="{StaticResource PropertyLabelStyle}"/>
+                        <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
+                                      ItemsSource="{Binding ElementName=control, Path=PolygonSideList}"
+                                      SelectedItem="{Binding ElementName=control, Path=ShapePolygonSide, Mode=TwoWay}"
+                                      SelectionChanged ="PolygonSides_SelectionChanged" />
+                    </Grid>
+
+                </StackPanel>   
+
+
+                <Grid x:Name="ContactGrid" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40*"/>
+                        <RowDefinition Height="40*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="40*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="40*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="40*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="40*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Assign Alowed Face Contacts" Style="{StaticResource PropetyHeaderStyle}" Grid.ColumnSpan="8"/>
+
+                    <TextBlock Text="W" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="0"/>
+                    <TextBlock Text="N" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="2"/>
+                    <TextBlock Text="S" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="4"/>
+                    <TextBlock Text="E" Style="{StaticResource PropertyLabelStyle}" Grid.Row="0" Grid.Column="6"/>
+
+                    <TextBlock Text="NW" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="0"/>
+                    <TextBlock Text="NE" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="2"/>
+                    <TextBlock Text="SW" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="4"/>
+                    <TextBlock Text="SE" Style="{StaticResource PropertyLabelStyle}" Grid.Row="1" Grid.Column="6"/>
+
+                    <ComboBox x:Name="WestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="1"/>
+                    <ComboBox x:Name="NorthContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="3"/>
+                    <ComboBox x:Name="SouthContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="5"/>
+                    <ComboBox x:Name="EastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="1" Grid.Column="7"/>
+
+                    <ComboBox x:Name="NorthWestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="1"/>
+                    <ComboBox x:Name="NorthEastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="3"/>
+                    <ComboBox x:Name="SouthWestContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="5"/>
+                    <ComboBox x:Name="SouthEastContact" Style="{StaticResource PropetyComboBoxStyle}" Grid.Row="2" Grid.Column="7"/>
+                </Grid>
+
+                <Grid x:Name="ContactWidthGrid" Height="40" Visibility="Collapsed">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="24*"/>
+                        <ColumnDefinition Width="68*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Contact Length" Style="{StaticResource PropertyLabelStyle}" Grid.Column="0"/>
+                    <Slider x:Name="ContactSlider" Style="{StaticResource PropertySliderStyle}" Width="300" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5"/>
+                </Grid>
+            </StackPanel>
+
         </Grid>
     </Grid>
 </Page>

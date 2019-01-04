@@ -13,11 +13,9 @@ namespace ModelGraph.Controls
         {
         }
 
-        internal Circle(Shape shape, Vector2 center)
+        internal Circle(Shape shape)
         {
-            DXY = new List<(sbyte dx, sbyte dy)>(DefaultDXY);
             CopyData(shape);
-            Center = center;
         }
 
         internal Circle(Vector2 center)
@@ -27,8 +25,8 @@ namespace ModelGraph.Controls
         }
 
         #region OverideAbstract  ==============================================
-        internal override Shape Clone() =>new Circle(this, Vector2.Zero);
-        internal override Shape Clone(Vector2 Center) => new Circle(this, Center);
+        internal override Shape Clone() =>new Circle(this);
+        internal override Shape Clone(Vector2 Center) => new Circle(Center);
 
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
         {

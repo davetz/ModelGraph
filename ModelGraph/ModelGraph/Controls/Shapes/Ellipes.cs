@@ -13,11 +13,9 @@ namespace ModelGraph.Controls
         {
         }
 
-        internal Ellipes(Shape shape, Vector2 center)
+        internal Ellipes(Shape shape)
         {
-            DXY = new List<(sbyte dx, sbyte dy)>(DefaultDXY);
             CopyData(shape);
-            Center = center;
         }
 
         internal Ellipes(Vector2 center)
@@ -27,8 +25,8 @@ namespace ModelGraph.Controls
         }
 
         #region OverideAbstract  ==============================================
-        internal override Shape Clone() =>new Ellipes(this, Vector2.Zero);
-        internal override Shape Clone(Vector2 Center) => new Ellipes(this, Center);
+        internal override Shape Clone() =>new Ellipes(this);
+        internal override Shape Clone(Vector2 Center) => new Ellipes(Center);
 
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
         {

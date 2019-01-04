@@ -8,10 +8,10 @@ namespace ModelGraph.Controls
     {
         private const int HeaderPointCountIndex = 14;
         protected byte ST = 0;  // shapte type code
-        protected byte A = 255;
-        protected byte R = 255;
-        protected byte G = 255;
-        protected byte B = 255;
+        protected byte A = 255; // color(A, R, G, B)
+        protected byte R = 255; // color(A, R, G, B)
+        protected byte G = 255; // color(A, R, G, B)
+        protected byte B = 255; // color(A, R, G, B)
         protected byte SW = 1;  // stroke width
         protected byte SC = 0;  // startCap
         protected byte EC = 0;  // endCap
@@ -22,7 +22,6 @@ namespace ModelGraph.Controls
         protected byte PS = 3;  // number of polygon sides
         protected byte RF = 0;  // rotate flip state code
         protected List<(sbyte dx, sbyte dy)> DXY;  // zero or more defined points
-        protected List<(float dx, float dy)> Points;  // zero or more output points
 
         #region Deserialize  ==================================================
         static public void Deserialize (byte[] data, List<Shape> shapes)
@@ -96,12 +95,12 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region CopyData  ====================================================
+        #region CopyData  =====================================================
         protected void CopyData(Shape s)
         {
             ST = s.ST; ;
             A = s.A;
-            R = s.B;
+            R = s.R;
             G = s.G;
             B = s.B;
             SW = s.SW;

@@ -13,11 +13,9 @@ namespace ModelGraph.Controls
         {
         }
 
-        internal Rectangle(Shape shape, Vector2 center)
+        internal Rectangle(Shape shape)
         {
-            DXY = new List<(sbyte dx, sbyte dy)>(DefaultDXY);
             CopyData(shape);
-            Center = center;
         }
 
         internal Rectangle(Vector2 center)
@@ -27,8 +25,8 @@ namespace ModelGraph.Controls
         }
 
         #region OverideAbstract  ==============================================
-        internal override Shape Clone() =>new Rectangle(this, Vector2.Zero);
-        internal override Shape Clone(Vector2 Center) => new Rectangle(this, Center);
+        internal override Shape Clone() =>new Rectangle(this);
+        internal override Shape Clone(Vector2 Center) => new Rectangle(Center);
 
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
         {

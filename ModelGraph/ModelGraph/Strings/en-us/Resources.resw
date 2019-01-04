@@ -2243,4 +2243,10 @@ The bulk of your modeling data work is best done in the custom tree and graph vi
   <data name="947X.Text" xml:space="preserve">
     <value>Rotate Counter Clockwise 180</value>
   </data>
+  <data name="_001A" xml:space="preserve">
+    <value>Select one shape at a time</value>
+  </data>
+  <data name="_001B" xml:space="preserve">
+    <value>Select one or more shapes at a time</value>
+  </data>
 </root>
