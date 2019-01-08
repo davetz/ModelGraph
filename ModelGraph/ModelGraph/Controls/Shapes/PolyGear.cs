@@ -10,28 +10,28 @@ namespace ModelGraph.Controls
     {
         internal PolyGear()
         {
-            P1 = 20;
-            P2 = 75;
-            P3 = 6;
+            R1 = 20;
+            R2 = 50;
+            PD = 4;
             CreatePoints();
         }
         internal PolyGear(int I, byte[] data) : base(I, data) { }
 
         protected override void CreatePoints()
         {
-            var N = 3 * P3;
-            var M = 2 * P3;
+            var N = 3 * PD; //number of points
+            var M = 2 * PD; //number of angles
             DXY = new List<(sbyte dx, sbyte dy)>(N);
 
             var da = Math.PI * 2 / M;
-            var ta = da / 6;
-            var a = (Math.PI / 2) - da;
+            var ta = da * R3 / 200 ;
+            var a = - da;
             for (int i = 0; i < M; i++)
             {
-                DXY.Add(Round((P2 * (float)Math.Cos(a - ta), P2 * (float)Math.Sin(a - ta))));
-                DXY.Add(Round((P2 * (float)Math.Cos(a + ta), P2 * (float)Math.Sin(a + ta))));
+                DXY.Add(Round((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
                 a += da;
-                DXY.Add(Round((P1 * (float)Math.Cos(a), P1 * (float)Math.Sin(a))));
+                DXY.Add(Round((R2 * (float)Math.Cos(a - ta), R2 * (float)Math.Sin(a - ta))));
+                DXY.Add(Round((R2 * (float)Math.Cos(a + ta), R2 * (float)Math.Sin(a + ta))));
                 a += da;
             }
         }

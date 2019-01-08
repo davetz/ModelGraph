@@ -25,14 +25,6 @@ namespace ModelGraph.Controls
         Stroke = 0,
         Filled = 1
     }
-    public enum PolygonSides
-    {
-        _3 = 3,
-        _4 = 4,
-        _5 = 5,
-        _6 = 6,
-        _8 = 8,
-    }
     #endregion
 
     public sealed partial class SymbolEditControl : Page, IPageControl, IModelPageControl, INotifyPropertyChanged
@@ -161,7 +153,7 @@ namespace ModelGraph.Controls
         public List<CanvasCapStyle> CapStyleList { get { return GetEnumAsList<CanvasCapStyle>(); } }
         public List<CanvasLineJoin> LineJoinList { get { return GetEnumAsList<CanvasLineJoin>(); } }
         public List<Fill_Stroke> FillStrokeList { get { return GetEnumAsList<Fill_Stroke>(); } }
-        public List<PolygonSides> PolygonSideList { get { return GetEnumAsList<PolygonSides>(); } }
+        public List<PolyDimension> PolyDimensionList { get { return GetEnumAsList<PolyDimension>(); } }
         #endregion
 
 
@@ -264,9 +256,9 @@ namespace ModelGraph.Controls
 
                     var (cent, vert, horz) = Shape.DrawTargets(SelectedShapes, record, _hasPolylineTarget, _targetPoints, ds, scale, Center);
 
-                    if (_initializeCentralSlider) { _initializeCentralSlider = false; ShapeCentralSize = cent; }
-                    if (_initializeVerticalSlider) { _initializeVerticalSlider = false; ShapeVerticalSize = cent; }
-                    if (_initializeHorizontalSlider) { _initializeHorizontalSlider = false; ShapeHorizontalSize = cent; }
+                    if (_initializeCentralSlider) { _initializeCentralSlider = false; CentralSize = cent; }
+                    if (_initializeVerticalSlider) { _initializeVerticalSlider = false; VerticalSize = cent; }
+                    if (_initializeHorizontalSlider) { _initializeHorizontalSlider = false; HorizontalSize = cent; }
                 }
             }
         }
@@ -538,7 +530,7 @@ namespace ModelGraph.Controls
             NewShape = PickerShape.Clone(ShapePoint1);
 
             SymbolShapes.Add(NewShape);
-            GrtProperty(NewShape);
+            SetProperty(NewShape, ProertyId.All);
             DragAction = BeginDragNewShape;
 
             EditorCanvas.Invalidate();
@@ -627,9 +619,9 @@ namespace ModelGraph.Controls
         {
             SetProperty(ProertyId.DashStyle);
         }
-        private void PolygonSides_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void PolyDimension_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProertyId.PolygonSide);
+            SetProperty(ProertyId.PolyDimension);
         }
         private void LineJoin_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -668,7 +660,7 @@ namespace ModelGraph.Controls
             {
                 _ignoreCentralSliderChange =_initializeCentralSlider = true;
 
-                Shape.ResizeRadius2(SelectedShapes, (float)VerticalSizeSlider.Value);
+                Shape.ResizeVertical(SelectedShapes, (float)VerticalSizeSlider.Value);
                 EditorCanvas.Invalidate();
             }
         }
@@ -680,20 +672,54 @@ namespace ModelGraph.Controls
             {
                 _ignoreCentralSliderChange = _initializeCentralSlider = true;
 
-                Shape.ResizeRadius1(SelectedShapes, (float)HorizontalSizeSlider.Value);
+                Shape.ResizeHorizontal(SelectedShapes, (float)HorizontalSizeSlider.Value);
                 EditorCanvas.Invalidate();
             }
         }
         private bool _ignoreCentralSliderChange;
         private bool _ignoreVerticalSliderChange;
         private bool _ignoreHorizontalSliderChange;
+        private bool _ignoreMajorAxixSliderChange;
+        private bool _ignoreMinorAxixSliderChange;
+        private bool _ignoreTernaryAxixSliderChange;
+
+        private void MinorAxisSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+            if (_ignoreMinorAxixSliderChange)
+                _ignoreMinorAxixSliderChange = false;
+            else
+            {
+                Shape.ResizeMinorAxis(SelectedShapes, (float)MinorAxisSizeSlider.Value);
+                EditorCanvas.Invalidate();
+            }
+        }
+        private void MajorAxisSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+            if (_ignoreMajorAxixSliderChange)
+                _ignoreMajorAxixSliderChange = false;
+            else
+            {
+                Shape.ResizeMajorAxis(SelectedShapes, (float)MajorAxisSizeSlider.Value);
+                EditorCanvas.Invalidate();
+            }
+        }
+        private void TernaryAxisSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+            if (_ignoreTernaryAxixSliderChange)
+                _ignoreTernaryAxixSliderChange = false;
+            else
+            {
+                Shape.ResizeTernaryAxis(SelectedShapes, (float)TernaryAxisSizeSlider.Value);
+                EditorCanvas.Invalidate();
+            }
+        }
         #endregion
 
         #region SetGetProperty  ===============================================
         [Flags]
         private enum ProertyId
         {
-            All = 0xFFF,
+            All = 0x0FF,
             EndCap = 0x01,
             DashCap = 0x02,
             StartCap = 0x04,
@@ -702,7 +728,10 @@ namespace ModelGraph.Controls
             FillStroke = 0x20,
             ShapeColor = 0x40,
             StrokeWidth = 0x80,
-            PolygonSide = 0x100,
+            PolyMajorAxis = 0x100,
+            PolyMinorAxix = 0x200,
+            PolyTernaryAxis = 0x400,
+            PolyDimension = 0x800,
         }
         void SetProperty(ProertyId pid)
         {
@@ -720,7 +749,10 @@ namespace ModelGraph.Controls
             if ((pid & ProertyId.FillStroke) != 0) shape.FillStroke = ShapeFillStroke;
             if ((pid & ProertyId.ShapeColor) != 0) shape.ColorCode = ShapeColor.ToString();
             if ((pid & ProertyId.StrokeWidth) != 0) shape.StrokeWidth = (float)ShapeStrokeWidth;
-            if ((pid & ProertyId.PolygonSide) != 0) shape.Dimension = ShapeDimension;
+            if ((pid & ProertyId.PolyMajorAxis) != 0) shape.MajorAxis = MagorAxisSize;
+            if ((pid & ProertyId.PolyMinorAxix) != 0) shape.MinorAxis = MinorAxisSize;
+            if ((pid & ProertyId.PolyTernaryAxis) != 0) shape.TernaryAxis = TernaryAxisSize;
+            if ((pid & ProertyId.PolyDimension) != 0) shape.Dimension = PolyDimension;
         }
 
         void GrtProperty(Shape shape)
@@ -731,8 +763,22 @@ namespace ModelGraph.Controls
             ShapeDashCap = shape.DashCap;
             ShapeDashStyle = shape.DashStyle;
             ShapeFillStroke = shape.FillStroke;
-            ShapeDimension = shape.Dimension;
+
+            _ignoreMajorAxixSliderChange = true;
+            MagorAxisSize = shape.MajorAxis;
+
+            _ignoreMinorAxixSliderChange = true;
+            MinorAxisSize = shape.MinorAxis;
+
+            _ignoreTernaryAxixSliderChange = true;
+            TernaryAxisSize = shape.TernaryAxis;
+
+            PolyDimension = shape.Dimension;
+
+            _ignoreColorChange = true;
             ShapeColor = shape.Color;
+
+            
             ShapeStrokeWidth = shape.StrokeWidth;
         }
         #endregion
@@ -892,8 +938,8 @@ namespace ModelGraph.Controls
         public Fill_Stroke ShapeFillStroke { get { return _fillStroke; } set { Set(ref _fillStroke, value); } }
         public Fill_Stroke _fillStroke;
 
-        public ShapeDimension ShapeDimension { get { return _shapeDimension; } set { Set(ref _shapeDimension, value); } }
-        private ShapeDimension _shapeDimension;
+        public PolyDimension PolyDimension { get { return _shapeDimension; } set { Set(ref _shapeDimension, value); } }
+        private PolyDimension _shapeDimension;
 
         public Color ShapeColor { get { return _shapeColor; } set { Set(ref _shapeColor, value); } }
         private Color _shapeColor;
@@ -901,14 +947,23 @@ namespace ModelGraph.Controls
         public double ShapeStrokeWidth { get { return _strokeWidth; } set { Set(ref _strokeWidth, value); } }
         public double _strokeWidth;
 
-        public double ShapeCentralSize { get { return _centralSize; } set { Set(ref _centralSize, value); } }
+        public double CentralSize { get { return _centralSize; } set { Set(ref _centralSize, value); } }
         public double _centralSize;
 
-        public double ShapeVerticalSize { get { return _verticalSize; } set { Set(ref _verticalSize, value); } }
+        public double VerticalSize { get { return _verticalSize; } set { Set(ref _verticalSize, value); } }
         public double _verticalSize;
 
-        public double ShapeHorizontalSize { get { return _horizontalSize; } set { Set(ref _horizontalSize, value); } }
+        public double HorizontalSize { get { return _horizontalSize; } set { Set(ref _horizontalSize, value); } }
         public double _horizontalSize;
+
+        public double MinorAxisSize { get { return _minorSize; } set { Set(ref _minorSize, value); } }
+        public double _minorSize;
+
+        public double MagorAxisSize { get { return _majorSize; } set { Set(ref _majorSize, value); } }
+        public double _majorSize;
+
+        public double TernaryAxisSize { get { return _ternarySize; } set { Set(ref _ternarySize, value); } }
+        public double _ternarySize;
 
         public double EastContactSize { get { return _eastContactSize; } set { Set(ref _eastContactSize, value); } }
         public double _eastContactSize;

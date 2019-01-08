@@ -19,9 +19,9 @@ namespace ModelGraph.Controls
             }
             return list.ToArray();
         }
-        protected override void Rotate(float radians, Vector2 center)
+        protected override void Rotate(float radians)
         {
-            Transform(Matrix3x2.CreateRotation(radians, center));
+            Transform(Matrix3x2.CreateRotation(radians));
         }
         protected override void Scale(Vector2 scale)
         {

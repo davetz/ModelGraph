@@ -8,20 +8,21 @@ namespace ModelGraph.Controls
     {
         private const int HeaderPointCountIndex = 15;
         protected byte ST;      // shapte type code
-        protected byte A = 255; // color(A, R, G, B)
-        protected byte R = 255; // color(A, R, G, B)
-        protected byte G = 255; // color(A, R, G, B)
-        protected byte B = 255; // color(A, R, G, B)
+        protected byte A = 0xFF; // color(A, R, G, B)
+        protected byte R = 0xFF; // color(A, R, G, B)
+        protected byte G = 0xFF; // color(A, R, G, B)
+        protected byte B = 0xF0; // color(A, R, G, B)
         protected byte SW = 1;  // stroke width
         protected byte SC;      // startCap
         protected byte EC;      // endCap
-        protected byte DC = 1;  // dashCap
+        protected byte DC = 2;  // dashCap
         protected byte LJ = 3;  // line join
         protected byte DS;      // dash style
         protected byte FS;      // fill stroke
-        protected byte P1;      // radius1 axis (horz, inner)
-        protected byte P2;      // radius2 axis (vert, outer)
-        protected byte P3;      // polygon dimension
+        protected byte R1;      // minor axis (inner, horzontal)
+        protected byte R2;      // major axis (outer, vertical)
+        protected byte R3;      // auxiliary axis (circomference)
+        protected byte PD;      // polygon dimension
         protected List<(sbyte dx, sbyte dy)> DXY;  // zero or more defined points
 
         #region Deserialize  ==================================================
@@ -74,8 +75,8 @@ namespace ModelGraph.Controls
             LJ = data[I++];
             DS = data[I++];
             FS = data[I++];
-            P1 = data[I++];
-            P2 = data[I++];
+            R1 = data[I++];
+            R2 = data[I++];
             var pc = data[I++];
             if (pc > 0)
             {
@@ -103,9 +104,10 @@ namespace ModelGraph.Controls
             LJ = s.LJ;
             DS = s.DS;
             FS = s.FS;
-            P1 = s.P1;
-            P2 = s.P2;
-            P3 = s.P3;
+            R1 = s.R1;
+            R2 = s.R2;
+            R3 = s.R3;
+            PD = s.PD;
             DXY = new List<(sbyte dx, sbyte dy)>(s.DXY);
         }
         #endregion

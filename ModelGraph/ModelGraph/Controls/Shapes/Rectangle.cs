@@ -9,8 +9,8 @@ namespace ModelGraph.Controls
     {
         internal Rectangle()
         {
-            P1 = 50;
-            P2 = 75;
+            R1 = 50;
+            R2 = 75;
             DXY = new List<(sbyte dx, sbyte dy)>() { (0, 0) };
         }
         internal Rectangle(int I, byte[] data) : base(I, data)

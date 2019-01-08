@@ -10,21 +10,21 @@ namespace ModelGraph.Controls
     {
         internal PolySide()
         {
-            P1 = P2 = 50;
-            P3 = 3;
+            R1 = R2 = 50;
+            PD = 3;
             CreatePoints();
         }
         internal PolySide(int I, byte[] data) : base(I, data) { }
 
         protected override void CreatePoints()
         {
-            DXY = new List<(sbyte dx, sbyte dy)>(P3);
+            DXY = new List<(sbyte dx, sbyte dy)>(PD);
 
-            var da = Math.PI * 2 / P3;
-            var a = da - Math.PI / 2;
-            for (int i = 0; i < P3; i++)
+            var da = Math.PI * 2 / PD;
+            var a = da;
+            for (int i = 0; i < PD; i++)
             {
-                DXY.Add(Round((P1 * (float)Math.Cos(a), P1 * (float)Math.Sin(a))));
+                DXY.Add(Round((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
                 a += da;
             }
         }

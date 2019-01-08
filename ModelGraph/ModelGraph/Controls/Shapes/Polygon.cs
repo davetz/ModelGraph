@@ -13,8 +13,9 @@ using Windows.UI;
 namespace ModelGraph.Controls
 {
 
-    public enum ShapeDimension : byte
+    public enum PolyDimension : byte
     {
+        D2 = 2,
         D3 = 3,
         D4 = 4,
         D5 = 5,

@@ -9,7 +9,7 @@ namespace ModelGraph.Controls
     {
         internal Circle()
         {
-            P1 = P2 = 25;
+            R1 = R2 = 25;
             DXY = new List<(sbyte dx, sbyte dy)>() { (0, 0) };
         }
         internal Circle(int I, byte[] data) : base(I, data)
@@ -34,7 +34,7 @@ namespace ModelGraph.Controls
 
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
         {
-            var radius = (P1 * scale);
+            var radius = (R1 * scale);
             if (FillStroke == Fill_Stroke.Filled)
                 ds.FillCircle( Center * scale + center, radius, Color);
             else
@@ -44,11 +44,11 @@ namespace ModelGraph.Controls
         {
             if (scale.X == 1)
             {
-                P1 = P2 = (byte)(P1 * scale.Y);
+                R1 = R2 = (byte)(R1 * scale.Y);
             }
             else
             {
-                P1 = P2 = (byte)(P1 * scale.X);
+                R1 = R2 = (byte)(R1 * scale.X);
             }
         }
         #endregion

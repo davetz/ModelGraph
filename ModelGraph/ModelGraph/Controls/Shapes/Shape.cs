@@ -31,7 +31,10 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Properties  ===================================================
-        internal ShapeDimension Dimension { get { return (ShapeDimension)P3; } set { P3 = (byte)value; CreatePoints(); } }
+        internal double MajorAxis { get { return R2; } set { R2 = (byte)value; CreatePoints(); } }
+        internal double MinorAxis { get { return R1; } set { R1 = (byte)value; CreatePoints(); } }
+        internal double TernaryAxis { get { return R3; } set { R3 = (byte)value; CreatePoints(); } }
+        internal PolyDimension Dimension { get { return (PolyDimension)PD; } set { PD = (byte)value; CreatePoints(); } }
 
         public CanvasStrokeStyle StrokeStyle()
         {
@@ -109,7 +112,7 @@ namespace ModelGraph.Controls
         internal abstract Shape Clone(Vector2 Center);
         internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth);
 
-        protected abstract void Rotate(float radians, Vector2 center);
+        protected abstract void Rotate(float radians);
         protected abstract void Scale(Vector2 scale);
 
         protected abstract (float dx1, float dy1, float dx2, float dy2) GetExtent();
@@ -159,13 +162,13 @@ namespace ModelGraph.Controls
         #region Flip/Rotate  ==================================================
         static internal void RotateLeft(IEnumerable<Shape> shapes)
         {
-            var radians = DegreesToRadians(22.5f);
-            foreach (var shape in shapes) { shape.Rotate(radians, Vector2.Zero); }
+            var radians = DegreesToRadians(-22.5f);
+            foreach (var shape in shapes) { shape.Rotate(radians); }
         }
         static internal void RotateRight(IEnumerable<Shape> shapes)
         {
-            var radians = DegreesToRadians(-22.5f);
-            foreach (var shape in shapes) { shape.Rotate(radians, Vector2.Zero); }
+            var radians = DegreesToRadians(22.5f);
+            foreach (var shape in shapes) { shape.Rotate(radians); }
         }
         static internal void VerticalFlip(IEnumerable<Shape> shapes)
         {
@@ -214,10 +217,11 @@ namespace ModelGraph.Controls
                 foreach (var shape in shapes)
                 {
                     shape.Scale(scale);
+                    SetCenter(shapes, new Vector2(cdx, cdy));
                 }
             }
         }
-        internal static void ResizeRadius1(IEnumerable<Shape> shapes, float factor)
+        internal static void ResizeHorizontal(IEnumerable<Shape> shapes, float factor)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
 
@@ -230,10 +234,11 @@ namespace ModelGraph.Controls
                 foreach (var shape in shapes)
                 {
                     shape.Scale(scale);
+                    SetCenter(shapes, new Vector2(cdx, cdy));
                 }
             }
         }
-        internal static void ResizeRadius2(IEnumerable<Shape> shapes, float factor)
+        internal static void ResizeVertical(IEnumerable<Shape> shapes, float factor)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
 
@@ -247,8 +252,39 @@ namespace ModelGraph.Controls
                 foreach (var shape in shapes)
                 {
                     shape.Scale(scale);
+                    SetCenter(shapes, new Vector2(cdx, cdy));
                 }
             }
+        }
+        internal static void ResizeMajorAxis(IEnumerable<Shape> shapes, float factor)
+        {
+            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+            foreach (var shape in shapes)
+            {
+                shape.R2 = (byte)(factor * SIZE / 2);
+                shape.CreatePoints();
+            }
+            SetCenter(shapes, new Vector2(cdx, cdy));
+        }
+        internal static void ResizeMinorAxis(IEnumerable<Shape> shapes, float factor)
+        {
+            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+            foreach (var shape in shapes)
+            {
+                shape.R1 = (byte)(factor * SIZE / 2);
+                shape.CreatePoints();
+            }
+            SetCenter(shapes, new Vector2(cdx, cdy));
+        }
+        internal static void ResizeTernaryAxis(IEnumerable<Shape> shapes, float factor)
+        {
+            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+            foreach (var shape in shapes)
+            {
+                shape.R3 = (byte)factor;
+                shape.CreatePoints();
+            }
+            SetCenter(shapes, new Vector2(cdx, cdy));
         }
         #endregion
 

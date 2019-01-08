@@ -10,25 +10,25 @@ namespace ModelGraph.Controls
     {
         internal PolyStar()
         {
-            P1 = 25;
-            P2 = 75;
-            P3 = 5;
+            R1 = 20;
+            R2 = 50;
+            PD = 6;
             CreatePoints();
         }
         internal PolyStar(int I, byte[] data) : base(I, data) { }
 
         protected override void CreatePoints()
         {
-            var N = 2 * P3;
+            var N = 2 * PD;
             DXY = new List<(sbyte dx, sbyte dy)>(N);
 
             var da = Math.PI * 2 / N;
             var a = -Math.PI /2;
-            for (int i = 0; i < P3; i++)
+            for (int i = 0; i < PD; i++)
             {
-                DXY.Add(Round((P2 * (float)Math.Cos(a), P2 * (float)Math.Sin(a))));
+                DXY.Add(Round((R2 * (float)Math.Cos(a), R2 * (float)Math.Sin(a))));
                 a += da;
-                DXY.Add(Round((P1 * (float)Math.Cos(a), P1 * (float)Math.Sin(a))));
+                DXY.Add(Round((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
                 a += da;
             }
         }
