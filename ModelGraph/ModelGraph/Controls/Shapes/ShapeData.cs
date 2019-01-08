@@ -6,21 +6,22 @@ namespace ModelGraph.Controls
 {
     internal abstract partial class Shape
     {
-        private const int HeaderPointCountIndex = 14;
-        protected byte ST = 0;  // shapte type code
+        private const int HeaderPointCountIndex = 15;
+        protected byte ST;      // shapte type code
         protected byte A = 255; // color(A, R, G, B)
         protected byte R = 255; // color(A, R, G, B)
         protected byte G = 255; // color(A, R, G, B)
         protected byte B = 255; // color(A, R, G, B)
         protected byte SW = 1;  // stroke width
-        protected byte SC = 0;  // startCap
-        protected byte EC = 0;  // endCap
-        protected byte DC = 0;  // dashCap
+        protected byte SC;      // startCap
+        protected byte EC;      // endCap
+        protected byte DC = 1;  // dashCap
         protected byte LJ = 3;  // line join
-        protected byte DS = 0;  // dash style
-        protected byte FS = 0;  // fill stroke
-        protected byte PS = 3;  // number of polygon sides
-        protected byte RF = 0;  // rotate flip state code
+        protected byte DS;      // dash style
+        protected byte FS;      // fill stroke
+        protected byte P1;      // radius1 axis (horz, inner)
+        protected byte P2;      // radius2 axis (vert, outer)
+        protected byte P3;      // polygon dimension
         protected List<(sbyte dx, sbyte dy)> DXY;  // zero or more defined points
 
         #region Deserialize  ==================================================
@@ -39,22 +40,14 @@ namespace ModelGraph.Controls
 
                     switch ((ShapeType)st)
                     {
-                        case ShapeType.Arc:
-                            break;
                         case ShapeType.Line:
-                            break;
-                        case ShapeType.Spline:
                             break;
                         case ShapeType.Circle:
                             shapes.Add(new Circle(I, data));
                             break;
                         case ShapeType.Ellipse:
                             break;
-                        case ShapeType.Polygon:
-                            break;
-                        case ShapeType.Polyline:
-                            break;
-                        case ShapeType.ClosedPolyline:
+                        case ShapeType.Rectangle:
                             break;
                         case ShapeType.RoundedRectangle:
                             break;
@@ -81,8 +74,8 @@ namespace ModelGraph.Controls
             LJ = data[I++];
             DS = data[I++];
             FS = data[I++];
-            PS = data[I++];
-            RF = data[I++];
+            P1 = data[I++];
+            P2 = data[I++];
             var pc = data[I++];
             if (pc > 0)
             {
@@ -110,8 +103,9 @@ namespace ModelGraph.Controls
             LJ = s.LJ;
             DS = s.DS;
             FS = s.FS;
-            PS = s.PS;
-            RF = s.RF;
+            P1 = s.P1;
+            P2 = s.P2;
+            P3 = s.P3;
             DXY = new List<(sbyte dx, sbyte dy)>(s.DXY);
         }
         #endregion

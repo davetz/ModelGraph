@@ -10,8 +10,14 @@ namespace ModelGraph.Controls
         internal Central() { }
         internal Central(int I, byte[] data) : base(I, data) { }
 
-        #region Center/Radius  ====================================================
-        internal Vector2 Center
+        protected void InititializeDXY((sbyte dx, sbyte dy)[] values)
+        {
+            DXY = new List<(sbyte dx, sbyte dy)>() { (0, 0) };
+            var (r1, r2) = values[1];
+            P1 = (byte)r1;
+            P2 = (byte)r2;
+        }
+        protected Vector2 Center
         {
             get
             {
@@ -23,40 +29,23 @@ namespace ModelGraph.Controls
                 DXY[0] = Round(value.X, value.Y);
             }
         }
-        internal Vector2 Radius
-        {
-            get
-            {
-                var (x, y) = DXY[1];
-                return new Vector2(x, y);
-            }
-            set
-            {
-                DXY[1] = Round(value.X, value.Y);
-            }
-        }
-        #endregion
+        protected Vector2 Radius => new Vector2(P1, P2);
 
         #region OverideAbstract  ==============================================
-        protected override void GetVector(List<Vector2> list)
-        {
-            list.Add(Center);
-        }
-        protected override void SetVector(List<Vector2> list)
-        {
-            Center = list[0];
-        }
-        protected override void GetPoints(List<(float dx, float dy)> list)
+        protected override (float dx1, float dy1, float dx2, float dy2) GetExtent()
         {
             var (dx, dy) = DXY[0];
-            var (rx, ry) = DXY[1];
-            list.Add((dx, dy));
-            list.Add((dx - rx, dy - ry));
-            list.Add((dx + rx, dy + ry));
+            return (dx - P1, dy - P2, dx + P1, dy + P2);
         }
-        protected override void SetPoints(List<(float dx, float dy)> list)
+        protected override void Scale(Vector2 scale)
         {
-            DXY[0] = Round(list[0]);
+            P1 = (byte)(P1 * scale.X);
+            P2 = (byte)(P1 * scale.Y);
+        }
+        protected override void Rotate(float radians, Vector2 center)
+        {
+            var m = Matrix3x2.CreateRotation(radians, center);
+            Center = Vector2.Transform(Center, m);
         }
         #endregion
     }

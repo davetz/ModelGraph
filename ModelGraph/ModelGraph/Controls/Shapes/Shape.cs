@@ -3,6 +3,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Windows.UI;
 
@@ -16,20 +17,22 @@ namespace ModelGraph.Controls
         #region Enums  ========================================================
         internal enum ShapeType : byte
         {
-            Arc = 0,
             Line = 1,
-            Spline = 2,
             Circle = 3,
             Ellipse = 4,
-            Polygon = 5,
-            Polyline = 6,
-            ClosedPolyline = 7,
+            PolySide = 5,
+            PolyStar = 6,
+            PolyGear = 7,
+            Polyline = 8,
+            Rectangle = 7,
             RoundedRectangle = 8,
             InvalidShapeType = 9,
         }
         #endregion
 
-        #region CommonProperties  =============================================
+        #region Properties  ===================================================
+        internal ShapeDimension Dimension { get { return (ShapeDimension)P3; } set { P3 = (byte)value; CreatePoints(); } }
+
         public CanvasStrokeStyle StrokeStyle()
         {
             var ss = _strokeStyle;
@@ -49,12 +52,10 @@ namespace ModelGraph.Controls
         public CanvasCapStyle DashCap { get { return (CanvasCapStyle)DC; } set { DC = (byte)value; } }
 
         public Fill_Stroke FillStroke { get { return (Fill_Stroke)FS; } set { FS = (byte)value; } }
-        public PolygonSides PolygonSide { get { return (PolygonSides)PS; } set { PS = (byte)value; } }
 
         public float StrokeWidth { get { return SW; } set { SW = (byte)((value < 1) ? 1 : (value > 20) ? 20 : value); } }
         public Color Color => Color.FromArgb(A, R, G, B);
         public string ColorCode { get { return $"#{A}{R}{G}{B}"; } set { SetColor(value); } }
-        #endregion
 
         #region SetColor  =====================================================
         private void SetColor(string code)
@@ -90,6 +91,8 @@ namespace ModelGraph.Controls
         const int _argbLength = 9;
         #endregion
 
+        #endregion
+
         #region HighLight  ====================================================
         internal static void HighLight(CanvasDrawingSession ds, float width, int index)
         {
@@ -101,129 +104,178 @@ namespace ModelGraph.Controls
         #endregion
 
         #region RequiredMethods  ==============================================
+        protected virtual void CreatePoints() { }
         internal abstract Shape Clone();
         internal abstract Shape Clone(Vector2 Center);
         internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth);
 
-        protected abstract void GetVector(List<Vector2> list);
-        protected abstract void SetVector(List<Vector2> list);
+        protected abstract void Rotate(float radians, Vector2 center);
+        protected abstract void Scale(Vector2 scale);
 
-        protected abstract void GetPoints(List<(float dx, float dy)> list);
-        protected abstract void SetPoints(List<(float dx, float dy)> list);
+        protected abstract (float dx1, float dy1, float dx2, float dy2) GetExtent();
         #endregion
 
-        #region StaticMethods  ================================================
-        static float PMIN = sbyte.MinValue;
-        static float PMAX = sbyte.MaxValue;
+        #region HelperMethods  ================================================
+        static protected float PMIN = sbyte.MinValue;
+        static protected float PMAX = sbyte.MaxValue;
         static private int LIM1(float v) => (int)Math.Round(v);
         static private sbyte LIM2(int v) => (v < sbyte.MinValue) ? sbyte.MinValue : (v > sbyte.MaxValue) ? sbyte.MaxValue : (sbyte)v;
         static protected (sbyte dx, sbyte dy) Round(float x, float y) => (LIM2(LIM1(x)), LIM2(LIM1(y)));
         static protected (sbyte dx, sbyte dy) Round((float x, float y) p) => Round(p.x, p.y);
 
-        static private bool GetAllPoints(IEnumerable<Shape> shapes, List<(float dx, float dy)> points)
+        static private (float dx1, float dy1, float dx2, float dy2, float cdx, float cdy, float dx, float dy) GetExtent(IEnumerable<Shape> shapes)
         {
-            foreach (var shape in shapes) { shape.GetPoints(points); }
-            return points.Count > 0;
-        }
-        static private (float dx1, float dy1, float dx2, float dy2, float cdx, float cdy) GetExtent(List<(float dx, float dy)> points)
-        {
-            if (points.Count == 0) return (0, 0, 0, 0, 0, 0);
-
             var x1 = PMAX;
             var y1 = PMAX;
             var x2 = PMIN;
             var y2 = PMIN;
 
-            foreach (var (dx, dy) in points)
+            foreach (var shape in shapes)
             {
-                if (dx < x1) x1 = dx;
-                if (dy < y1) y1 = dy;
+                var (dx1, dy1, dx2, dy2) = shape.GetExtent();
 
-                if (dx > x2) x2 = dx;
-                if (dy > y2) y2 = dy;
+                if (dx1 < x1) x1 = dx1;
+                if (dy1 < y1) y1 = dy1;
+
+                if (dx2 > x2) x2 = dx2;
+                if (dy2 > y2) y2 = dy2;
             }
-            return (x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2);
+            return (x1 == PMAX) ? (0, 0, 0, 0, 0, 0, 0, 0) : (x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, (x2 - x1), (y2 - y1));
         }
+        internal static float DegreesToRadians(float angle) => angle * (float)Math.PI / 180;
+
+        private void MoveCenter(float dx, float dy)
+        {
+            for (int i = 0; i < DXY.Count; i++)
+            {
+                var (tx, ty) = DXY[i];
+                DXY[i] = Round(tx + dx, ty + dy);
+            }
+        }
+        #endregion
+
+        #region StaticMethods  ================================================
+
+        #region Flip/Rotate  ==================================================
+        static internal void RotateLeft(IEnumerable<Shape> shapes)
+        {
+            var radians = DegreesToRadians(22.5f);
+            foreach (var shape in shapes) { shape.Rotate(radians, Vector2.Zero); }
+        }
+        static internal void RotateRight(IEnumerable<Shape> shapes)
+        {
+            var radians = DegreesToRadians(-22.5f);
+            foreach (var shape in shapes) { shape.Rotate(radians, Vector2.Zero); }
+        }
+        static internal void VerticalFlip(IEnumerable<Shape> shapes)
+        {
+            foreach (var shape in shapes) { shape.Scale(new Vector2(1, -1)); }
+        }
+        static internal void HorizontalFlip(IEnumerable<Shape> shapes)
+        {
+            foreach (var shape in shapes) { shape.Scale(new Vector2(-1, 1)); }
+        }
+        #endregion
+
+        #region SetCenter  ====================================================
         static internal void SetCenter(IEnumerable<Shape> shapes, Vector2 cp)
         {
-            var points = new List<(float dx, float dy)>();
-            if (GetAllPoints(shapes, points))
+            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+
+            if (dx + dy > 0)
             {
-                var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtent(points);
                 var ex = cp.X - cdx;
                 var ey = cp.Y - cdy;
 
-                foreach (var shape in shapes)
-                {
-                    points.Clear();
-                    shape.GetPoints(points);
-                    for (int i = 0; i < points.Count; i++)
-                    {
-                        var (tx, ty) = points[i];
-                        points[i] = (tx + ex, ty + ey);
-                    }
-                    shape.SetPoints(points);
-                }
+                foreach (var shape in shapes) { shape.MoveCenter(ex, ey); }
             }
         }
-        static internal void MoveCenter(IEnumerable<Shape> shapes, Vector2 dcp)
-        {
-            var points = new List<(float dx, float dy)>();
-            if (GetAllPoints(shapes, points))
-            {
-                var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtent(points);
-                var ex = dcp.X;
-                var ey = dcp.Y;
+        #endregion
 
+        #region MoveCenter  ===================================================
+        static internal void MoveCenter(IEnumerable<Shape> shapes, Vector2 ds)
+        {
+            foreach (var shape in shapes) { shape.MoveCenter(ds.X, ds.Y); }
+        }
+        #endregion
+
+        #region Resize  =======================================================
+        const float SIZE = 2.56f;
+        internal static void ResizeCentral(IEnumerable<Shape> shapes, float factor)
+        {
+            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+
+            if (dx + dy > 0)
+            {
+                var actualSize = (dx > dy) ? dx : dy;
+                var desiredSize = SIZE * factor;
+                var ratio = desiredSize / actualSize;
+                var scale = new Vector2(ratio, ratio);
                 foreach (var shape in shapes)
                 {
-                    points.Clear();
-                    shape.GetPoints(points);
-                    for (int i = 0; i < points.Count; i++)
-                    {
-                        var (tx, ty) = points[i];
-                        points[i] = (tx + ex, ty + ey);
-                    }
-                    shape.SetPoints(points);
+                    shape.Scale(scale);
                 }
             }
         }
+        internal static void ResizeRadius1(IEnumerable<Shape> shapes, float factor)
+        {
+            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+
+            if (dx + dy > 0)
+            {
+                var actualSize = dx2 - dx1;
+                var desiredSize = SIZE * factor;
+                var ratio = desiredSize / actualSize;
+                var scale = new Vector2(ratio, 1);
+                foreach (var shape in shapes)
+                {
+                    shape.Scale(scale);
+                }
+            }
+        }
+        internal static void ResizeRadius2(IEnumerable<Shape> shapes, float factor)
+        {
+            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+
+            if (dx + dy > 0)
+            {
+
+                var actualSize = dy2 - dy1;
+                var desiredSize = SIZE * factor;
+                var ratio = desiredSize / actualSize;
+                var scale = new Vector2(1, ratio);
+                foreach (var shape in shapes)
+                {
+                    shape.Scale(scale);
+                }
+            }
+        }
+        #endregion
 
         #region DrawTargets  ==================================================
-        static internal bool DrawTargets(IEnumerable<Shape> shapes, bool recordTargets, bool recordPointTargets, List<Vector2> targets, CanvasDrawingSession ds, float scale, Vector2 center, Vector2 limit)
+        static internal (float Cent, float Vert, float Horz) DrawTargets(IEnumerable<Shape> shapes, bool recordTargets, bool recordPointTargets, List<Vector2> targets, CanvasDrawingSession ds, float scale, Vector2 center)
         {
-            var points = new List<(float dx, float dy)>();
-            if (GetAllPoints(shapes, points))
+            var (dx1, dy1, dx2, dy2, cdx, cdy, dw, dh) = GetExtent(shapes);
+            if (dw + dh > 0)
             {
-                var (dx1, dy1, dx2, dy2, cdx, cdy) = GetExtent(points);
                 if (recordTargets) targets.Clear();
 
-                var limit1 = center - limit;
-                var limit2 = center + limit;
+                var h = dw / SIZE;
+                var v = dh / SIZE;
+                var s = (h > v) ? h : v;
 
-                var x1 = dx1 * scale + center.X;
-                var y1 = dy1 * scale + center.Y;
-
-                var x2 = dx2 * scale + center.X;
-                var y2 = dy2 * scale + center.Y;
-
-
-                DrawSliders(new Vector2(x1, limit1.Y), new Vector2(x1, limit2.Y), dsx);
-                DrawSliders(new Vector2(x2, limit1.Y), new Vector2(x2, limit2.Y), dsx);
-
-                DrawSliders(new Vector2(limit1.X, y1), new Vector2(limit2.X, y1), dsy);
-                DrawSliders(new Vector2(limit1.X, y2), new Vector2(limit2.X, y2), dsy);
 
                 DrawTarget(new Vector2(cdx, cdy) * scale + center);
 
-                if (recordPointTargets && recordTargets)
+                if (recordPointTargets && recordTargets  && shapes.First() is Polyline polyline)
                 {
-                    foreach (var (dx, dy) in points)
+                    var points = polyline.GetDrawingPoints( center, scale);
+                    foreach (var point in points)
                     {
-                        DrawTarget(new Vector2(dx, dy) * scale + center);
+                        DrawTarget(point);
                     }
                 }
-                return true;
+                return (s, v, h);
 
                 void DrawTarget(Vector2 c)
                 {
@@ -232,15 +284,8 @@ namespace ModelGraph.Controls
                     ds.DrawCircle(c, 5, Colors.White, 2);
                     ds.DrawCircle(c, 7, Colors.Black, 2);
                 }
-                void DrawSliders(Vector2 p1, Vector2 p2, Vector2 dp)
-                {
-                    ds.DrawLine(p1, p2, Colors.White, 2);
-                    ds.DrawLine(p1 + dp, p2 + dp, Colors.Black, 2);
-                    //DrawTarget(p1);
-                    DrawTarget(p2);
-                }
             }
-            return false;
+            return (1, 1, 1);
         }
         private static Vector2 dsx = new Vector2(2, 0);
         private static Vector2 dsy = new Vector2(0, 2);

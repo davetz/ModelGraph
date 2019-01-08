@@ -7,26 +7,31 @@ namespace ModelGraph.Controls
 {
     internal class Ellipes : Central
     {
-        private static (sbyte dx, sbyte dy)[] DefaultDXY = { (0, 0), (40, 30) };
-
+        internal Ellipes()
+        {
+            P1 = 50;
+            P2 = 75;
+            DXY = new List<(sbyte dx, sbyte dy)>() { (0, 0) };
+        }
         internal Ellipes(int I, byte[] data) : base(I, data)
         {
         }
 
-        internal Ellipes(Shape shape)
+        #region PrivateConstructor  ===========================================
+        private Ellipes(Shape shape)
         {
             CopyData(shape);
         }
-
-        internal Ellipes(Vector2 center)
+        private Ellipes(Shape shape, Vector2 center)
         {
-            DXY = new List<(sbyte dx, sbyte dy)>(DefaultDXY);
+            CopyData(shape);
             Center = center;
         }
+        #endregion
 
         #region OverideAbstract  ==============================================
         internal override Shape Clone() =>new Ellipes(this);
-        internal override Shape Clone(Vector2 Center) => new Ellipes(Center);
+        internal override Shape Clone(Vector2 center) => new Ellipes(this, center);
 
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
         {
@@ -34,7 +39,7 @@ namespace ModelGraph.Controls
             if (FillStroke == Fill_Stroke.Filled)
                 ds.FillEllipse(Center * scale + center, radius.X, radius.Y, Color);
             else
-                ds.DrawEllipse(Center * scale + center, radius.X, radius.Y, Color, strokeWidth);
+                ds.DrawEllipse(Center * scale + center, radius.X, radius.Y, Color, strokeWidth, StrokeStyle());
         }
         #endregion
     }

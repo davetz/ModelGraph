@@ -7,26 +7,31 @@ namespace ModelGraph.Controls
 {
     internal class Rectangle : Central
     {
-        private static (sbyte dx, sbyte dy)[] DefaultDXY = { (0, 0), (50, 70)};
-
+        internal Rectangle()
+        {
+            P1 = 50;
+            P2 = 75;
+            DXY = new List<(sbyte dx, sbyte dy)>() { (0, 0) };
+        }
         internal Rectangle(int I, byte[] data) : base(I, data)
         {
         }
 
-        internal Rectangle(Shape shape)
+        #region PrivateConstructor  ===========================================
+        private Rectangle(Shape shape)
         {
             CopyData(shape);
         }
-
-        internal Rectangle(Vector2 center)
+        private Rectangle(Shape shape, Vector2 center)
         {
-            DXY = new List<(sbyte dx, sbyte dy)>(DefaultDXY);
+            CopyData(shape);
             Center = center;
         }
+        #endregion
 
         #region OverideAbstract  ==============================================
         internal override Shape Clone() =>new Rectangle(this);
-        internal override Shape Clone(Vector2 Center) => new Rectangle(Center);
+        internal override Shape Clone(Vector2 center) => new Rectangle(this, center);
 
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
         {
@@ -35,7 +40,7 @@ namespace ModelGraph.Controls
             if (FillStroke == Fill_Stroke.Filled)
                 ds.FillRectangle( min.X, min.Y, len.X, len.Y, Color);
             else
-                ds.DrawRectangle(min.X, min.Y, len.X, len.Y, Color, strokeWidth);
+                ds.DrawRectangle(min.X, min.Y, len.X, len.Y, Color, strokeWidth, StrokeStyle());
         }
         #endregion
     }
