@@ -10,8 +10,8 @@ namespace ModelGraph.Controls
     {
         internal PolyStar()
         {
-            R1 = 20;
-            R2 = 50;
+            R1 = 50;
+            R2 = 20;
             PD = 6;
             CreatePoints();
         }
@@ -23,12 +23,12 @@ namespace ModelGraph.Controls
             DXY = new List<(sbyte dx, sbyte dy)>(N);
 
             var da = Math.PI * 2 / N;
-            var a = -Math.PI /2;
+            var a = da * (A0 + 1);
             for (int i = 0; i < PD; i++)
             {
-                DXY.Add(Round((R2 * (float)Math.Cos(a), R2 * (float)Math.Sin(a))));
-                a += da;
                 DXY.Add(Round((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
+                a += da;
+                DXY.Add(Round((R2 * (float)Math.Cos(a), R2 * (float)Math.Sin(a))));
                 a += da;
             }
         }

@@ -10,9 +10,11 @@ namespace ModelGraph.Controls
     {
         internal PolyGear()
         {
-            R1 = 20;
-            R2 = 50;
+            R1 = 50;
+            R2 = 20;
+            R3 = 10;
             PD = 4;
+            A0 = 1;
             CreatePoints();
         }
         internal PolyGear(int I, byte[] data) : base(I, data) { }
@@ -25,13 +27,13 @@ namespace ModelGraph.Controls
 
             var da = Math.PI * 2 / M;
             var ta = da * R3 / 200 ;
-            var a = - da;
+            var a = da * (A0 + 1);
             for (int i = 0; i < M; i++)
             {
-                DXY.Add(Round((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
+                DXY.Add(Round((R1 * (float)Math.Cos(a - ta), R1 * (float)Math.Sin(a - ta))));
+                DXY.Add(Round((R1 * (float)Math.Cos(a + ta), R1 * (float)Math.Sin(a + ta))));
                 a += da;
-                DXY.Add(Round((R2 * (float)Math.Cos(a - ta), R2 * (float)Math.Sin(a - ta))));
-                DXY.Add(Round((R2 * (float)Math.Cos(a + ta), R2 * (float)Math.Sin(a + ta))));
+                DXY.Add(Round((R2 * (float)Math.Cos(a), R2 * (float)Math.Sin(a))));
                 a += da;
             }
         }

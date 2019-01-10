@@ -40,12 +40,7 @@ namespace ModelGraph.Controls
         protected override void Scale(Vector2 scale)
         {
             R1 = (byte)(R1 * scale.X);
-            R2 = (byte)(R1 * scale.Y);
-        }
-        protected override void Rotate(float radians)
-        {
-            var m = Matrix3x2.CreateRotation(radians);
-            Center = Vector2.Transform(Center, m);
+            R2 = (byte)(R2 * scale.Y);
         }
         #endregion
     }

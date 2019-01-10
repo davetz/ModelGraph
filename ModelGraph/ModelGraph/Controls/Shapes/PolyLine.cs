@@ -19,24 +19,6 @@ namespace ModelGraph.Controls
             }
             return list.ToArray();
         }
-        protected override void Rotate(float radians)
-        {
-            Transform(Matrix3x2.CreateRotation(radians));
-        }
-        protected override void Scale(Vector2 scale)
-        {
-            Transform(Matrix3x2.CreateScale(scale));
-        }
-        private void Transform(Matrix3x2 m)
-        {
-            for (int i = 0; i < DXY.Count; i++)
-            {
-                var (dx, dy) = DXY[i];
-                var p = new Vector2(dx, dy);
-                p = Vector2.Transform(p, m);
-                DXY[i] = Round(p.X, p.Y);
-            }
-        }
 
         #region OverideAbstract  ==============================================
         protected override (float dx1, float dy1, float dx2, float dy2) GetExtent()
@@ -55,6 +37,10 @@ namespace ModelGraph.Controls
                 if (dy > y2) y2 = dy;
             }
             return (x1 == PMAX) ? (0, 0, 0, 0) : (x1, y1, x2, y2);
+        }
+        protected override void Scale(Vector2 scale)
+        {
+            TransformPoints(Matrix3x2.CreateScale(scale));
         }
         #endregion
     }

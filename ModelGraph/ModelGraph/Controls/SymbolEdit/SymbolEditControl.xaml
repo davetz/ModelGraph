@@ -342,45 +342,32 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="30"/>
                             <ColumnDefinition Width="288"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="288"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="288"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Size"  Style="{StaticResource PropertyLabelStyle}" />
+                        <TextBlock Grid.Column="0" Text="Size"  Style="{StaticResource PropertyLabelStyle}" />
                         <Slider Grid.Column="1"  Width="272" x:Name="CentralSizeSlider"
                                 Style="{StaticResource PropertySliderStyle}"
-                                Value="{x:Bind CentralSize, Mode=TwoWay}"
                                 Minimum="1"
                                 Maximum="100"
                                 ValueChanged="CentralSizeSlider_ValueChanged" />
-                    </Grid>
 
-                    <Grid Height="40">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="288"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Text="Vert"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1"  Width="272" x:Name="VerticalSizeSlider"
+                        <TextBlock Grid.Column="2" Text="Horz"  Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="3"  Width="272" x:Name="HorizontalSizeSlider"
                                 Style="{StaticResource PropertySliderStyle}"
-                                Value="{x:Bind VerticalSize, Mode=TwoWay}"
-                                Minimum="1"
-                                Maximum="100"
-                                ValueChanged="VerticalSizeSlider_ValueChanged" />
-                    </Grid>
-
-                    <Grid Height="40">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="288"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Text="Horz"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1"  Width="272" x:Name="HorizontalSizeSlider"
-                                Style="{StaticResource PropertySliderStyle}"
-                                Value="{x:Bind HorizontalSize, Mode=TwoWay}"
                                 Minimum="1"
                                 Maximum="100"
                                 ValueChanged="HorizontalSizeSlider_ValueChanged" />
+
+                        <TextBlock Grid.Column="4" Text="Vert"  Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="5"  Width="272" x:Name="VerticalSizeSlider"
+                                Style="{StaticResource PropertySliderStyle}"
+                                Minimum="1"
+                                Maximum="100"
+                                ValueChanged="VerticalSizeSlider_ValueChanged" />
                     </Grid>
                 </StackPanel>
 
@@ -389,58 +376,41 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="148"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="288"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="288"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock  Grid.Column="0" Text="Polygon" Style="{StaticResource PropertyLabelStyle}"/>
+                        <TextBlock Grid.Column="0" Text="Polygon" Style="{StaticResource PropertyLabelStyle}"/>
                         <ComboBox Grid.Column="1" Style="{StaticResource PropetyComboBoxStyle}"
                                       ItemsSource="{Binding ElementName=control, Path=PolyDimensionList}"
                                       SelectedItem="{Binding ElementName=control, Path=PolyDimension, Mode=TwoWay}"
                                       SelectionChanged ="PolyDimension_SelectionChanged" />
-                    </Grid>
 
-                    <Grid Height="40">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="288"/>
-                        </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Major"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1"  Width="272" x:Name="MajorAxisSizeSlider"
+                        <TextBlock Grid.Column="2" Text="Aux"  Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="3"  Width="130" x:Name="TernarySizeSlider"
                                 Style="{StaticResource PropertySliderStyle}"
-                                Value="{x:Bind MagorAxisSize, Mode=TwoWay}"
                                 Minimum="1"
                                 Maximum="100"
-                                ValueChanged="MajorAxisSizeSlider_ValueChanged" />
-                    </Grid>
+                                ValueChanged="TernarySizeSlider_ValueChanged" />
 
-                    <Grid Height="40">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="288"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Text="Minor"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1"  Width="272" x:Name="MinorAxisSizeSlider"
+                        <TextBlock Grid.Column="4" Text="Major"  Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="5"  Width="272" x:Name="MajorSizeSlider"
                                 Style="{StaticResource PropertySliderStyle}"
-                                Value="{x:Bind MinorAxisSize, Mode=TwoWay}"
                                 Minimum="1"
                                 Maximum="100"
-                                ValueChanged="MinorAxisSizeSlider_ValueChanged" />
-                    </Grid>
+                                ValueChanged="MajorSizeSlider_ValueChanged" />
 
-                    <Grid Height="40">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="188"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Text="Aux"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1"  Width="172" x:Name="TernaryAxisSizeSlider"
+                        <TextBlock Grid.Column="6" Text="Minor"  Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="7"  Width="272" x:Name="MinorSizeSlider"
                                 Style="{StaticResource PropertySliderStyle}"
-                                Value="{x:Bind TernaryAxisSize, Mode=TwoWay}"
                                 Minimum="1"
                                 Maximum="100"
-                                ValueChanged="TernaryAxisSizeSlider_ValueChanged" />
+                                ValueChanged="MinorSizeSlider_ValueChanged" />
                     </Grid>
                 </StackPanel>   
 

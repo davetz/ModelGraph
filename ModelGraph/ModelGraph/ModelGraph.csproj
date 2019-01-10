@@ -136,6 +136,7 @@
     <Compile Include="Controls\Shapes\ShapeData.cs" />
     <Compile Include="Controls\Shapes\Polygon.cs" />
     <Compile Include="Controls\Shapes\Shape.cs" />
+    <Compile Include="Controls\Shapes\ShapeUtils.cs" />
     <Compile Include="Controls\SymbolEdit\SymbolEditControl.xaml.cs">
       <DependentUpon>SymbolEditControl.xaml</DependentUpon>
     </Compile>

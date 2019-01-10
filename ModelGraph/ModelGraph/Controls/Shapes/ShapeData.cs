@@ -21,9 +21,26 @@ namespace ModelGraph.Controls
         protected byte FS;      // fill stroke
         protected byte R1;      // minor axis (inner, horzontal)
         protected byte R2;      // major axis (outer, vertical)
-        protected byte R3;      // auxiliary axis (circomference)
+        protected byte R3;      // auxiliary axis (for PolyGear)
         protected byte PD;      // polygon dimension
+        protected byte A0;      // polygon rotation index
         protected List<(sbyte dx, sbyte dy)> DXY;  // zero or more defined points
+
+        #region ShapeType  ====================================================
+        internal enum ShapeType : byte
+        {
+            Line = 1,
+            Circle = 3,
+            Ellipse = 4,
+            PolySide = 5,
+            PolyStar = 6,
+            PolyGear = 7,
+            Polyline = 8,
+            Rectangle = 7,
+            RoundedRectangle = 8,
+            InvalidShapeType = 9,
+        }
+        #endregion
 
         #region Deserialize  ==================================================
         static public void Deserialize (byte[] data, List<Shape> shapes)

@@ -8,6 +8,7 @@ using ModelGraphSTD;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -254,17 +255,10 @@ namespace ModelGraph.Controls
 
                     var record = !_editorCanvasPressed; // don't refresh targets durring drag operations
 
-                    var (cent, vert, horz) = Shape.DrawTargets(SelectedShapes, record, _hasPolylineTarget, _targetPoints, ds, scale, Center);
-
-                    if (_initializeCentralSlider) { _initializeCentralSlider = false; CentralSize = cent; }
-                    if (_initializeVerticalSlider) { _initializeVerticalSlider = false; VerticalSize = cent; }
-                    if (_initializeHorizontalSlider) { _initializeHorizontalSlider = false; HorizontalSize = cent; }
+                    Shape.DrawTargets(SelectedShapes, record, _hasPolylineTarget, _targetPoints, ds, scale, Center);
                 }
             }
         }
-        private bool _initializeCentralSlider;
-        private bool _initializeVerticalSlider;
-        private bool _initializeHorizontalSlider;
         private Shape _polylineTarget;
         private bool _hasPolylineTarget;
         private List<Vector2> _targetPoints = new List<Vector2>();
@@ -296,7 +290,10 @@ namespace ModelGraph.Controls
                 ds.DrawLine(z, a, z, b, color3);
                 ds.DrawLine(a, z, b, z, color3);
             }
-            ds.DrawLine(a, a, b, b, color1);
+            ds.DrawLine(2, 2, 10, 14, color1, 3);
+            ds.DrawLine(2, 2, 14, 10, color1, 3);
+            ds.DrawLine(0, 0, b, b, color1);
+            ds.DrawLine(0, 0, b, b, color1);
             ds.DrawLine(a, b, b, a, color1);
 
             ds.DrawLine(a, e, b, f, color4);
@@ -565,9 +562,7 @@ namespace ModelGraph.Controls
             BeginAction = CheckHitTest;
             DragAction = EndAction = null;
 
-            _initializeCentralSlider = _initializeVerticalSlider = _initializeHorizontalSlider = true;
-            _ignoreCentralSliderChange = _ignoreVerticalSliderChange = _ignoreHorizontalSliderChange = true;
-            _ignoreColorChange = true;
+            SetSizeSliders();
 
             EditorCanvas.Invalidate();
         }
@@ -597,122 +592,204 @@ namespace ModelGraph.Controls
         #region PropertyChanged  ==============================================
         private void ColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
         {
-            if (_ignoreColorChange)
-                _ignoreColorChange = false;
-            else
+            if (_changesEnabled)
             {
                 _shapeColor = ColorPicker.Color;
                 SetProperty(ProertyId.ShapeColor);
             }
         }
-        private bool _ignoreColorChange;
         private void StrokeWidthSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-            _strokeWidth = StrokeWidthSlider.Value;
-            SetProperty(ProertyId.StrokeWidth);
+            if (_changesEnabled)
+            {
+                SetProperty(ProertyId.StrokeWidth);
+            }
         }
         private void FillStroke_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProertyId.FillStroke);
+            if (_changesEnabled)
+            {
+                SetProperty(ProertyId.FillStroke);
+            }
         }
         private void DashStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProertyId.DashStyle);
+            if (_changesEnabled)
+            {
+                SetProperty(ProertyId.DashStyle);
+            }
         }
         private void PolyDimension_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProertyId.PolyDimension);
+            if (_changesEnabled)
+            {
+                SetProperty(ProertyId.PolyDimension);
+            }
         }
         private void LineJoin_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProertyId.LineJoin);
+            if (_changesEnabled)
+            {
+                SetProperty(ProertyId.LineJoin);
+            }
         }
         private void StartCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProertyId.StartCap);
+            if (_changesEnabled)
+            {
+                SetProperty(ProertyId.StartCap);
+            }
         }
         private void EndCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProertyId.EndCap);
+            if (_changesEnabled)
+            {
+                SetProperty(ProertyId.EndCap);
+            }
         }
         private void DashCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetProperty(ProertyId.DashCap);
+            if (_changesEnabled)
+            {
+                SetProperty(ProertyId.DashCap);
+            }
         }
+
+        #region CentralSize  ==================================================
         private void CentralSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-            if (_ignoreCentralSliderChange)
-                _ignoreCentralSliderChange = false;
-            else
+            var value = (float)CentralSizeSlider.Value;
+            if (Changed(value, _centralSize))
             {
-                _ignoreVerticalSliderChange = _ignoreHorizontalSliderChange = true;
-                _initializeVerticalSlider = _initializeHorizontalSlider = true;
-
-                Shape.ResizeCentral(SelectedShapes, (float)CentralSizeSlider.Value);
+                Shape.ResizeCentral(SelectedShapes, value);
+                SetSizeSliders();
                 EditorCanvas.Invalidate();
             }
         }
+        private void SetCentralSize(float value)
+        {
+            _centralSize = value;
+            CentralSizeSlider.Value = value;
+        }
+        private float _centralSize;
+        #endregion
+
+        #region VerticalSize  =================================================
         private void VerticalSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-            if (_ignoreVerticalSliderChange)
-                _ignoreVerticalSliderChange = false;
-            else
+            var value = (float)VerticalSizeSlider.Value;
+            if (Changed(value, _verticalSize))
             {
-                _ignoreCentralSliderChange =_initializeCentralSlider = true;
-
-                Shape.ResizeVertical(SelectedShapes, (float)VerticalSizeSlider.Value);
+                Shape.ResizeVertical(SelectedShapes, value);
+                SetSizeSliders();
                 EditorCanvas.Invalidate();
             }
         }
+        private void SetVerticalSize(float value)
+        {
+            _verticalSize = value;
+            VerticalSizeSlider.Value = value;
+        }
+        private float _verticalSize;
+        #endregion
+
+        #region HorizontalSize  ===============================================
         private void HorizontalSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-            if (_ignoreHorizontalSliderChange)
-                _ignoreHorizontalSliderChange = false;
-            else
+            var value = (float)HorizontalSizeSlider.Value;
+            if (Changed(value, _horizontalSize))
             {
-                _ignoreCentralSliderChange = _initializeCentralSlider = true;
+                Shape.ResizeHorizontal(SelectedShapes, value);
+                SetSizeSliders();
+                EditorCanvas.Invalidate();
+            }
+        }
+        private void SetHorizontalSize(float value)
+        {
+            _horizontalSize = value;
+            HorizontalSizeSlider.Value = value;
+        }
+        private float _horizontalSize;
+        #endregion
 
-                Shape.ResizeHorizontal(SelectedShapes, (float)HorizontalSizeSlider.Value);
+        #region MajorSize  ====================================================
+        private void MajorSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+            var value = (float)MajorSizeSlider.Value;
+            if (Changed(value, _majorSize))
+            {
+                Shape.ResizeMajorAxis(SelectedShapes, value);
+                SetSizeSliders();
                 EditorCanvas.Invalidate();
             }
         }
-        private bool _ignoreCentralSliderChange;
-        private bool _ignoreVerticalSliderChange;
-        private bool _ignoreHorizontalSliderChange;
-        private bool _ignoreMajorAxixSliderChange;
-        private bool _ignoreMinorAxixSliderChange;
-        private bool _ignoreTernaryAxixSliderChange;
+        private void SetMajorSize(float value)
+        {
+            _majorSize = value;
+            MajorSizeSlider.Value = value;
+        }
+        private float _majorSize;
+        #endregion
 
-        private void MinorAxisSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        #region MinorAxisSize  ================================================
+        private void MinorSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-            if (_ignoreMinorAxixSliderChange)
-                _ignoreMinorAxixSliderChange = false;
-            else
+            var value = (float)MinorSizeSlider.Value;
+            if (Changed(value, _minorSize))
             {
-                Shape.ResizeMinorAxis(SelectedShapes, (float)MinorAxisSizeSlider.Value);
+                Shape.ResizeMinorAxis(SelectedShapes, value);
+                SetSizeSliders();
                 EditorCanvas.Invalidate();
             }
         }
-        private void MajorAxisSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        private void SetMinorSize(float value)
         {
-            if (_ignoreMajorAxixSliderChange)
-                _ignoreMajorAxixSliderChange = false;
-            else
+            _minorSize = value;
+            MinorSizeSlider.Value = value;
+        }
+        private float _minorSize;
+        #endregion
+
+        #region TernarySize  ==================================================
+        private void TernarySizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+            var value = (float)TernarySizeSlider.Value;
+            if (Changed(value, _ternarySize))
             {
-                Shape.ResizeMajorAxis(SelectedShapes, (float)MajorAxisSizeSlider.Value);
+                Shape.ResizeTernaryAxis(SelectedShapes, value);
+                SetSizeSliders();
                 EditorCanvas.Invalidate();
             }
         }
-        private void TernaryAxisSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        private void SetTernarySize(float value)
         {
-            if (_ignoreTernaryAxixSliderChange)
-                _ignoreTernaryAxixSliderChange = false;
-            else
+            _ternarySize = value;
+            TernarySizeSlider.Value = value;
+        }
+        private float _ternarySize;
+        #endregion
+
+        #region SetSizeSliders  ===============================================
+        private void SetSizeSliders()
+        {
+            if (SelectedShapes.Count > 0)
             {
-                Shape.ResizeTernaryAxis(SelectedShapes, (float)TernaryAxisSizeSlider.Value);
-                EditorCanvas.Invalidate();
+                _changesEnabled = false;
+
+                var (cent, vert, horz, major, minor, ternary) = Shape.GetSliders(SelectedShapes);
+                SetCentralSize(cent);
+                SetVerticalSize(vert);
+                SetHorizontalSize(horz);
+                SetMajorSize(major);
+                SetMinorSize(minor);
+                SetTernarySize(ternary);
+
+                _changesEnabled = true;
             }
         }
+        private bool Changed(float v1, float v2) => _changesEnabled && v1 != v2;
+        bool _changesEnabled;
+        #endregion
         #endregion
 
         #region SetGetProperty  ===============================================
@@ -749,37 +826,24 @@ namespace ModelGraph.Controls
             if ((pid & ProertyId.FillStroke) != 0) shape.FillStroke = ShapeFillStroke;
             if ((pid & ProertyId.ShapeColor) != 0) shape.ColorCode = ShapeColor.ToString();
             if ((pid & ProertyId.StrokeWidth) != 0) shape.StrokeWidth = (float)ShapeStrokeWidth;
-            if ((pid & ProertyId.PolyMajorAxis) != 0) shape.MajorAxis = MagorAxisSize;
-            if ((pid & ProertyId.PolyMinorAxix) != 0) shape.MinorAxis = MinorAxisSize;
-            if ((pid & ProertyId.PolyTernaryAxis) != 0) shape.TernaryAxis = TernaryAxisSize;
             if ((pid & ProertyId.PolyDimension) != 0) shape.Dimension = PolyDimension;
         }
 
         void GrtProperty(Shape shape)
         {
+            _changesEnabled = false;
+
+            ShapeColor = shape.Color;
             ShapeStartCap = shape.StartCap;
             ShapeEndCap = shape.EndCap;
             ShapeLineJoin = shape.LineJoin;
             ShapeDashCap = shape.DashCap;
             ShapeDashStyle = shape.DashStyle;
             ShapeFillStroke = shape.FillStroke;
-
-            _ignoreMajorAxixSliderChange = true;
-            MagorAxisSize = shape.MajorAxis;
-
-            _ignoreMinorAxixSliderChange = true;
-            MinorAxisSize = shape.MinorAxis;
-
-            _ignoreTernaryAxixSliderChange = true;
-            TernaryAxisSize = shape.TernaryAxis;
-
             PolyDimension = shape.Dimension;
-
-            _ignoreColorChange = true;
-            ShapeColor = shape.Color;
-
-            
             ShapeStrokeWidth = shape.StrokeWidth;
+
+            _changesEnabled = true;
         }
         #endregion
 
@@ -946,24 +1010,6 @@ namespace ModelGraph.Controls
 
         public double ShapeStrokeWidth { get { return _strokeWidth; } set { Set(ref _strokeWidth, value); } }
         public double _strokeWidth;
-
-        public double CentralSize { get { return _centralSize; } set { Set(ref _centralSize, value); } }
-        public double _centralSize;
-
-        public double VerticalSize { get { return _verticalSize; } set { Set(ref _verticalSize, value); } }
-        public double _verticalSize;
-
-        public double HorizontalSize { get { return _horizontalSize; } set { Set(ref _horizontalSize, value); } }
-        public double _horizontalSize;
-
-        public double MinorAxisSize { get { return _minorSize; } set { Set(ref _minorSize, value); } }
-        public double _minorSize;
-
-        public double MagorAxisSize { get { return _majorSize; } set { Set(ref _majorSize, value); } }
-        public double _majorSize;
-
-        public double TernaryAxisSize { get { return _ternarySize; } set { Set(ref _ternarySize, value); } }
-        public double _ternarySize;
 
         public double EastContactSize { get { return _eastContactSize; } set { Set(ref _eastContactSize, value); } }
         public double _eastContactSize;

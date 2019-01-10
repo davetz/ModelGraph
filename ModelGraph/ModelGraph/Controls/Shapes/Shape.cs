@@ -3,6 +3,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Windows.UI;
@@ -13,22 +14,6 @@ namespace ModelGraph.Controls
     {
         internal Shape() { }
         internal Shape(int I, byte[] data) { ReadData(I, data); }
-
-        #region Enums  ========================================================
-        internal enum ShapeType : byte
-        {
-            Line = 1,
-            Circle = 3,
-            Ellipse = 4,
-            PolySide = 5,
-            PolyStar = 6,
-            PolyGear = 7,
-            Polyline = 8,
-            Rectangle = 7,
-            RoundedRectangle = 8,
-            InvalidShapeType = 9,
-        }
-        #endregion
 
         #region Properties  ===================================================
         internal double MajorAxis { get { return R2; } set { R2 = (byte)value; CreatePoints(); } }
@@ -112,49 +97,9 @@ namespace ModelGraph.Controls
         internal abstract Shape Clone(Vector2 Center);
         internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth);
 
-        protected abstract void Rotate(float radians);
+        protected abstract (float dx1, float dy1, float dx2, float dy2) GetExtent();
         protected abstract void Scale(Vector2 scale);
 
-        protected abstract (float dx1, float dy1, float dx2, float dy2) GetExtent();
-        #endregion
-
-        #region HelperMethods  ================================================
-        static protected float PMIN = sbyte.MinValue;
-        static protected float PMAX = sbyte.MaxValue;
-        static private int LIM1(float v) => (int)Math.Round(v);
-        static private sbyte LIM2(int v) => (v < sbyte.MinValue) ? sbyte.MinValue : (v > sbyte.MaxValue) ? sbyte.MaxValue : (sbyte)v;
-        static protected (sbyte dx, sbyte dy) Round(float x, float y) => (LIM2(LIM1(x)), LIM2(LIM1(y)));
-        static protected (sbyte dx, sbyte dy) Round((float x, float y) p) => Round(p.x, p.y);
-
-        static private (float dx1, float dy1, float dx2, float dy2, float cdx, float cdy, float dx, float dy) GetExtent(IEnumerable<Shape> shapes)
-        {
-            var x1 = PMAX;
-            var y1 = PMAX;
-            var x2 = PMIN;
-            var y2 = PMIN;
-
-            foreach (var shape in shapes)
-            {
-                var (dx1, dy1, dx2, dy2) = shape.GetExtent();
-
-                if (dx1 < x1) x1 = dx1;
-                if (dy1 < y1) y1 = dy1;
-
-                if (dx2 > x2) x2 = dx2;
-                if (dy2 > y2) y2 = dy2;
-            }
-            return (x1 == PMAX) ? (0, 0, 0, 0, 0, 0, 0, 0) : (x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, (x2 - x1), (y2 - y1));
-        }
-        internal static float DegreesToRadians(float angle) => angle * (float)Math.PI / 180;
-
-        private void MoveCenter(float dx, float dy)
-        {
-            for (int i = 0; i < DXY.Count; i++)
-            {
-                var (tx, ty) = DXY[i];
-                DXY[i] = Round(tx + dx, ty + dy);
-            }
-        }
         #endregion
 
         #region StaticMethods  ================================================
@@ -162,21 +107,19 @@ namespace ModelGraph.Controls
         #region Flip/Rotate  ==================================================
         static internal void RotateLeft(IEnumerable<Shape> shapes)
         {
-            var radians = DegreesToRadians(-22.5f);
-            foreach (var shape in shapes) { shape.Rotate(radians); }
+            foreach (var shape in shapes) { shape.RotateLeft(); }
         }
         static internal void RotateRight(IEnumerable<Shape> shapes)
         {
-            var radians = DegreesToRadians(22.5f);
-            foreach (var shape in shapes) { shape.Rotate(radians); }
+            foreach (var shape in shapes) { shape.RotateRight(); }
         }
         static internal void VerticalFlip(IEnumerable<Shape> shapes)
         {
-            foreach (var shape in shapes) { shape.Scale(new Vector2(1, -1)); }
+            foreach (var shape in shapes) { shape.VerticalFlip(); }
         }
         static internal void HorizontalFlip(IEnumerable<Shape> shapes)
         {
-            foreach (var shape in shapes) { shape.Scale(new Vector2(-1, 1)); }
+            foreach (var shape in shapes) { shape.HorizontalFlip(); }
         }
         #endregion
 
@@ -203,7 +146,7 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Resize  =======================================================
-        const float SIZE = 2.56f;
+        const float SIZE = 2.56f; // 1% of the maximum width, height of the shape
         internal static void ResizeCentral(IEnumerable<Shape> shapes, float factor)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
@@ -214,23 +157,6 @@ namespace ModelGraph.Controls
                 var desiredSize = SIZE * factor;
                 var ratio = desiredSize / actualSize;
                 var scale = new Vector2(ratio, ratio);
-                foreach (var shape in shapes)
-                {
-                    shape.Scale(scale);
-                    SetCenter(shapes, new Vector2(cdx, cdy));
-                }
-            }
-        }
-        internal static void ResizeHorizontal(IEnumerable<Shape> shapes, float factor)
-        {
-            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
-
-            if (dx + dy > 0)
-            {
-                var actualSize = dx2 - dx1;
-                var desiredSize = SIZE * factor;
-                var ratio = desiredSize / actualSize;
-                var scale = new Vector2(ratio, 1);
                 foreach (var shape in shapes)
                 {
                     shape.Scale(scale);
@@ -256,12 +182,29 @@ namespace ModelGraph.Controls
                 }
             }
         }
+        internal static void ResizeHorizontal(IEnumerable<Shape> shapes, float factor)
+        {
+            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+
+            if (dx + dy > 0)
+            {
+                var actualSize = dx2 - dx1;
+                var desiredSize = SIZE * factor;
+                var ratio = desiredSize / actualSize;
+                var scale = new Vector2(ratio, 1);
+                foreach (var shape in shapes)
+                {
+                    shape.Scale(scale);
+                    SetCenter(shapes, new Vector2(cdx, cdy));
+                }
+            }
+        }
         internal static void ResizeMajorAxis(IEnumerable<Shape> shapes, float factor)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
             foreach (var shape in shapes)
             {
-                shape.R2 = (byte)(factor * SIZE / 2);
+                shape.R1 = (byte)(factor * SIZE / 2);
                 shape.CreatePoints();
             }
             SetCenter(shapes, new Vector2(cdx, cdy));
@@ -271,7 +214,7 @@ namespace ModelGraph.Controls
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
             foreach (var shape in shapes)
             {
-                shape.R1 = (byte)(factor * SIZE / 2);
+                shape.R2 = (byte)(factor * SIZE / 2);
                 shape.CreatePoints();
             }
             SetCenter(shapes, new Vector2(cdx, cdy));
@@ -288,8 +231,27 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        internal static (float cent, float vert, float horz, float major, float minor, float ternary) GetSliders(IEnumerable<Shape> shapes)
+        {
+            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+            var (r1, r2, r3) = GetMaxRadius(shapes);
+
+            var horz = Limited(dx1, dx2);
+            var vert = Limited(dy1, dy2);
+            var cent = Larger(vert, horz);
+            var major = Factor(r1);
+            var minor = Factor(r2);
+            var ternary = Factor(r3);
+
+            return (cent, vert, horz, major, minor, ternary);
+
+            float Larger(float p, float q) => (p > q) ? p : q;
+            float Limited(float a, float b) => Larger(Factor(a), Factor(b));
+            float Factor(float v) => (float)System.Math.Round(100 * ((v < 0) ?  ((v < PMIN) ? 1 : v / PMIN) : ((v > PMAX) ? 1 : v / PMAX)));
+        }
+
         #region DrawTargets  ==================================================
-        static internal (float Cent, float Vert, float Horz) DrawTargets(IEnumerable<Shape> shapes, bool recordTargets, bool recordPointTargets, List<Vector2> targets, CanvasDrawingSession ds, float scale, Vector2 center)
+        static internal  void DrawTargets(IEnumerable<Shape> shapes, bool recordTargets, bool recordPointTargets, List<Vector2> targets, CanvasDrawingSession ds, float scale, Vector2 center)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dw, dh) = GetExtent(shapes);
             if (dw + dh > 0)
@@ -311,7 +273,6 @@ namespace ModelGraph.Controls
                         DrawTarget(point);
                     }
                 }
-                return (s, v, h);
 
                 void DrawTarget(Vector2 c)
                 {
@@ -321,7 +282,6 @@ namespace ModelGraph.Controls
                     ds.DrawCircle(c, 7, Colors.Black, 2);
                 }
             }
-            return (1, 1, 1);
         }
         private static Vector2 dsx = new Vector2(2, 0);
         private static Vector2 dsy = new Vector2(0, 2);
