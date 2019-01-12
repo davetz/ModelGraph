@@ -1,21 +1,16 @@
 ﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
-using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using ModelGraph.Helpers;
 using ModelGraph.Services;
 using ModelGraphSTD;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Color = Windows.UI.Color;
 
 namespace ModelGraph.Controls
@@ -36,7 +31,6 @@ namespace ModelGraph.Controls
         private HashSet<Shape> SelectedShapes = new HashSet<Shape>();
         private static HashSet<Shape> CutCopyShapes = new HashSet<Shape>(); //cut/copy/clone shapes between two SymbolEditControls
 
-        private Shape NewShape; //the just-cloned picker shape
         private Shape PickerShape; //current selected picker shape
 
         private float EditZoom => EditSize / ShapeSize;
@@ -233,14 +227,31 @@ namespace ModelGraph.Controls
         {
             var ds = args.DrawingSession;
             var scale = EditSize / ShapeSize;
-
             DrawEditorBackgroundGrid(ds);
-            foreach (var shape in SymbolShapes)
+
+            if (SelectedShapes.Count > 0)
             {
-                var strokeWidth = shape.StrokeWidth * scale * 5;
-                shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth);
+                _polylineTarget = SelectedShapes.First() as Polyline;
+                _isValidPolylineTarget = (SelectedShapes.Count == 1 && _polylineTarget != null);
+
+                foreach (var shape in SymbolShapes)
+                {
+                    var coloring = SelectedShapes.Contains(shape) ? Shape.Coloring.Light : Shape.Coloring.Gray;
+                    var strokeWidth = shape.StrokeWidth * scale * 5;
+                    shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, coloring);
+                }
+                DrawSelectTargets();
+
             }
-            DrawSelectTargets();
+            else
+            {
+                foreach (var shape in SymbolShapes)
+                {
+                    var strokeWidth = shape.StrokeWidth * scale * 5;
+                    shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, Shape.Coloring.Normal);
+                }
+
+            }
 
             SymbolCanvas.Invalidate();
             SelectorCanvas.Invalidate();
@@ -249,18 +260,16 @@ namespace ModelGraph.Controls
             {
                 if (SelectedShapes.Count > 0)
                 {
-                    _polylineTarget = SelectedShapes.First();
-                    _hasPolylineTarget = (SelectedShapes.Count == 1 && !(_polylineTarget is Central));
-                    if (!_hasPolylineTarget) _polylineTarget = null;
+                    if (!_isValidPolylineTarget) _polylineTarget = null;
 
-                    var record = !_editorCanvasPressed; // don't refresh targets durring drag operations
+                    var record = !_editorPointerPressed; // don't refresh targets durring drag operations
 
-                    Shape.DrawTargets(SelectedShapes, record, _hasPolylineTarget, _targetPoints, ds, scale, Center);
+                    Shape.DrawTargets(SelectedShapes, record, _isValidPolylineTarget, _targetPoints, ds, scale, Center);
                 }
             }
         }
-        private Shape _polylineTarget;
-        private bool _hasPolylineTarget;
+        private Polyline _polylineTarget;
+        private bool _isValidPolylineTarget;
         private List<Vector2> _targetPoints = new List<Vector2>();
 
         #endregion
@@ -328,470 +337,6 @@ namespace ModelGraph.Controls
         #endregion
 
 
-        #region PickerCanvas_PointerEvents  ===================================
-        private int _pickerIndex = -1;
-        private void PickerCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            PickerShape = null;
-
-            _pickerIndex = GetPickerShapeIndex(e);
-
-            PickerCanvas.Invalidate();
-        }
-
-        private void PickerCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            var index = GetPickerShapeIndex(e);
-            if (index < 0 || (index != _pickerIndex)) return;
-
-            SetPicker(PickerShapes[index]);
-
-            PickerCanvas.Invalidate();
-            EditorCanvas.Invalidate();
-        }
-        private int GetPickerShapeIndex(PointerRoutedEventArgs e)
-        {
-            var p = e.GetCurrentPoint(PickerCanvas).Position;
-            int index = (int)(p.Y / PickerCanvas.Width);
-            return (index < 0 || index >= PickerShapes.Count) ? -1 : index;
-        }
-        #endregion
-
-        #region SymbolCanvas_PointerEvents  ===================================
-        private bool _symbolCanvasPressed;
-        private void SymbolCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            _symbolCanvasPressed = true;
-        }
-
-        private void SymbolCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            if (_symbolCanvasPressed)
-            {
-                _symbolCanvasPressed = false;
-
-                if (SelectedShapes.Count > 0)
-                {
-                    SelectedShapes.Clear();
-                    SetIdle();
-                }
-                else
-                {
-                    foreach (var shape in SymbolShapes) { SelectedShapes.Add(shape); }
-                    EnableHitTest();
-                }
-
-
-                PickerShape = null;
-                PickerCanvas.Invalidate();
-            }
-        }
-        #endregion
-
-        #region SelectorCanvas_PointerEvents  =================================
-        private int _selectorIndex = -1;
-        private bool _selectorCanvasPressed;
-        private bool _ignoreSelectorCanvaseReleased;
-        private void SelectorCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            _selectorCanvasPressed = true;
-            _selectorIndex = GetSelectorIndex(e);
-        }
-
-        private void SelectorCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
-        {
-            if (_selectorCanvasPressed && _selectorIndex >= 0 && SelectedShapes.Count == 0)
-            {
-                var index  = GetSelectorIndex(e);
-                if (index >= 0 && index != _selectorIndex)
-                {
-                    var shape = SymbolShapes[_selectorIndex];
-                    SymbolShapes[_selectorIndex] = SymbolShapes[index];
-                    SymbolShapes[index] = shape;
-                    _selectorIndex = index;
-                    _ignoreSelectorCanvaseReleased = true;
-                    EditorCanvas.Invalidate();
-                }
-            }
-        }
-
-        private void SelectorCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            if (_selectorCanvasPressed && !_ignoreSelectorCanvaseReleased)
-            {
-                var index = GetSelectorIndex(e);
-                if (index < 0 || _selectorIndex < 0)
-                    SelectedShapes.Clear();
-                else if (index == _selectorIndex)
-                {
-                    var shape = SymbolShapes[index];
-
-                    if (IsSelectOneOrMoreShapeMode)
-                    {
-                        if (SelectedShapes.Contains(shape))
-                            SelectedShapes.Remove(shape);
-                        else
-                            SelectedShapes.Add(shape);
-                    }
-                    else
-                    {
-                        SelectedShapes.Clear();
-                        SelectedShapes.Add(shape);
-                    }
-
-                    GrtProperty(shape);
-                }
-                PickerShape = null;
-
-                if (SelectedShapes.Count > 0)
-                    EnableHitTest();
-                else
-                    SetIdle();
-
-                PickerCanvas.Invalidate();
-            }
-            _selectorCanvasPressed = false;
-            _ignoreSelectorCanvaseReleased = false;
-        }
-        private int GetSelectorIndex(PointerRoutedEventArgs e)
-        {
-            var p = e.GetCurrentPoint(SelectorCanvas).Position;
-            int index = (int)(p.Y / SelectorCanvas.Width);
-            return (index < 0 || index >= SymbolShapes.Count) ? -1 : index;
-        }
-        #endregion
-
-        #region EditorCanvas_PointerEvents  ===================================
-        private bool _editorCanvasPressed;
-
-        private void EditorCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            _editorCanvasPressed = true;
-            RawPoint1 = GetRawPoint(e);
-            ShapePoint1 = ShapePoint(RawPoint1);
-
-            BeginAction?.Invoke();
-        }
-
-        private void EditorCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
-        {
-            RawPoint2 = GetRawPoint(e);
-            ShapePoint2 = ShapePoint(RawPoint2);
-
-            if (_editorCanvasPressed && ShapeDelta.LengthSquared() > 1) DragAction?.Invoke();
-        }
-
-        private void EditorCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            _editorCanvasPressed = false;
-            RawPoint2 = GetRawPoint(e);
-            ShapePoint2 = ShapePoint(RawPoint2);
-
-            EndAction?.Invoke();
-        }
-        private Vector2 ShapePoint(Vector2 rawPoint) => (rawPoint - Center) / EditZoom;
-
-        private Vector2 GetRawPoint(PointerRoutedEventArgs e)
-        {
-            var p = e.GetCurrentPoint(EditorCanvas).Position;
-            return new Vector2((float)p.X, (float)p.Y);
-        }
-        #endregion
-
-
-        #region EditorAction  =================================================
-        private Action EndAction;
-        private Action DragAction;
-        private Action BeginAction;
-
-        private void SetIdle()
-        {
-            BeginAction = DragAction = EndAction = null;
-            NewShape = null;
-            PickerShape = null;
-            SelectedShapes.Clear();
-
-            EditorCanvas.Invalidate();
-        }
-
-        private void SetPicker(Shape pickerShape)
-        {
-            PickerShape = pickerShape;
-            BeginAction = AddNewShape;
-            DragAction = EndAction = null;
-        }
-        private void AddNewShape()
-        {
-            if (PickerShape is null) return;
-
-            NewShape = PickerShape.Clone(ShapePoint1);
-
-            SymbolShapes.Add(NewShape);
-            SetProperty(NewShape, ProertyId.All);
-            DragAction = BeginDragNewShape;
-
-            EditorCanvas.Invalidate();
-        }
-        private void BeginDragNewShape()
-        {
-            if (NewShape is null) return;
-
-            SelectedShapes.Add(NewShape);
-            NewShape = null;
-            PickerShape = null;
-
-            PickerCanvas.Invalidate();
-
-            DragAction = DragingShapes;
-            DragingShapes();
-        }
-        private void DragingShapes()
-        {
-            if (SelectedShapes.Count > 0)
-            {
-                Shape.MoveCenter(SelectedShapes, ShapeDelta);
-                RawPoint1 = RawPoint2;
-                ShapePoint1 = ShapePoint(RawPoint2);
-
-                EditorCanvas.Invalidate();
-            }
-        }
-
-        private void EnableHitTest()
-        {
-            BeginAction = CheckHitTest;
-            DragAction = EndAction = null;
-
-            SetSizeSliders();
-
-            EditorCanvas.Invalidate();
-        }
-
-        private void CheckHitTest()
-        {
-            var index = HitTest(RawPoint1);
-            if (index < 0) SetIdle();
-
-            if (index == 0)
-                DragAction = DragingShapes;
-        }
-
-        private int HitTest(Vector2 rawPoint)
-        {
-            var N = _targetPoints.Count;
-            for (int i = 0; i < N; i++)
-            {
-                var dp = rawPoint - _targetPoints[i];
-                if (dp.LengthSquared() < 50) return i;
-            }
-            return -1;
-        }
-        #endregion
-
-
-        #region PropertyChanged  ==============================================
-        private void ColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
-        {
-            if (_changesEnabled)
-            {
-                _shapeColor = ColorPicker.Color;
-                SetProperty(ProertyId.ShapeColor);
-            }
-        }
-        private void StrokeWidthSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            if (_changesEnabled)
-            {
-                SetProperty(ProertyId.StrokeWidth);
-            }
-        }
-        private void FillStroke_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_changesEnabled)
-            {
-                SetProperty(ProertyId.FillStroke);
-            }
-        }
-        private void DashStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_changesEnabled)
-            {
-                SetProperty(ProertyId.DashStyle);
-            }
-        }
-        private void PolyDimension_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_changesEnabled)
-            {
-                SetProperty(ProertyId.PolyDimension);
-            }
-        }
-        private void LineJoin_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_changesEnabled)
-            {
-                SetProperty(ProertyId.LineJoin);
-            }
-        }
-        private void StartCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_changesEnabled)
-            {
-                SetProperty(ProertyId.StartCap);
-            }
-        }
-        private void EndCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_changesEnabled)
-            {
-                SetProperty(ProertyId.EndCap);
-            }
-        }
-        private void DashCap_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_changesEnabled)
-            {
-                SetProperty(ProertyId.DashCap);
-            }
-        }
-
-        #region CentralSize  ==================================================
-        private void CentralSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            var value = (float)CentralSizeSlider.Value;
-            if (Changed(value, _centralSize))
-            {
-                Shape.ResizeCentral(SelectedShapes, value);
-                SetSizeSliders();
-                EditorCanvas.Invalidate();
-            }
-        }
-        private void SetCentralSize(float value)
-        {
-            _centralSize = value;
-            CentralSizeSlider.Value = value;
-        }
-        private float _centralSize;
-        #endregion
-
-        #region VerticalSize  =================================================
-        private void VerticalSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            var value = (float)VerticalSizeSlider.Value;
-            if (Changed(value, _verticalSize))
-            {
-                Shape.ResizeVertical(SelectedShapes, value);
-                SetSizeSliders();
-                EditorCanvas.Invalidate();
-            }
-        }
-        private void SetVerticalSize(float value)
-        {
-            _verticalSize = value;
-            VerticalSizeSlider.Value = value;
-        }
-        private float _verticalSize;
-        #endregion
-
-        #region HorizontalSize  ===============================================
-        private void HorizontalSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            var value = (float)HorizontalSizeSlider.Value;
-            if (Changed(value, _horizontalSize))
-            {
-                Shape.ResizeHorizontal(SelectedShapes, value);
-                SetSizeSliders();
-                EditorCanvas.Invalidate();
-            }
-        }
-        private void SetHorizontalSize(float value)
-        {
-            _horizontalSize = value;
-            HorizontalSizeSlider.Value = value;
-        }
-        private float _horizontalSize;
-        #endregion
-
-        #region MajorSize  ====================================================
-        private void MajorSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            var value = (float)MajorSizeSlider.Value;
-            if (Changed(value, _majorSize))
-            {
-                Shape.ResizeMajorAxis(SelectedShapes, value);
-                SetSizeSliders();
-                EditorCanvas.Invalidate();
-            }
-        }
-        private void SetMajorSize(float value)
-        {
-            _majorSize = value;
-            MajorSizeSlider.Value = value;
-        }
-        private float _majorSize;
-        #endregion
-
-        #region MinorAxisSize  ================================================
-        private void MinorSizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            var value = (float)MinorSizeSlider.Value;
-            if (Changed(value, _minorSize))
-            {
-                Shape.ResizeMinorAxis(SelectedShapes, value);
-                SetSizeSliders();
-                EditorCanvas.Invalidate();
-            }
-        }
-        private void SetMinorSize(float value)
-        {
-            _minorSize = value;
-            MinorSizeSlider.Value = value;
-        }
-        private float _minorSize;
-        #endregion
-
-        #region TernarySize  ==================================================
-        private void TernarySizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            var value = (float)TernarySizeSlider.Value;
-            if (Changed(value, _ternarySize))
-            {
-                Shape.ResizeTernaryAxis(SelectedShapes, value);
-                SetSizeSliders();
-                EditorCanvas.Invalidate();
-            }
-        }
-        private void SetTernarySize(float value)
-        {
-            _ternarySize = value;
-            TernarySizeSlider.Value = value;
-        }
-        private float _ternarySize;
-        #endregion
-
-        #region SetSizeSliders  ===============================================
-        private void SetSizeSliders()
-        {
-            if (SelectedShapes.Count > 0)
-            {
-                _changesEnabled = false;
-
-                var (cent, vert, horz, major, minor, ternary) = Shape.GetSliders(SelectedShapes);
-                SetCentralSize(cent);
-                SetVerticalSize(vert);
-                SetHorizontalSize(horz);
-                SetMajorSize(major);
-                SetMinorSize(minor);
-                SetTernarySize(ternary);
-
-                _changesEnabled = true;
-            }
-        }
-        private bool Changed(float v1, float v2) => _changesEnabled && v1 != v2;
-        bool _changesEnabled;
-        #endregion
-        #endregion
-
         #region SetGetProperty  ===============================================
         [Flags]
         private enum ProertyId
@@ -805,9 +350,6 @@ namespace ModelGraph.Controls
             FillStroke = 0x20,
             ShapeColor = 0x40,
             StrokeWidth = 0x80,
-            PolyMajorAxis = 0x100,
-            PolyMinorAxix = 0x200,
-            PolyTernaryAxis = 0x400,
             PolyDimension = 0x800,
         }
         void SetProperty(ProertyId pid)
@@ -847,89 +389,6 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-
-        #region LeftButtonClick  ==============================================
-        private void OneManyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            ToggleOneManyButton();
-        }
-        private void ToggleOneManyButton()
-        {
-            if (IsSelectOneOrMoreShapeMode)
-            {
-                OneManyButton.Content = "\uE8C5";
-                ToolTipService.SetToolTip(OneManyButton, "_001A".GetLocalized() );
-                IsSelectOneOrMoreShapeMode = false;
-            }
-            else
-            {
-                OneManyButton.Content = "\uE8C4";
-                ToolTipService.SetToolTip(OneManyButton, "_001B".GetLocalized());
-                IsSelectOneOrMoreShapeMode = true;
-            }
-        }
-        private bool IsSelectOneOrMoreShapeMode = true;
-
-        private void CutButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            if (SelectedShapes.Count > 0)
-            {
-                CutCopyShapes.Clear();
-                foreach (var shape in SelectedShapes)
-                {
-                    CutCopyShapes.Add(shape);
-                    SymbolShapes.Remove(shape);
-                }
-                SelectedShapes.Clear();
-
-                EditorCanvas.Invalidate();
-            }
-        }
-
-        private void CopyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            if (SelectedShapes.Count > 0)
-            {
-                CutCopyShapes.Clear();
-                foreach (var shape in SelectedShapes)
-                {
-                    CutCopyShapes.Add(shape.Clone());
-                }
-                SelectedShapes.Clear();
-
-                EditorCanvas.Invalidate();
-            }
-        }
-
-        private void PasteButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            if (CutCopyShapes.Count > 0)
-            {
-                SelectedShapes.Clear();
-                foreach (var template in CutCopyShapes)
-                {
-                    var shape = template.Clone();
-                    SymbolShapes.Add(shape);
-                    SelectedShapes.Add(shape);
-                }
-                EnableHitTest();
-                EditorCanvas.Invalidate();
-            }
-        }
-
-        private void RecenterButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            if (SelectedShapes.Count > 0)
-            {
-                Shape.SetCenter(SelectedShapes, Vector2.Zero);
-                EditorCanvas.Invalidate();
-            }
-        }
-        private void RotateLeftButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => RotateLeft();
-        private void RotateRightButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => RotateRight();
-        private void FlipVerticalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => FlipVertical();
-        private void FlipHorizontalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => FlipHorizontal();
-        #endregion
 
         #region LeftButtonHelperMethods  ======================================
         private List<(float dx, float dy)> _getList = new List<(float dx, float dy)>();

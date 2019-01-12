@@ -73,10 +73,7 @@ namespace ModelGraph.Controls
         #region SetIdleOnVoid  ================================================
         private void SetIdleOnVoid()
         {
-            if (!SetEventAction(EventAction.IdleOnVoid))
-            {
-                return;
-            }
+            if (!SetEventAction(EventAction.IdleOnVoid)) return;
 
             HideTootlip();
             //DisableAutoPan();

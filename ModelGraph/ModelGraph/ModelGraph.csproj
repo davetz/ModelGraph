@@ -140,6 +140,8 @@
     <Compile Include="Controls\SymbolEdit\SymbolEditControl.xaml.cs">
       <DependentUpon>SymbolEditControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\SymbolEdit\SymbolEditControlActions.cs" />
+    <Compile Include="Controls\SymbolEdit\SymbolEditControlEvents.cs" />
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
     <Compile Include="Helpers\Json.cs" />
     <Compile Include="Helpers\NavHelper.cs" />

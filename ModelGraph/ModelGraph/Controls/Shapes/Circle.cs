@@ -32,13 +32,14 @@ namespace ModelGraph.Controls
         internal override Shape Clone() =>new Circle(this);
         internal override Shape Clone(Vector2 center) => new Circle(this, center);
 
-        internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
+        internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth, Coloring coloring = Coloring.Normal)
         {
+            var color = GetColor(coloring);
             var radius = (R1 * scale);
             if (FillStroke == Fill_Stroke.Filled)
-                ds.FillCircle( Center * scale + center, radius, Color);
+                ds.FillCircle( Center * scale + center, radius, color);
             else
-                ds.DrawCircle(Center * scale + center, radius, Color, strokeWidth, StrokeStyle());
+                ds.DrawCircle(Center * scale + center, radius, color, strokeWidth, StrokeStyle());
         }
         protected override void Scale(Vector2 scale)
         {

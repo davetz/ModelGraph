@@ -16,6 +16,7 @@ namespace ModelGraph.Controls
         internal Shape(int I, byte[] data) { ReadData(I, data); }
 
         #region Properties  ===================================================
+        internal enum Coloring { Gray, Light, Normal};
         internal double MajorAxis { get { return R2; } set { R2 = (byte)value; CreatePoints(); } }
         internal double MinorAxis { get { return R1; } set { R1 = (byte)value; CreatePoints(); } }
         internal double TernaryAxis { get { return R3; } set { R3 = (byte)value; CreatePoints(); } }
@@ -43,6 +44,7 @@ namespace ModelGraph.Controls
 
         public float StrokeWidth { get { return SW; } set { SW = (byte)((value < 1) ? 1 : (value > 20) ? 20 : value); } }
         public Color Color => Color.FromArgb(A, R, G, B);
+        internal Color GetColor(Coloring c) => (c == Coloring.Normal) ? Color : (c == Coloring.Light) ? Color.FromArgb(0x60, R, G, B) : Color.FromArgb(0x60, 0X80, 0X80, 0X80);
         public string ColorCode { get { return $"#{A}{R}{G}{B}"; } set { SetColor(value); } }
 
         #region SetColor  =====================================================
@@ -95,7 +97,7 @@ namespace ModelGraph.Controls
         protected virtual void CreatePoints() { }
         internal abstract Shape Clone();
         internal abstract Shape Clone(Vector2 Center);
-        internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth);
+        internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth, Coloring coloring = Coloring.Normal);
 
         protected abstract (float dx1, float dy1, float dx2, float dy2) GetExtent();
         protected abstract void Scale(Vector2 scale);

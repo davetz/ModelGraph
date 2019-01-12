@@ -20,6 +20,16 @@ namespace ModelGraph.Controls
             return list.ToArray();
         }
 
+        internal void MovePoint(int index, Vector2 ds)
+        {
+            if (index < 0) return;
+            if (index < DXY.Count)
+            {
+                var (dx, dy) = DXY[index];
+                DXY[index] = Round(dx + ds.X, dy + ds.Y);
+            }
+        }
+
         #region OverideAbstract  ==============================================
         protected override (float dx1, float dy1, float dx2, float dy2) GetExtent()
         {

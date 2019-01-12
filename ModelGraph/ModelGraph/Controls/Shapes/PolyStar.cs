@@ -22,8 +22,8 @@ namespace ModelGraph.Controls
             var N = 2 * PD;
             DXY = new List<(sbyte dx, sbyte dy)>(N);
 
-            var da = Math.PI * 2 / N;
-            var a = da * (A0 + 1);
+            var da = FullRadians / N;
+            var a = RadiansStart;
             for (int i = 0; i < PD; i++)
             {
                 DXY.Add(Round((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));

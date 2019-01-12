@@ -16,6 +16,7 @@ namespace ModelGraph.Controls
         static protected (sbyte dx, sbyte dy) Round(float x, float y) => (LIM2(LIM1(x)), LIM2(LIM1(y)));
         static protected (sbyte dx, sbyte dy) Round((float x, float y) p) => Round(p.x, p.y);
 
+        #region GetMaxRadius  =================================================
         static private (byte r1, byte r2, byte r3) GetMaxRadius(IEnumerable<Shape> shapes)
         {
             byte r1 = 0, r2 = 0, r3 = 0;
@@ -28,6 +29,9 @@ namespace ModelGraph.Controls
             }
             return (r1, r2, r3);
         }
+        #endregion
+
+        #region GetExtent  ====================================================
         static private (float dx1, float dy1, float dx2, float dy2, float cdx, float cdy, float dx, float dy) GetExtent(IEnumerable<Shape> shapes)
         {
             var x1 = PMAX;
@@ -47,7 +51,15 @@ namespace ModelGraph.Controls
             }
             return (x1 == PMAX) ? (0, 0, 0, 0, 0, 0, 0, 0) : (x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, (x2 - x1), (y2 - y1));
         }
-        private float DegreesToRadians(float angle) => angle * (float)Math.PI / 180;
+        #endregion
+
+        #region Rotation  =====================================================
+        protected static float FullRadians = (float)(2 * Math.PI);
+        protected static float DeltaRadians = (float)(Math.PI / 8);
+        protected float RotateLeftRadians => -DeltaRadians;
+        protected float RotateRightRadians => DeltaRadians;
+        protected float RadiansDelta(int n) => (n & 0xF) * DeltaRadians;
+        protected float RadiansStart => RadiansDelta(A0);
 
         private void MoveCenter(float dx, float dy)
         {
@@ -60,13 +72,16 @@ namespace ModelGraph.Controls
         private void RotateLeft()
         {
             A0 = (byte)((A0 - 1) & 0xF);
-            TransformPoints(Matrix3x2.CreateRotation(DegreesToRadians(-22.5f)));
+            TransformPoints(Matrix3x2.CreateRotation(RotateLeftRadians));
         }
         private void RotateRight()
         {
             A0 = (byte)((A0 + 1) & 0xF);
-            TransformPoints(Matrix3x2.CreateRotation(DegreesToRadians(22.5f)));
+            TransformPoints(Matrix3x2.CreateRotation(RotateRightRadians));
         }
+        #endregion
+
+        #region Flip/TransformPoints  =========================================
         private void VerticalFlip()
         {
             TransformPoints(Matrix3x2.CreateScale(new Vector2(1, -1)));
@@ -85,5 +100,6 @@ namespace ModelGraph.Controls
                 DXY[i] = Round(p.X, p.Y);
             }
         }
+        #endregion
     }
 }

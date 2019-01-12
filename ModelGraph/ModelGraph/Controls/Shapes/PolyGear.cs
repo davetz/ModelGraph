@@ -25,10 +25,10 @@ namespace ModelGraph.Controls
             var M = 2 * PD; //number of angles
             DXY = new List<(sbyte dx, sbyte dy)>(N);
 
-            var da = Math.PI * 2 / M;
-            var ta = da * R3 / 200 ;
-            var a = da * (A0 + 1);
-            for (int i = 0; i < M; i++)
+            var da = FullRadians / M;
+            var ta = da * R3 / 200;
+            var a = RadiansStart;
+            for (int i = 0; i < PD; i++)
             {
                 DXY.Add(Round((R1 * (float)Math.Cos(a - ta), R1 * (float)Math.Sin(a - ta))));
                 DXY.Add(Round((R1 * (float)Math.Cos(a + ta), R1 * (float)Math.Sin(a + ta))));

@@ -35,15 +35,16 @@ namespace ModelGraph.Controls
         internal override Shape Clone() =>new RoundedRectangle(this);
         internal override Shape Clone(Vector2 center) => new RoundedRectangle(this, center);
 
-        internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth)
+        internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth, Coloring coloring = Coloring.Normal)
         {
+            var color = GetColor(coloring);
             var min = center + (Center - Radius) * scale;
             var len = Radius * 2 * scale;
             var corner = Corner * scale;
             if (FillStroke == Fill_Stroke.Filled)
-                ds.FillRoundedRectangle( min.X, min.Y, len.X, len.Y, corner, corner, Color);
+                ds.FillRoundedRectangle( min.X, min.Y, len.X, len.Y, corner, corner, color);
             else
-                ds.DrawRoundedRectangle(min.X, min.Y, len.X, len.Y, corner, corner, Color, strokeWidth, StrokeStyle());
+                ds.DrawRoundedRectangle(min.X, min.Y, len.X, len.Y, corner, corner, color, strokeWidth, StrokeStyle());
         }
         #endregion
     }
