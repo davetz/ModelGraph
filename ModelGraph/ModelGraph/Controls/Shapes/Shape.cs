@@ -45,6 +45,11 @@ namespace ModelGraph.Controls
         public float StrokeWidth { get { return SW; } set { SW = (byte)((value < 1) ? 1 : (value > 20) ? 20 : value); } }
         public Color Color => Color.FromArgb(A, R, G, B);
         internal Color GetColor(Coloring c) => (c == Coloring.Normal) ? Color : (c == Coloring.Light) ? Color.FromArgb(0x60, R, G, B) : Color.FromArgb(0x60, 0X80, 0X80, 0X80);
+
+        protected Vector2 Radius => new Vector2(R1, R2);
+        protected (float r1, float r2, float r3) GetRadius(float scale) => (R1 * scale, R2 * scale, R3 * scale);
+        protected (float r1, float r2) GetRadius() => (R1, R2);
+
         public string ColorCode { get { return $"#{A}{R}{G}{B}"; } set { SetColor(value); } }
 
         #region SetColor  =====================================================
@@ -233,6 +238,7 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        #region GetSliders  ===================================================
         internal static (float cent, float vert, float horz, float major, float minor, float ternary) GetSliders(IEnumerable<Shape> shapes)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
@@ -251,23 +257,21 @@ namespace ModelGraph.Controls
             float Limited(float a, float b) => Larger(Factor(a), Factor(b));
             float Factor(float v) => (float)System.Math.Round(100 * ((v < 0) ?  ((v < PMIN) ? 1 : v / PMIN) : ((v > PMAX) ? 1 : v / PMAX)));
         }
+        #endregion
 
         #region DrawTargets  ==================================================
-        static internal  void DrawTargets(IEnumerable<Shape> shapes, bool recordTargets, bool recordPointTargets, List<Vector2> targets, CanvasDrawingSession ds, float scale, Vector2 center)
+        static internal  void DrawTargets(IEnumerable<Shape> shapes, List<Vector2> targets, CanvasDrawingSession ds, float scale, Vector2 center)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dw, dh) = GetExtent(shapes);
             if (dw + dh > 0)
             {
-                if (recordTargets) targets.Clear();
-
                 var h = dw / SIZE;
                 var v = dh / SIZE;
                 var s = (h > v) ? h : v;
 
-
                 DrawTarget(new Vector2(cdx, cdy) * scale + center);
 
-                if (recordPointTargets && recordTargets  && shapes.First() is Polyline polyline)
+                if (shapes.Count() == 1  && shapes.First() is Polyline polyline)
                 {
                     var points = polyline.GetDrawingPoints( center, scale);
                     foreach (var point in points)
@@ -278,15 +282,12 @@ namespace ModelGraph.Controls
 
                 void DrawTarget(Vector2 c)
                 {
-                    if (recordTargets) targets.Add(c);
+                    targets.Add(c);
 
-                    ds.DrawCircle(c, 5, Colors.White, 2);
-                    ds.DrawCircle(c, 7, Colors.Black, 2);
+                    ds.DrawCircle(c, 7, Colors.White, 3);
                 }
             }
         }
-        private static Vector2 dsx = new Vector2(2, 0);
-        private static Vector2 dsy = new Vector2(0, 2);
         #endregion
 
         #endregion

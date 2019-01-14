@@ -27,7 +27,7 @@ namespace ModelGraph.Controls
     {
         private RootModel _rootModel;
         private List<Shape> SymbolShapes = new List<Shape>();
-        private List<Shape> PickerShapes = new List<Shape> { new Circle(), new Ellipes(), new RoundedRectangle(), new Rectangle(), new PolySide(), new PolyStar(), new PolyGear() };
+        private List<Shape> PickerShapes = new List<Shape> { new Circle(), new Ellipes(), new RoundedRectangle(), new Rectangle(), new PolySide(), new PolyStar(), new PolyGear(), new Polyline(0), new Polyline(1), new Polyline(2), new Spring() };
         private HashSet<Shape> SelectedShapes = new HashSet<Shape>();
         private static HashSet<Shape> CutCopyShapes = new HashSet<Shape>(); //cut/copy/clone shapes between two SymbolEditControls
 
@@ -231,17 +231,16 @@ namespace ModelGraph.Controls
 
             if (SelectedShapes.Count > 0)
             {
-                _polylineTarget = SelectedShapes.First() as Polyline;
-                _isValidPolylineTarget = (SelectedShapes.Count == 1 && _polylineTarget != null);
-
                 foreach (var shape in SymbolShapes)
                 {
                     var coloring = SelectedShapes.Contains(shape) ? Shape.Coloring.Light : Shape.Coloring.Gray;
                     var strokeWidth = shape.StrokeWidth * scale * 5;
                     shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, coloring);
                 }
-                DrawSelectTargets();
 
+                _polylineTarget = SelectedShapes.First() as Polyline;
+                _targetPoints.Clear();
+                 Shape.DrawTargets(SelectedShapes, _targetPoints, ds, scale, Center);
             }
             else
             {
@@ -255,21 +254,8 @@ namespace ModelGraph.Controls
 
             SymbolCanvas.Invalidate();
             SelectorCanvas.Invalidate();
-
-            void DrawSelectTargets()
-            {
-                if (SelectedShapes.Count > 0)
-                {
-                    if (!_isValidPolylineTarget) _polylineTarget = null;
-
-                    var record = !_editorPointerPressed; // don't refresh targets durring drag operations
-
-                    Shape.DrawTargets(SelectedShapes, record, _isValidPolylineTarget, _targetPoints, ds, scale, Center);
-                }
-            }
         }
         private Polyline _polylineTarget;
-        private bool _isValidPolylineTarget;
         private List<Vector2> _targetPoints = new List<Vector2>();
 
         #endregion

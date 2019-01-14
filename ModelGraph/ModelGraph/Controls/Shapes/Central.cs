@@ -29,7 +29,6 @@ namespace ModelGraph.Controls
                 DXY[0] = Round(value.X, value.Y);
             }
         }
-        protected Vector2 Radius => new Vector2(R1, R2);
 
         #region OverideAbstract  ==============================================
         protected override (float dx1, float dy1, float dx2, float dy2) GetExtent()

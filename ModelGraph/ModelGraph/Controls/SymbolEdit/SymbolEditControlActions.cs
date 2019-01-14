@@ -96,16 +96,17 @@ namespace ModelGraph.Controls
         #region TryHitTest  ===================================================
         private bool TryHitTest(Vector2 rawPoint, out int index)
         {
+            index = -1;
+            var bestDelta = 500.0f;
             var N = _targetPoints.Count;
             for (int i = 0; i < N; i++)
             {
-                var dp = rawPoint - _targetPoints[i];
-                if (dp.LengthSquared() > 50) continue;
+                var delta = (rawPoint - _targetPoints[i]).LengthSquared();
+                if (delta > 100 || delta > bestDelta) continue;
+                bestDelta = delta;
                 index = i;
-                return true;
             }
-            index = -1;
-            return false;
+            return !(index < 0);
         }
         #endregion
 
@@ -196,18 +197,74 @@ namespace ModelGraph.Controls
             {
                 SetSizeSliders();
                 SetEventAction(PointerEvent.Begin, TargetPointerDown);
+                SetEventAction(PointerEvent.Hover, TargetPointerHover);
 
                 PickerShape = null;
                 PickerCanvas.Invalidate();
                 EditorCanvas.Invalidate();
             }
         }
+
+        #region Hover  ========================================================
+        private void TargetPointerHover()
+        {
+            if (TryHitTest(RawPoint1, out int index))
+            {
+                _hoverPointIndex = index;
+                SetEventAction(VirtualKey.Up, VirtualKeyModifiers.None, AccessKey_Up);
+                SetEventAction(VirtualKey.Down, VirtualKeyModifiers.None, AccessKey_Down);
+                SetEventAction(VirtualKey.Left, VirtualKeyModifiers.None, AccessKey_Left);
+                SetEventAction(VirtualKey.Right, VirtualKeyModifiers.None, AccessKey_Right);
+            }
+            else
+            {
+                ClearEventAction(VirtualKey.Up, VirtualKeyModifiers.None);
+                ClearEventAction(VirtualKey.Down, VirtualKeyModifiers.None);
+                ClearEventAction(VirtualKey.Left, VirtualKeyModifiers.None);
+                ClearEventAction(VirtualKey.Right, VirtualKeyModifiers.None);
+            }
+        }
+        int _hoverPointIndex;
+
+        private void AccessKey_Up()
+        {
+            var ds = new Vector2(0, -1);
+            if (_hoverPointIndex == 0)
+                Shape.MoveCenter(SelectedShapes, ds);
+            else
+                _polylineTarget.MovePoint(_hoverPointIndex - 1, ds);
+        }
+        private void AccessKey_Down()
+        {
+            var ds = new Vector2(0, 1);
+            if (_hoverPointIndex == 0)
+                Shape.MoveCenter(SelectedShapes, ds);
+            else
+                _polylineTarget.MovePoint(_hoverPointIndex - 1, ds);
+        }
+        private void AccessKey_Left()
+        {
+            var ds = new Vector2(-1, 0);
+            if (_hoverPointIndex == 0)
+                Shape.MoveCenter(SelectedShapes, ds);
+            else
+                _polylineTarget.MovePoint(_hoverPointIndex - 1, ds);
+        }
+        private void AccessKey_Right()
+        {
+            var ds = new Vector2(1, 0);
+            if (_hoverPointIndex == 0)
+                Shape.MoveCenter(SelectedShapes, ds);
+            else
+                _polylineTarget.MovePoint(_hoverPointIndex - 1, ds);
+        }
+        #endregion
+
+        #region Drag  =========================================================
         private void TargetPointerDown()
         {
             if (TryHitTest(RawPoint1, out int index))
             {
-                if (index < 0) SetIdleOnVoid();
-
                 SetEventAction(PointerEvent.End, EndTargetDrag);
 
                 if (index == 0)
@@ -272,6 +329,8 @@ namespace ModelGraph.Controls
             SelectorCanvas.Invalidate();
             SetIdleOnVoid();
         }
+        #endregion
+
         #endregion
     }
 }
