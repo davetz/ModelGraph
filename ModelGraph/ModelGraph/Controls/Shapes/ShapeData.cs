@@ -13,8 +13,8 @@ namespace ModelGraph.Controls
         protected byte G = 0xFF; // color(A, R, G, B)
         protected byte B = 0xF0; // color(A, R, G, B)
         protected byte SW = 1;  // stroke width
-        protected byte SC;      // startCap
-        protected byte EC;      // endCap
+        protected byte SC = 2;  // startCap
+        protected byte EC = 2;  // endCap
         protected byte DC = 2;  // dashCap
         protected byte LJ = 3;  // line join
         protected byte DS;      // dash style
@@ -22,23 +22,23 @@ namespace ModelGraph.Controls
         protected byte R1;      // minor axis (inner, horzontal)
         protected byte R2;      // major axis (outer, vertical)
         protected byte R3;      // auxiliary axis (for PolyGear)
-        protected byte PD;      // polygon dimension
-        protected byte A0;      // polygon rotation index
-        protected List<(sbyte dx, sbyte dy)> DXY;  // zero or more defined points
+        protected byte PD;      // polyline dimension specific to the shape type
+        protected byte VM;      // variation modifier specific to the shape type
+        protected byte A0;      // rotation index for 22.5 degree delta
+        protected byte A1;      // rotation index for 30.0 degree delta
+        protected List<(float dx, float dy)> DXY;  // zero or more defined points
 
         #region ShapeType  ====================================================
         internal enum ShapeType : byte
         {
-            Line = 1,
-            Circle = 3,
-            Ellipse = 4,
-            PolySide = 5,
-            PolyStar = 6,
-            PolyGear = 7,
-            Polyline = 8,
-            Rectangle = 7,
+            Circle = 0,
+            Ellipse = 1,
+            PolySide = 2,
+            PolyStar = 3,
+            PolyGear = 4,
+            Rectangle = 5,
+            PolySpline = 6,
             RoundedRectangle = 8,
-            InvalidShapeType = 9,
         }
         #endregion
 
@@ -52,28 +52,48 @@ namespace ModelGraph.Controls
             while(I + HeaderPointCountIndex < M)
             {
                 var st = data[I];
-                if (st < (byte)ShapeType.InvalidShapeType)
+                if (st <= (byte)ShapeType.RoundedRectangle)
                 {
                     var pc = data[I + HeaderPointCountIndex];
 
                     switch ((ShapeType)st)
                     {
-                        case ShapeType.Line:
-                            break;
                         case ShapeType.Circle:
                             shapes.Add(new Circle(I, data));
                             break;
+
                         case ShapeType.Ellipse:
+                            shapes.Add(new Ellipes(I, data));
                             break;
+
+                        case ShapeType.PolySide:
+                            shapes.Add(new PolySide(I, data));
+                            break;
+
+                        case ShapeType.PolyStar:
+                            shapes.Add(new PolyStar(I, data));
+                            break;
+
+                        case ShapeType.PolyGear:
+                            shapes.Add(new PolyGear(I, data));
+                            break;
+
                         case ShapeType.Rectangle:
+                            shapes.Add(new Rectangle(I, data));
                             break;
+
+                        case ShapeType.PolySpline:
+                            shapes.Add(new PolySpline(I, data));
+                            break;
+
                         case ShapeType.RoundedRectangle:
+                            shapes.Add(new RoundedRectangle(I, data));
                             break;
                     }
                     I += pc + HeaderPointCountIndex;
                 }
                 else return; // stop and disregard invalid shape data
-            }                
+            }
         }
         #endregion
 
@@ -94,10 +114,15 @@ namespace ModelGraph.Controls
             FS = data[I++];
             R1 = data[I++];
             R2 = data[I++];
+            R3 = data[I++];
+            PD = data[I++];
+            VM = data[I++];
+            A0 = data[I++];
+            A1 = data[I++];
             var pc = data[I++];
             if (pc > 0)
             {
-                DXY = new List<(sbyte dx, sbyte dy)>(pc);
+                DXY = new List<(float dx, float dy)>(pc);
                 for (int i = 0; i < pc; i++)
                 {
                     DXY.Add(((sbyte)data[I++], (sbyte)data[I++]));
@@ -125,7 +150,10 @@ namespace ModelGraph.Controls
             R2 = s.R2;
             R3 = s.R3;
             PD = s.PD;
-            DXY = new List<(sbyte dx, sbyte dy)>(s.DXY);
+            VM = s.VM;
+            A0 = s.A0;
+            A1 = s.A1;
+            DXY = new List<(float dx, float dy)>(s.DXY);
         }
         #endregion
     }

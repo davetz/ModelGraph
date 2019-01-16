@@ -27,7 +27,7 @@ namespace ModelGraph.Controls
     {
         private RootModel _rootModel;
         private List<Shape> SymbolShapes = new List<Shape>();
-        private List<Shape> PickerShapes = new List<Shape> { new Circle(), new Ellipes(), new RoundedRectangle(), new Rectangle(), new PolySide(), new PolyStar(), new PolyGear(), new Polyline(0), new Polyline(1), new Polyline(2), new Spring() };
+        private List<Shape> PickerShapes = new List<Shape> { new Circle(), new Ellipes(), new RoundedRectangle(), new Rectangle(), new PolySide(), new PolyStar(), new PolyGear(), new Polyline(0), new Polyline(1), new Polyline(2), new PolySpline() };
         private HashSet<Shape> SelectedShapes = new HashSet<Shape>();
         private static HashSet<Shape> CutCopyShapes = new HashSet<Shape>(); //cut/copy/clone shapes between two SymbolEditControls
 
@@ -64,9 +64,6 @@ namespace ModelGraph.Controls
         }
         private void Initialize()
         {
-            _fillStroke = Fill_Stroke.Stroke;
-            _strokeWidth = 1;
-            _shapeColor = Colors.White;
             ToggleOneManyButton();
         }
         #endregion
@@ -148,7 +145,6 @@ namespace ModelGraph.Controls
         public List<CanvasCapStyle> CapStyleList { get { return GetEnumAsList<CanvasCapStyle>(); } }
         public List<CanvasLineJoin> LineJoinList { get { return GetEnumAsList<CanvasLineJoin>(); } }
         public List<Fill_Stroke> FillStrokeList { get { return GetEnumAsList<Fill_Stroke>(); } }
-        public List<PolyDimension> PolyDimensionList { get { return GetEnumAsList<PolyDimension>(); } }
         #endregion
 
 
@@ -336,7 +332,6 @@ namespace ModelGraph.Controls
             FillStroke = 0x20,
             ShapeColor = 0x40,
             StrokeWidth = 0x80,
-            PolyDimension = 0x800,
         }
         void SetProperty(ProertyId pid)
         {
@@ -354,7 +349,6 @@ namespace ModelGraph.Controls
             if ((pid & ProertyId.FillStroke) != 0) shape.FillStroke = ShapeFillStroke;
             if ((pid & ProertyId.ShapeColor) != 0) shape.ColorCode = ShapeColor.ToString();
             if ((pid & ProertyId.StrokeWidth) != 0) shape.StrokeWidth = (float)ShapeStrokeWidth;
-            if ((pid & ProertyId.PolyDimension) != 0) shape.Dimension = PolyDimension;
         }
 
         void GrtProperty(Shape shape)
@@ -368,7 +362,6 @@ namespace ModelGraph.Controls
             ShapeDashCap = shape.DashCap;
             ShapeDashStyle = shape.DashStyle;
             ShapeFillStroke = shape.FillStroke;
-            PolyDimension = shape.Dimension;
             ShapeStrokeWidth = shape.StrokeWidth;
 
             _changesEnabled = true;
@@ -379,11 +372,12 @@ namespace ModelGraph.Controls
         #region LeftButtonHelperMethods  ======================================
         private List<(float dx, float dy)> _getList = new List<(float dx, float dy)>();
         private List<(float dx, float dy)> _setList = new List<(float dx, float dy)>();
+        private bool _use30degreeDelta;
         private void RotateLeft()
         {
             if (SelectedShapes.Count > 0)
             {
-                Shape.RotateLeft(SelectedShapes);
+                Shape.RotateLeft(SelectedShapes, _use30degreeDelta);
                 EditorCanvas.Invalidate();
             }
         }
@@ -391,7 +385,7 @@ namespace ModelGraph.Controls
         {
             if (SelectedShapes.Count > 0)
             {
-                Shape.RotateRight(SelectedShapes);
+                Shape.RotateRight(SelectedShapes, _use30degreeDelta);
                 EditorCanvas.Invalidate();
             }
         }
@@ -430,31 +424,28 @@ namespace ModelGraph.Controls
 
         #region INotifyPropertyChanged  =======================================
         public CanvasCapStyle ShapeStartCap { get { return _startCap; } set { Set(ref _startCap, value); } }
-        private CanvasCapStyle _startCap;
+        private CanvasCapStyle _startCap = CanvasCapStyle.Round;
 
         public CanvasCapStyle ShapeEndCap { get { return _endCap; } set { Set(ref _endCap, value); } }
-        private CanvasCapStyle _endCap;
+        private CanvasCapStyle _endCap = CanvasCapStyle.Round;
 
         public CanvasDashStyle ShapeDashStyle { get { return _dashStyle; } set { Set(ref _dashStyle, value); } }
         private CanvasDashStyle _dashStyle;
 
         public CanvasCapStyle ShapeDashCap { get { return _dashCap; } set { Set(ref _dashCap, value); } }
-        private CanvasCapStyle _dashCap;
+        private CanvasCapStyle _dashCap = CanvasCapStyle.Round;
 
         public CanvasLineJoin ShapeLineJoin { get { return _lineJoin; } set { Set(ref _lineJoin, value); } }
-        private CanvasLineJoin _lineJoin;
+        private CanvasLineJoin _lineJoin = CanvasLineJoin.Round;
 
         public Fill_Stroke ShapeFillStroke { get { return _fillStroke; } set { Set(ref _fillStroke, value); } }
-        public Fill_Stroke _fillStroke;
-
-        public PolyDimension PolyDimension { get { return _shapeDimension; } set { Set(ref _shapeDimension, value); } }
-        private PolyDimension _shapeDimension;
+        public Fill_Stroke _fillStroke = Fill_Stroke.Stroke;
 
         public Color ShapeColor { get { return _shapeColor; } set { Set(ref _shapeColor, value); } }
-        private Color _shapeColor;
+        private Color _shapeColor = Color.FromArgb(0xff, 0xcd, 0xdf, 0xff);
 
         public double ShapeStrokeWidth { get { return _strokeWidth; } set { Set(ref _strokeWidth, value); } }
-        public double _strokeWidth;
+        public double _strokeWidth = 1;
 
         public double EastContactSize { get { return _eastContactSize; } set { Set(ref _eastContactSize, value); } }
         public double _eastContactSize;
@@ -480,5 +471,6 @@ namespace ModelGraph.Controls
         public double SouthWestContactSize { get { return _southWestContactSize; } set { Set(ref _southWestContactSize, value); } }
         public double _southWestContactSize;
         #endregion
+
     }
 }

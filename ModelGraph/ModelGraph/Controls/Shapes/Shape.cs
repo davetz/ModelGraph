@@ -20,7 +20,6 @@ namespace ModelGraph.Controls
         internal double MajorAxis { get { return R2; } set { R2 = (byte)value; CreatePoints(); } }
         internal double MinorAxis { get { return R1; } set { R1 = (byte)value; CreatePoints(); } }
         internal double TernaryAxis { get { return R3; } set { R3 = (byte)value; CreatePoints(); } }
-        internal PolyDimension Dimension { get { return (PolyDimension)PD; } set { PD = (byte)value; CreatePoints(); } }
 
         public CanvasStrokeStyle StrokeStyle()
         {
@@ -107,18 +106,20 @@ namespace ModelGraph.Controls
         protected abstract (float dx1, float dy1, float dx2, float dy2) GetExtent();
         protected abstract void Scale(Vector2 scale);
 
+        protected virtual (byte min, byte max) MinMaxDimension => (1, 100);
+
         #endregion
 
         #region StaticMethods  ================================================
 
         #region Flip/Rotate  ==================================================
-        static internal void RotateLeft(IEnumerable<Shape> shapes)
+        static internal void RotateLeft(IEnumerable<Shape> shapes, bool useAlternate = false)
         {
-            foreach (var shape in shapes) { shape.RotateLeft(); }
+            foreach (var shape in shapes) { shape.RotateLeft(useAlternate); }
         }
-        static internal void RotateRight(IEnumerable<Shape> shapes)
+        static internal void RotateRight(IEnumerable<Shape> shapes, bool useAlternate = false)
         {
-            foreach (var shape in shapes) { shape.RotateRight(); }
+            foreach (var shape in shapes) { shape.RotateRight(useAlternate); }
         }
         static internal void VerticalFlip(IEnumerable<Shape> shapes)
         {
@@ -236,22 +237,33 @@ namespace ModelGraph.Controls
             }
             SetCenter(shapes, new Vector2(cdx, cdy));
         }
+        internal static void SetDimension(IEnumerable<Shape> shapes, float pd)
+        {
+            var (min, max, dim) = GetDimension(shapes);
+            if (pd < min) pd = min;
+            if (pd > max) pd = max;
+            foreach (var shape in shapes)
+            {
+                shape.PD = (byte)pd;
+                shape.CreatePoints();
+            }
+        }
         #endregion
 
         #region GetSliders  ===================================================
-        internal static (float cent, float vert, float horz, float major, float minor, float ternary) GetSliders(IEnumerable<Shape> shapes)
+        internal static (float min, float max, float dim, float aux, float major, float minor, float cent, float vert, float horz) GetSliders(IEnumerable<Shape> shapes)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
             var (r1, r2, r3) = GetMaxRadius(shapes);
+            var (min, max, dim) = GetDimension(shapes);
 
             var horz = Limited(dx1, dx2);
             var vert = Limited(dy1, dy2);
             var cent = Larger(vert, horz);
             var major = Factor(r1);
             var minor = Factor(r2);
-            var ternary = Factor(r3);
-
-            return (cent, vert, horz, major, minor, ternary);
+            var aux = Factor(r3);
+            return (min, max, dim, aux, major, minor, cent, vert, horz);
 
             float Larger(float p, float q) => (p > q) ? p : q;
             float Limited(float a, float b) => Larger(Factor(a), Factor(b));
@@ -269,7 +281,7 @@ namespace ModelGraph.Controls
                 var v = dh / SIZE;
                 var s = (h > v) ? h : v;
 
-                DrawTarget(new Vector2(cdx, cdy) * scale + center);
+                DrawTarget(new Vector2(cdx, cdy) * scale + center, true);
 
                 if (shapes.Count() == 1  && shapes.First() is Polyline polyline)
                 {
@@ -280,11 +292,13 @@ namespace ModelGraph.Controls
                     }
                 }
 
-                void DrawTarget(Vector2 c)
+                void DrawTarget(Vector2 c, bool highlight = false)
                 {
                     targets.Add(c);
 
                     ds.DrawCircle(c, 7, Colors.White, 3);
+                    if  (highlight)
+                        ds.DrawCircle(c, 9, Colors.Red, 3);
                 }
             }
         }

@@ -11,7 +11,7 @@ namespace ModelGraph.Controls
         {
             R1 = 50;
             R2 = 30;
-            DXY = new List<(sbyte dx, sbyte dy)>() { (0, 0) };
+            DXY = new List<(float dx, float dy)>() { (0, 0) };
         }
         internal RoundedRectangle(int I, byte[] data) : base(I, data)
         {

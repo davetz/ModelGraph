@@ -12,7 +12,7 @@ namespace ModelGraph.Controls
 
         protected void InititializeDXY((sbyte dx, sbyte dy)[] values)
         {
-            DXY = new List<(sbyte dx, sbyte dy)>() { (0, 0) };
+            DXY = new List<(float dx, float dy)>() { (0, 0) };
             var (r1, r2) = values[1];
             R1 = (byte)r1;
             R2 = (byte)r2;
@@ -26,7 +26,7 @@ namespace ModelGraph.Controls
             }
             set
             {
-                DXY[0] = Round(value.X, value.Y);
+                DXY[0] = Limit(value.X, value.Y);
             }
         }
 

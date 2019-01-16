@@ -8,11 +8,11 @@ namespace ModelGraph.Controls
 {
     internal class Polyline : Shape
     {
-        private static (sbyte dx, sbyte dy)[] _points1 = { (-50, -0), (50, 0) };
-        private static (sbyte dx, sbyte dy)[] _points2 = { (-100, -0), (-75, -0), (-50, -40), (-25, 40), (-0, -40), (25, 40), (50, -40), (75, 0), (100, 0) };
-        private static (sbyte dx, sbyte dy)[] _points3 = { (-50, 50), (-50, -50), (50, -50), (50, 50) };
-        private static (sbyte dx, sbyte dy)[] _points4 = { (-50, -0), (50, 0) };
-        private static (sbyte dx, sbyte dy)[][] _tempates = { _points1, _points2, _points3, _points4 };
+        private static (float dx, float dy)[] _points1 = { (-50, -0), (50, 0) };
+        private static (float dx, float dy)[] _points2 = { (-100, -0), (-75, -0), (-50, -40), (-25, 40), (-0, -40), (25, 40), (50, -40), (75, 0), (100, 0) };
+        private static (float dx, float dy)[] _points3 = { (-50, 50), (-50, -50), (50, -50), (50, 50) };
+        private static (float dx, float dy)[] _points4 = { (-50, -0), (50, 0) };
+        private static (float dx, float dy)[][] _tempates = { _points1, _points2, _points3, _points4 };
 
         internal Polyline() { }
         internal Polyline(int index)
@@ -20,7 +20,7 @@ namespace ModelGraph.Controls
             index &= 3; // we only have four to choose from
             var points = _tempates[index];
             var N = points.Length;
-            DXY = new List<(sbyte dx, sbyte dy)>(N + 2);
+            DXY = new List<(float dx, float dy)>(N + 2);
             DXY.AddRange(points);
         }
         internal Polyline(int I, byte[] data) : base(I, data) { }
@@ -53,7 +53,7 @@ namespace ModelGraph.Controls
             if (index < DXY.Count)
             {
                 var (dx, dy) = DXY[index];
-                DXY[index] = Round(dx + ds.X, dy + ds.Y);
+                DXY[index] = Limit(dx + ds.X, dy + ds.Y);
             }
         }
 

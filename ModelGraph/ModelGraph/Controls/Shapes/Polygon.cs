@@ -5,16 +5,6 @@ using System.Numerics;
 
 namespace ModelGraph.Controls
 {
-    public enum PolyDimension : byte
-    {
-        D2 = 2,
-        D3 = 3,
-        D4 = 4,
-        D5 = 5,
-        D6 = 6,
-        D8 = 8,
-    }
-
     internal abstract class Polygon : Polyline
     {
         internal Polygon() { }
@@ -33,5 +23,7 @@ namespace ModelGraph.Controls
                     ds.DrawGeometry(geo, color, strokeWidth, StrokeStyle());
             }
         }
+
+        protected override (byte min, byte max) MinMaxDimension => (2, 8);
     }
 }

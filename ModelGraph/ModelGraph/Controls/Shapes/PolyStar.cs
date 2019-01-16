@@ -20,15 +20,15 @@ namespace ModelGraph.Controls
         protected override void CreatePoints()
         {
             var N = 2 * PD;
-            DXY = new List<(sbyte dx, sbyte dy)>(N);
+            DXY = new List<(float dx, float dy)>(N);
 
             var da = FullRadians / N;
             var a = RadiansStart;
             for (int i = 0; i < PD; i++)
             {
-                DXY.Add(Round((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
+                DXY.Add(Limit((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
                 a += da;
-                DXY.Add(Round((R2 * (float)Math.Cos(a), R2 * (float)Math.Sin(a))));
+                DXY.Add(Limit((R2 * (float)Math.Cos(a), R2 * (float)Math.Sin(a))));
                 a += da;
             }
         }

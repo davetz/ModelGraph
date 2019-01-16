@@ -43,13 +43,6 @@ namespace ModelGraph.Controls
                 SetProperty(ProertyId.DashStyle);
             }
         }
-        private void PolyDimension_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_changesEnabled)
-            {
-                SetProperty(ProertyId.PolyDimension);
-            }
-        }
         private void LineJoin_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_changesEnabled)
@@ -175,6 +168,27 @@ namespace ModelGraph.Controls
         private float _minorSize;
         #endregion
 
+        #region PolyDimension  ================================================
+        private void DimensionSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+            var value = (float)DimensionSlider.Value;
+            if (Changed(value, _polyDimension))
+            {
+                Shape.SetDimension(SelectedShapes, value);
+                SetSizeSliders();
+                EditorCanvas.Invalidate();
+            }
+        }
+        private void SetDemeinsonSize(float min, float max, float value)
+        {
+            _polyDimension = value;
+            DimensionSlider.Minimum = min;
+            DimensionSlider.Maximum = max;
+            DimensionSlider.Value = value;
+        }
+        private float _polyDimension;
+        #endregion
+
         #region TernarySize  ==================================================
         private void TernarySizeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
@@ -201,13 +215,14 @@ namespace ModelGraph.Controls
             {
                 _changesEnabled = false;
 
-                var (cent, vert, horz, major, minor, ternary) = Shape.GetSliders(SelectedShapes);
+                var (min, max, dim, aux, major, minor, cent, vert, horz) = Shape.GetSliders(SelectedShapes);
                 SetCentralSize(cent);
                 SetVerticalSize(vert);
                 SetHorizontalSize(horz);
                 SetMajorSize(major);
                 SetMinorSize(minor);
-                SetTernarySize(ternary);
+                SetTernarySize(aux);
+                SetDemeinsonSize(min, max, dim);
 
                 _changesEnabled = true;
             }
@@ -295,6 +310,19 @@ namespace ModelGraph.Controls
         }
         private void RotateLeftButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => RotateLeft();
         private void RotateRightButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => RotateRight();
+        private void RotateAngleButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            if (_use30degreeDelta)
+            {
+                _use30degreeDelta = false;
+                RotateAngleButton.Content = "22.5";
+            }
+            else
+            {
+                _use30degreeDelta = true;
+                RotateAngleButton.Content = "30.0";
+            }
+        }
         private void FlipVerticalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => FlipVertical();
         private void FlipHorizontalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => FlipHorizontal();
         #endregion

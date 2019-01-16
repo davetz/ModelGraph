@@ -18,13 +18,13 @@ namespace ModelGraph.Controls
 
         protected override void CreatePoints()
         {
-            DXY = new List<(sbyte dx, sbyte dy)>(PD);
+            DXY = new List<(float dx, float dy)>(PD);
 
             var da = FullRadians / PD;
             var a = RadiansStart;
             for (int i = 0; i < PD; i++)
             {
-                DXY.Add(Round((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
+                DXY.Add(Limit((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
                 a += da;
             }
         }

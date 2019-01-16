@@ -13,8 +13,6 @@ namespace ModelGraph.Controls
         When entering a new state the action vectors are reprogramed.
         This makes the programing problem staight forward and piecemeal.
         I am in this particular state, what are the permited event actions?
-        A side effect is a simpler event handle,
-        e.g. TryInvokeEventAction(eventEnum);
      */
         #region EventAction  ==================================================
         private enum PointerEvent
@@ -102,7 +100,7 @@ namespace ModelGraph.Controls
             for (int i = 0; i < N; i++)
             {
                 var delta = (rawPoint - _targetPoints[i]).LengthSquared();
-                if (delta > 100 || delta > bestDelta) continue;
+                if (delta > 200 || delta > bestDelta) continue;
                 bestDelta = delta;
                 index = i;
             }

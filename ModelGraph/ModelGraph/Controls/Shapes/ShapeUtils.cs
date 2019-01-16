@@ -11,10 +11,9 @@ namespace ModelGraph.Controls
     {
         static protected float PMIN = sbyte.MinValue;
         static protected float PMAX = sbyte.MaxValue;
-        static private int LIM1(float v) => (int)Math.Round(v);
-        static private sbyte LIM2(int v) => (v < sbyte.MinValue) ? sbyte.MinValue : (v > sbyte.MaxValue) ? sbyte.MaxValue : (sbyte)v;
-        static protected (sbyte dx, sbyte dy) Round(float x, float y) => (LIM2(LIM1(x)), LIM2(LIM1(y)));
-        static protected (sbyte dx, sbyte dy) Round((float x, float y) p) => Round(p.x, p.y);
+        static private float LIM(float v) => (v < PMIN) ? PMIN : (v > PMAX) ? PMAX : v;
+        static protected (float dx, float dy) Limit(float x, float y) => (LIM(x), LIM(y));
+        static protected (float dx, float dy) Limit((float x, float y) p) => Limit(p.x, p.y);
 
         #region GetMaxRadius  =================================================
         static private (byte r1, byte r2, byte r3) GetMaxRadius(IEnumerable<Shape> shapes)
@@ -28,6 +27,23 @@ namespace ModelGraph.Controls
                 if (shape.R3 > r3) r3 = shape.R3;
             }
             return (r1, r2, r3);
+        }
+        #endregion
+
+        #region GetMinMaxDimension  ===========================================
+        static private (byte min, byte max, byte dim) GetDimension(IEnumerable<Shape> shapes)
+        {
+            byte min = 0, max = 100, dim = 0;
+
+            foreach (var shape in shapes)
+            {
+                var pd = shape.PD;
+                var (d1, d2) = shape.MinMaxDimension;
+                if (d1 > min) min = d1;
+                if (d2 < max) max = d2;
+                dim = (pd < min) ? min : (pd > max) ? max : pd;
+            }
+            return (min, max, dim);
         }
         #endregion
 
@@ -55,29 +71,47 @@ namespace ModelGraph.Controls
 
         #region Rotation  =====================================================
         protected static float FullRadians = (float)(2 * Math.PI);
-        protected static float DeltaRadians = (float)(Math.PI / 8);
-        protected float RotateLeftRadians => -DeltaRadians;
-        protected float RotateRightRadians => DeltaRadians;
-        protected float RadiansDelta(int n) => (n & 0xF) * DeltaRadians;
-        protected float RadiansStart => RadiansDelta(A0);
+        protected static float DeltaRadians0 = (float)(Math.PI / 8);
+        protected static float DeltaRadians1 = (float)(Math.PI / 6);
+        protected float RotateLeftRadians0 => -DeltaRadians0;
+        protected float RotateRightRadians0 => DeltaRadians0;
+        protected float RotateLeftRadians1 => -DeltaRadians1;
+        protected float RotateRightRadians1 => DeltaRadians1;
+        protected float RadiansStart => (A0 % 16) * DeltaRadians0 + (A1 % 12) * DeltaRadians1;
 
         private void MoveCenter(float dx, float dy)
         {
             for (int i = 0; i < DXY.Count; i++)
             {
                 var (tx, ty) = DXY[i];
-                DXY[i] = Round(tx + dx, ty + dy);
+                DXY[i] = Limit(tx + dx, ty + dy);
             }
         }
-        private void RotateLeft()
+        private void RotateLeft(bool useAlternate = false)
         {
-            A0 = (byte)((A0 - 1) & 0xF);
-            TransformPoints(Matrix3x2.CreateRotation(RotateLeftRadians));
+            if (useAlternate)
+            {
+                A1 = (byte)((A1 - 1) & 0xF);
+                TransformPoints(Matrix3x2.CreateRotation(RotateLeftRadians1));
+            }
+            else
+            {
+                A0 = (byte)((A0 - 1) & 0xF);
+                TransformPoints(Matrix3x2.CreateRotation(RotateLeftRadians0));
+            }
         }
-        private void RotateRight()
+        private void RotateRight(bool useAlternate = false)
         {
-            A0 = (byte)((A0 + 1) & 0xF);
-            TransformPoints(Matrix3x2.CreateRotation(RotateRightRadians));
+            if (useAlternate)
+            {
+                A1 = (byte)((A1 - 1) & 0xF);
+                TransformPoints(Matrix3x2.CreateRotation(RotateRightRadians1));
+            }
+            else
+            {
+                A0 = (byte)((A0 - 1) & 0xF);
+                TransformPoints(Matrix3x2.CreateRotation(RotateRightRadians0));
+            }
         }
         #endregion
 
@@ -97,7 +131,7 @@ namespace ModelGraph.Controls
                 var (dx, dy) = DXY[i];
                 var p = new Vector2(dx, dy);
                 p = Vector2.Transform(p, m);
-                DXY[i] = Round(p.X, p.Y);
+                DXY[i] = Limit(p.X, p.Y);
             }
         }
         #endregion
