@@ -10,7 +10,7 @@ namespace ModelGraph.Controls
         internal Ellipes()
         {
             Radius1 = 50;
-            Radius2 = 75;
+            Radius2 = 25;
             DXY = new List<(float dx, float dy)>() { (0, 0) };
         }
         internal Ellipes(int I, byte[] data) : base(I, data)

@@ -81,7 +81,10 @@ namespace ModelGraph.Controls
 
                 using (var geo = CanvasGeometry.CreatePath(pb))
                 {
-                    ds.DrawGeometry(geo, color, strokeWidth, StrokeStyle());
+                    if (FillStroke == Fill_Stroke.Filled)
+                        ds.FillGeometry(geo, color);
+                    else
+                        ds.DrawGeometry(geo, color, strokeWidth, StrokeStyle());
                 }
             }
         }
