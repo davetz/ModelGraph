@@ -6,23 +6,9 @@ using System.Numerics;
 
 namespace ModelGraph.Controls
 {
-    internal class Polyline : Shape
+    internal abstract class Polyline : Shape
     {
-        private static (float dx, float dy)[] _points1 = { (-50, -0), (50, 0) };
-        private static (float dx, float dy)[] _points2 = { (-100, -0), (-75, -0), (-50, -40), (-25, 40), (-0, -40), (25, 40), (50, -40), (75, 0), (100, 0) };
-        private static (float dx, float dy)[] _points3 = { (-50, 50), (-50, -50), (50, -50), (50, 50) };
-        private static (float dx, float dy)[] _points4 = { (-50, -0), (50, 0) };
-        private static (float dx, float dy)[][] _tempates = { _points1, _points2, _points3, _points4 };
-
         internal Polyline() { }
-        internal Polyline(int index)
-        {
-            index &= 3; // we only have four to choose from
-            var points = _tempates[index];
-            var N = points.Length;
-            DXY = new List<(float dx, float dy)>(N + 2);
-            DXY.AddRange(points);
-        }
         internal Polyline(int I, byte[] data) : base(I, data) { }
 
         #region PrivateConstructor  ===========================================
@@ -37,6 +23,8 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+
+        #region Polyline Methods  =============================================
         internal Vector2[] GetDrawingPoints(Vector2 center, float scale)
         {
             var list = new List<Vector2>(DXY.Count);
@@ -56,6 +44,7 @@ namespace ModelGraph.Controls
                 DXY[index] = Limit(dx + ds.X, dy + ds.Y);
             }
         }
+        #endregion
 
         #region OverideAbstract  ==============================================
         protected override (float dx1, float dy1, float dx2, float dy2) GetExtent()
@@ -75,8 +64,6 @@ namespace ModelGraph.Controls
             }
             return (x1 == PMAX) ? (0, 0, 0, 0) : (x1, y1, x2, y2);
         }
-        internal override Shape Clone() => new Polyline(this);
-        internal override Shape Clone(Vector2 center) => new Polyline(this, center);
         protected override void Scale(Vector2 scale) => TransformPoints(Matrix3x2.CreateScale(scale)); 
         internal override void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth, Coloring coloring = Coloring.Normal)
         {
@@ -98,6 +85,7 @@ namespace ModelGraph.Controls
                 }
             }
         }
+        protected override (int min, int max) MinMaxDimension => (1, 18);
         #endregion
     }
 }

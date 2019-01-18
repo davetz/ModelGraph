@@ -124,6 +124,7 @@
       <DependentUpon>ModelTreeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ModelTree\ModelTreeUICache.cs" />
+    <Compile Include="Controls\Shapes\PolyPulse.cs" />
     <Compile Include="Controls\Shapes\PolySpline.cs" />
     <Compile Include="Controls\Shapes\Polyline.cs" />
     <Compile Include="Controls\Shapes\Central.cs" />

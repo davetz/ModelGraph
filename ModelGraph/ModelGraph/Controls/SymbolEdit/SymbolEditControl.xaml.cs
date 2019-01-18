@@ -27,7 +27,7 @@ namespace ModelGraph.Controls
     {
         private RootModel _rootModel;
         private List<Shape> SymbolShapes = new List<Shape>();
-        private List<Shape> PickerShapes = new List<Shape> { new Circle(), new Ellipes(), new RoundedRectangle(), new Rectangle(), new PolySide(), new PolyStar(), new PolyGear(), new Polyline(0), new Polyline(1), new Polyline(2), new PolySpline() };
+        private List<Shape> PickerShapes = new List<Shape> { new Circle(), new Ellipes(), new RoundedRectangle(), new Rectangle(), new PolySide(), new PolyStar(), new PolyGear(), new PolySpline() };
         private HashSet<Shape> SelectedShapes = new HashSet<Shape>();
         private static HashSet<Shape> CutCopyShapes = new HashSet<Shape>(); //cut/copy/clone shapes between two SymbolEditControls
 
@@ -208,12 +208,15 @@ namespace ModelGraph.Controls
             var center_0 = new Vector2(HW, HW);
             for (int i = 0; i < n; i++)
             {
-                var center = new Vector2(HW, (i * W) + HW);
+                var a = i * W;
+                var b = (i + 1) * W;
+                var center = new Vector2(HW, a + HW);
                 var shape = SymbolShapes[i];
                 var strokeWidth = shape.StrokeWidth;
                 if (SelectedShapes.Contains(shape)) Shape.HighLight(ds, W, i);
 
                 shape.Draw(canvas, ds, scale, center, strokeWidth);
+                ds.DrawLine(0, b, b, b, Colors.LightGray, 1);
             }
         }
         #endregion

@@ -14,9 +14,9 @@ namespace ModelGraph.Controls
     {
         internal PolySpline()
         {
-            R1 = 60;
-            R2 = 60;
-            PD = 6;
+            Radius1 = 60;
+            Radius2 = 60;
+            Dimension = 6;
             CreatePoints();
         }
         internal PolySpline(int I, byte[] data) : base(I, data) { }
@@ -37,18 +37,19 @@ namespace ModelGraph.Controls
         private enum PS { L1, L2, L3, L4}
         protected override void CreatePoints()
         {
-            if (PD > 18) PD = 18;
+            var D = Dimension;
+            var (r1, r2, f1) = GetRadius();
 
             var n = 0;
-            var N = 1 + PD * 2; // number of points per spline
+            var N = 1 + D * 2; // number of points per spline
             DXY = new List<(float dx, float dy)>(N);
-            float dx = -R1, dy = R2, adx, bdx, cdx;
+            float dx = -r1, dy = r2, adx, bdx, cdx;
            
-            var ps = (PD < 7) ? PS.L1 : (PD < 11) ? PS.L2 : (PD < 15) ? PS.L3 : PS.L4;
+            var ps = (D < 7) ? PS.L1 : (D < 11) ? PS.L2 : (D < 15) ? PS.L3 : PS.L4;
             switch (ps)
             {
                 case PS.L1:
-                    SetDelta(2 * R1 / 6);
+                    SetDelta(2 * r1 / 6);
 
                     if (AddLobe(adx, -dy)) break;  // 1
                     if (AddLobe(bdx, dy)) break;   // 2
@@ -56,7 +57,7 @@ namespace ModelGraph.Controls
                     break;
 
                 case PS.L2:
-                    SetDelta(2 * R1 / 9);
+                    SetDelta(2 * r1 / 9);
 
                     if (AddLobe(adx, -dy)) break;  // 1
                     if (AddLobe(bdx, dy)) break;   // 2
@@ -65,7 +66,7 @@ namespace ModelGraph.Controls
                     if (AddLobe(adx, -dy)) break;  // 5
                     break;
                 case PS.L3:
-                    SetDelta(2 * R1 / 12);
+                    SetDelta(2 * r1 / 12);
 
                     if (AddLobe(adx, -dy)) break;  // 1
                     if (AddLobe(bdx, dy)) break;   // 2
@@ -77,7 +78,7 @@ namespace ModelGraph.Controls
                     break;
 
                 case PS.L4:
-                    SetDelta(2 * R1 / 14);
+                    SetDelta(2 * r1 / 14);
 
                     if (AddLobe(adx, -dy)) break;  // 1
                     if (AddLobe(bdx, dy)) break;   // 2
@@ -120,13 +121,12 @@ namespace ModelGraph.Controls
         #region OverideAbstract  ==============================================
         internal override Shape Clone() => new PolySpline(this);
         internal override Shape Clone(Vector2 center) => new PolySpline(this, center);
-        protected override (byte min, byte max) MinMaxDimension => (1, 18);
+        protected override (int min, int max) MinMaxDimension => (1, 18);
 
         internal override void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth, Coloring coloring = Coloring.Normal)
         {
             var color = GetColor(coloring);
             var points = GetDrawingPoints(center, scale);
-            var (r1, r2, r3) = GetRadius(scale);
 
             using (var pb = new CanvasPathBuilder(ctl))
             {
@@ -147,10 +147,6 @@ namespace ModelGraph.Controls
                 }
             }
         }
-        private static float K1 = FullRadians / 4;
-        private static float K2 = FullRadians * 0.9f;
-        private static float K3 = FullRadians / 4;
-
         #endregion
     }
 }

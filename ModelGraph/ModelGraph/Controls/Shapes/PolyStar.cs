@@ -10,25 +10,26 @@ namespace ModelGraph.Controls
     {
         internal PolyStar()
         {
-            R1 = 50;
-            R2 = 20;
-            PD = 6;
+            Radius1 = 50;
+            Radius2 = 20;
+            Dimension = 6;
             CreatePoints();
         }
         internal PolyStar(int I, byte[] data) : base(I, data) { }
 
         protected override void CreatePoints()
         {
-            var N = 2 * PD;
+            var D = Dimension;
+            var N = 2 * D;
             DXY = new List<(float dx, float dy)>(N);
-
+            var (r1, r2, f1) = GetRadius();
             var da = FullRadians / N;
             var a = RadiansStart;
-            for (int i = 0; i < PD; i++)
+            for (int i = 0; i < D; i++)
             {
-                DXY.Add(Limit((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
+                DXY.Add(Limit((r1 * (float)Math.Cos(a), r1 * (float)Math.Sin(a))));
                 a += da;
-                DXY.Add(Limit((R2 * (float)Math.Cos(a), R2 * (float)Math.Sin(a))));
+                DXY.Add(Limit((r2 * (float)Math.Cos(a), r2 * (float)Math.Sin(a))));
                 a += da;
             }
         }

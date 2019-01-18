@@ -10,21 +10,23 @@ namespace ModelGraph.Controls
     {
         internal PolySide()
         {
-            R1 = R2 = 50;
-            PD = 3;
+            Radius1 = Radius2 = 50;
+            Dimension = 3;
             CreatePoints();
         }
         internal PolySide(int I, byte[] data) : base(I, data) { }
 
         protected override void CreatePoints()
         {
-            DXY = new List<(float dx, float dy)>(PD);
 
-            var da = FullRadians / PD;
+            var D = Dimension;
+            DXY = new List<(float dx, float dy)>(D);
+            var da = FullRadians / D;
+            var (r1, r2, f1) = GetRadius();
             var a = RadiansStart;
-            for (int i = 0; i < PD; i++)
+            for (int i = 0; i < D; i++)
             {
-                DXY.Add(Limit((R1 * (float)Math.Cos(a), R1 * (float)Math.Sin(a))));
+                DXY.Add(Limit((r1 * (float)Math.Cos(a), r1 * (float)Math.Sin(a))));
                 a += da;
             }
         }

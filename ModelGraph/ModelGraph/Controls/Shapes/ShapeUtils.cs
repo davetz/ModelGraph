@@ -24,16 +24,16 @@ namespace ModelGraph.Controls
             {
                 if (shape.R1 > r1) r1 = shape.R1;
                 if (shape.R2 > r2) r2 = shape.R2;
-                if (shape.R3 > r3) r3 = shape.R3;
+                if (shape.F1 > r3) r3 = shape.F1;
             }
             return (r1, r2, r3);
         }
         #endregion
 
         #region GetMinMaxDimension  ===========================================
-        static private (byte min, byte max, byte dim) GetDimension(IEnumerable<Shape> shapes)
+        static private (int min, int max, int dim) GetDimension(IEnumerable<Shape> shapes)
         {
-            byte min = 0, max = 100, dim = 0;
+            int min = 1, max = 100, dim = 0;
 
             foreach (var shape in shapes)
             {
@@ -70,14 +70,6 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Rotation  =====================================================
-        protected static float FullRadians = (float)(2 * Math.PI);
-        protected static float DeltaRadians0 = (float)(Math.PI / 8);
-        protected static float DeltaRadians1 = (float)(Math.PI / 6);
-        protected float RotateLeftRadians0 => -DeltaRadians0;
-        protected float RotateRightRadians0 => DeltaRadians0;
-        protected float RotateLeftRadians1 => -DeltaRadians1;
-        protected float RotateRightRadians1 => DeltaRadians1;
-        protected float RadiansStart => (A0 % 16) * DeltaRadians0 + (A1 % 12) * DeltaRadians1;
 
         private void MoveCenter(float dx, float dy)
         {
@@ -91,12 +83,12 @@ namespace ModelGraph.Controls
         {
             if (useAlternate)
             {
-                A1 = (byte)((A1 - 1) & 0xF);
+                RotateStartLeft1();
                 TransformPoints(Matrix3x2.CreateRotation(RotateLeftRadians1));
             }
             else
             {
-                A0 = (byte)((A0 - 1) & 0xF);
+                RotateStartLeft0();
                 TransformPoints(Matrix3x2.CreateRotation(RotateLeftRadians0));
             }
         }
@@ -104,12 +96,12 @@ namespace ModelGraph.Controls
         {
             if (useAlternate)
             {
-                A1 = (byte)((A1 - 1) & 0xF);
+                RotateStartRight1();
                 TransformPoints(Matrix3x2.CreateRotation(RotateRightRadians1));
             }
             else
             {
-                A0 = (byte)((A0 - 1) & 0xF);
+                RotateStartRight0();
                 TransformPoints(Matrix3x2.CreateRotation(RotateRightRadians0));
             }
         }

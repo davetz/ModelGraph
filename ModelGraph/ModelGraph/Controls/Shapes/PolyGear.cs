@@ -10,30 +10,31 @@ namespace ModelGraph.Controls
     {
         internal PolyGear()
         {
-            R1 = 50;
-            R2 = 20;
-            R3 = 10;
-            PD = 4;
-            A0 = 1;
+            Radius1 = 50;
+            Radius2 = 20;
+            AuxFactor = 50;
+            Dimension = 4;
             CreatePoints();
         }
         internal PolyGear(int I, byte[] data) : base(I, data) { }
 
         protected override void CreatePoints()
         {
-            var N = 3 * PD; //number of points
-            var M = 2 * PD; //number of angles
+            var D = Dimension;
+            var N = 3 * D; //number of points
+            var M = 2 * D; //number of angles
             DXY = new List<(float dx, float dy)>(N);
+            var (r1, r2, f1) = GetRadius();
 
             var da = FullRadians / M;
-            var ta = da * R3 / 200;
+            var ta = da * f1 / 200;
             var a = RadiansStart;
-            for (int i = 0; i < PD; i++)
+            for (int i = 0; i < D; i++)
             {
-                DXY.Add(Limit((R1 * (float)Math.Cos(a - ta), R1 * (float)Math.Sin(a - ta))));
-                DXY.Add(Limit((R1 * (float)Math.Cos(a + ta), R1 * (float)Math.Sin(a + ta))));
+                DXY.Add(Limit((r1 * (float)Math.Cos(a - ta), r1 * (float)Math.Sin(a - ta))));
+                DXY.Add(Limit((r1 * (float)Math.Cos(a + ta), r1 * (float)Math.Sin(a + ta))));
                 a += da;
-                DXY.Add(Limit((R2 * (float)Math.Cos(a), R2 * (float)Math.Sin(a))));
+                DXY.Add(Limit((r2 * (float)Math.Cos(a), r2 * (float)Math.Sin(a))));
                 a += da;
             }
         }

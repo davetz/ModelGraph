@@ -10,13 +10,6 @@ namespace ModelGraph.Controls
         internal Central() { }
         internal Central(int I, byte[] data) : base(I, data) { }
 
-        protected void InititializeDXY((sbyte dx, sbyte dy)[] values)
-        {
-            DXY = new List<(float dx, float dy)>() { (0, 0) };
-            var (r1, r2) = values[1];
-            R1 = (byte)r1;
-            R2 = (byte)r2;
-        }
         protected Vector2 Center
         {
             get
@@ -30,16 +23,25 @@ namespace ModelGraph.Controls
             }
         }
 
+        protected (Vector2 cp, float r1, float r2) GetCenterRadius(Vector2 center, float scale)
+        {
+            var (r1, r2, f1) = GetRadius(scale);
+            var (dx, dy) = DXY[0];
+            return (new Vector2(center.X + scale * dx, center.Y + scale * dy), r1, r2);
+        }
+
         #region OverideAbstract  ==============================================
         protected override (float dx1, float dy1, float dx2, float dy2) GetExtent()
         {
+            var r1 = Radius1;
+            var r2 = Radius2;
             var (dx, dy) = DXY[0];
-            return (dx - R1, dy - R2, dx + R1, dy + R2);
+            return (dx - r1, dy - r2, dx + r1, dy + r2);
         }
         protected override void Scale(Vector2 scale)
         {
-            R1 = (byte)(R1 * scale.X);
-            R2 = (byte)(R2 * scale.Y);
+            Radius1 *= scale.X;
+            Radius2 *= scale.Y;
         }
         #endregion
     }

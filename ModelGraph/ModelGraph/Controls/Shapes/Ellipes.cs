@@ -9,8 +9,8 @@ namespace ModelGraph.Controls
     {
         internal Ellipes()
         {
-            R1 = 50;
-            R2 = 75;
+            Radius1 = 50;
+            Radius2 = 75;
             DXY = new List<(float dx, float dy)>() { (0, 0) };
         }
         internal Ellipes(int I, byte[] data) : base(I, data)
@@ -36,12 +36,12 @@ namespace ModelGraph.Controls
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth, Coloring coloring = Coloring.Normal)
         {
             var color = GetColor(coloring);
-            var radius = Radius * scale;
+            var (cp, r1, r2) = GetCenterRadius(center, scale);
 
             if (FillStroke == Fill_Stroke.Filled)
-                ds.FillEllipse(Center * scale + center, radius.X, radius.Y, color);
+                ds.FillEllipse(cp, r1, r2, color);
             else
-                ds.DrawEllipse(Center * scale + center, radius.X, radius.Y, color, strokeWidth, StrokeStyle());
+                ds.DrawEllipse(cp, r1, r2, color, strokeWidth, StrokeStyle());
         }
         #endregion
     }

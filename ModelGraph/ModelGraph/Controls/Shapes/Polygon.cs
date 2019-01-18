@@ -24,6 +24,6 @@ namespace ModelGraph.Controls
             }
         }
 
-        protected override (byte min, byte max) MinMaxDimension => (2, 8);
+        protected override (int min, int max) MinMaxDimension => (2, 8);
     }
 }

@@ -267,11 +267,11 @@
                     <Grid x:Name="StrokeWidthGrid" Height="40">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="200"/>
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Text="Width"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1"  Width="300" x:Name="StrokeWidthSlider"
+                        <Slider Grid.Column="1"  Width="180" x:Name="StrokeWidthSlider"
                                 Style="{StaticResource PropertySliderStyle}"
                                 Value="{x:Bind ShapeStrokeWidth, Mode=TwoWay}"
                                 Minimum="1"
