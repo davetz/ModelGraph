@@ -16,9 +16,7 @@ namespace ModelGraph.Controls
             Dimension = 5;
             CreatePoints();
         }
-        internal PolyPulse(int I, byte[] data) : base(I, data)
-        {
-        }
+        internal PolyPulse(int I, byte[] data) : base(I, data) { }
 
         #region PrivateConstructor  ===========================================
         private PolyPulse(Shape shape)
@@ -30,7 +28,6 @@ namespace ModelGraph.Controls
             CopyData(shape);
         }
         #endregion
-
 
         #region CreatePoints  =================================================
         protected override void CreatePoints()
@@ -117,11 +114,11 @@ namespace ModelGraph.Controls
         static private int[] LAC = { 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 0, 0, 1, 1, 2, 2, }; //loop action index for given dimension 
         #endregion
 
-
         #region RequiredMethods  ==============================================
         internal override Shape Clone() =>new PolyPulse(this);
         internal override Shape Clone(Vector2 center) => new PolyPulse(this, center);
         protected override (int min, int max) MinMaxDimension => (1, 15);
+        internal override HasSlider Slider => HasSlider.Horz | HasSlider.Vert | HasSlider.Major | HasSlider.Minor | HasSlider.Aux | HasSlider.Dim;
         #endregion
     }
 }

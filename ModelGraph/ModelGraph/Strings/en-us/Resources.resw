@@ -2249,4 +2249,10 @@ The bulk of your modeling data work is best done in the custom tree and graph vi
   <data name="_001B" xml:space="preserve">
     <value>Select one or more shapes at a time</value>
   </data>
+  <data name="_002A" xml:space="preserve">
+    <value>Polyline controls are disabled, Click to enable</value>
+  </data>
+  <data name="_002B" xml:space="preserve">
+    <value>Polyline controls are enabled, Click to disable</value>
+  </data>
 </root>

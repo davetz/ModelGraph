@@ -65,6 +65,7 @@ namespace ModelGraph.Controls
         private void Initialize()
         {
             ToggleOneManyButton();
+            UnlockPolyline();
         }
         #endregion
 

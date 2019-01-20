@@ -1,5 +1,6 @@
 ﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -13,6 +14,18 @@ namespace ModelGraph.Controls
         internal Shape(int I, byte[] data) { ReadData(I, data); }
 
         #region Abstract/Virtual  =============================================
+        [Flags]
+        internal enum HasSlider
+        {
+            None = 0,
+            Dim = 0x01,
+            Aux = 0x02,
+            Horz = 0x04,
+            Vert = 0x08,
+            Major = 0x20,
+            Minor = 0x40,
+        }
+        internal virtual HasSlider Slider { get { return HasSlider.None; } }
         internal abstract Shape Clone();
         internal abstract Shape Clone(Vector2 Center);
 
@@ -169,6 +182,7 @@ namespace ModelGraph.Controls
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
             var (r1, r2, r3) = GetMaxRadius(shapes);
             var (min, max, dim) = GetDimension(shapes);
+            var slider = GetHasSlider(shapes);
 
             var horz = Limited(dx1, dx2);
             var vert = Limited(dy1, dy2);
@@ -176,6 +190,12 @@ namespace ModelGraph.Controls
             var major = Factor(r1);
             var minor = Factor(r2);
             var aux = Factor(r3);
+            if ((slider & HasSlider.Horz) == 0) horz = -1;
+            if ((slider & HasSlider.Vert) == 0) vert = -1;
+            if ((slider & HasSlider.Major) == 0) major = -1;
+            if ((slider & HasSlider.Minor) == 0) minor = -1;
+            if ((slider & HasSlider.Aux) == 0) aux = -1;
+            if ((slider & HasSlider.Dim) == 0) dim = -1;
             return (min, max, dim, aux, major, minor, cent, vert, horz);
 
             float Larger(float p, float q) => (p > q) ? p : q;

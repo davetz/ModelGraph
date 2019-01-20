@@ -5,8 +5,10 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace ModelGraph.Controls
 {
@@ -26,6 +28,7 @@ namespace ModelGraph.Controls
         {
             if (_changesEnabled)
             {
+                _strokeWidth = StrokeWidthSlider.Value;
                 SetProperty(ProertyId.StrokeWidth);
             }
         }
@@ -80,6 +83,7 @@ namespace ModelGraph.Controls
             if (Changed(value, _centralSize))
             {
                 Shape.ResizeCentral(SelectedShapes, value);
+                LockPolyline();
                 SetSizeSliders();
                 EditorCanvas.Invalidate();
             }
@@ -99,6 +103,7 @@ namespace ModelGraph.Controls
             if (Changed(value, _verticalSize))
             {
                 Shape.ResizeVertical(SelectedShapes, value);
+                LockPolyline();
                 SetSizeSliders();
                 EditorCanvas.Invalidate();
             }
@@ -118,6 +123,7 @@ namespace ModelGraph.Controls
             if (Changed(value, _horizontalSize))
             {
                 Shape.ResizeHorizontal(SelectedShapes, value);
+                LockPolyline();
                 SetSizeSliders();
                 EditorCanvas.Invalidate();
             }
@@ -217,12 +223,49 @@ namespace ModelGraph.Controls
 
                 var (min, max, dim, aux, major, minor, cent, vert, horz) = Shape.GetSliders(SelectedShapes);
                 SetCentralSize(cent);
-                SetVerticalSize(vert);
-                SetHorizontalSize(horz);
-                SetMajorSize(major);
-                SetMinorSize(minor);
-                SetTernarySize(aux);
-                SetDemeinsonSize(min, max, dim);
+                if (vert < 0)
+                    VerticalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                else
+                {
+                    SetVerticalSize(vert);
+                    VerticalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                }
+                if (horz < 0)
+                    HorizontalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                else
+                {
+                    SetHorizontalSize(horz);
+                    HorizontalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                }
+                if (major < 0)
+                    MajorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                else
+                {
+                    SetMajorSize(major);
+                    MajorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                }
+                if (minor < 0)
+                    MinorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                else
+                {
+                    SetMinorSize(minor);
+                    MinorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                }
+                if (aux < 0)
+                    TernarySizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                else
+                {
+                    SetTernarySize(aux);
+                    TernarySizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                }
+                if (dim < 0)
+                    DimensionSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                else
+                {
+                    SetDemeinsonSize(min, max, dim);
+                    DimensionSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                }
+
 
                 _changesEnabled = true;
             }
@@ -232,6 +275,36 @@ namespace ModelGraph.Controls
         #endregion
 
         #region LeftButtonClick  ==============================================
+        private void LockButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            if (IsPolylineLocked)
+                UnlockPolyline();
+            else
+                LockPolyline();
+        }
+        private void UnlockPolyline()
+        {
+            LockButton.Content = "\uE785";
+            LockButton.Background = (Brush)Resources["LockButtonUnlockedBrush"];
+            ToolTipService.SetToolTip(LockButton, "_002B".GetLocalized());
+            DimensionSlider.IsEnabled = true;
+            TernarySizeSlider.IsEnabled = true;
+            MajorSizeSlider.IsEnabled = true;
+            MinorSizeSlider.IsEnabled = true;
+            IsPolylineLocked = false;
+        }
+        private void LockPolyline()
+        {
+            LockButton.Content = "\uE72E";
+            LockButton.Background = (Brush)Resources["LockButtonLockedBrush"];
+            ToolTipService.SetToolTip(LockButton, "_002A".GetLocalized());
+            DimensionSlider.IsEnabled = false;
+            TernarySizeSlider.IsEnabled = false;
+            MajorSizeSlider.IsEnabled = false;
+            MinorSizeSlider.IsEnabled = false;
+            IsPolylineLocked = true;
+        }
+        private bool IsPolylineLocked = true;
         private void OneManyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             ToggleOneManyButton();

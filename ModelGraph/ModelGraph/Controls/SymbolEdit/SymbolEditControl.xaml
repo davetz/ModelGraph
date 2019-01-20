@@ -14,7 +14,16 @@
 
         <RotateTransform x:Key="Rotate90" Angle="90"  CenterX="8" CenterY="9"/>
         <ScaleTransform x:Key="FlipHorizontal" ScaleX="1" ScaleY="-1" CenterX="8" CenterY="10"/>
-
+        <SolidColorBrush x:Key="LockButtonLockedBrush" Color="LightPink"/>
+        <SolidColorBrush x:Key="LockButtonUnlockedBrush" Color="Transparent"/>
+        <Style x:Key="LockButtonStyle" TargetType="Button">
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Visibility" Value="Visible" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        </Style>
 
         <Style x:Key="OneManyButtonStyle" TargetType="Button">
             <Setter Property="IsTabStop" Value="False" />
@@ -273,7 +282,7 @@
                         <TextBlock Text="Width"  Style="{StaticResource PropertyLabelStyle}" />
                         <Slider Grid.Column="1"  Width="180" x:Name="StrokeWidthSlider"
                                 Style="{StaticResource PropertySliderStyle}"
-                                Value="{x:Bind ShapeStrokeWidth, Mode=TwoWay}"
+                                Value="{x:Bind ShapeStrokeWidth, Mode=OneWay}"
                                 Minimum="1"
                                 Maximum="20"
                                 ValueChanged="StrokeWidthSlider_ValueChanged" />
@@ -349,34 +358,36 @@
                 <StackPanel x:Name="PolygonPanel" Orientation="Horizontal">
                     <Grid Height="40" >
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
                             <ColumnDefinition Width="30"/>
-                            <ColumnDefinition Width="122"/>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="122"/>
+                            <ColumnDefinition Width="112"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="112"/>
                             <ColumnDefinition Width="54"/>
                             <ColumnDefinition Width="288"/>
                             <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="288"/>
                         </Grid.ColumnDefinitions>
 
+                        <Button Name="LockButton" Style="{StaticResource LockButtonStyle}" Click="LockButton_Click"/>
 
-                        <TextBlock Grid.Column="0" Text="Dim"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="1"  Width="100" x:Name="DimensionSlider"
+                        <TextBlock Grid.Column="1" Text="Dim"  Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="2"  Width="100" x:Name="DimensionSlider"
                                 Style="{StaticResource PropertySliderStyle}"
                                 ValueChanged="DimensionSlider_ValueChanged" />
 
-                        <TextBlock Grid.Column="2" Text="Aux"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="3"  Width="100" x:Name="TernarySizeSlider"
+                        <TextBlock Grid.Column="3" Text="Aux"  Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="4"  Width="100" x:Name="TernarySizeSlider"
                                 Style="{StaticResource PropertySliderStyle}"
                                 ValueChanged="TernarySizeSlider_ValueChanged" />
 
-                        <TextBlock Grid.Column="4" Text="Major"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="5"  Width="272" x:Name="MajorSizeSlider"
+                        <TextBlock Grid.Column="5" Text="Major"  Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="6"  Width="272" x:Name="MajorSizeSlider"
                                 Style="{StaticResource PropertySliderStyle}"
                                 ValueChanged="MajorSizeSlider_ValueChanged" />
 
-                        <TextBlock Grid.Column="6" Text="Minor"  Style="{StaticResource PropertyLabelStyle}" />
-                        <Slider Grid.Column="7"  Width="272" x:Name="MinorSizeSlider"
+                        <TextBlock Grid.Column="7" Text="Minor"  Style="{StaticResource PropertyLabelStyle}" />
+                        <Slider Grid.Column="8"  Width="272" x:Name="MinorSizeSlider"
                                 Style="{StaticResource PropertySliderStyle}"
                                 ValueChanged="MinorSizeSlider_ValueChanged" />
                     </Grid>

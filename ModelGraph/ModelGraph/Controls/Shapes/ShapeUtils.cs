@@ -30,6 +30,18 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        #region GetHasSlider  =================================================
+        static private HasSlider GetHasSlider(IEnumerable<Shape> shapes)
+        {
+            var slider = HasSlider.None;
+            foreach (var shape in shapes)
+            {
+                slider |= shape.Slider;
+            }
+            return slider;
+        }
+        #endregion
+
         #region GetMinMaxDimension  ===========================================
         static private (int min, int max, int dim) GetDimension(IEnumerable<Shape> shapes)
         {
