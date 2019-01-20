@@ -1,4 +1,5 @@
 ﻿using ModelGraph.Helpers;
+using ModelGraphSTD;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,29 @@ namespace ModelGraph.Controls
     {
 
         #region PropertyChanged  ==============================================
+
+        private void EditContactComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (EditContact == Edit_Contact.Edit)
+            {
+                SelectorCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                PickerCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                ContactGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                SelectorCanvas.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                PickerCanvas.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                PropertyGrid.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                ColorPickerGrid.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+            else
+            {
+                PropertyGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                ColorPickerGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                SelectorCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                PickerCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                ContactGrid.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+            EditorCanvas.Invalidate();
+        }
         private void ColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
         {
             if (_changesEnabled)
@@ -74,6 +98,127 @@ namespace ModelGraph.Controls
                 SetProperty(ProertyId.DashCap);
             }
         }
+
+
+        private void Contact_N_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_N.Visibility = (Contact_N == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_NE_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_NE.Visibility = (Contact_NE == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_NW_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_NW.Visibility = (Contact_NW== Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_NEC_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_NEC.Visibility = (Contact_NEC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_NWC_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_NWC.Visibility = (Contact_NWC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+
+        private void Contact_E_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_E.Visibility = (Contact_E == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_EN_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_EN.Visibility = (Contact_EN == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_ES_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_ES.Visibility = (Contact_ES == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+
+        private void Contact_W_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_W.Visibility = (Contact_W == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_WN_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_WN.Visibility = (Contact_WN == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_WS_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_WS.Visibility = (Contact_WS == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+
+        private void Contact_S_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_S.Visibility = (Contact_S == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_SE_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_SE.Visibility = (Contact_SE == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_SW_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_SW.Visibility = (Contact_SW == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_SEC_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_SEC.Visibility = (Contact_SEC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+        private void Contact_SWC_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ContactSizeSlider_SWC.Visibility = (Contact_SWC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+        }
+
+        private void ContactSizeSlider_N_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_NE_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_NW_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_NEC_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_NWC_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+
+        private void ContactSizeSlider_E_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_EN_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_ES_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+
+        private void ContactSizeSlider_W_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_WN_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_WS_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_S_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_SE_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_SW_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_SEC_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+        private void ContactSizeSlider_SWC_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+        }
+
         #endregion
 
         #region CentralSize  ==================================================
@@ -217,58 +362,61 @@ namespace ModelGraph.Controls
         #region SetSizeSliders  ===============================================
         private void SetSizeSliders()
         {
-            if (SelectedShapes.Count > 0)
+            _changesEnabled = false;
+
+            var (locked, min, max, dim, aux, major, minor, cent, vert, horz) = Shape.GetSliders(SelectedShapes);
+
+            if (cent < 0)
+                CentralSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            else
             {
-                _changesEnabled = false;
-
-                var (min, max, dim, aux, major, minor, cent, vert, horz) = Shape.GetSliders(SelectedShapes);
                 SetCentralSize(cent);
-                if (vert < 0)
-                    VerticalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                else
-                {
-                    SetVerticalSize(vert);
-                    VerticalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                }
-                if (horz < 0)
-                    HorizontalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                else
-                {
-                    SetHorizontalSize(horz);
-                    HorizontalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                }
-                if (major < 0)
-                    MajorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                else
-                {
-                    SetMajorSize(major);
-                    MajorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                }
-                if (minor < 0)
-                    MinorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                else
-                {
-                    SetMinorSize(minor);
-                    MinorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                }
-                if (aux < 0)
-                    TernarySizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                else
-                {
-                    SetTernarySize(aux);
-                    TernarySizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                }
-                if (dim < 0)
-                    DimensionSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                else
-                {
-                    SetDemeinsonSize(min, max, dim);
-                    DimensionSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                }
-
-
-                _changesEnabled = true;
+                CentralSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
+            if (vert < 0)
+                VerticalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            else
+            {
+                SetVerticalSize(vert);
+                VerticalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+            if (horz < 0)
+                HorizontalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            else
+            {
+                SetHorizontalSize(horz);
+                HorizontalSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+            if (major < 0)
+                MajorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            else
+            {
+                SetMajorSize(major);
+                MajorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+            if (minor < 0)
+                MinorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            else
+            {
+                SetMinorSize(minor);
+                MinorSizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+            if (aux < 0)
+                TernarySizeSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            else
+            {
+                SetTernarySize(aux);
+                TernarySizeSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+            if (dim < 0)
+                DimensionSlider.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            else
+            {
+                SetDemeinsonSize(min, max, dim);
+                DimensionSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+            CheckPolylineLocked(locked);
+            _changesEnabled = true;
         }
         private bool Changed(float v1, float v2) => _changesEnabled && v1 != v2;
         bool _changesEnabled;
@@ -282,8 +430,20 @@ namespace ModelGraph.Controls
             else
                 LockPolyline();
         }
+        private void CheckPolylineLocked(bool isLocked)
+        {
+            if (IsPolylineLocked)
+            {
+                if (!isLocked) UnlockPolyline();
+            }
+            else
+            {
+                if (isLocked) LockPolyline();
+            }
+        }
         private void UnlockPolyline()
         {
+            Shape.LockSliders(SelectedShapes, false);
             LockButton.Content = "\uE785";
             LockButton.Background = (Brush)Resources["LockButtonUnlockedBrush"];
             ToolTipService.SetToolTip(LockButton, "_002B".GetLocalized());
@@ -295,6 +455,7 @@ namespace ModelGraph.Controls
         }
         private void LockPolyline()
         {
+            Shape.LockSliders(SelectedShapes, true);
             LockButton.Content = "\uE72E";
             LockButton.Background = (Brush)Resources["LockButtonLockedBrush"];
             ToolTipService.SetToolTip(LockButton, "_002A".GetLocalized());

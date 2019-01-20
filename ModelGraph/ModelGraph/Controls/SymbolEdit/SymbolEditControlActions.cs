@@ -123,6 +123,7 @@ namespace ModelGraph.Controls
             {
                 PickerShape = null;
                 SelectedShapes.Clear();
+                SetSizeSliders();
 
                 PickerCanvas.Invalidate();
                 EditorCanvas.Invalidate();
@@ -193,7 +194,6 @@ namespace ModelGraph.Controls
         {
             if (SetEditorState(EditorState.ShapesAreSelected)) //enable hit test
             {
-                SetSizeSliders();
                 SetEventAction(PointerEvent.Begin, TargetPointerDown);
                 SetEventAction(PointerEvent.Hover, TargetPointerHover);
 
@@ -280,11 +280,17 @@ namespace ModelGraph.Controls
         private void DragCenterPoint()
         {
             Shape.MoveCenter(SelectedShapes, ShapeDelta);
+            Shape.LockSliders(SelectedShapes, true);
+            SetSizeSliders();
+
             EditorCanvas.Invalidate();
         }
         private void DragLinePoint()
         {
             _polylineTarget.MovePoint(_linePointIndex, ShapeDelta);
+            Shape.LockSliders(SelectedShapes, true);
+            SetSizeSliders();
+
             EditorCanvas.Invalidate();
         }
         private void EndTargetDrag()
@@ -318,12 +324,14 @@ namespace ModelGraph.Controls
                 SetIdleOnVoid();
 
             PickerShape = null;
+            SetSizeSliders();
             PickerCanvas.Invalidate();
             EditorCanvas.Invalidate();
         }
         private void ShapeSelectorMiss()
         {
             SelectedShapes.Clear();
+            SetSizeSliders();
             SelectorCanvas.Invalidate();
             SetIdleOnVoid();
         }

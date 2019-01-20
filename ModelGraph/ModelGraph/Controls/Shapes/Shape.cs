@@ -25,7 +25,7 @@ namespace ModelGraph.Controls
             Major = 0x20,
             Minor = 0x40,
         }
-        internal virtual HasSlider Slider { get { return HasSlider.None; } }
+        internal abstract HasSlider Sliders { get; }
         internal abstract Shape Clone();
         internal abstract Shape Clone(Vector2 Center);
 
@@ -177,30 +177,48 @@ namespace ModelGraph.Controls
         #endregion
 
         #region GetSliders  ===================================================
-        internal static (float min, float max, float dim, float aux, float major, float minor, float cent, float vert, float horz) GetSliders(IEnumerable<Shape> shapes)
+        internal static (bool locked, float min, float max, float dim, float aux, float major, float minor, float cent, float vert, float horz) GetSliders(IEnumerable<Shape> shapes)
         {
-            var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
-            var (r1, r2, r3) = GetMaxRadius(shapes);
-            var (min, max, dim) = GetDimension(shapes);
-            var slider = GetHasSlider(shapes);
+            if (shapes.Count() > 0)
+            {
+                var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+                var (r1, r2, r3) = GetMaxRadius(shapes);
+                var (min, max, dim) = GetDimension(shapes);
+                var (locked, slider) = GetHasSlider(shapes);
 
-            var horz = Limited(dx1, dx2);
-            var vert = Limited(dy1, dy2);
-            var cent = Larger(vert, horz);
-            var major = Factor(r1);
-            var minor = Factor(r2);
-            var aux = Factor(r3);
-            if ((slider & HasSlider.Horz) == 0) horz = -1;
-            if ((slider & HasSlider.Vert) == 0) vert = -1;
-            if ((slider & HasSlider.Major) == 0) major = -1;
-            if ((slider & HasSlider.Minor) == 0) minor = -1;
-            if ((slider & HasSlider.Aux) == 0) aux = -1;
-            if ((slider & HasSlider.Dim) == 0) dim = -1;
-            return (min, max, dim, aux, major, minor, cent, vert, horz);
+                var horz = Limited(dx1, dx2);
+                var vert = Limited(dy1, dy2);
+                var cent = Larger(vert, horz);
+                var major = Factor(r1);
+                var minor = Factor(r2);
+                var aux = Factor(r3);
+                if ((slider & HasSlider.Horz) == 0) horz = -1;
+                if ((slider & HasSlider.Vert) == 0) vert = -1;
+                if ((slider & HasSlider.Major) == 0) major = -1;
+                if ((slider & HasSlider.Minor) == 0) minor = -1;
+                if ((slider & HasSlider.Aux) == 0) aux = -1;
+                if ((slider & HasSlider.Dim) == 0) dim = -1;
+                return (locked, min, max, dim, aux, major, minor, cent, vert, horz);
+            }
+            else
+            {
+                return (false, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+            }
+
 
             float Larger(float p, float q) => (p > q) ? p : q;
             float Limited(float a, float b) => Larger(Factor(a), Factor(b));
             float Factor(float v) => (float)System.Math.Round(100 * ((v < 0) ?  ((v < PMIN) ? 1 : v / PMIN) : ((v > PMAX) ? 1 : v / PMAX)));
+        }
+        #endregion
+
+        #region LockSliders  ==================================================
+        internal static void LockSliders(IEnumerable<Shape> shapes, bool isLocked)
+        {
+            foreach (var shape in shapes)
+            {
+                shape.IsLocked = isLocked;
+            }
         }
         #endregion
 

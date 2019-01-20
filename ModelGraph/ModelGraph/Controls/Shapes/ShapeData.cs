@@ -8,7 +8,7 @@ namespace ModelGraph.Controls
 {
     internal abstract partial class Shape
     {
-        private const int HeaderPointCountIndex = 15;
+        private const int PointCountIndex = 19;
         private byte ST;      // shapte type code
         private byte A = 0xFF; // of color(A, R, G, B)
         private byte R = 0xFF; // of color(A, R, G, B)
@@ -30,7 +30,7 @@ namespace ModelGraph.Controls
         private byte A1;      // rotation index for 30.0 degree delta
         protected List<(float dx, float dy)> DXY;  // one or more defined points
 
-        #region Properties  ===================================================
+       #region Properties  ===================================================
 
         #region Color  ========================================================
         internal enum Coloring { Gray, Light, Normal };
@@ -135,9 +135,13 @@ namespace ModelGraph.Controls
         protected void RotateStartRight1() { A1 = (byte)((A1 + 1) % 12); }
         #endregion
 
+        #region Sliders  ======================================================
+        internal bool IsLocked { get { return PL != 0; } set { PL = (byte)(value ? 1 : 0); } }
         internal double AuxSlider { get { return F1; } set { AuxFactor = (float)value; CreatePoints(); } }
         internal double MajorSlider { get { return R2; } set { Radius2 = (float)value; CreatePoints(); } }
         internal double MinorSlider { get { return R1; } set { Radius1 = (float)value; CreatePoints(); } }
+        #endregion
+    
         #endregion
 
         #region ShapeType  ====================================================
@@ -164,12 +168,12 @@ namespace ModelGraph.Controls
             var M = data.Length;
 
             var I = 0;
-            while(I + HeaderPointCountIndex < M)
+            while(I + PointCountIndex < M)
             {
                 var st = data[I];
                 if (st <= (byte)ShapeType.RoundedRectangle)
                 {
-                    var pc = data[I + HeaderPointCountIndex];
+                    var pc = data[I + PointCountIndex];
 
                     switch ((ShapeType)st)
                     {
@@ -205,7 +209,7 @@ namespace ModelGraph.Controls
                             shapes.Add(new RoundedRectangle(I, data));
                             break;
                     }
-                    I += pc + HeaderPointCountIndex;
+                    I += pc + PointCountIndex;
                 }
                 else return; // stop and disregard invalid shape data
             }

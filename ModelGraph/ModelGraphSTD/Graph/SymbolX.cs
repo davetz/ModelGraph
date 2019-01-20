@@ -13,6 +13,8 @@ namespace ModelGraphSTD
         public byte[] Data;
         public Attach Attach;
         public Graphic Graphic;
+        public List<(Contact contact, byte size)> ContactSizeList = new List<(Contact, byte size)>(4);
+
         public Contact NorthContact;
         public Contact WestContact;
         public Contact EastContact;

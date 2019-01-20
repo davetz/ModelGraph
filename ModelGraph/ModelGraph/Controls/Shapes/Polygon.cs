@@ -25,6 +25,6 @@ namespace ModelGraph.Controls
         }
 
         protected override (int min, int max) MinMaxDimension => (2, 8);
-        internal override HasSlider Slider => HasSlider.Major | HasSlider.Minor | HasSlider.Dim;
+        internal override HasSlider Sliders => HasSlider.Major | HasSlider.Minor | HasSlider.Dim;
     }
 }

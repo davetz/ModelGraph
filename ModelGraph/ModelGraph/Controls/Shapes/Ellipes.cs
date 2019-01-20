@@ -43,7 +43,7 @@ namespace ModelGraph.Controls
             else
                 ds.DrawEllipse(cp, r1, r2, color, strokeWidth, StrokeStyle());
         }
-        internal override HasSlider Slider => HasSlider.Vert | HasSlider.Horz;
+        internal override HasSlider Sliders => HasSlider.Vert | HasSlider.Horz;
         #endregion
     }
 }

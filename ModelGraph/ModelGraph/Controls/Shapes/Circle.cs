@@ -49,6 +49,7 @@ namespace ModelGraph.Controls
             else
                 Radius1 = Radius2 = (Radius1 * scale.X);
         }
+        internal override HasSlider Sliders => HasSlider.None;
         #endregion
     }
 }

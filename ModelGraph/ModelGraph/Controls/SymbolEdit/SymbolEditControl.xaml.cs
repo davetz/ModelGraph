@@ -21,6 +21,11 @@ namespace ModelGraph.Controls
         Stroke = 0,
         Filled = 1
     }
+    public enum Edit_Contact
+    {
+        Edit,
+        Contacts
+    }
     #endregion
 
     public sealed partial class SymbolEditControl : Page, IPageControl, IModelPageControl, INotifyPropertyChanged
@@ -37,7 +42,7 @@ namespace ModelGraph.Controls
         private const float ShapeSize = 256; //max width, height of shape
         private const float EditSize = 512;  //width, height of shape in the editor
 
-        private const float EditMargin = 24; //size of empty space arround the shape editor 
+        private const float EditMargin = 32; //size of empty space arround the shape editor 
         private const float EditLimit = (EditSize + EditMargin) / 2; // delta to center of the margin area
         private const float EDITCenter = EditMargin + EditSize / 2; //center of editor canvas
         private static Vector2 Center = new Vector2(EDITCenter);
@@ -66,6 +71,7 @@ namespace ModelGraph.Controls
         {
             ToggleOneManyButton();
             UnlockPolyline();
+            SetSizeSliders();
         }
         #endregion
 
@@ -146,6 +152,8 @@ namespace ModelGraph.Controls
         public List<CanvasCapStyle> CapStyleList { get { return GetEnumAsList<CanvasCapStyle>(); } }
         public List<CanvasLineJoin> LineJoinList { get { return GetEnumAsList<CanvasLineJoin>(); } }
         public List<Fill_Stroke> FillStrokeList { get { return GetEnumAsList<Fill_Stroke>(); } }
+        public List<Edit_Contact> EditContactList { get { return GetEnumAsList<Edit_Contact>(); } }
+        public List<Contact> ContactList { get { return GetEnumAsList<Contact>(); } }
         #endregion
 
 
@@ -233,31 +241,40 @@ namespace ModelGraph.Controls
             var scale = EditSize / ShapeSize;
             DrawEditorBackgroundGrid(ds);
 
-            if (SelectedShapes.Count > 0)
+            if (EditContact == Edit_Contact.Contacts)
             {
                 foreach (var shape in SymbolShapes)
                 {
-                    var coloring = SelectedShapes.Contains(shape) ? Shape.Coloring.Light : Shape.Coloring.Gray;
                     var strokeWidth = shape.StrokeWidth * scale * 5;
-                    shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, coloring);
+                    shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, Shape.Coloring.Light);
                 }
-
-                _polylineTarget = SelectedShapes.First() as Polyline;
-                _targetPoints.Clear();
-                 Shape.DrawTargets(SelectedShapes, _targetPoints, ds, scale, Center);
             }
             else
             {
-                foreach (var shape in SymbolShapes)
+                if (SelectedShapes.Count > 0)
                 {
-                    var strokeWidth = shape.StrokeWidth * scale * 5;
-                    shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, Shape.Coloring.Normal);
+                    foreach (var shape in SymbolShapes)
+                    {
+                        var coloring = SelectedShapes.Contains(shape) ? Shape.Coloring.Light : Shape.Coloring.Gray;
+                        var strokeWidth = shape.StrokeWidth * scale * 5;
+                        shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, coloring);
+                    }
+
+                    _polylineTarget = SelectedShapes.First() as Polyline;
+                    _targetPoints.Clear();
+                    Shape.DrawTargets(SelectedShapes, _targetPoints, ds, scale, Center);
                 }
-
+                else
+                {
+                    foreach (var shape in SymbolShapes)
+                    {
+                        var strokeWidth = shape.StrokeWidth * scale * 5;
+                        shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, Shape.Coloring.Normal);
+                    }
+                }
+                SymbolCanvas.Invalidate();
+                SelectorCanvas.Invalidate();
             }
-
-            SymbolCanvas.Invalidate();
-            SelectorCanvas.Invalidate();
         }
         private Polyline _polylineTarget;
         private List<Vector2> _targetPoints = new List<Vector2>();
@@ -274,9 +291,9 @@ namespace ModelGraph.Controls
             var color3 = Color.FromArgb(0x80, 0xff, 0xff, 0x00);
             var color4 = Color.FromArgb(0x40, 0xff, 0xff, 0xff);
 
-            var a = EditMargin;
-            var b = a + EditSize;
-            var c = EDITCenter;
+            var a = EditMargin;   //north or west axis line
+            var b = a + EditSize; //south or east axis line
+            var c = EDITCenter;   //center axis line
             var r = EditSize / 2;
 
             var d = r * Math.Sin(Math.PI / 8);
@@ -313,16 +330,36 @@ namespace ModelGraph.Controls
             var xC = c - 6;
             var yN = -2;
             var yS = b - 3;
+            var xe = b - _workAxis - 10;
+            var xw = a + _workAxis - 10;
+            var xec = b - 10;
+            var xwc = a - 16;
+            ds.DrawText("nec", xec, yN, color3);
+            ds.DrawText("ne", xe, yN, color3);
             ds.DrawText("N", xC, yN, color1);
+            ds.DrawText("nw", xw, yN, color3);
+            ds.DrawText("nwc", xwc, yN, color3);
+
+            ds.DrawText("sec", xec, yS, color3);
+            ds.DrawText("se", xe, yS, color3);
             ds.DrawText("S", xC, yS, color1);
+            ds.DrawText("sw", xw, yS, color3);
+            ds.DrawText("swc", xwc, yS, color3);
+
 
             var xE = b + 3;
-            var xW = 2;
+            var xW = 8;
             var yC = c - 14;
-            ds.DrawText("E", xE, yC, color1);
-            ds.DrawText("W", xW, yC, color1);
+            var yn = a + _workAxis - 14;
+            var ys = b - _workAxis - 14;
 
-            ds.DrawText("(keep it simple)", a, yN, Colors.LightPink);
+            ds.DrawText("en", xE, yn, color3);
+            ds.DrawText("E", xE, yC, color1);
+            ds.DrawText("es", xE, ys, color3);
+
+            ds.DrawText("wn", xW - 4, yn, color3);
+            ds.DrawText("W", xW, yC, color1);
+            ds.DrawText("ws", xW - 4, ys, color3);
         }
         #endregion
 
@@ -447,7 +484,10 @@ namespace ModelGraph.Controls
         private CanvasLineJoin _lineJoin = CanvasLineJoin.Round;
 
         public Fill_Stroke ShapeFillStroke { get { return _fillStroke; } set { Set(ref _fillStroke, value); } }
-        public Fill_Stroke _fillStroke = Fill_Stroke.Stroke;
+        private Fill_Stroke _fillStroke = Fill_Stroke.Stroke;
+
+        public Edit_Contact EditContact{ get { return _editContact; } set { Set(ref _editContact, value); } }
+        private Edit_Contact _editContact = Edit_Contact.Edit;
 
         public Color ShapeColor { get { return _shapeColor; } set { Set(ref _shapeColor, value); } }
         private Color _shapeColor = Color.FromArgb(0xff, 0xcd, 0xdf, 0xff);
@@ -455,30 +495,78 @@ namespace ModelGraph.Controls
         public double ShapeStrokeWidth { get { return _strokeWidth; } set { Set(ref _strokeWidth, value); } }
         public double _strokeWidth = 1;
 
-        public double EastContactSize { get { return _eastContactSize; } set { Set(ref _eastContactSize, value); } }
-        public double _eastContactSize;
 
-        public double WestContactSize { get { return _westContactSize; } set { Set(ref _westContactSize, value); } }
-        public double _westContactSize;
+        public Contact Contact_N { get { return _contact_N; } set { Set(ref _contact_N, value); } }
+        private Contact _contact_N = Contact.None;
+        public Contact Contact_NE { get { return _contact_NE; } set { Set(ref _contact_NE, value); } }
+        private Contact _contact_NE = Contact.None;
+        public Contact Contact_NW { get { return _contact_NW; } set { Set(ref _contact_NW, value); } }
+        private Contact _contact_NW = Contact.None;
+        public Contact Contact_NEC { get { return _contact_NEC; } set { Set(ref _contact_NEC, value); } }
+        private Contact _contact_NEC = Contact.None;
+        public Contact Contact_NWC { get { return _contact_NWC; } set { Set(ref _contact_NWC, value); } }
+        private Contact _contact_NWC = Contact.None;
 
-        public double NorthContactSize { get { return _northContactSize; } set { Set(ref _northContactSize, value); } }
-        public double _northContactSize;
+        public Contact Contact_E { get { return _contact_E; } set { Set(ref _contact_E, value); } }
+        private Contact _contact_E = Contact.Any;
+        public Contact Contact_EN { get { return _contact_EN; } set { Set(ref _contact_EN, value); } }
+        private Contact _contact_EN = Contact.None;
+        public Contact Contact_ES { get { return _contact_ES; } set { Set(ref _contact_ES, value); } }
+        private Contact _contact_ES = Contact.None;
 
-        public double SouthContactSize { get { return _southContactSize; } set { Set(ref _southContactSize, value); } }
-        public double _southContactSize;
+        public Contact Contact_W { get { return _contact_W; } set { Set(ref _contact_W, value); } }
+        private Contact _contact_W = Contact.One;
+        public Contact Contact_WN { get { return _contact_WN; } set { Set(ref _contact_WN, value); } }
+        private Contact _contact_WN = Contact.None;
+        public Contact Contact_WS { get { return _contact_WS; } set { Set(ref _contact_WS, value); } }
+        private Contact _contact_WS = Contact.None;
 
-        public double NorthEastContactSize { get { return _northastContactSize; } set { Set(ref _northastContactSize, value); } }
-        public double _northastContactSize;
+        public Contact Contact_S { get { return _contact_S; } set { Set(ref _contact_S, value); } }
+        private Contact _contact_S = Contact.None;
+        public Contact Contact_SE { get { return _contact_SE; } set { Set(ref _contact_SE, value); } }
+        private Contact _contact_SE = Contact.None;
+        public Contact Contact_SW { get { return _contact_SW; } set { Set(ref _contact_SW, value); } }
+        private Contact _contact_SW = Contact.None;
+        public Contact Contact_SEC { get { return _contact_SEC; } set { Set(ref _contact_SEC, value); } }
+        private Contact _contact_SEC = Contact.None;
+        public Contact Contact_SWC { get { return _contact_SWC; } set { Set(ref _contact_SWC, value); } }
+        private Contact _contact_SWC = Contact.None;
 
-        public double NorthWestContactSize { get { return _northWestContactSize; } set { Set(ref _northWestContactSize, value); } }
-        public double _northWestContactSize;
+        public double ContactSize_N { get { return _contactSize_N; } set { Set(ref _contactSize_N, value); } }
+        public double _contactSize_N;
+        public double ContactSize_NE { get { return _contactSize_NE; } set { Set(ref _contactSize_NE, value); } }
+        public double _contactSize_NE;
+        public double ContactSize_NW { get { return _contactSize_NW; } set { Set(ref _contactSize_NW, value); } }
+        public double _contactSize_NW;
+        public double ContactSize_NEC { get { return _contactSize_NEC; } set { Set(ref _contactSize_NEC, value); } }
+        public double _contactSize_NEC;
+        public double ContactSize_NWC { get { return _contactSize_NWC; } set { Set(ref _contactSize_NWC, value); } }
+        public double _contactSize_NWC;
 
-        public double SouthEastContactSize { get { return _southEastContactSize; } set { Set(ref _southEastContactSize, value); } }
-        public double _southEastContactSize;
+        public double ContactSize_E { get { return _contactSize_E; } set { Set(ref _contactSize_E, value); } }
+        public double _contactSize_E;
+        public double ContactSize_EN { get { return _contactSize_EN; } set { Set(ref _contactSize_EN, value); } }
+        public double _contactSize_EN;
+        public double ContactSize_ES { get { return _contactSize_ES; } set { Set(ref _contactSize_ES, value); } }
+        public double _contactSize_ES;
 
-        public double SouthWestContactSize { get { return _southWestContactSize; } set { Set(ref _southWestContactSize, value); } }
-        public double _southWestContactSize;
+        public double ContactSize_W { get { return _contactSize_W; } set { Set(ref _contactSize_E, value); } }
+        public double _contactSize_W;
+        public double ContactSize_WN { get { return _contactSize_WN; } set { Set(ref _contactSize_WN, value); } }
+        public double _contactSize_WN;
+        public double ContactSize_WS { get { return _contactSize_WS; } set { Set(ref _contactSize_WS, value); } }
+        public double _contactSize_WS;
+
+        public double ContactSize_S { get { return _contactSize_S; } set { Set(ref _contactSize_S, value); } }
+        public double _contactSize_S;
+        public double ContactSize_SE { get { return _contactSize_SE; } set { Set(ref _contactSize_SE, value); } }
+        public double _contactSize_SE;
+        public double ContactSize_SW { get { return _contactSize_SW; } set { Set(ref _contactSize_SW, value); } }
+        public double _contactSize_SW;
+        public double ContactSize_SEC { get { return _contactSize_SEC; } set { Set(ref _contactSize_SEC, value); } }
+        public double _contactSize_SEC;
+        public double ContactSize_SWC { get { return _contactSize_SWC; } set { Set(ref _contactSize_SWC, value); } }
+        public double _contactSize_SWC;
         #endregion
-
     }
 }

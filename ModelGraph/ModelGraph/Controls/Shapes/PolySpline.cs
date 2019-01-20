@@ -143,7 +143,7 @@ namespace ModelGraph.Controls
                 }
             }
         }
-        internal override HasSlider Slider => HasSlider.Horz | HasSlider.Vert | HasSlider.Minor | HasSlider.Major | HasSlider.Dim;
+        internal override HasSlider Sliders => HasSlider.Horz | HasSlider.Vert | HasSlider.Minor | HasSlider.Major | HasSlider.Dim;
         #endregion
     }
 }

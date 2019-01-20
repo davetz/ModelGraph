@@ -46,7 +46,7 @@ namespace ModelGraph.Controls
             else
                 ds.DrawRoundedRectangle(min.X, min.Y, len.X, len.Y, corner, corner, color, strokeWidth, StrokeStyle());
         }
-        internal override HasSlider Slider => HasSlider.Horz | HasSlider.Vert;
+        internal override HasSlider Sliders => HasSlider.Horz | HasSlider.Vert;
         #endregion
     }
 }
