@@ -6,9 +6,17 @@ using System.Numerics;
 
 namespace ModelGraph.Controls
 {
-    internal abstract class Polyline : Shape
+    internal class Polyline : Shape
     {
+        private static (float, float)[] POINTS_2 = { (-64, 0), (64, 0) };
+        private static (float, float)[] POINTS_4 = { (-64, 0), (-32, 64), (32, -64), (64, 0) };
+        private static (float, float)[][] POINTS = { POINTS_2, POINTS_4 };
+
         internal Polyline() { }
+        internal Polyline(int n)
+        {
+            DXY = new List<(float dx, float dy)>(POINTS[n & 1]);
+        }
         internal Polyline(int I, byte[] data) : base(I, data) { }
 
         #region PrivateConstructor  ===========================================
@@ -44,9 +52,36 @@ namespace ModelGraph.Controls
                 DXY[index] = Limit(dx + ds.X, dy + ds.Y);
             }
         }
+        internal bool TryDeletePoint(int index)
+        {
+            if (index < 0) return false;
+            if (index < DXY.Count && DXY.Count > 2)
+            {
+                DXY.RemoveAt(index);
+                return true;
+            }
+            return false;
+        }
+        internal bool TryAddPoint(int index, Vector2 point)
+        {
+            if (index < 0) return false;
+            if (index < DXY.Count)
+            {
+                DXY.Insert(index + 1, (point.X, point.Y));
+                return true;
+            }
+            else if (index == DXY.Count)
+            {
+                DXY.Add((point.X, point.Y));
+                return true;
+            }
+            return false;
+        }
         #endregion
 
         #region OverideAbstract  ==============================================
+        internal override Shape Clone() => new Polyline(this);
+        internal override Shape Clone(Vector2 center) => new Polyline(this, center);
         protected override (float dx1, float dy1, float dx2, float dy2) GetExtent()
         {
             var x1 = PMAX;
@@ -70,24 +105,32 @@ namespace ModelGraph.Controls
             var color = GetColor(coloring);
             var points = GetDrawingPoints(center, scale);
 
-            using (var pb = new CanvasPathBuilder(ctl))
+            if (points.Length == 2)
             {
-                pb.BeginFigure(points[0]);
-                for (int i = 1; i < points.Length; i++)
+                ds.DrawLine(points[0], points[1], color, strokeWidth, StrokeStyle());
+            }
+            else if (points.Length > 2)
+            {
+                using (var pb = new CanvasPathBuilder(ctl))
                 {
-                    pb.AddLine(points[i]);
-                }
-                pb.EndFigure(CanvasFigureLoop.Open);
+                    pb.BeginFigure(points[0]);
+                    for (int i = 1; i < points.Length; i++)
+                    {
+                        pb.AddLine(points[i]);
+                    }
+                    pb.EndFigure(CanvasFigureLoop.Open);
 
-                using (var geo = CanvasGeometry.CreatePath(pb))
-                {
-                    if (FillStroke == Fill_Stroke.Filled)
-                        ds.FillGeometry(geo, color);
-                    else
-                        ds.DrawGeometry(geo, color, strokeWidth, StrokeStyle());
+                    using (var geo = CanvasGeometry.CreatePath(pb))
+                    {
+                        if (FillStroke == Fill_Stroke.Filled)
+                            ds.FillGeometry(geo, color);
+                        else
+                            ds.DrawGeometry(geo, color, strokeWidth, StrokeStyle());
+                    }
                 }
             }
         }
+        internal override HasSlider Sliders => HasSlider.Horz | HasSlider.Vert;
         protected override (int min, int max) MinMaxDimension => (1, 18);
         #endregion
     }

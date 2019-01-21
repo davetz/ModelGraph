@@ -114,8 +114,8 @@ namespace ModelGraphSTD
         public bool IsWide { get { return DX > DY; } }
         public bool IsEmpty { get { return (IsVertical || IsHorizontal); } }
         public bool HasArea { get { return (X1 != X2 && Y1 != Y2); } }
-        public bool IsVertical { get { return (X1 == X2); } }
-        public bool IsHorizontal { get { return (Y1 == Y2); } }
+        public bool IsVertical => (X2 - X1 < 0) ? ((X2 - X1 > -4) ? true : false) : (X2 - X1 < 4) ? true : false;
+        public bool IsHorizontal => (Y2 - Y1 < 0) ? ((Y2 - Y1 > -4) ? true : false) : (Y2 - Y1 < 4) ? true : false;
         #endregion
 
         #region Center  =======================================================

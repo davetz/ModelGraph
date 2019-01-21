@@ -1,8 +1,11 @@
-﻿using System;
+﻿using ModelGraphSTD;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using Windows.System;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
 
 namespace ModelGraph.Controls
 {
@@ -274,9 +277,78 @@ namespace ModelGraph.Controls
                 }
             }
             else
-                SetIdleOnVoid();
+            {
+                var ip = NewLineSegmentPointIndex();
+                if (ip.index > 0)
+                {
+                    if (_polylineTarget.TryAddPoint(ip.index - 1, ShapePoint(ip.hitPoint)))
+                    {
+                        _linePointIndex = ip.index;
+                        SetEventAction(PointerEvent.Drag, DragLinePoint);
+                    }
+                }
+                else
+                    SetIdleOnVoid();
+            }
         }
         int _linePointIndex;
+
+        #region OnLineSegment  ================================================
+        private (int index, Vector2 hitPoint) NewLineSegmentPointIndex()
+        {
+            var p = RawPoint1;
+            if (_targetPoints.Count > 2)
+            {
+                (float X, float Y) p1 = (0, 0); // used for testing line segments
+                (float X, float Y) p2 = (0, 0); // used for testing line segments
+
+                var v = p;
+                var E = new Extent((p.X, p.Y), 15);
+
+                v = _targetPoints[1];
+                p1 = (v.X, v.Y);
+
+                for (int i = 2; i < _targetPoints.Count; i++)
+                {
+                    v = _targetPoints[i];
+                    p2 = (v.X, v.Y);
+
+                    var e = new Extent(p1, p2);
+                    if (e.Intersects(E))
+                    {
+                        if (e.IsHorizontal)
+                            return (i - 1, new Vector2(p.X, p2.Y));
+                        else if (e.IsVertical)
+                            return (i - 1, new Vector2(p1.X, p.Y));
+                        else
+                        {
+                            var dx = (double)(p2.X - p1.X);
+                            var dy = (double)(p2.Y - p1.Y);
+
+                            int xi = (int)(p1.X + (dx * (p.Y - p1.Y)) / dy);
+                            if (E.ContainsX(xi))
+                                return (i - 1, new Vector2(xi, p.Y));
+
+                            xi = (int)(p2.X + (dx * (p.Y - p2.Y)) / dy);
+                            if (E.ContainsX(xi))
+                                return (i - 1, new Vector2(xi, p.Y));
+
+                            int yi = (int)(p1.Y + (dy * (p.X - p1.X)) / dx);
+                            if (E.ContainsY(yi))
+                                return (i - 1, new Vector2(p.X, yi));
+
+                            yi = (int)(p2.Y + (dy * (p.X - p2.X)) / dx);
+                            if (E.ContainsY(yi))
+                                return (i - 1, new Vector2(p.X, yi));
+                        }
+                    }
+                    p1 = p2;
+                }
+            }
+            return (-1, Vector2.Zero);
+        }
+        #endregion
+
         private void DragCenterPoint()
         {
             Shape.MoveCenter(SelectedShapes, ShapeDelta);
@@ -291,11 +363,52 @@ namespace ModelGraph.Controls
             Shape.LockSliders(SelectedShapes, true);
             SetSizeSliders();
 
+            if (IsKillZone())
+                TrySetNewCursor(CoreCursorType.UniversalNo);
+            else
+                RestorePointerCursor();
+
             EditorCanvas.Invalidate();
         }
+
+        #region PointerCursor  ================================================
+        private void RestorePointerCursor()
+        {
+            if (defaultPointerCursor is null) return;
+            Window.Current.CoreWindow.PointerCursor = (CoreCursor)defaultPointerCursor;
+            defaultPointerCursor = null;
+        }
+        private void TrySetNewCursor(CoreCursorType type)
+        {
+            if (Window.Current.CoreWindow.PointerCursor.Type != type)
+            {
+                if (defaultPointerCursor is null)
+                    defaultPointerCursor = Window.Current.CoreWindow.PointerCursor;
+
+                Window.Current.CoreWindow.PointerCursor = new CoreCursor(type, 0);
+            }
+        }
+        private bool IsKillZone() => (RawPoint2.X < KILL_1 || RawPoint2.X > KILL_2 || RawPoint2.Y < KILL_1 || RawPoint2.Y > KILL_2);
+        private object defaultPointerCursor;
+        static float KILL_1 = EditMargin -4 ;
+        static float KILL_2 = EditSize + (2 * EditMargin) - KILL_1;
+        #endregion
+
         private void EndTargetDrag()
         {
+            if (IsKillZone())
+            {
+                RestorePointerCursor();
+                if (!_polylineTarget.TryDeletePoint(_linePointIndex))
+                {
+                    SymbolShapes.Remove(_polylineTarget);
+                    _targetPoints.Clear();
+                    SetIdleOnVoid();
+                }
+            }
+
             ClearEventAction(PointerEvent.Drag);
+            EditorCanvas.Invalidate();
         }
 
         private void ShapeSelectorHit(int index)

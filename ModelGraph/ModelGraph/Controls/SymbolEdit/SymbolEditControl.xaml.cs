@@ -32,7 +32,7 @@ namespace ModelGraph.Controls
     {
         private RootModel _rootModel;
         private List<Shape> SymbolShapes = new List<Shape>();
-        private List<Shape> PickerShapes = new List<Shape> { new Circle(), new Ellipes(), new RoundedRectangle(), new Rectangle(), new PolySide(), new PolyStar(), new PolyGear(), new PolyPulse(), new PolySpline() };
+        private List<Shape> PickerShapes = new List<Shape> { new Circle(), new Ellipes(), new RoundedRectangle(), new Rectangle(), new PolySide(), new PolyStar(), new PolyGear(), new Polyline(0), new Polyline(1), new PolyPulse(), new PolySpline() };
         private HashSet<Shape> SelectedShapes = new HashSet<Shape>();
         private static HashSet<Shape> CutCopyShapes = new HashSet<Shape>(); //cut/copy/clone shapes between two SymbolEditControls
 

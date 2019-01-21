@@ -26,6 +26,7 @@ namespace ModelGraph.Controls
         private PolyPulse(Shape shape, Vector2 center)
         {
             CopyData(shape);
+            SetCenter(new Shape[] { this }, center);
         }
         #endregion
 

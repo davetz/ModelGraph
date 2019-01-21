@@ -30,7 +30,7 @@ namespace ModelGraph.Controls
         private byte A1;      // rotation index for 30.0 degree delta
         protected List<(float dx, float dy)> DXY;  // one or more defined points
 
-       #region Properties  ===================================================
+        #region Properties  ===================================================
 
         #region Color  ========================================================
         internal enum Coloring { Gray, Light, Normal };
