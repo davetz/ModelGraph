@@ -79,8 +79,10 @@ namespace ModelGraph.Controls
             ShapesAreSelected,  // one or more shapes have been selected
 
             DragSelectorShape,  // changing the drawing order of the symbol shapes
+
+            ContactsOnVoid, 
         }
-        
+
         private EditorState _editorState;   // used to log event action state transitions
 
         private bool SetEditorState(EditorState editorState)
@@ -401,6 +403,7 @@ namespace ModelGraph.Controls
                 RestorePointerCursor();
                 if (!_polylineTarget.TryDeletePoint(_linePointIndex))
                 {
+
                     SymbolShapes.Remove(_polylineTarget);
                     _targetPoints.Clear();
                     SetIdleOnVoid();
@@ -447,6 +450,95 @@ namespace ModelGraph.Controls
             SetSizeSliders();
             SelectorCanvas.Invalidate();
             SetIdleOnVoid();
+        }
+        #endregion
+
+        #endregion
+
+        #region SetContactsOnVoid  ============================================
+        private void SetContactsOnVoid()
+        {
+            if (SetEditorState(EditorState.ContactsOnVoid))
+            {
+                SetEventAction(PointerEvent.Begin, BeginContact);
+                SetEventAction(PointerEvent.End, EndContact);
+            }
+        }
+        private void EndContact()
+        {
+            ClearEventAction(PointerEvent.Drag);
+        }
+
+        #region BeginContact  =================================================
+        private void BeginContact()
+        {
+            var index = -1;
+            var bestDelta = 500.0f;
+            var N = _targetPoints.Count;
+            for (int i = 0; i < N; i++)
+            {
+                var delta = (RawPoint1 - _targetPoints[i]).LengthSquared();
+                if (delta > 200 || delta > bestDelta) continue;
+                bestDelta = delta;
+                index = i;
+            }
+            if (index < 0) return;
+
+            var (cont, targ, point, size) = _contactTargets[index];
+            switch (targ)
+            {
+                case Target.N:
+                    SetEventAction(PointerEvent.Drag, DragContact_N);
+                    break;
+                case Target.S:
+                    break;
+                case Target.E:
+                    break;
+                case Target.W:
+                    break;
+                case Target.NE:
+                    break;
+                case Target.NW:
+                    break;
+                case Target.SE:
+                    break;
+                case Target.SW:
+                    break;
+                case Target.EN:
+                    break;
+                case Target.ES:
+                    break;
+                case Target.WN:
+                    break;
+                case Target.WS:
+                    break;
+                case Target.NEC:
+                    break;
+                case Target.NWC:
+                    break;
+                case Target.SEC:
+                    break;
+                case Target.SWC:
+                    break;
+                case Target.Any:
+                    break;
+            }
+        }
+        #endregion
+
+        #region DragContact_N  ================================================
+        private void DragContact_N()
+        {
+            if (Target_Contacts.TryGetValue(Target.N, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var dy = ShapePoint2.Y;
+                if (dy > -20) dy = -20;
+                if (dy < -LIM) dy = -LIM;
+
+                Target_Contacts[Target.N] = (val.con, (0, (sbyte)dy), val.siz);
+            }
+
+            EditorCanvas.Invalidate();
         }
         #endregion
 

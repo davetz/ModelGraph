@@ -31,6 +31,8 @@ namespace ModelGraph.Controls
     public sealed partial class SymbolEditControl : Page, IPageControl, IModelPageControl, INotifyPropertyChanged
     {
         private RootModel _rootModel;
+        private SymbolX _symbol;
+
         private List<Shape> SymbolShapes = new List<Shape>();
         private List<Shape> PickerShapes = new List<Shape> { new Circle(), new Ellipes(), new RoundedRectangle(), new Rectangle(), new PolySide(), new PolyStar(), new PolyGear(), new Polyline(0), new Polyline(1), new PolyPulse(), new PolySpline() };
         private HashSet<Shape> SelectedShapes = new HashSet<Shape>();
@@ -38,7 +40,8 @@ namespace ModelGraph.Controls
 
         private Shape PickerShape; //current selected picker shape
 
-        private float EditZoom => EditSize / ShapeSize;
+        private float LIM = 127; // +/- range of shape dx, dy values
+        private float EditScale => EditSize / 2;
         private const float ShapeSize = 256; //max width, height of shape
         private const float EditSize = 512;  //width, height of shape in the editor
 
@@ -64,6 +67,9 @@ namespace ModelGraph.Controls
         public SymbolEditControl(RootModel model)
         {
             _rootModel = model;
+            _symbol = model.Item as SymbolX;
+            Target_Contacts = _symbol.Target_Contacts;
+
             this.InitializeComponent();
             Initialize();
         }
@@ -163,7 +169,6 @@ namespace ModelGraph.Controls
             var ds = args.DrawingSession;
             var W = (float)sender.Width;
             var HW = W / 2;
-            var scale = (W - 2) / ShapeSize;
 
             var strokeWidth = 3;
 
@@ -176,7 +181,7 @@ namespace ModelGraph.Controls
                 var shape = PickerShapes[i];
 
                 if (shape == PickerShape) Shape.HighLight(ds, W, i);
-                shape.Draw(sender, ds, scale, center, strokeWidth);
+                shape.Draw(sender, ds, HW, center, strokeWidth);
                 if (i == 3 || i == 6)
                     ds.DrawLine(0, b, b, b, Colors.LightGray, 1);
             }
@@ -190,7 +195,6 @@ namespace ModelGraph.Controls
 
             var W = (float)canvas.Width;
             var HW = W / 2;
-            var scale = (W - 2) / ShapeSize;
             var n = SymbolShapes.Count;
 
             var center = new Vector2(HW, HW);
@@ -199,7 +203,7 @@ namespace ModelGraph.Controls
                 var shape = SymbolShapes[i];
                 var strokeWidth = shape.StrokeWidth;
 
-                shape.Draw(canvas, ds, scale, center, strokeWidth);
+                shape.Draw(canvas, ds, HW, center, strokeWidth);
             }
         }
         #endregion
@@ -211,7 +215,6 @@ namespace ModelGraph.Controls
 
             var W = (float)canvas.Width;
             var HW = W / 2;
-            var scale = (W - 2) / ShapeSize;
             var n = SymbolShapes.Count;
 
             var m = SelectorCanvas.MinHeight;
@@ -228,7 +231,7 @@ namespace ModelGraph.Controls
                 var strokeWidth = shape.StrokeWidth;
                 if (SelectedShapes.Contains(shape)) Shape.HighLight(ds, W, i);
 
-                shape.Draw(canvas, ds, scale, center, strokeWidth);
+                shape.Draw(canvas, ds, HW, center, strokeWidth);
                 ds.DrawLine(0, b, b, b, Colors.LightGray, 1);
             }
         }
@@ -238,17 +241,18 @@ namespace ModelGraph.Controls
         private void EditorCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
         {
             var ds = args.DrawingSession;
-            var scale = EditSize / ShapeSize;
+            var scale = EditSize / 2;
             DrawEditorBackgroundGrid(ds);
 
             if (EditContact == Edit_Contact.Contacts)
             {
                 foreach (var shape in SymbolShapes)
                 {
-                    var strokeWidth = shape.StrokeWidth * scale * 5;
+                    var strokeWidth = shape.StrokeWidth * 5;
                     shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, Shape.Coloring.Light);
                 }
-            }
+
+                DrawTargetContacts(ds);            }
             else
             {
                 if (SelectedShapes.Count > 0)
@@ -256,7 +260,7 @@ namespace ModelGraph.Controls
                     foreach (var shape in SymbolShapes)
                     {
                         var coloring = SelectedShapes.Contains(shape) ? Shape.Coloring.Light : Shape.Coloring.Gray;
-                        var strokeWidth = shape.StrokeWidth * scale * 5;
+                        var strokeWidth = shape.StrokeWidth * 5;
                         shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, coloring);
                     }
 
@@ -268,7 +272,7 @@ namespace ModelGraph.Controls
                 {
                     foreach (var shape in SymbolShapes)
                     {
-                        var strokeWidth = shape.StrokeWidth * scale * 5;
+                        var strokeWidth = shape.StrokeWidth * 5;
                         shape.Draw(EditorCanvas, ds, scale, Center, strokeWidth, Shape.Coloring.Normal);
                     }
                 }
@@ -361,6 +365,83 @@ namespace ModelGraph.Controls
             ds.DrawText("W", xW, yC, color1);
             ds.DrawText("ws", xW - 4, ys, color3);
         }
+        #endregion
+
+        #region DrawTargetContacts  ===========================================
+        private void DrawTargetContacts(CanvasDrawingSession ds)
+        {
+            var cp = new Vector2(EDITCenter, EDITCenter);
+            var sf = EditSize / 200; //scale factor to get target point 
+
+            CheckContacts();
+            var N = _contactTargets.Count;
+
+            _targetPoints.Clear();
+            for (int i = 0; i < N; i++)
+            {
+                var (cont, targ, point, size) = _contactTargets[i];
+
+                var p = new Vector2(point.dx, point.dy);
+                var c = cp + p * sf;
+                _targetPoints.Add(c);
+                ds.DrawCircle(c, 7, Colors.Cyan, 3);
+            }
+        }
+        #endregion
+
+        #region Target_Contacts  ==============================================
+        private Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> Target_Contacts;
+        private List<(Contact cont, Target targ, (sbyte dx, sbyte dy) point, byte)> _contactTargets = new List<(Contact cont, Target targ, (sbyte dx, sbyte dy) point, byte)>();
+
+        #region CheckContacts  ================================================
+        private void CheckContacts()
+        {
+            byte s = 25;
+            sbyte z = 0;
+            sbyte p = 100;
+            sbyte n = -100;
+            sbyte hp = 50;
+            sbyte hn = -50;
+
+            _contactTargets.Clear();
+            
+            CheckContact(Contact_NWC, Target.NWC, (n, n), 0);
+            CheckContact(Contact_NW, Target.NW, (hn, n), s);
+            CheckContact(Contact_N, Target.N, (z, n), s);
+            CheckContact(Contact_NE, Target.NE, (hp, n), s);
+            CheckContact(Contact_NEC, Target.NEC, (p, n), 0);
+
+            CheckContact(Contact_EN, Target.EN, (p, hn), s);
+            CheckContact(Contact_E, Target.E, (p, z), s);
+            CheckContact(Contact_ES, Target.ES, (p, hp), s);
+
+            CheckContact(Contact_WN, Target.WN, (n, hn), s);
+            CheckContact(Contact_W, Target.W, (n, z), s);
+            CheckContact(Contact_WS, Target.WS, (n, hp), s);
+
+            CheckContact(Contact_SWC, Target.SWC, (n, p), s);
+            CheckContact(Contact_SW, Target.SW, (hn, p), s);
+            CheckContact(Contact_S, Target.S, (z, p), s);
+            CheckContact(Contact_SE, Target.SE, (hp, p), s);
+            CheckContact(Contact_SEC, Target.SEC, (p, p), s);
+
+            void CheckContact(Contact cont, Target targ, (sbyte,sbyte) point, byte size)
+            {
+                if (cont == Contact.None)
+                    Target_Contacts.Remove(targ);
+                else if (Target_Contacts.TryGetValue(targ, value: out (Contact, (sbyte, sbyte) pnt, byte siz) ex))
+                {
+                    Target_Contacts[targ] = (cont, ex.pnt, ex.siz);
+                    _contactTargets.Add((cont, targ, ex.pnt, ex.siz));
+                }
+                else
+                {
+                    Target_Contacts.Add(targ, (cont, point, size));
+                    _contactTargets.Add((cont, targ, point, size));
+                }
+            }
+        }
+        #endregion
         #endregion
 
 

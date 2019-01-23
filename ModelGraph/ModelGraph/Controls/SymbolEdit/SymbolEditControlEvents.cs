@@ -29,6 +29,7 @@ namespace ModelGraph.Controls
                 PickerCanvas.Visibility = Windows.UI.Xaml.Visibility.Visible;
                 PropertyGrid.Visibility = Windows.UI.Xaml.Visibility.Visible;
                 ColorPickerGrid.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                SetIdleOnVoid();
             }
             else
             {
@@ -37,6 +38,7 @@ namespace ModelGraph.Controls
                 SelectorCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
                 PickerCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
                 ContactGrid.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                SetContactsOnVoid();
             }
             EditorCanvas.Invalidate();
         }
@@ -103,69 +105,85 @@ namespace ModelGraph.Controls
         private void Contact_N_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_N.Visibility = (Contact_N == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_NE_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_NE.Visibility = (Contact_NE == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_NW_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_NW.Visibility = (Contact_NW== Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_NEC_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_NEC.Visibility = (Contact_NEC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_NWC_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_NWC.Visibility = (Contact_NWC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
 
         private void Contact_E_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_E.Visibility = (Contact_E == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_EN_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_EN.Visibility = (Contact_EN == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_ES_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_ES.Visibility = (Contact_ES == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
 
         private void Contact_W_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_W.Visibility = (Contact_W == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_WN_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_WN.Visibility = (Contact_WN == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_WS_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_WS.Visibility = (Contact_WS == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
 
         private void Contact_S_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_S.Visibility = (Contact_S == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_SE_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_SE.Visibility = (Contact_SE == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_SW_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_SW.Visibility = (Contact_SW == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_SEC_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_SEC.Visibility = (Contact_SEC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
         private void Contact_SWC_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContactSizeSlider_SWC.Visibility = (Contact_SWC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            EditorCanvas.Invalidate();
         }
 
         private void ContactSizeSlider_N_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
@@ -711,7 +729,7 @@ namespace ModelGraph.Controls
             var p = e.GetCurrentPoint(EditorCanvas).Position;
             return new Vector2((float)p.X, (float)p.Y);
         }
-        private Vector2 ShapePoint(Vector2 rawPoint) => (rawPoint - Center) / EditZoom;
+        private Vector2 ShapePoint(Vector2 rawPoint) => (rawPoint - Center) / EditScale;
         #endregion
     }
 }

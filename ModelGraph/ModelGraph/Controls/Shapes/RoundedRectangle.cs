@@ -1,5 +1,6 @@
 ﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using ModelGraphSTD;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -9,14 +10,14 @@ namespace ModelGraph.Controls
     {
         internal RoundedRectangle()
         {
-            Radius1 = 50;
-            Radius2 = 30;
+            Radius1 = 0.5f;
+            Radius2 = 0.3f;
             DXY = new List<(float dx, float dy)>() { (0, 0) };
         }
         internal RoundedRectangle(int I, byte[] data) : base(I, data)
         {
         }
-        internal float Corner => 12f;
+        internal float Corner => 0.1f;
 
         #region PrivateConstructor  ===========================================
         internal RoundedRectangle(Shape shape)
@@ -45,6 +46,20 @@ namespace ModelGraph.Controls
                 ds.FillRoundedRectangle( min.X, min.Y, len.X, len.Y, corner, corner, color);
             else
                 ds.DrawRoundedRectangle(min.X, min.Y, len.X, len.Y, corner, corner, color, strokeWidth, StrokeStyle());
+        }
+        internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, FlipState flip)
+        {
+            var color = GetColor(Coloring.Normal);
+            var (cp, r1, r2) = GetCenterRadius(center, scale);
+            var radius = new Vector2(r1, r2);
+            var min = cp - radius;
+            var len = radius * 2;
+            var corner = Corner * scale;
+
+            if (FillStroke == Fill_Stroke.Filled)
+                ds.FillRoundedRectangle(min.X, min.Y, len.X, len.Y, corner, corner, color);
+            else
+                ds.DrawRoundedRectangle(min.X, min.Y, len.X, len.Y, corner, corner, color, StrokeWidth, StrokeStyle());
         }
         internal override HasSlider Sliders => HasSlider.Horz | HasSlider.Vert;
         #endregion

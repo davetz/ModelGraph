@@ -13,8 +13,9 @@ namespace ModelGraphSTD
         public byte[] Data;
         public Attach Attach;
         public Graphic Graphic;
-        public List<(Contact contact, byte size)> ContactSizeList = new List<(Contact, byte size)>(4);
-        private List<Shape> Shapes;
+        public Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> Target_Contacts = new Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)>(4);
+        public Target AllTargets = Target.None;
+        public FlipState FlipState;
 
         public Contact NorthContact;
         public Contact WestContact;

@@ -10,7 +10,7 @@ namespace ModelGraph.Controls
     {
         internal PolySide()
         {
-            Radius1 = Radius2 = 50;
+            Radius1 = Radius2 = 0.5f;
             Dimension = 3;
             CreatePoints();
         }

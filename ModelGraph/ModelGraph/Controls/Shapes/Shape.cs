@@ -1,5 +1,6 @@
 ﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using ModelGraphSTD;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,7 @@ namespace ModelGraph.Controls
         internal abstract Shape Clone(Vector2 Center);
 
         internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth, Coloring coloring = Coloring.Normal);
+        internal abstract void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, FlipState flip);
 
         protected abstract (float dx1, float dy1, float dx2, float dy2) GetExtent();
         protected abstract void Scale(Vector2 scale);
@@ -80,7 +82,6 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Resize  =======================================================
-        const float SIZE = 2.56f; // 1% of the maximum width, height of the shape
         internal static void ResizeCentral(IEnumerable<Shape> shapes, float factor)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
@@ -88,7 +89,7 @@ namespace ModelGraph.Controls
             if (dx + dy > 0)
             {
                 var actualSize = (dx > dy) ? dx : dy;
-                var desiredSize = SIZE * factor;
+                var desiredSize = ConvertSlider(factor);
                 var ratio = desiredSize / actualSize;
                 var scale = new Vector2(ratio, ratio);
                 foreach (var shape in shapes)
@@ -106,7 +107,7 @@ namespace ModelGraph.Controls
             {
 
                 var actualSize = dy2 - dy1;
-                var desiredSize = SIZE * factor;
+                var desiredSize = ConvertSlider(factor);
                 var ratio = desiredSize / actualSize;
                 var scale = new Vector2(1, ratio);
                 foreach (var shape in shapes)
@@ -123,7 +124,7 @@ namespace ModelGraph.Controls
             if (dx + dy > 0)
             {
                 var actualSize = dx2 - dx1;
-                var desiredSize = SIZE * factor;
+                var desiredSize = ConvertSlider(factor);
                 var ratio = desiredSize / actualSize;
                 var scale = new Vector2(ratio, 1);
                 foreach (var shape in shapes)
@@ -136,9 +137,11 @@ namespace ModelGraph.Controls
         internal static void ResizeMajorAxis(IEnumerable<Shape> shapes, float factor)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+            var desiredSize = ConvertSlider(factor);
+
             foreach (var shape in shapes)
             {
-                shape.R1 = (byte)(factor * SIZE / 2);
+                shape.Radius1 = desiredSize;
                 shape.CreatePoints();
             }
             SetCenter(shapes, new Vector2(cdx, cdy));
@@ -146,9 +149,10 @@ namespace ModelGraph.Controls
         internal static void ResizeMinorAxis(IEnumerable<Shape> shapes, float factor)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+            var desiredSize = ConvertSlider(factor);
             foreach (var shape in shapes)
             {
-                shape.R2 = (byte)(factor * SIZE / 2);
+                shape.Radius2 = desiredSize;
                 shape.CreatePoints();
             }
             SetCenter(shapes, new Vector2(cdx, cdy));
@@ -156,9 +160,10 @@ namespace ModelGraph.Controls
         internal static void ResizeTernaryAxis(IEnumerable<Shape> shapes, float factor)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
+            var desiredSize = ConvertSlider(factor);
             foreach (var shape in shapes)
             {
-                shape.F1 = (byte)factor;
+                shape.AuxFactor = desiredSize;
                 shape.CreatePoints();
             }
             SetCenter(shapes, new Vector2(cdx, cdy));
@@ -173,6 +178,12 @@ namespace ModelGraph.Controls
                 shape.PD = (byte)pd;
                 shape.CreatePoints();
             }
+        }
+
+        private static float ConvertSlider(float val)
+        {
+            var v = val < 0 ? 0 : val > 100 ? 100 : val;
+            return v / 100;
         }
         #endregion
 
@@ -208,7 +219,7 @@ namespace ModelGraph.Controls
 
             float Larger(float p, float q) => (p > q) ? p : q;
             float Limited(float a, float b) => Larger(Factor(a), Factor(b));
-            float Factor(float v) => (float)System.Math.Round(100 * ((v < 0) ?  ((v < PMIN) ? 1 : v / PMIN) : ((v > PMAX) ? 1 : v / PMAX)));
+            float Factor(float v) => (float)System.Math.Round(100 * ((v < 0.1f) ? 0.1 : v));
         }
         #endregion
 
@@ -228,10 +239,6 @@ namespace ModelGraph.Controls
             var (dx1, dy1, dx2, dy2, cdx, cdy, dw, dh) = GetExtent(shapes);
             if (dw + dh > 0)
             {
-                var h = dw / SIZE;
-                var v = dh / SIZE;
-                var s = (h > v) ? h : v;
-
                 DrawTarget(new Vector2(cdx, cdy) * scale + center, true);
 
                 if (shapes.Count() == 1  && shapes.First() is Polyline polyline)

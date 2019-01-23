@@ -309,60 +309,60 @@
 
                 <TextBlock Text="Assign span of edge contacts allowed on each target" Style="{StaticResource PropetyHeaderStyle}" Grid.Column="0" Grid.ColumnSpan="3"/>
 
-                <TextBlock Text="- - -  N" Style="{StaticResource ContactLabelStyle}" Grid.Row="1" Grid.Column="0"/>
-                <TextBlock Text="NE" Style="{StaticResource ContactLabelStyle}" Grid.Row="2" Grid.Column="0"/>
-                <TextBlock Text="NW" Style="{StaticResource ContactLabelStyle}" Grid.Row="3" Grid.Column="0"/>
-                <TextBlock Text="NEC" Style="{StaticResource ContactLabelStyle}" Grid.Row="4" Grid.Column="0"/>
-                <TextBlock Text="NWC" Style="{StaticResource ContactLabelStyle}" Grid.Row="5" Grid.Column="0"/>
+                <TextBlock Text="NWC" Style="{StaticResource ContactLabelStyle}" Grid.Row="1" Grid.Column="0"/>
+                <TextBlock Text="NW" Style="{StaticResource ContactLabelStyle}" Grid.Row="2" Grid.Column="0"/>
+                <TextBlock Text="- - -  N" Style="{StaticResource ContactLabelStyle}" Grid.Row="3" Grid.Column="0" FontWeight="Bold"/>
+                <TextBlock Text="NE" Style="{StaticResource ContactLabelStyle}" Grid.Row="4" Grid.Column="0"/>
+                <TextBlock Text="NEC" Style="{StaticResource ContactLabelStyle}" Grid.Row="5" Grid.Column="0"/>
 
-                <TextBlock Text="- - -  E" Style="{StaticResource ContactLabelStyle}" Grid.Row="6" Grid.Column="0"/>
-                <TextBlock Text="EN" Style="{StaticResource ContactLabelStyle}" Grid.Row="7" Grid.Column="0"/>
+                <TextBlock Text="EN" Style="{StaticResource ContactLabelStyle}" Grid.Row="6" Grid.Column="0"/>
+                <TextBlock Text="- - -  E" Style="{StaticResource ContactLabelStyle}" Grid.Row="7" Grid.Column="0" FontWeight="Bold"/>
                 <TextBlock Text="ES" Style="{StaticResource ContactLabelStyle}" Grid.Row="8" Grid.Column="0"/>
 
-                <TextBlock Text="- - -  W" Style="{StaticResource ContactLabelStyle}" Grid.Row="9" Grid.Column="0"/>
-                <TextBlock Text="WN" Style="{StaticResource ContactLabelStyle}" Grid.Row="10" Grid.Column="0"/>
+                <TextBlock Text="WN" Style="{StaticResource ContactLabelStyle}" Grid.Row="9" Grid.Column="0"/>
+                <TextBlock Text="- - -  W" Style="{StaticResource ContactLabelStyle}" Grid.Row="10" Grid.Column="0" FontWeight="Bold"/>
                 <TextBlock Text="WS" Style="{StaticResource ContactLabelStyle}" Grid.Row="11" Grid.Column="0"/>
 
-                <TextBlock Text="- - -  S" Style="{StaticResource ContactLabelStyle}" Grid.Row="12" Grid.Column="0"/>
-                <TextBlock Text="SE" Style="{StaticResource ContactLabelStyle}" Grid.Row="13" Grid.Column="0"/>
-                <TextBlock Text="SW" Style="{StaticResource ContactLabelStyle}" Grid.Row="14" Grid.Column="0"/>
-                <TextBlock Text="SEC" Style="{StaticResource ContactLabelStyle}" Grid.Row="15" Grid.Column="0"/>
-                <TextBlock Text="SWC" Style="{StaticResource ContactLabelStyle}" Grid.Row="16" Grid.Column="0"/>
+                <TextBlock Text="SWC" Style="{StaticResource ContactLabelStyle}" Grid.Row="12" Grid.Column="0"/>
+                <TextBlock Text="SW" Style="{StaticResource ContactLabelStyle}" Grid.Row="13" Grid.Column="0"/>
+                <TextBlock Text="- - -  S" Style="{StaticResource ContactLabelStyle}" Grid.Row="14" Grid.Column="0" FontWeight="Bold"/>
+                <TextBlock Text="SE" Style="{StaticResource ContactLabelStyle}" Grid.Row="15" Grid.Column="0"/>
+                <TextBlock Text="SEC" Style="{StaticResource ContactLabelStyle}" Grid.Row="16" Grid.Column="0"/>
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="1" Grid.Column="1"
-                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
-                           SelectedItem="{Binding ElementName=control, Path=Contact_N, Mode=TwoWay}"
-                           SelectionChanged ="Contact_N_SelectionChanged" />
-
-                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="2" Grid.Column="1"
-                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
-                           SelectedItem="{Binding ElementName=control, Path=Contact_NE, Mode=TwoWay}"
-                           SelectionChanged ="Contact_NE_SelectionChanged" />
-
-                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="3" Grid.Column="1"
-                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
-                           SelectedItem="{Binding ElementName=control, Path=Contact_NW, Mode=TwoWay}"
-                           SelectionChanged ="Contact_NW_SelectionChanged" />
-
-                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="4" Grid.Column="1"
-                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
-                           SelectedItem="{Binding ElementName=control, Path=Contact_NEC, Mode=TwoWay}"
-                           SelectionChanged ="Contact_NEC_SelectionChanged" />
-
-                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="5" Grid.Column="1"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_NWC, Mode=TwoWay}"
                            SelectionChanged ="Contact_NWC_SelectionChanged" />
 
-                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="6" Grid.Column="1"
+                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="2" Grid.Column="1"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
-                           SelectedItem="{Binding ElementName=control, Path=Contact_E, Mode=TwoWay}"
-                           SelectionChanged ="Contact_E_SelectionChanged" />
+                           SelectedItem="{Binding ElementName=control, Path=Contact_NW, Mode=TwoWay}"
+                           SelectionChanged ="Contact_NW_SelectionChanged" />
 
-                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="7" Grid.Column="1"
+                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="3" Grid.Column="1"
+                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
+                           SelectedItem="{Binding ElementName=control, Path=Contact_N, Mode=TwoWay}"
+                           SelectionChanged ="Contact_N_SelectionChanged" />
+
+                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="4" Grid.Column="1"
+                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
+                           SelectedItem="{Binding ElementName=control, Path=Contact_NE, Mode=TwoWay}"
+                           SelectionChanged ="Contact_NE_SelectionChanged" />
+
+                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="5" Grid.Column="1"
+                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
+                           SelectedItem="{Binding ElementName=control, Path=Contact_NEC, Mode=TwoWay}"
+                           SelectionChanged ="Contact_NEC_SelectionChanged" />
+
+                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="6" Grid.Column="1"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_EN, Mode=TwoWay}"
                            SelectionChanged ="Contact_EN_SelectionChanged" />
+
+                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="7" Grid.Column="1"
+                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
+                           SelectedItem="{Binding ElementName=control, Path=Contact_E, Mode=TwoWay}"
+                           SelectionChanged ="Contact_E_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="8" Grid.Column="1"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
@@ -371,13 +371,13 @@
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="9" Grid.Column="1"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
-                           SelectedItem="{Binding ElementName=control, Path=Contact_W, Mode=TwoWay}"
-                           SelectionChanged ="Contact_W_SelectionChanged" />
+                           SelectedItem="{Binding ElementName=control, Path=Contact_WN, Mode=TwoWay}"
+                           SelectionChanged ="Contact_WN_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="10" Grid.Column="1"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
-                           SelectedItem="{Binding ElementName=control, Path=Contact_WN, Mode=TwoWay}"
-                           SelectionChanged ="Contact_WN_SelectionChanged" />
+                           SelectedItem="{Binding ElementName=control, Path=Contact_W, Mode=TwoWay}"
+                           SelectionChanged ="Contact_W_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="11" Grid.Column="1"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
@@ -386,78 +386,81 @@
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="12" Grid.Column="1"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
-                           SelectedItem="{Binding ElementName=control, Path=Contact_S, Mode=TwoWay}"
-                           SelectionChanged ="Contact_S_SelectionChanged" />
+                           SelectedItem="{Binding ElementName=control, Path=Contact_SWC, Mode=TwoWay}"
+                           SelectionChanged ="Contact_SWC_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="13" Grid.Column="1"
-                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
-                           SelectedItem="{Binding ElementName=control, Path=Contact_SE, Mode=TwoWay}"
-                           SelectionChanged ="Contact_SE_SelectionChanged" />
-
-                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="14" Grid.Column="1"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_SW, Mode=TwoWay}"
                            SelectionChanged ="Contact_SW_SelectionChanged" />
 
+                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="14" Grid.Column="1"
+                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
+                           SelectedItem="{Binding ElementName=control, Path=Contact_S, Mode=TwoWay}"
+                           SelectionChanged ="Contact_S_SelectionChanged" />
+
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="15" Grid.Column="1"
+                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
+                           SelectedItem="{Binding ElementName=control, Path=Contact_SE, Mode=TwoWay}"
+                           SelectionChanged ="Contact_SE_SelectionChanged" />
+
+                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="16" Grid.Column="1"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_SEC, Mode=TwoWay}"
                            SelectionChanged ="Contact_SEC_SelectionChanged" />
 
-                <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="16" Grid.Column="1"
-                          ItemsSource="{Binding ElementName=control, Path=ContactList}"
-                           SelectedItem="{Binding ElementName=control, Path=Contact_SWC, Mode=TwoWay}"
-                           SelectionChanged ="Contact_SWC_SelectionChanged" />
 
-                <Slider Width="180" x:Name="ContactSizeSlider_N" Grid.Row="1" Grid.Column="2" Visibility="Collapsed"   
-                                Style="{StaticResource ContactSliderStyle}"
-                                Value="{x:Bind ContactSize_N, Mode=OneWay}"
-                                ValueChanged="ContactSizeSlider_N_ValueChanged" />
-
-                <Slider Width="180" x:Name="ContactSizeSlider_NE" Grid.Row="2" Grid.Column="2" Visibility="Collapsed"   
-                                Style="{StaticResource ContactSliderStyle}"
-                                Value="{x:Bind ContactSize_NE, Mode=OneWay}"
-                                ValueChanged="ContactSizeSlider_NE_ValueChanged" />
-
-                <Slider Width="180" x:Name="ContactSizeSlider_NW" Grid.Row="3" Grid.Column="2" Visibility="Collapsed"   
-                                Style="{StaticResource ContactSliderStyle}"
-                                Value="{x:Bind ContactSize_NW, Mode=OneWay}"
-                                ValueChanged="ContactSizeSlider_NW_ValueChanged" />
-
-                <Slider Width="180" x:Name="ContactSizeSlider_NEC" Grid.Row="4" Grid.Column="2" Visibility="Collapsed"   
-                                Style="{StaticResource ContactSliderStyle}"
-                                Value="{x:Bind ContactSize_NEC, Mode=OneWay}"
-                                ValueChanged="ContactSizeSlider_NEC_ValueChanged" />
-
-                <Slider Width="180" x:Name="ContactSizeSlider_NWC" Grid.Row="5" Grid.Column="2" Visibility="Collapsed"   
+                <Slider Width="180" x:Name="ContactSizeSlider_NWC" Grid.Row="1" Grid.Column="2" Visibility="Collapsed"   
                                 Style="{StaticResource ContactSliderStyle}"
                                 Value="{x:Bind ContactSize_NWC, Mode=OneWay}"
                                 ValueChanged="ContactSizeSlider_NWC_ValueChanged" />
 
-                <Slider Width="180" x:Name="ContactSizeSlider_E" Grid.Row="6" Grid.Column="2"  Visibility="Visible"  
+                <Slider Width="180" x:Name="ContactSizeSlider_NW" Grid.Row="2" Grid.Column="2" Visibility="Collapsed"   
                                 Style="{StaticResource ContactSliderStyle}"
-                                Value="{x:Bind ContactSize_E, Mode=OneWay}"
-                                ValueChanged="ContactSizeSlider_E_ValueChanged" />
+                                Value="{x:Bind ContactSize_NW, Mode=OneWay}"
+                                ValueChanged="ContactSizeSlider_NW_ValueChanged" />
 
-                <Slider Width="180" x:Name="ContactSizeSlider_EN" Grid.Row="7" Grid.Column="2" Visibility="Collapsed"   
+                <Slider Width="180" x:Name="ContactSizeSlider_N" Grid.Row="3" Grid.Column="2" Visibility="Collapsed"   
+                                Style="{StaticResource ContactSliderStyle}"
+                                Value="{x:Bind ContactSize_N, Mode=OneWay}"
+                                ValueChanged="ContactSizeSlider_N_ValueChanged" />
+
+                <Slider Width="180" x:Name="ContactSizeSlider_NE" Grid.Row="4" Grid.Column="2" Visibility="Collapsed"   
+                                Style="{StaticResource ContactSliderStyle}"
+                                Value="{x:Bind ContactSize_NE, Mode=OneWay}"
+                                ValueChanged="ContactSizeSlider_NE_ValueChanged" />
+
+                <Slider Width="180" x:Name="ContactSizeSlider_NEC" Grid.Row="5" Grid.Column="2" Visibility="Collapsed"   
+                                Style="{StaticResource ContactSliderStyle}"
+                                Value="{x:Bind ContactSize_NEC, Mode=OneWay}"
+                                ValueChanged="ContactSizeSlider_NEC_ValueChanged" />
+
+
+                <Slider Width="180" x:Name="ContactSizeSlider_EN" Grid.Row="6" Grid.Column="2" Visibility="Collapsed"   
                                 Style="{StaticResource ContactSliderStyle}"
                                 Value="{x:Bind ContactSize_EN, Mode=OneWay}"
                                 ValueChanged="ContactSizeSlider_EN_ValueChanged" />
+
+                <Slider Width="180" x:Name="ContactSizeSlider_E" Grid.Row="7" Grid.Column="2"  Visibility="Visible"  
+                                Style="{StaticResource ContactSliderStyle}"
+                                Value="{x:Bind ContactSize_E, Mode=OneWay}"
+                                ValueChanged="ContactSizeSlider_E_ValueChanged" />
 
                 <Slider Width="180" x:Name="ContactSizeSlider_ES" Grid.Row="8" Grid.Column="2" Visibility="Collapsed"   
                                 Style="{StaticResource ContactSliderStyle}"
                                 Value="{x:Bind ContactSize_ES, Mode=OneWay}"
                                 ValueChanged="ContactSizeSlider_ES_ValueChanged" />
 
-                <Slider Width="180" x:Name="ContactSizeSlider_W" Grid.Row="9" Grid.Column="2" Visibility="Collapsed"   
-                                Style="{StaticResource ContactSliderStyle}"
-                                Value="{x:Bind ContactSize_W, Mode=OneWay}"
-                                ValueChanged="ContactSizeSlider_W_ValueChanged" />
 
-                <Slider Width="180" x:Name="ContactSizeSlider_WN" Grid.Row="10" Grid.Column="2" Visibility="Collapsed"   
+                <Slider Width="180" x:Name="ContactSizeSlider_WN" Grid.Row="9" Grid.Column="2" Visibility="Collapsed"   
                                 Style="{StaticResource ContactSliderStyle}"
                                 Value="{x:Bind ContactSize_WN, Mode=OneWay}"
                                 ValueChanged="ContactSizeSlider_WN_ValueChanged" />
+
+                <Slider Width="180" x:Name="ContactSizeSlider_W" Grid.Row="10" Grid.Column="2" Visibility="Collapsed"   
+                                Style="{StaticResource ContactSliderStyle}"
+                                Value="{x:Bind ContactSize_W, Mode=OneWay}"
+                                ValueChanged="ContactSizeSlider_W_ValueChanged" />
 
                 <Slider Width="180" x:Name="ContactSizeSlider_WS" Grid.Row="11" Grid.Column="2" Visibility="Collapsed"   
                                 Style="{StaticResource ContactSliderStyle}"
@@ -465,30 +468,30 @@
                                 ValueChanged="ContactSizeSlider_WS_ValueChanged" />
 
 
-                <Slider Width="180" x:Name="ContactSizeSlider_S" Grid.Row="12" Grid.Column="2" Visibility="Collapsed"   
+                <Slider Width="180" x:Name="ContactSizeSlider_SWC" Grid.Row="12" Grid.Column="2" Visibility="Collapsed" 
                                 Style="{StaticResource ContactSliderStyle}"
-                                Value="{x:Bind ContactSize_S, Mode=OneWay}"
-                                ValueChanged="ContactSizeSlider_S_ValueChanged" />
+                                Value="{x:Bind ContactSize_SWC, Mode=OneWay}"
+                                ValueChanged="ContactSizeSlider_SWC_ValueChanged" />
 
-                <Slider Width="180" x:Name="ContactSizeSlider_SE" Grid.Row="13" Grid.Column="2" Visibility="Collapsed"   
-                                Style="{StaticResource ContactSliderStyle}"
-                                Value="{x:Bind ContactSize_SE, Mode=OneWay}"
-                                ValueChanged="ContactSizeSlider_SE_ValueChanged" />
-
-                <Slider Width="180" x:Name="ContactSizeSlider_SW" Grid.Row="14" Grid.Column="2" Visibility="Collapsed"   
+                <Slider Width="180" x:Name="ContactSizeSlider_SW" Grid.Row="13" Grid.Column="2" Visibility="Collapsed"   
                                 Style="{StaticResource ContactSliderStyle}"
                                 Value="{x:Bind ContactSize_SW, Mode=OneWay}"
                                 ValueChanged="ContactSizeSlider_SW_ValueChanged" />
 
-                <Slider Width="180" x:Name="ContactSizeSlider_SEC" Grid.Row="15" Grid.Column="2" Visibility="Collapsed"   
+                <Slider Width="180" x:Name="ContactSizeSlider_S" Grid.Row="14" Grid.Column="2" Visibility="Collapsed"   
+                                Style="{StaticResource ContactSliderStyle}"
+                                Value="{x:Bind ContactSize_S, Mode=OneWay}"
+                                ValueChanged="ContactSizeSlider_S_ValueChanged" />
+
+                <Slider Width="180" x:Name="ContactSizeSlider_SE" Grid.Row="15" Grid.Column="2" Visibility="Collapsed"   
+                                Style="{StaticResource ContactSliderStyle}"
+                                Value="{x:Bind ContactSize_SE, Mode=OneWay}"
+                                ValueChanged="ContactSizeSlider_SE_ValueChanged" />
+
+                <Slider Width="180" x:Name="ContactSizeSlider_SEC" Grid.Row="16" Grid.Column="2" Visibility="Collapsed"   
                                 Style="{StaticResource ContactSliderStyle}"
                                 Value="{x:Bind ContactSize_SEC, Mode=OneWay}"
                                 ValueChanged="ContactSizeSlider_SEC_ValueChanged" />
-
-                <Slider Width="180" x:Name="ContactSizeSlider_SWC" Grid.Row="16" Grid.Column="2" Visibility="Collapsed" 
-                                Style="{StaticResource ContactSliderStyle}"
-                                Value="{x:Bind ContactSize_SWC, Mode=OneWay}"
-                                ValueChanged="ContactSizeSlider_SWC_ValueChanged" />
 
 
             </Grid>

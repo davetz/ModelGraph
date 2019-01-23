@@ -10,8 +10,8 @@ namespace ModelGraph.Controls
     {
         internal PolySpline()
         {
-            Radius1 = 60;
-            Radius2 = 60;
+            Radius1 = 0.5f;
+            Radius2 = 0.5f;
             Dimension = 6;
             CreatePoints();
         }

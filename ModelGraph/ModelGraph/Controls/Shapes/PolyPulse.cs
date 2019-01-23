@@ -10,9 +10,9 @@ namespace ModelGraph.Controls
     {
         internal PolyPulse()
         {
-            Radius1 = 64;
-            Radius2 = 32;
-            AuxFactor = 25;
+            Radius1 = 0.5f;
+            Radius2 = 0.25f;
+            AuxFactor = 0.25f;
             Dimension = 5;
             CreatePoints();
         }

@@ -97,13 +97,30 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Radius  =======================================================
-        protected float Radius1 { get { return R1; } set { R1 = (byte)((value < 1) ? 1 : (value > 128) ? 128 : value); } }
-        protected float Radius2 { get { return R2; } set { R2 = (byte)((value < 1) ? 1 : (value > 128) ? 128 : value); } }
-        protected float AuxFactor { get { return F1; } set { F1 = (byte)((value < 0) ? 0 : (value > 100) ? 100 : value); } }
+        byte ToByte(float v, float L = 0)
+        {
+            if (v < L) v = L;
+            var b = v * 255;
+            if (b > 255) b = 255;
+            return (byte)b;
+        }
+        sbyte ToSByte(float v)
+        {
+            if (v < -1) v = -1;
+            if (v >  1) v =  1;
 
-        protected Vector2 Radius => new Vector2(R1, R2);
-        protected (float r1, float r2, float f1) GetRadius(float scale) => (R1 * scale, R2 * scale, F1);
-        protected (float r1, float r2, float f1) GetRadius() => (R1, R2, F1);
+            return (sbyte)(v * 127);
+        }
+        float ToFloat(byte b) => b / 255f;
+        float ToFloat(sbyte s) => s / 127f;
+
+        protected float Radius1 { get { return ToFloat(R1); } set { R1 = ToByte(value, 0.004f); } }
+        protected float Radius2 { get { return ToFloat(R2); } set { R2 = ToByte(value, 0.004f); } }
+        protected float AuxFactor { get { return ToFloat(F1); } set { F1 = ToByte(value); } }
+
+        protected Vector2 Radius => new Vector2(Radius1, Radius2);
+        protected (float r1, float r2, float f1) GetRadius(float scale) => (Radius1 * scale, Radius2 * scale, AuxFactor);
+        protected (float r1, float r2, float f1) GetRadius() => (Radius1, Radius2, AuxFactor);
         #endregion
 
         #region Dimension  ====================================================
@@ -137,9 +154,9 @@ namespace ModelGraph.Controls
 
         #region Sliders  ======================================================
         internal bool IsLocked { get { return PL != 0; } set { PL = (byte)(value ? 1 : 0); } }
-        internal double AuxSlider { get { return F1; } set { AuxFactor = (float)value; CreatePoints(); } }
-        internal double MajorSlider { get { return R2; } set { Radius2 = (float)value; CreatePoints(); } }
-        internal double MinorSlider { get { return R1; } set { Radius1 = (float)value; CreatePoints(); } }
+        internal double AuxSlider { get { return 100 * AuxFactor; } set { AuxFactor = (float)value / 100; CreatePoints(); } }
+        internal double MajorSlider { get { return 100 * Radius2; } set { Radius2 = (float)value / 100; CreatePoints(); } }
+        internal double MinorSlider { get { return 100 * Radius2; } set { Radius1 = (float)value / 100; CreatePoints(); } }
         #endregion
     
         #endregion
@@ -244,7 +261,9 @@ namespace ModelGraph.Controls
                 DXY = new List<(float dx, float dy)>(pc);
                 for (int i = 0; i < pc; i++)
                 {
-                    DXY.Add(((sbyte)data[I++], (sbyte)data[I++]));
+                    var dx = ((sbyte)data[I++]) / 127.0f; //use as much of the sbyte
+                    var dy = ((sbyte)data[I++]) / 127.0f; //precision as posible
+                    DXY.Add((dx, dy));
                 }
             }
         }

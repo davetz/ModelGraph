@@ -10,8 +10,8 @@ namespace ModelGraph.Controls
     {
         internal PolyStar()
         {
-            Radius1 = 50;
-            Radius2 = 20;
+            Radius1 = 0.5f;
+            Radius2 = 0.2f;
             Dimension = 6;
             CreatePoints();
         }
