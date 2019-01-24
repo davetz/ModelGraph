@@ -186,55 +186,81 @@ namespace ModelGraph.Controls
             EditorCanvas.Invalidate();
         }
 
+        private void SetNewContactSize(Target targ, double value)
+        {
+            var d = (float)(value / 100);
+            if (Target_Contacts.TryGetValue(targ, out (Contact c, (sbyte x, sbyte y) p, byte s) v))
+            {
+                Target_Contacts[targ] = (v.c, v.p, Shape.ToByte(d));
+                EditorCanvas.Invalidate();
+            }
+        }
+
         private void ContactSizeSlider_N_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.N, e.NewValue);
         }
         private void ContactSizeSlider_NE_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.NE, e.NewValue);
         }
         private void ContactSizeSlider_NW_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.NW, e.NewValue);
         }
         private void ContactSizeSlider_NEC_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.NEC, e.NewValue);
         }
         private void ContactSizeSlider_NWC_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.NWC, e.NewValue);
         }
 
         private void ContactSizeSlider_E_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.E, e.NewValue);
         }
         private void ContactSizeSlider_EN_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.EN, e.NewValue);
         }
         private void ContactSizeSlider_ES_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.ES, e.NewValue);
         }
 
         private void ContactSizeSlider_W_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.W, e.NewValue);
         }
         private void ContactSizeSlider_WN_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.WN, e.NewValue);
         }
         private void ContactSizeSlider_WS_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.WS, e.NewValue);
         }
         private void ContactSizeSlider_S_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.S, e.NewValue);
         }
         private void ContactSizeSlider_SE_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.SE, e.NewValue);
         }
         private void ContactSizeSlider_SW_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.SW, e.NewValue);
         }
         private void ContactSizeSlider_SEC_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.SEC, e.NewValue);
         }
         private void ContactSizeSlider_SWC_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            SetNewContactSize(Target.SWC, e.NewValue);
         }
 
         #endregion

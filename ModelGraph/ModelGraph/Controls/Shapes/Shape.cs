@@ -82,15 +82,15 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Resize  =======================================================
-        internal static void ResizeCentral(IEnumerable<Shape> shapes, float factor)
+        internal static void ResizeCentral(IEnumerable<Shape> shapes, float slider)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
 
             if (dx + dy > 0)
             {
                 var actualSize = (dx > dy) ? dx : dy;
-                var desiredSize = ConvertSlider(factor);
-                var ratio = desiredSize / actualSize;
+                var desiredSize = ConvertSlider(slider);
+                var ratio = 2 * desiredSize / actualSize;
                 var scale = new Vector2(ratio, ratio);
                 foreach (var shape in shapes)
                 {
@@ -99,7 +99,7 @@ namespace ModelGraph.Controls
                 }
             }
         }
-        internal static void ResizeVertical(IEnumerable<Shape> shapes, float factor)
+        internal static void ResizeVertical(IEnumerable<Shape> shapes, float slider)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
 
@@ -107,8 +107,8 @@ namespace ModelGraph.Controls
             {
 
                 var actualSize = dy2 - dy1;
-                var desiredSize = ConvertSlider(factor);
-                var ratio = desiredSize / actualSize;
+                var desiredSize = ConvertSlider(slider);
+                var ratio = 2 * desiredSize / actualSize;
                 var scale = new Vector2(1, ratio);
                 foreach (var shape in shapes)
                 {
@@ -117,15 +117,15 @@ namespace ModelGraph.Controls
                 }
             }
         }
-        internal static void ResizeHorizontal(IEnumerable<Shape> shapes, float factor)
+        internal static void ResizeHorizontal(IEnumerable<Shape> shapes, float slider)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
 
             if (dx + dy > 0)
             {
                 var actualSize = dx2 - dx1;
-                var desiredSize = ConvertSlider(factor);
-                var ratio = desiredSize / actualSize;
+                var desiredSize = ConvertSlider(slider);
+                var ratio = 2 * desiredSize / actualSize;
                 var scale = new Vector2(ratio, 1);
                 foreach (var shape in shapes)
                 {
@@ -134,10 +134,10 @@ namespace ModelGraph.Controls
                 }
             }
         }
-        internal static void ResizeMajorAxis(IEnumerable<Shape> shapes, float factor)
+        internal static void ResizeMajorAxis(IEnumerable<Shape> shapes, float slider)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
-            var desiredSize = ConvertSlider(factor);
+            var desiredSize = ConvertSlider(slider);
 
             foreach (var shape in shapes)
             {
@@ -146,10 +146,10 @@ namespace ModelGraph.Controls
             }
             SetCenter(shapes, new Vector2(cdx, cdy));
         }
-        internal static void ResizeMinorAxis(IEnumerable<Shape> shapes, float factor)
+        internal static void ResizeMinorAxis(IEnumerable<Shape> shapes, float slider)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
-            var desiredSize = ConvertSlider(factor);
+            var desiredSize = ConvertSlider(slider);
             foreach (var shape in shapes)
             {
                 shape.Radius2 = desiredSize;
@@ -157,10 +157,10 @@ namespace ModelGraph.Controls
             }
             SetCenter(shapes, new Vector2(cdx, cdy));
         }
-        internal static void ResizeTernaryAxis(IEnumerable<Shape> shapes, float factor)
+        internal static void ResizeTernaryAxis(IEnumerable<Shape> shapes, float slider)
         {
             var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
-            var desiredSize = ConvertSlider(factor);
+            var desiredSize = ConvertSlider(slider);
             foreach (var shape in shapes)
             {
                 shape.AuxFactor = desiredSize;

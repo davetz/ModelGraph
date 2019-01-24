@@ -27,7 +27,7 @@ namespace ModelGraph.Controls
             var (r1, r2, f1) = GetRadius();
 
             var da = FullRadians / M;
-            var ta = da * f1 / 200;
+            var ta = da * f1;
             var a = RadiansStart;
             for (int i = 0; i < D; i++)
             {

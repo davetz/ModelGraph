@@ -491,53 +491,273 @@ namespace ModelGraph.Controls
                     SetEventAction(PointerEvent.Drag, DragContact_N);
                     break;
                 case Target.S:
+                    SetEventAction(PointerEvent.Drag, DragContact_S);
                     break;
                 case Target.E:
+                    SetEventAction(PointerEvent.Drag, DragContact_E);
                     break;
                 case Target.W:
+                    SetEventAction(PointerEvent.Drag, DragContact_W);
                     break;
                 case Target.NE:
+                    SetEventAction(PointerEvent.Drag, DragContact_NE);
                     break;
                 case Target.NW:
+                    SetEventAction(PointerEvent.Drag, DragContact_NW);
                     break;
                 case Target.SE:
+                    SetEventAction(PointerEvent.Drag, DragContact_SE);
                     break;
                 case Target.SW:
+                    SetEventAction(PointerEvent.Drag, DragContact_SW);
                     break;
                 case Target.EN:
+                    SetEventAction(PointerEvent.Drag, DragContact_EN);
                     break;
                 case Target.ES:
+                    SetEventAction(PointerEvent.Drag, DragContact_ES);
                     break;
                 case Target.WN:
+                    SetEventAction(PointerEvent.Drag, DragContact_WN);
                     break;
                 case Target.WS:
+                    SetEventAction(PointerEvent.Drag, DragContact_WS);
                     break;
                 case Target.NEC:
+                    SetEventAction(PointerEvent.Drag, DragContact_NEC);
                     break;
                 case Target.NWC:
+                    SetEventAction(PointerEvent.Drag, DragContact_NWC);
                     break;
                 case Target.SEC:
+                    SetEventAction(PointerEvent.Drag, DragContact_SEC);
                     break;
                 case Target.SWC:
+                    SetEventAction(PointerEvent.Drag, DragContact_SWC);
                     break;
                 case Target.Any:
+                    SetEventAction(PointerEvent.Drag, DragContact_SWC);
                     break;
             }
         }
         #endregion
 
         #region DragContact_N  ================================================
+        private void DragContact_NWC()
+        {
+            if (Target_Contacts.TryGetValue(Target.NWC, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.Y;
+                if (d <  -1f) d = -1f;
+                if (d > -0.1f) d = -0.1f;
+                var p = new Vector2(d, d);
+
+                Target_Contacts[Target.NWC] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_NW()
+        {
+            if (Target_Contacts.TryGetValue(Target.NW, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.Y;
+                if (d < -1f) d = -1f;
+                if (d > -0.1f) d = -0.1f;
+                var p = new Vector2(-.5f, d);
+
+                Target_Contacts[Target.NW] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
         private void DragContact_N()
         {
             if (Target_Contacts.TryGetValue(Target.N, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var dy = ShapePoint2.Y;
-                if (dy > -20) dy = -20;
-                if (dy < -LIM) dy = -LIM;
+                var d = ShapePoint2.Y;
+                if (d < -1f) d = -1f;
+                if (d > -0.1f) d = -0.1f;
+                var p = new Vector2(0, d);
 
-                Target_Contacts[Target.N] = (val.con, (0, (sbyte)dy), val.siz);
+                Target_Contacts[Target.N] = (val.con, Shape.ToSByte(p), val.siz);
             }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_NE()
+        {
+            if (Target_Contacts.TryGetValue(Target.NE, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.Y;
+                if (d < -1f) d = -1f;
+                if (d > -0.1f) d = -0.1f;
+                var p = new Vector2(.5f, d);
 
+                Target_Contacts[Target.NE] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_NEC()
+        {
+            if (Target_Contacts.TryGetValue(Target.NEC, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.Y;
+                if (d < -1f) d = -1f;
+                if (d > -0.1f) d = -0.1f;
+                var p = new Vector2(-d, d);
+
+                Target_Contacts[Target.NEC] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        #endregion
+
+        #region DragContact_E  ================================================
+        private void DragContact_EN()
+        {
+            if (Target_Contacts.TryGetValue(Target.EN, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.X;
+                if (d > 1) d = 1;
+                if (d < 0.1f) d = 0.1f;
+                var p = new Vector2(d, -.5f);
+
+                Target_Contacts[Target.EN] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_E()
+        {
+            if (Target_Contacts.TryGetValue(Target.E, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.X;
+                if (d > 1) d = 1;
+                if (d < 0.1f) d = 0.1f;
+                var p = new Vector2(d, 0);
+
+                Target_Contacts[Target.E] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_ES()
+        {
+            if (Target_Contacts.TryGetValue(Target.ES, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.X;
+                if (d > 1) d = 1;
+                if (d < 0.1f) d = 0.1f;
+                var p = new Vector2(d, .5f);
+
+                Target_Contacts[Target.ES] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        #endregion
+
+        #region DragContact_W  ================================================
+        private void DragContact_WN()
+        {
+            if (Target_Contacts.TryGetValue(Target.WN, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.X;
+                if (d < -1f) d = -1f;
+                if (d > -0.1f) d = -0.1f;
+                var p = new Vector2(d, -.5f);
+
+                Target_Contacts[Target.WN] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_W()
+        {
+            if (Target_Contacts.TryGetValue(Target.W, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.X;
+                if (d < -1f) d = -1f;
+                if (d > -0.1f) d = -0.1f;
+                var p = new Vector2(d, 0);
+
+                Target_Contacts[Target.W] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_WS()
+        {
+            if (Target_Contacts.TryGetValue(Target.WS, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.X;
+                if (d < -1f) d = -1f;
+                if (d > -0.1f) d = -0.1f;
+                var p = new Vector2(d, .5f);
+
+                Target_Contacts[Target.WS] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        #endregion
+
+        #region DragContact_S  ================================================
+        private void DragContact_SWC()
+        {
+            if (Target_Contacts.TryGetValue(Target.SWC, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.Y;
+                if (d > 1) d = 1;
+                if (d < 0.1f) d = 0.1f;
+                var p = new Vector2(-d, d);
+
+                Target_Contacts[Target.SWC] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_SW()
+        {
+            if (Target_Contacts.TryGetValue(Target.SW, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.Y;
+                if (d > 1) d = 1;
+                if (d < 0.1f) d = 0.1f;
+                var p = new Vector2(-.5f, d);
+
+                Target_Contacts[Target.SW] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_S()
+        {
+            if (Target_Contacts.TryGetValue(Target.S, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.Y;
+                if (d > 1) d = 1;
+                if (d < 0.1f) d = 0.1f;
+                var p = new Vector2(0, d);
+
+                Target_Contacts[Target.S] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_SE()
+        {
+            if (Target_Contacts.TryGetValue(Target.SE, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.Y;
+                if (d > 1) d = 1;
+                if (d < 0.1f) d = 0.1f;
+                var p = new Vector2(.5f, d);
+
+                Target_Contacts[Target.SE] = (val.con, Shape.ToSByte(p), val.siz);
+            }
+            EditorCanvas.Invalidate();
+        }
+        private void DragContact_SEC()
+        {
+            if (Target_Contacts.TryGetValue(Target.SEC, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
+            {
+                var d = ShapePoint2.Y;
+                if (d > 1) d = 1;
+                if (d < 0.1f) d = 0.1f;
+                var p = new Vector2(d, d);
+
+                Target_Contacts[Target.SEC] = (val.con, Shape.ToSByte(p), val.siz);
+            }
             EditorCanvas.Invalidate();
         }
         #endregion

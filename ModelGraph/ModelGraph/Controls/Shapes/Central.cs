@@ -100,8 +100,8 @@ namespace ModelGraph.Controls
         }
         protected override void Scale(Vector2 scale)
         {
-            Radius1 *= scale.X;
-            Radius2 *= scale.Y;
+            Radius1 = scale.X;
+            Radius2 = scale.Y;
         }
         #endregion
     }

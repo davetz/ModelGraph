@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace ModelGraphSTD
 {
@@ -98,6 +99,62 @@ namespace ModelGraphSTD
                     return (quad, sect, dy / dx);
                 }
             }
+        }
+        public static ((float dx, float dy) p1, (float dx2, float dy2) p2) GetScaledNormal(Target targ, float x, float y, float d)
+        {
+            float s;
+            switch (targ)
+            {
+                case Target.N:
+                case Target.S:
+                    return ((x - d, y), (x + d, y));
+
+                case Target.E:
+                case Target.W:
+                    return ((x, y - d), (x, y + d));
+
+                case Target.NE:
+                case Target.SE:
+                case Target.NW:
+                case Target.SW:
+                    d *= .5f;
+                    return ((x - d, y), (x + d, y));
+
+                case Target.EN:
+                case Target.WN:
+                case Target.ES:
+                case Target.WS:
+                    d *= .5f;
+                    return ((x, y - d), (x, y + d));
+
+                case Target.NEC:
+                    s = (x - 1) * d;
+                    return ((x - s, y - s), (x + s, y + s));
+
+                case Target.SEC:
+                    s = (x - 1) * d;
+                    return ((x - s, y + s), (x + s, y - s));
+
+                case Target.NWC:
+                    s = (1 + x) * d;
+                    return ((x - s, y + s), (x + s, y - s));
+
+                case Target.SWC:
+                    s = (1 + x) * d;
+                    return ((x - s, y - s), (x + s, y + s));
+
+                default:
+                    return ((0, 0), (0, 0));
+            }
+        }
+        public static (Vector2 p1, Vector2 p2) GetScaledNormal(Target targ, Vector2 p, float d, Vector2 center, float scale)
+        {
+            var (p1, p2) = GetScaledNormal(targ, p.X, p.Y, d);
+            var v1 = ToVector(p1);
+            var v2 = ToVector(p2);
+            return (center + scale * v1, center + scale * v2);
+
+            Vector2 ToVector((float x, float y) q) => new Vector2(q.x, q.y);
         }
     }
 }

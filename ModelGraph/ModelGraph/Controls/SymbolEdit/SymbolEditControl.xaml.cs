@@ -40,9 +40,7 @@ namespace ModelGraph.Controls
 
         private Shape PickerShape; //current selected picker shape
 
-        private float LIM = 127; // +/- range of shape dx, dy values
         private float EditScale => EditSize / 2;
-        private const float ShapeSize = 256; //max width, height of shape
         private const float EditSize = 512;  //width, height of shape in the editor
 
         private const float EditMargin = 32; //size of empty space arround the shape editor 
@@ -370,8 +368,7 @@ namespace ModelGraph.Controls
         #region DrawTargetContacts  ===========================================
         private void DrawTargetContacts(CanvasDrawingSession ds)
         {
-            var cp = new Vector2(EDITCenter, EDITCenter);
-            var sf = EditSize / 200; //scale factor to get target point 
+            var cp = Center;
 
             CheckContacts();
             var N = _contactTargets.Count;
@@ -381,62 +378,60 @@ namespace ModelGraph.Controls
             {
                 var (cont, targ, point, size) = _contactTargets[i];
 
-                var p = new Vector2(point.dx, point.dy);
-                var c = cp + p * sf;
+                var p = point * EditScale;
+                var c = Center + p;
                 _targetPoints.Add(c);
-                ds.DrawCircle(c, 7, Colors.Cyan, 3);
+                ds.DrawCircle(c, 8, Colors.Red, 5);
+                if (cont == Contact.Any && size > 0)
+                {
+                    var (p1, p2) = XYPair.GetScaledNormal(targ, point, size, Center, EditScale);
+                    ds.DrawLine(p1, p2, Color.FromArgb(0x80, 0xFF, 0, 0), 20);
+                }
             }
         }
         #endregion
 
         #region Target_Contacts  ==============================================
         private Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> Target_Contacts;
-        private List<(Contact cont, Target targ, (sbyte dx, sbyte dy) point, byte)> _contactTargets = new List<(Contact cont, Target targ, (sbyte dx, sbyte dy) point, byte)>();
+        private List<(Contact cont, Target targ, Vector2 point, float size)> _contactTargets = new List<(Contact cont, Target targ, Vector2 point, float)>();
 
         #region CheckContacts  ================================================
         private void CheckContacts()
         {
-            byte s = 25;
-            sbyte z = 0;
-            sbyte p = 100;
-            sbyte n = -100;
-            sbyte hp = 50;
-            sbyte hn = -50;
-
             _contactTargets.Clear();
             
-            CheckContact(Contact_NWC, Target.NWC, (n, n), 0);
-            CheckContact(Contact_NW, Target.NW, (hn, n), s);
-            CheckContact(Contact_N, Target.N, (z, n), s);
-            CheckContact(Contact_NE, Target.NE, (hp, n), s);
-            CheckContact(Contact_NEC, Target.NEC, (p, n), 0);
+            CheckContact(Contact_NWC, Target.NWC, new Vector2(-1, -1), 0);
+            CheckContact(Contact_NW, Target.NW, new Vector2(-.5f, -1), 0);
+            CheckContact(Contact_N, Target.N, new Vector2(0, -1), 0);
+            CheckContact(Contact_NE, Target.NE, new Vector2(.5f, -1), 0);
+            CheckContact(Contact_NEC, Target.NEC, new Vector2(1, -1), 0);
 
-            CheckContact(Contact_EN, Target.EN, (p, hn), s);
-            CheckContact(Contact_E, Target.E, (p, z), s);
-            CheckContact(Contact_ES, Target.ES, (p, hp), s);
+            CheckContact(Contact_EN, Target.EN, new Vector2(1, -.5f), 0);
+            CheckContact(Contact_E, Target.E, new Vector2(1, 0), 0);
+            CheckContact(Contact_ES, Target.ES, new Vector2(1, .5f), 0);
 
-            CheckContact(Contact_WN, Target.WN, (n, hn), s);
-            CheckContact(Contact_W, Target.W, (n, z), s);
-            CheckContact(Contact_WS, Target.WS, (n, hp), s);
+            CheckContact(Contact_WN, Target.WN, new Vector2(-1, -.5f), 0);
+            CheckContact(Contact_W, Target.W, new Vector2(-1, 0), 0);
+            CheckContact(Contact_WS, Target.WS, new Vector2(-1, .5f), 0);
 
-            CheckContact(Contact_SWC, Target.SWC, (n, p), s);
-            CheckContact(Contact_SW, Target.SW, (hn, p), s);
-            CheckContact(Contact_S, Target.S, (z, p), s);
-            CheckContact(Contact_SE, Target.SE, (hp, p), s);
-            CheckContact(Contact_SEC, Target.SEC, (p, p), s);
+            CheckContact(Contact_SWC, Target.SWC, new Vector2(-1, 1), 0);
+            CheckContact(Contact_SW, Target.SW, new Vector2(-.5f, 1), 0);
+            CheckContact(Contact_S, Target.S, new Vector2(0, 1), 0);
+            CheckContact(Contact_SE, Target.SE, new Vector2(.5f, 1), 0);
+            CheckContact(Contact_SEC, Target.SEC, new Vector2(1, 1), 0);
 
-            void CheckContact(Contact cont, Target targ, (sbyte,sbyte) point, byte size)
+            void CheckContact(Contact cont, Target targ, Vector2 point, float size)
             {
                 if (cont == Contact.None)
                     Target_Contacts.Remove(targ);
-                else if (Target_Contacts.TryGetValue(targ, value: out (Contact, (sbyte, sbyte) pnt, byte siz) ex))
+                else if (Target_Contacts.TryGetValue(targ, value: out (Contact c, (sbyte, sbyte) p, byte s) e))
                 {
-                    Target_Contacts[targ] = (cont, ex.pnt, ex.siz);
-                    _contactTargets.Add((cont, targ, ex.pnt, ex.siz));
+                    var s = (byte)((cont == Contact.One) ? 0 : e.s);
+                    _contactTargets.Add((e.c, targ, Shape.ToVector(e.p), Shape.ToFloat(s)));
                 }
                 else
                 {
-                    Target_Contacts.Add(targ, (cont, point, size));
+                    Target_Contacts.Add(targ, (cont, Shape.ToSByte(point), Shape.ToByte(size)));
                     _contactTargets.Add((cont, targ, point, size));
                 }
             }

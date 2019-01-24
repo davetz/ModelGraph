@@ -97,29 +97,33 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Radius  =======================================================
-        byte ToByte(float v, float L = 0)
+        public static byte ToByte(float v, float L = 0)
         {
             if (v < L) v = L;
             var b = v * 255;
             if (b > 255) b = 255;
             return (byte)b;
         }
-        sbyte ToSByte(float v)
+        public static sbyte ToSByte(float v)
         {
             if (v < -1) v = -1;
             if (v >  1) v =  1;
 
             return (sbyte)(v * 127);
         }
-        float ToFloat(byte b) => b / 255f;
-        float ToFloat(sbyte s) => s / 127f;
+        public static float ToFloat(byte b) => b / 255f;
+        public static float ToFloat(sbyte s) => s / 127f;
+
+        public static (float, float) ToFloat((sbyte dx, sbyte dy) p) => (ToFloat(p.dx), ToFloat(p.dy));
+        public static Vector2 ToVector((sbyte dx, sbyte dy) p) => new Vector2(ToFloat(p.dx), ToFloat(p.dy));
+        public static (sbyte dx, sbyte dy) ToSByte(Vector2 p) => (ToSByte(p.X), ToSByte(p.Y));
 
         protected float Radius1 { get { return ToFloat(R1); } set { R1 = ToByte(value, 0.004f); } }
         protected float Radius2 { get { return ToFloat(R2); } set { R2 = ToByte(value, 0.004f); } }
         protected float AuxFactor { get { return ToFloat(F1); } set { F1 = ToByte(value); } }
 
         protected Vector2 Radius => new Vector2(Radius1, Radius2);
-        protected (float r1, float r2, float f1) GetRadius(float scale) => (Radius1 * scale, Radius2 * scale, AuxFactor);
+        protected (float r1, float r2, float f1) GetRadius(float scale) => (Radius1 * scale, Radius2 * scale, AuxFactor * scale);
         protected (float r1, float r2, float f1) GetRadius() => (Radius1, Radius2, AuxFactor);
         #endregion
 

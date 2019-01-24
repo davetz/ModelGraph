@@ -42,7 +42,7 @@ namespace ModelGraph.Controls
 
             var nax = NAX[D]; // number of ax steps for given dimension
             var ax = r1 * 2 / nax; //ax step size
-            var bx = ax * f1 / 200;
+            var bx = ax * f1;
             var dx = -r1;
             var dy = r2;
 
