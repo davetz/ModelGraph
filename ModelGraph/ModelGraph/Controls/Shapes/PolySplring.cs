@@ -6,23 +6,23 @@ using System.Numerics;
 
 namespace ModelGraph.Controls
 {
-    internal class PolySpline : Polyline
+    internal class PolySpring : Polyline
     {
-        internal PolySpline()
+        internal PolySpring()
         {
-            Radius1 = 0.5f;
-            Radius2 = 0.5f;
+            Radius1 = 0.75f;
+            Radius2 = 0.35f;
             Dimension = 6;
             CreatePoints();
         }
-        internal PolySpline(int I, byte[] data) : base(I, data) { }
+        internal PolySpring(int I, byte[] data) : base(I, data) { }
 
         #region PrivateConstructor  ===========================================
-        private PolySpline(Shape shape)
+        private PolySpring(Shape shape)
         {
             CopyData(shape);
         }
-        private PolySpline(Shape shape, Vector2 center)
+        private PolySpring(Shape shape, Vector2 center)
         {
             CopyData(shape);
             SetCenter(new Shape[] { this }, center);
@@ -115,8 +115,8 @@ namespace ModelGraph.Controls
         #endregion
 
         #region OverideAbstract  ==============================================
-        internal override Shape Clone() => new PolySpline(this);
-        internal override Shape Clone(Vector2 center) => new PolySpline(this, center);
+        internal override Shape Clone() => new PolySpring(this);
+        internal override Shape Clone(Vector2 center) => new PolySpring(this, center);
         protected override (int min, int max) MinMaxDimension => (1, 18);
 
         internal override void Draw(CanvasControl ctl, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth, Coloring coloring = Coloring.Normal)
@@ -144,6 +144,8 @@ namespace ModelGraph.Controls
             }
         }
         internal override HasSlider Sliders => HasSlider.Horz | HasSlider.Vert | HasSlider.Minor | HasSlider.Major | HasSlider.Dim;
+        protected override byte TypeCode => (byte)ShapeType.PolySpring;
+
         #endregion
     }
 }

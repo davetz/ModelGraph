@@ -124,8 +124,11 @@
       <DependentUpon>ModelTreeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ModelTree\ModelTreeUICache.cs" />
+    <Compile Include="Controls\Shapes\Line.cs" />
+    <Compile Include="Controls\Shapes\PolySpike.cs" />
     <Compile Include="Controls\Shapes\PolyPulse.cs" />
-    <Compile Include="Controls\Shapes\PolySpline.cs" />
+    <Compile Include="Controls\Shapes\PolyWave.cs" />
+    <Compile Include="Controls\Shapes\PolySplring.cs" />
     <Compile Include="Controls\Shapes\Polyline.cs" />
     <Compile Include="Controls\Shapes\Central.cs" />
     <Compile Include="Controls\Shapes\PolyGear.cs" />

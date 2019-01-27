@@ -9,11 +9,13 @@ namespace ModelGraphSTD
         internal DashStyle DashStyle;
 
         // connection detail at head end of path
+        internal Target Target1;
+        internal Connect Connect1; //[DELETE]
         internal Facet Facet1;
-        internal Connect Connect1;
 
         // connection detail at tail end of path
+        internal Target Target2;
+        internal Connect Connect2; //[DELETE]
         internal Facet Facet2;
-        internal Connect Connect2;
     }
 }

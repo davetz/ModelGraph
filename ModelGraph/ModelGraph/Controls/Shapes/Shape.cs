@@ -38,6 +38,7 @@ namespace ModelGraph.Controls
 
         protected virtual void CreatePoints() { }
         protected virtual (int min, int max) MinMaxDimension => (1, 100);
+        protected abstract byte TypeCode { get; }
         #endregion
 
         #region Flip/Rotate  ==================================================
@@ -193,7 +194,7 @@ namespace ModelGraph.Controls
             if (shapes.Count() > 0)
             {
                 var (dx1, dy1, dx2, dy2, cdx, cdy, dx, dy) = GetExtent(shapes);
-                var (r1, r2, r3) = GetMaxRadius(shapes);
+                var (r1, r2, f1) = GetMaxRadius(shapes);
                 var (min, max, dim) = GetDimension(shapes);
                 var (locked, slider) = GetHasSlider(shapes);
 
@@ -202,7 +203,7 @@ namespace ModelGraph.Controls
                 var cent = Larger(vert, horz);
                 var major = Factor(r1);
                 var minor = Factor(r2);
-                var aux = Factor(r3);
+                var aux = Factor(f1);
                 if ((slider & HasSlider.Horz) == 0) horz = -1;
                 if ((slider & HasSlider.Vert) == 0) vert = -1;
                 if ((slider & HasSlider.Major) == 0) major = -1;
@@ -219,7 +220,7 @@ namespace ModelGraph.Controls
 
             float Larger(float p, float q) => (p > q) ? p : q;
             float Limited(float a, float b) => Larger(Factor(a), Factor(b));
-            float Factor(float v) => (float)System.Math.Round(100 * ((v < 0.1f) ? 0.1 : v));
+            float Factor(float v) => (float)System.Math.Round(100 * ((v < 0.01f) ? 0.01 : v));
         }
         #endregion
 

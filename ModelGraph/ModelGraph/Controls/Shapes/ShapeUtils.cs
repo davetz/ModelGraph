@@ -16,17 +16,17 @@ namespace ModelGraph.Controls
         static protected Vector2 ToVector((float x, float y) p) => new Vector2(p.x, p.y);
 
         #region GetMaxRadius  =================================================
-        static private (float r1, float r2, float r3) GetMaxRadius(IEnumerable<Shape> shapes)
+        static private (float r1, float r2, float f1) GetMaxRadius(IEnumerable<Shape> shapes)
         {
-            float r1 = 0, r2 = 0, r3 = 0;
+            float r1 = 0, r2 = 0, f1 = 0;
 
             foreach (var shape in shapes)
             {
                 if (shape.Radius1 > r1) r1 = shape.Radius1;
                 if (shape.Radius2 > r2) r2 = shape.Radius2;
-                if (shape.AuxFactor > r3) r3 = shape.AuxFactor;
+                if (shape.AuxFactor > f1) f1 = shape.AuxFactor;
             }
-            return (r1, r2, r3);
+            return (r1, r2, f1);
         }
         #endregion
 

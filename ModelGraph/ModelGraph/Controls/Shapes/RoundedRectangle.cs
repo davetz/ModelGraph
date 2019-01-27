@@ -62,6 +62,7 @@ namespace ModelGraph.Controls
                 ds.DrawRoundedRectangle(min.X, min.Y, len.X, len.Y, corner, corner, color, StrokeWidth, StrokeStyle());
         }
         internal override HasSlider Sliders => HasSlider.Horz | HasSlider.Vert;
+        protected override byte TypeCode => (byte)ShapeType.RoundedRectangle;
         #endregion
     }
 }

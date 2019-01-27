@@ -1,6 +1,7 @@
 ﻿using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Windows.UI;
 
@@ -9,7 +10,6 @@ namespace ModelGraph.Controls
     internal abstract partial class Shape
     {
         private const int PointCountIndex = 19;
-        private byte ST;      // shapte type code
         private byte A = 0xFF; // of color(A, R, G, B)
         private byte R = 0xFF; // of color(A, R, G, B)
         private byte G = 0xFF; // of color(A, R, G, B)
@@ -162,23 +162,68 @@ namespace ModelGraph.Controls
         internal double MajorSlider { get { return 100 * Radius2; } set { Radius2 = (float)value / 100; CreatePoints(); } }
         internal double MinorSlider { get { return 100 * Radius2; } set { Radius1 = (float)value / 100; CreatePoints(); } }
         #endregion
-    
+
+        #endregion
+
+        #region Serialize  ====================================================
+        public static byte[] Serialize(IEnumerable<Shape> shapes)
+        {
+            var data = new List<byte>(shapes.Count() * 30);
+
+            foreach (var shape in shapes)
+            {
+                data.Add(shape.TypeCode);
+
+                data.Add(shape.A);
+                data.Add(shape.R);
+                data.Add(shape.G);
+                data.Add(shape.B);
+                data.Add(shape.SW);
+                data.Add(shape.SC);
+                data.Add(shape.EC);
+                data.Add(shape.DC);
+                data.Add(shape.LJ);
+                data.Add(shape.DS);
+                data.Add(shape.FS);
+                data.Add(shape.R1);
+                data.Add(shape.R2);
+                data.Add(shape.F1);
+                data.Add(shape.PD);
+                data.Add(shape.PL);
+                data.Add(shape.A0);
+                data.Add(shape.A1);
+
+                var points = shape.DXY;
+                var count = points.Count;
+                if (count > byte.MaxValue) count = byte.MaxValue;
+
+                for (int i = 0; i < count; i++)
+                {
+                    var (dx, dy) = points[i];
+                    data.Add((byte)ToSByte(dx));
+                    data.Add((byte)ToSByte(dy));
+                }
+            }
+
+            return data.ToArray();
+        }
         #endregion
 
         #region ShapeType  ====================================================
         internal enum ShapeType : byte
         {
-            Circle = 0,
-            Ellipse = 1,
-            PolySin = 2,
-            PolySide = 3,
-            PolyStar = 4,
-            PolyGear = 5,
-            Rectangle = 6,
-            PolyPulse = 7,
-            PolySpike = 8,
-            PolySpline = 9,
-            RoundedRectangle = 10,
+            Line = 1,
+            Circle = 2,
+            Ellipse = 3,
+            PolySide = 4,
+            PolyStar = 5,
+            PolyGear = 6,
+            PolyWave = 7,
+            Rectangle = 8,
+            PolySpike = 9,
+            PolyPulse = 10,
+            PolySpring = 11,
+            RoundedRectangle = 12,
         }
         #endregion
 
@@ -189,50 +234,64 @@ namespace ModelGraph.Controls
             var M = data.Length;
 
             var I = 0;
-            while(I + PointCountIndex < M)
+            while (I + PointCountIndex < M)
             {
-                var st = data[I];
-                if (st <= (byte)ShapeType.RoundedRectangle)
+                var st = (ShapeType)data[I];
+                var pc = data[I + PointCountIndex];
+
+                switch (st)
                 {
-                    var pc = data[I + PointCountIndex];
+                    case ShapeType.Line:
+                        shapes.Add(new Line(I, data));
+                        break;
 
-                    switch ((ShapeType)st)
-                    {
-                        case ShapeType.Circle:
-                            shapes.Add(new Circle(I, data));
-                            break;
+                    case ShapeType.Circle:
+                        shapes.Add(new Circle(I, data));
+                        break;
 
-                        case ShapeType.Ellipse:
-                            shapes.Add(new Ellipes(I, data));
-                            break;
+                    case ShapeType.Ellipse:
+                        shapes.Add(new Ellipes(I, data));
+                        break;
 
-                        case ShapeType.PolySide:
-                            shapes.Add(new PolySide(I, data));
-                            break;
+                    case ShapeType.PolySide:
+                        shapes.Add(new PolySide(I, data));
+                        break;
 
-                        case ShapeType.PolyStar:
-                            shapes.Add(new PolyStar(I, data));
-                            break;
+                    case ShapeType.PolyStar:
+                        shapes.Add(new PolyStar(I, data));
+                        break;
 
-                        case ShapeType.PolyGear:
-                            shapes.Add(new PolyGear(I, data));
-                            break;
+                    case ShapeType.PolyGear:
+                        shapes.Add(new PolyGear(I, data));
+                        break;
 
-                        case ShapeType.Rectangle:
-                            shapes.Add(new Rectangle(I, data));
-                            break;
+                    case ShapeType.PolyWave:
+                        shapes.Add(new PolyWave(I, data));
+                        break;
 
-                        case ShapeType.PolySpline:
-                            shapes.Add(new PolySpline(I, data));
-                            break;
+                    case ShapeType.Rectangle:
+                        shapes.Add(new Rectangle(I, data));
+                        break;
 
-                        case ShapeType.RoundedRectangle:
-                            shapes.Add(new RoundedRectangle(I, data));
-                            break;
-                    }
-                    I += pc + PointCountIndex;
+                    case ShapeType.PolySpike:
+                        shapes.Add(new PolySpike(I, data));
+                        break;
+
+                    case ShapeType.PolyPulse:
+                        shapes.Add(new PolyPulse(I, data));
+                        break;
+
+                    case ShapeType.PolySpring:
+                        shapes.Add(new PolySpring(I, data));
+                        break;
+
+                    case ShapeType.RoundedRectangle:
+                        shapes.Add(new RoundedRectangle(I, data));
+                        break;
+                    default:
+                        return; // stop and disregard invalid shape data
                 }
-                else return; // stop and disregard invalid shape data
+                I += pc + PointCountIndex;
             }
         }
         #endregion
@@ -240,7 +299,6 @@ namespace ModelGraph.Controls
         #region ReadData  =====================================================
         void ReadData(int I, byte[] data)
         {
-            ST = data[I++];
             A = data[I++];
             R = data[I++];
             G = data[I++];
@@ -276,7 +334,6 @@ namespace ModelGraph.Controls
         #region CopyData  =====================================================
         protected void CopyData(Shape s)
         {
-            ST = s.ST; ;
             A = s.A;
             R = s.R;
             G = s.G;

@@ -55,6 +55,7 @@ namespace ModelGraph.Controls
                 ds.DrawEllipse(cp, r1, r2, color, StrokeWidth, StrokeStyle());
         }
         internal override HasSlider Sliders => HasSlider.Vert | HasSlider.Horz;
+        protected override byte TypeCode => (byte)ShapeType.Ellipse;
         #endregion
     }
 }

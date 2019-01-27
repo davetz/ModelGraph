@@ -6,24 +6,24 @@ using System.Numerics;
 
 namespace ModelGraph.Controls
 {
-    internal class PolyPulse : Polyline
+    internal class PolySpike : Polyline
     {
-        internal PolyPulse()
+        internal PolySpike()
         {
             Radius1 = 0.75f;
             Radius2 = 0.25f;
-            AuxFactor = 0.25f;
-            Dimension = 7;
+            AuxFactor = 0.50f;
+            Dimension = 4;
             CreatePoints();
         }
-        internal PolyPulse(int I, byte[] data) : base(I, data) { }
+        internal PolySpike(int I, byte[] data) : base(I, data) { }
 
         #region PrivateConstructor  ===========================================
-        private PolyPulse(Shape shape)
+        private PolySpike(Shape shape)
         {
             CopyData(shape);
         }
-        private PolyPulse(Shape shape, Vector2 center)
+        private PolySpike(Shape shape, Vector2 center)
         {
             CopyData(shape);
             SetCenter(new Shape[] { this }, center);
@@ -40,22 +40,17 @@ namespace ModelGraph.Controls
 
             var (r1, r2, f1) = GetRadius();
 
-            var d = D / 2;
-            var ax = r1 * 2 / d; //ax step size
-            var bx = ax * f1;
+            var ax = r1 * 4 / D; //ax step size
+            var bx = ax * f1; //ax step size
+
             var dx = -r1;
             var dy = r2;
 
-            Add(dx, -dy);
-            dx += bx;
-            for (int i = 0; i < D; i++)
+            for (int i = 0; i < N; i++)
             {
+                if (Add(dx, -dy)) return;
                 if (Add(dx + bx, dy)) return;
                 dx += ax;
-                if (Add(dx - bx, dy)) return;
-                if (Add(dx + bx, -dy)) return;
-                dx += ax;
-                if (Add(dx - bx, -dy)) return;
             }
             TransformPoints(Matrix3x2.CreateRotation(RadiansStart));
 
@@ -68,11 +63,11 @@ namespace ModelGraph.Controls
         #endregion
 
         #region RequiredMethods  ==============================================
-        internal override Shape Clone() =>new PolyPulse(this);
-        internal override Shape Clone(Vector2 center) => new PolyPulse(this, center);
-        protected override (int min, int max) MinMaxDimension => (2, 19);
+        internal override Shape Clone() =>new PolySpike(this);
+        internal override Shape Clone(Vector2 center) => new PolySpike(this, center);
+        protected override (int min, int max) MinMaxDimension => (2, 20);
         internal override HasSlider Sliders => HasSlider.Horz | HasSlider.Vert | HasSlider.Major | HasSlider.Minor | HasSlider.Aux | HasSlider.Dim;
-        protected override byte TypeCode => (byte)ShapeType.PolyPulse;
+        protected override byte TypeCode => (byte)ShapeType.PolySpike;
         #endregion
     }
 }

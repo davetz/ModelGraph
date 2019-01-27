@@ -7,31 +7,11 @@ using System.Numerics;
 
 namespace ModelGraph.Controls
 {
-    internal class Polyline : Shape
+    internal abstract class Polyline : Shape
     {
-        private static (float, float)[] POINTS_2 = { (-0.25f, 0), (0.25f, 0) };
-        private static (float, float)[] POINTS_4 = { (-0.25f, 0), (0, 0.25f), (0.25f, 0), };
-        private static (float, float)[][] POINTS = { POINTS_2, POINTS_4 };
 
         internal Polyline() { }
-        internal Polyline(int n)
-        {
-            DXY = new List<(float dx, float dy)>(POINTS[n & 1]);
-        }
         internal Polyline(int I, byte[] data) : base(I, data) { }
-
-        #region PrivateConstructor  ===========================================
-        private Polyline(Shape shape)
-        {
-            CopyData(shape);
-        }
-        private Polyline(Shape shape, Vector2 center)
-        {
-            CopyData(shape);
-            SetCenter( new Shape[] { this }, center);
-        }
-        #endregion
-
 
         #region Polyline Methods  =============================================
         internal Vector2[] GetDrawingPoints(Vector2 center, float scale)
@@ -81,8 +61,6 @@ namespace ModelGraph.Controls
         #endregion
 
         #region OverideAbstract  ==============================================
-        internal override Shape Clone() => new Polyline(this);
-        internal override Shape Clone(Vector2 center) => new Polyline(this, center);
         protected override (float dx1, float dy1, float dx2, float dy2) GetExtent()
         {
             var x1 = 1f;
@@ -162,7 +140,6 @@ namespace ModelGraph.Controls
             }
         }
         internal override HasSlider Sliders => HasSlider.Horz | HasSlider.Vert;
-        protected override (int min, int max) MinMaxDimension => (1, 18);
         #endregion
     }
 }

@@ -50,6 +50,7 @@ namespace ModelGraph.Controls
         internal override Shape Clone() =>new PolyStar(this);
         internal override Shape Clone(Vector2 center) => new PolyStar(this, center);
         internal override HasSlider Sliders => HasSlider.Horz | HasSlider.Vert | HasSlider.Minor | HasSlider.Major | HasSlider.Dim;
+        protected override byte TypeCode => (byte)ShapeType.PolyStar;
         #endregion
     }
 }
