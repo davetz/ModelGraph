@@ -9,9 +9,7 @@ namespace ModelGraph.Controls
     internal abstract class Central : Shape
     {
         internal Central() { }
-        internal Central(int I, byte[] data) : base(I, data) { }
 
-        
         protected Vector2 Center { get { return ToVector(DXY[0]); } set { DXY[0] = Limit(value.X, value.Y); } }
 
         #region GetCenterRadius  ==============================================

@@ -8,15 +8,16 @@ namespace ModelGraph.Controls
 {
     internal class PolyPulse : Polyline
     {
-        internal PolyPulse()
+        internal PolyPulse(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             Radius1 = 0.75f;
             Radius2 = 0.25f;
             AuxFactor = 0.25f;
             Dimension = 7;
             CreatePoints();
         }
-        internal PolyPulse(int I, byte[] data) : base(I, data) { }
 
         #region PrivateConstructor  ===========================================
         private PolyPulse(Shape shape)

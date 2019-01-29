@@ -8,15 +8,16 @@ namespace ModelGraph.Controls
 {
     internal class PolyGear : Polygon
     {
-        internal PolyGear()
+        internal PolyGear(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             Radius1 = 0.5f;
             Radius2 = 0.2f;
             AuxFactor = 0.5f;
             Dimension = 4;
             CreatePoints();
         }
-        internal PolyGear(int I, byte[] data) : base(I, data) { }
 
         protected override void CreatePoints()
         {

@@ -30,6 +30,7 @@ namespace ModelGraph.Controls
 
     public sealed partial class SymbolEditControl : Page, IPageControl, IModelPageControl, INotifyPropertyChanged
     {
+        private bool _isScratchPad;
         private RootModel _rootModel;
         private SymbolX _symbol;
 
@@ -58,15 +59,23 @@ namespace ModelGraph.Controls
         #region Constructor  ==================================================
         public SymbolEditControl()
         {
+            _isScratchPad = true;
             this.InitializeComponent();
-            Initialize();
         }
 
         public SymbolEditControl(RootModel model)
         {
-            _rootModel = model;
-            _symbol = model.Item as SymbolX;
-            Target_Contacts = _symbol.Target_Contacts;
+            if (model is null || model.Item is null || !(model.Item is SymbolX))
+            {
+                _isScratchPad = true;
+                Target_Contacts = new Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)>();
+            }
+            else
+            {
+                _rootModel = model;
+                _symbol = model.Item as SymbolX;
+                Target_Contacts = _symbol.Target_Contacts;
+            }
 
             this.InitializeComponent();
             Initialize();
@@ -76,6 +85,14 @@ namespace ModelGraph.Controls
             ToggleOneManyButton();
             UnlockPolyline();
             SetSizeSliders();
+            if (_isScratchPad)
+            {
+                EditContactComboBox.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            }
+            else
+            {
+                Shape.Deserialize(_symbol.Data, SymbolShapes);
+            }
         }
         #endregion
 

@@ -8,14 +8,15 @@ namespace ModelGraph.Controls
 {
     internal class PolyStar : Polygon
     {
-        internal PolyStar()
+        internal PolyStar(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             Radius1 = 0.5f;
             Radius2 = 0.2f;
             Dimension = 6;
             CreatePoints();
         }
-        internal PolyStar(int I, byte[] data) : base(I, data) { }
 
         protected override void CreatePoints()
         {

@@ -25,7 +25,7 @@ namespace ModelGraphSTD
                 RequestType = RequestType.Save
             };
         }
-        internal static UIRequest CloseModel(RootModel root)
+        public static UIRequest CloseModel(RootModel root)
         {
             return new UIRequest()
             {

@@ -8,15 +8,16 @@ namespace ModelGraph.Controls
 {
     internal class PolySpike : Polyline
     {
-        internal PolySpike()
+        internal PolySpike(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             Radius1 = 0.75f;
             Radius2 = 0.25f;
             AuxFactor = 0.50f;
             Dimension = 4;
             CreatePoints();
         }
-        internal PolySpike(int I, byte[] data) : base(I, data) { }
 
         #region PrivateConstructor  ===========================================
         private PolySpike(Shape shape)

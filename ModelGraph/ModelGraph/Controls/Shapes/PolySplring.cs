@@ -8,14 +8,15 @@ namespace ModelGraph.Controls
 {
     internal class PolySpring : Polyline
     {
-        internal PolySpring()
+        internal PolySpring(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             Radius1 = 0.75f;
             Radius2 = 0.35f;
             Dimension = 6;
             CreatePoints();
         }
-        internal PolySpring(int I, byte[] data) : base(I, data) { }
 
         #region PrivateConstructor  ===========================================
         private PolySpring(Shape shape)

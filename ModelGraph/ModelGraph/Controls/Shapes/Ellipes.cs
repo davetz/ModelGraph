@@ -8,14 +8,13 @@ namespace ModelGraph.Controls
 {
     internal class Ellipes : Central
     {
-        internal Ellipes()
+        internal Ellipes(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             Radius1 = 0.30f;
             Radius2 = 0.20f;
             DXY = new List<(float dx, float dy)>() { (0, 0) };
-        }
-        internal Ellipes(int I, byte[] data) : base(I, data)
-        {
         }
 
         #region PrivateConstructor  ===========================================

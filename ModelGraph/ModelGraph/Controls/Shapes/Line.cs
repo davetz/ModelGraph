@@ -9,11 +9,12 @@ namespace ModelGraph.Controls
 {
     internal class Line : Polyline
     {
-        internal Line()
+        internal Line(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             DXY = new List<(float dx, float dy)>() {(-0.25f, 0), (0.25f, 0)};
         }
-        internal Line(int I, byte[] data) : base(I, data) { }
 
         #region PrivateConstructor  ===========================================
         private Line(Shape shape)

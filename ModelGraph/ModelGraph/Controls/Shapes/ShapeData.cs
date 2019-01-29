@@ -172,30 +172,32 @@ namespace ModelGraph.Controls
 
             foreach (var shape in shapes)
             {
-                data.Add(shape.TypeCode);
+                data.Add(shape.TypeCode);   // 0
 
-                data.Add(shape.A);
-                data.Add(shape.R);
-                data.Add(shape.G);
-                data.Add(shape.B);
-                data.Add(shape.SW);
-                data.Add(shape.SC);
-                data.Add(shape.EC);
-                data.Add(shape.DC);
-                data.Add(shape.LJ);
-                data.Add(shape.DS);
-                data.Add(shape.FS);
-                data.Add(shape.R1);
-                data.Add(shape.R2);
-                data.Add(shape.F1);
-                data.Add(shape.PD);
-                data.Add(shape.PL);
-                data.Add(shape.A0);
-                data.Add(shape.A1);
+                data.Add(shape.A);          // 1
+                data.Add(shape.R);          // 2
+                data.Add(shape.G);          // 3
+                data.Add(shape.B);          // 4
+                data.Add(shape.SW);         // 5
+                data.Add(shape.SC);         // 6
+                data.Add(shape.EC);         // 7
+                data.Add(shape.DC);         // 8
+                data.Add(shape.LJ);         // 9
+                data.Add(shape.DS);         //10
+                data.Add(shape.FS);         //11
+                data.Add(shape.R1);         //12
+                data.Add(shape.R2);         //13
+                data.Add(shape.F1);         //14
+                data.Add(shape.PD);         //15
+                data.Add(shape.PL);         //16
+                data.Add(shape.A0);         //17
+                data.Add(shape.A1);         //18
 
                 var points = shape.DXY;
                 var count = points.Count;
                 if (count > byte.MaxValue) count = byte.MaxValue;
+
+                data.Add((byte)count);      //19
 
                 for (int i = 0; i < count; i++)
                 {
@@ -228,107 +230,120 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Deserialize  ==================================================
-        static public void Deserialize (byte[] data, List<Shape> shapes)
+        static public void Deserialize(byte[] data, List<Shape> shapes)
         {
             shapes.Clear();
-            var M = data.Length;
+            if (data is null) return;
 
+            var M = data.Length;
             var I = 0;
-            while (I + PointCountIndex < M)
+
+            while (IsMoreDataAvailable())
             {
-                var st = (ShapeType)data[I];
-                var pc = data[I + PointCountIndex];
+                var st = (ShapeType)data[I++];
 
                 switch (st)
                 {
                     case ShapeType.Line:
-                        shapes.Add(new Line(I, data));
+                        ReadData(new Line(true));
                         break;
 
                     case ShapeType.Circle:
-                        shapes.Add(new Circle(I, data));
+                        ReadData(new Circle(true));
                         break;
 
                     case ShapeType.Ellipse:
-                        shapes.Add(new Ellipes(I, data));
+                        ReadData(new Ellipes(true));
                         break;
 
                     case ShapeType.PolySide:
-                        shapes.Add(new PolySide(I, data));
+                        ReadData(new PolySide(true));
                         break;
 
                     case ShapeType.PolyStar:
-                        shapes.Add(new PolyStar(I, data));
+                        ReadData(new PolyStar(true));
                         break;
 
                     case ShapeType.PolyGear:
-                        shapes.Add(new PolyGear(I, data));
+                        ReadData(new PolyGear(true));
                         break;
 
                     case ShapeType.PolyWave:
-                        shapes.Add(new PolyWave(I, data));
+                        ReadData(new PolyWave(true));
                         break;
 
                     case ShapeType.Rectangle:
-                        shapes.Add(new Rectangle(I, data));
+                        ReadData(new Rectangle(true));
                         break;
 
                     case ShapeType.PolySpike:
-                        shapes.Add(new PolySpike(I, data));
+                        ReadData(new PolySpike(true));
                         break;
 
                     case ShapeType.PolyPulse:
-                        shapes.Add(new PolyPulse(I, data));
+                        ReadData(new PolyPulse(true));
                         break;
 
                     case ShapeType.PolySpring:
-                        shapes.Add(new PolySpring(I, data));
+                        ReadData(new PolySpring(true));
                         break;
 
                     case ShapeType.RoundedRectangle:
-                        shapes.Add(new RoundedRectangle(I, data));
+                        ReadData(new RoundedRectangle(true));
                         break;
                     default:
                         return; // stop and disregard invalid shape data
                 }
-                I += pc + PointCountIndex;
+            }
+
+            bool IsMoreDataAvailable()
+            {
+                var J = I + PointCountIndex;
+                if (M > J)
+                {
+                    var K = data[J];
+                    return (K != 0 && M > J + K * 2);
+                }
+                return false;
+            }
+            void ReadData(Shape shape)
+            {
+                shapes.Add(shape);
+
+                shape.A = data[I++];
+                shape.R = data[I++];
+                shape.G = data[I++];
+                shape.B = data[I++];
+                shape.SW = data[I++];
+                shape.SC = data[I++];
+                shape.EC = data[I++];
+                shape.DC = data[I++];
+                shape.LJ = data[I++];
+                shape.DS = data[I++];
+                shape.FS = data[I++];
+                shape.R1 = data[I++];
+                shape.R2 = data[I++];
+                shape.F1 = data[I++];
+                shape.PD = data[I++];
+                shape.PL = data[I++];
+                shape.A0 = data[I++];
+                shape.A1 = data[I++];
+                var pc = data[I++];
+                if (pc > 0)
+                {
+                    shape.DXY = new List<(float dx, float dy)>(pc);
+                    for (int i = 0; i < pc; i++)
+                    {
+                        var dx = ((sbyte)data[I++]) / 127.0f; //use as much of the sbyte
+                        var dy = ((sbyte)data[I++]) / 127.0f; //precision as posible
+                        shape.DXY.Add((dx, dy));
+                    }
+                }
             }
         }
         #endregion
 
         #region ReadData  =====================================================
-        void ReadData(int I, byte[] data)
-        {
-            A = data[I++];
-            R = data[I++];
-            G = data[I++];
-            B = data[I++];
-            SW = data[I++];
-            SC = data[I++];
-            EC = data[I++];
-            DC = data[I++];
-            LJ = data[I++];
-            DS = data[I++];
-            FS = data[I++];
-            R1 = data[I++];
-            R2 = data[I++];
-            F1 = data[I++];
-            PD = data[I++];
-            PL = data[I++];
-            A0 = data[I++];
-            A1 = data[I++];
-            var pc = data[I++];
-            if (pc > 0)
-            {
-                DXY = new List<(float dx, float dy)>(pc);
-                for (int i = 0; i < pc; i++)
-                {
-                    var dx = ((sbyte)data[I++]) / 127.0f; //use as much of the sbyte
-                    var dy = ((sbyte)data[I++]) / 127.0f; //precision as posible
-                    DXY.Add((dx, dy));
-                }
-            }
-        }
         #endregion
 
         #region CopyData  =====================================================

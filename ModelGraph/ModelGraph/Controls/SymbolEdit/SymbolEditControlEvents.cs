@@ -1,4 +1,5 @@
 ﻿using ModelGraph.Helpers;
+using ModelGraph.Services;
 using ModelGraphSTD;
 using System;
 using System.Collections.Generic;
@@ -603,6 +604,32 @@ namespace ModelGraph.Controls
         }
         private void FlipVerticalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => FlipVertical();
         private void FlipHorizontalButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) => FlipHorizontal();
+        #endregion
+
+        #region RightButtonClick  =============================================
+        private void ScratchButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
+        }
+
+        private void SaveButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            _symbol.Data = Shape.Serialize(SymbolShapes);
+
+            List<ModelCommand> buttonCommands = new List<ModelCommand>(2);
+            _rootModel.PageButtonComands(buttonCommands);
+            foreach (var cmd in buttonCommands)
+            {
+                if (cmd.IsSaveCommand) cmd.Execute();
+                return;
+            }
+        }
+
+        private void ReloadButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Shape.Deserialize(_symbol.Data, SymbolShapes);
+            EditorCanvas.Invalidate();
+        }
         #endregion
 
         #region EditorKeyboardAccelerators  ===================================

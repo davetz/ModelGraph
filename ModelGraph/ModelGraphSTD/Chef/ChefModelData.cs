@@ -4548,7 +4548,6 @@ namespace ModelGraphSTD
                 ButtonCommands = (m, bc) =>
                 {
                     bc.Add(new ModelCommand(this, m, Trait.SaveCommand, Save));
-                    bc.Add(new ModelCommand(this, m, Trait.ReloadCommand, Reload));
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -4575,11 +4574,6 @@ namespace ModelGraphSTD
             {
                 var root = m as RootModel;
                 root.UIRequestSaveSymbol();
-            }
-            void Reload(ItemModel m)
-            {
-                var root = m as RootModel;
-                root.UIRequestReloadSymbol();
             }
             #endregion
         }

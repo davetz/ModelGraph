@@ -55,11 +55,10 @@
             <Setter Property="IsTabStop" Value="False" />
             <Setter Property="Padding" Value="2,2,2,2" />
             <Setter Property="Margin" Value="5,0,5,0" />
-            <Setter Property="Visibility" Value="Collapsed" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="15" />
         </Style>
 
         <SolidColorBrush x:Key="ActiveColor" Color="#FFE4BF99" />
@@ -221,8 +220,9 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="SaveButton" Style="{StaticResource RightButtonStyle}" />
-                <Button x:Name="ReloadButton" Style="{StaticResource RightButtonStyle}" />
+                <!--<Button x:Name="ScratchButton" Content="ScratchPad" Style="{StaticResource RightButtonStyle}" Click="ScratchButton_Click"/>-->
+                <Button x:Name="SaveButton" Content="Save" Style="{StaticResource RightButtonStyle}" Click="SaveButton_Click"/>
+                <Button x:Name="ReloadButton" Content="Reload" Style="{StaticResource RightButtonStyle}" Click="ReloadButton_Click"/>
             </StackPanel>
         </Grid>
 
@@ -242,7 +242,7 @@
 
                 <Button Grid.Row="0" x:Name="OneManyButton" Style="{StaticResource OneManyButtonStyle}" Click="OneManyButton_Click" Margin="-2,0,0,0" />
 
-                <ScrollViewer Grid.Row="1" Height="544">
+                <ScrollViewer Grid.Row="1" Height="544" VerticalScrollBarVisibility="Hidden" >
                     <Grid Background="DarkSlateGray" HorizontalAlignment="Left" >
                         <canvas:CanvasControl x:Name="SelectorCanvas" Width="40" MinHeight="524" 
                             Draw="SelectorCanvas_Draw"

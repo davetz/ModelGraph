@@ -8,14 +8,15 @@ namespace ModelGraph.Controls
 {
     internal class PolyWave : Polyline
     {
-        internal PolyWave()
+        internal PolyWave(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             Radius1 = 0.75f;
             Radius2 = 0.35f;
             Dimension = 6;
             CreatePoints();
         }
-        internal PolyWave(int I, byte[] data) : base(I, data) { }
 
         #region PrivateConstructor  ===========================================
         private PolyWave(Shape shape)

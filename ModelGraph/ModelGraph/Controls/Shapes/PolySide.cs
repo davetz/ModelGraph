@@ -8,13 +8,14 @@ namespace ModelGraph.Controls
 {
     internal class PolySide : Polygon
     {
-        internal PolySide()
+        internal PolySide(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             Radius1 = Radius2 = 0.5f;
             Dimension = 3;
             CreatePoints();
         }
-        internal PolySide(int I, byte[] data) : base(I, data) { }
 
         protected override void CreatePoints()
         {

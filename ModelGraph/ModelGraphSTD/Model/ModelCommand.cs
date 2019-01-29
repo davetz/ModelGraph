@@ -53,6 +53,8 @@ namespace ModelGraphSTD
         public bool IsStorageFileParameter1 => (Trait & Trait.GetStorageFile) != 0;
         public bool IsSaveAsCommand => (Trait & Trait.KeyMask) == (Trait.SaveAsCommand & Trait.KeyMask);
         public bool IsInsertCommand => (Trait == Trait.InsertCommand);
+        public bool IsSaveCommand => (Trait == Trait.SaveCommand);
+        public bool IsCloseCommand => (Trait == Trait.CloseCommand);
         public bool IsRemoveCommand => (Trait == Trait.RemoveCommand);
         #endregion
     }

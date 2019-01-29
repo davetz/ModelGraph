@@ -10,9 +10,6 @@ namespace ModelGraph.Controls
     internal abstract class Polyline : Shape
     {
 
-        internal Polyline() { }
-        internal Polyline(int I, byte[] data) : base(I, data) { }
-
         #region Polyline Methods  =============================================
         internal Vector2[] GetDrawingPoints(Vector2 center, float scale)
         {

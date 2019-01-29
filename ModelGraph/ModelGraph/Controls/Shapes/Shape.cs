@@ -12,7 +12,6 @@ namespace ModelGraph.Controls
     internal abstract partial class Shape
     {
         internal Shape() { }
-        internal Shape(int I, byte[] data) { ReadData(I, data); }
 
         #region Abstract/Virtual  =============================================
         [Flags]

@@ -8,14 +8,13 @@ namespace ModelGraph.Controls
 {
     internal class RoundedRectangle : Central
     {
-        internal RoundedRectangle()
+        internal RoundedRectangle(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             Radius1 = 0.5f;
             Radius2 = 0.3f;
             DXY = new List<(float dx, float dy)>() { (0, 0) };
-        }
-        internal RoundedRectangle(int I, byte[] data) : base(I, data)
-        {
         }
         internal float Corner => 0.1f;
 

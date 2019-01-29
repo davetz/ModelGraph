@@ -8,13 +8,12 @@ namespace ModelGraph.Controls
 {
     internal class Circle : Central
     {
-        internal Circle()
+        internal Circle(bool deserializing = false)
         {
+            if (deserializing) return; // properties to be loaded from serialized data
+
             Radius1 = Radius2 = 0.25f;
             DXY = new List<(float dx, float dy)>() { (0, 0) };
-        }
-        internal Circle(int I, byte[] data) : base(I, data)
-        {
         }
 
         #region PrivateConstructor  ===========================================

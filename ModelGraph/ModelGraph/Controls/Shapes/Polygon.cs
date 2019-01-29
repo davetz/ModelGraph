@@ -7,9 +7,6 @@ namespace ModelGraph.Controls
 {
     internal abstract class Polygon : Polyline
     {
-        internal Polygon() { }
-        internal Polygon(int I, byte[] data) : base(I, data) { }
-
         internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, float strokeWidth, Coloring coloring = Coloring.Normal)
         {
             var color = GetColor(coloring);
