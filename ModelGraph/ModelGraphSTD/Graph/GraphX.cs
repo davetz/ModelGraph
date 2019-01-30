@@ -12,6 +12,7 @@ namespace ModelGraphSTD
         internal string Name;
         internal string Summary;
         internal string Description;
+        internal byte SymbolSize = 48;
         internal byte ThinBusSize = 6;
         internal byte WideBusSize = 10;
         internal byte ExtraBusSize = 20;
@@ -44,6 +45,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Properties/Methods  ===========================================
+        public float SymbolScale => SymbolSize;
         internal bool TryGetGraph(Item root, out Graph graph)
         {
             if (Count < 0)

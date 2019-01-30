@@ -16,8 +16,7 @@ namespace ModelGraph.Controls
         protected (Vector2 cp, float r1, float r2) GetCenterRadius(Vector2 center, float scale)
         {
             var (r1, r2, f1) = GetRadius(scale);
-            var (dx, dy) = DXY[0];
-            return (new Vector2(center.X + scale * dx, center.Y + scale * dy), r1, r2);
+            return (center + Center * scale, r1, r2);
         }
 
         protected (Vector2 cp, float r1, float r2) GetCenterRadius(FlipState flip, Vector2 center, float scale)

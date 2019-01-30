@@ -17,7 +17,7 @@ namespace ModelGraph.Controls
         private List<Color> _colorList = new List<Color>() { Color.FromArgb(255, 255, 255, 127) };
         private float _zoomFactor; //scale the view extent so that it fits on the canvas
         private Vector2 _offset; //complete offset need to exactly center the view extent on the canvas
-
+        private List<List<Shape>> _symbolShapes = new List<List<Shape>>();
         private Extent _viewExtent = new Extent();
 
         #region DrawingStyles  ================================================
@@ -27,7 +27,7 @@ namespace ModelGraph.Controls
         public List<CanvasLineJoin> LineJoins { get { return GetEnumAsList<CanvasLineJoin>(); } }
         #endregion
 
-        #region EditorCanvas_Draw  ==============================================
+        #region EditorCanvas_Draw  ============================================
         private void EditorCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
         {
             #region RefreshColorList  =========================================
@@ -88,6 +88,7 @@ namespace ModelGraph.Controls
             #region DrawNodes  ================================================
             for (int i = 0; i < _graph.NodeCount; i++)
             {
+                var ds = args.DrawingSession;
                 var node = _graph.Nodes[i];
                 pen.Color = Colors.Magenta;
 
@@ -105,10 +106,16 @@ namespace ModelGraph.Controls
                         pen.DrawBusBar(node.X, node.Y, node.DX, node.DY);
                     }
                 }
-                else
+                else if (_symbolShapes.Count == _graph.SymbolCount)
                 {
+                    var scale = _zoomFactor * _graph.GraphX.SymbolScale;
+                    var center = _offset + new Vector2(node.X, node.Y) * _zoomFactor;
                     var sym = _graph.Symbols[k];
-                    _drawSymbol[(int)node.FlipRotate & 7](node, sym, pen);
+                    foreach (var shape in _symbolShapes[k])
+                    {
+                        shape.Draw(sender, ds, scale, center, sym.FlipState);
+                    }
+                    //_drawSymbol[(int)node.FlipRotate & 7](node, sym, pen);
                 }
             }
             #endregion

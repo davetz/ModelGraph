@@ -343,9 +343,6 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region ReadData  =====================================================
-        #endregion
-
         #region CopyData  =====================================================
         protected void CopyData(Shape s)
         {

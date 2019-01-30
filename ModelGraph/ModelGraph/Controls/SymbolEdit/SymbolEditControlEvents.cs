@@ -615,6 +615,7 @@ namespace ModelGraph.Controls
         private void SaveButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             _symbol.Data = Shape.Serialize(SymbolShapes);
+            _symbol.Version += 1;
 
             List<ModelCommand> buttonCommands = new List<ModelCommand>(2);
             _rootModel.PageButtonComands(buttonCommands);

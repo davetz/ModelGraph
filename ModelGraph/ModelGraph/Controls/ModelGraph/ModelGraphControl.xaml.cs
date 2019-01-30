@@ -5,6 +5,7 @@ using Windows.UI.Xaml.Controls;
 using ModelGraphSTD;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using ModelGraph.Services;
+using System.Collections.Generic;
 
 namespace ModelGraph.Controls
 {
@@ -34,6 +35,8 @@ namespace ModelGraph.Controls
             Loaded -= ModelGraphControl_Loaded;
             Focus(Windows.UI.Xaml.FocusState.Programmatic);
 
+            CheckGraphSymbols();
+
             SetIdleOnVoid();
         }
 
@@ -62,8 +65,50 @@ namespace ModelGraph.Controls
         {
             if (EditorCanvas == null) return;
 
+            CheckGraphSymbols();
             EditorCanvas.Invalidate();
         }
+        private void CheckGraphSymbols()
+        {
+            var N = _graph.SymbolCount;
+            if (N > 0)
+            {
+
+                bool anyChange = (N == _symbol_version.Count);
+                if (!anyChange)
+                {
+                    for (int i = 0; i < N; i++)
+                    {
+                        var sym = _graph.Symbols[i];
+                        if (_symbol_version.TryGetValue(sym, out (byte indx, byte vers) val) && val.indx == i && val.vers == sym.Version) continue;
+                        anyChange = true;
+                        break;
+                    }
+                }
+
+                if (anyChange)
+                {
+                    _symbol_version.Clear();
+                    _symbolShapes.Clear();
+                    for (int i = 0; i < N; i++)
+                    {
+                        var sym = _graph.Symbols[i];
+                        _symbol_version[sym] = ((byte)i, sym.Version);
+                        var shapes = new List<Shape>(8);
+                        Shape.Deserialize(sym.Data, shapes);
+                        _symbolShapes.Add(shapes);
+                    }
+                }
+            }
+            else
+            {
+                _symbolShapes.Clear();
+                _symbol_version.Clear();
+            }
+        }
+        private Dictionary<SymbolX, (byte indx, byte vers)> _symbol_version = new Dictionary<SymbolX, (byte, byte)>();
+
+
         // needed because win2D.uwp canvaseControl is implemented in c++ (prevent memory leaks)
         private void ModelGraphControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
