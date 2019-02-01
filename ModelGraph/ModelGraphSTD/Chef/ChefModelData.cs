@@ -4308,10 +4308,6 @@ namespace ModelGraphSTD
 
                     AddProperyModel(prev, m, _symbolXNameProperty);
                     AddProperyModel(prev, m, _symbolXAttachProperty);
-                    AddProperyModel(prev, m, _symbolXTopContactProperty);
-                    AddProperyModel(prev, m, _symbolXLeftContacttProperty);
-                    AddProperyModel(prev, m, _symbolXRightContactProperty);
-                    AddProperyModel(prev, m, _symbolXBottomContactProperty);
 
                     return (true, true);
                 }
@@ -5968,8 +5964,10 @@ namespace ModelGraphSTD
                         anyChange |= AddProperyModel(prev, m, _queryXLineColorProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXLineStyleProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXDashStyleProperty);
+
                         anyChange |= AddProperyModel(prev, m, _queryXFacet1Property);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect1Property);
+
                         anyChange |= AddProperyModel(prev, m, _queryXFacet2Property);
                         anyChange |= AddProperyModel(prev, m, _queryXConnect2Property);
                     }

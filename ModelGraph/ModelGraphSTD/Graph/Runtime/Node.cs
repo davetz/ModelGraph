@@ -17,7 +17,8 @@ namespace ModelGraphSTD
         public Labeling Labeling;
         public Sizing Sizing;
         public BarWidth BarWidth;
-        public FlipRotate FlipRotate;
+        public FlipState FlipState;
+        public FlipRotate FlipRotate; //[DELETE]
         public Aspect Aspect;
 
         #region Snapshot  =====================================================

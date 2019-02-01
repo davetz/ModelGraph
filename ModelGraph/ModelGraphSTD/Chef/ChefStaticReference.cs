@@ -31,18 +31,12 @@ namespace ModelGraphSTD
                 { _edgeConnect2Property, _connectEnum },
 
                 { _symbolXAttachProperty, _attatchEnum },
-                { _symbolXTopContactProperty, _contactEnum },
-                { _symbolXLeftContacttProperty, _contactEnum },
-                { _symbolXRightContactProperty, _contactEnum },
-                { _symbolXBottomContactProperty, _contactEnum },
-
-                { _queryXFacet1Property, _facetEnum },
-                { _queryXFacet2Property, _facetEnum },
-                { _queryXConnect1Property, _connectEnum },
-                { _queryXConnect2Property, _connectEnum },
 
                 { _queryXLineStyleProperty, _lineStyleEnum },
                 { _queryXDashStyleProperty, _dashStyleEnum },
+
+                { _queryXFacet1Property, _facetEnum },
+                { _queryXFacet2Property, _facetEnum },
 
                 { _computeXCompuTypeProperty, _computeTypeEnum },
                 { _computeXNumericSetProperty, _numericSetEnum },

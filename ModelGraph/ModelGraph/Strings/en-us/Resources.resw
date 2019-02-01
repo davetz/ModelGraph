@@ -849,13 +849,21 @@
     <value>Connect1</value>
   </data>
   <data name="462S" xml:space="preserve">
-    <value>Specify allowed connections on head end</value>
+    <value>Specify allowed connections on head end
+N – S – E – W – 
+NE – NW- SE – SW – 
+EN – ES – WN – WS – 
+NEC – NWC – SEC - SWC</value>
   </data>
   <data name="463N" xml:space="preserve">
     <value>Connect2</value>
   </data>
   <data name="463S" xml:space="preserve">
-    <value>Specify allowed conntions on tail end</value>
+    <value>Specify allowed connections on tail end
+N – S – E – W – 
+NE – NW- SE – SW – 
+EN – ES – WN – WS – 
+NEC – NWC – SEC - SWC</value>
   </data>
   <data name="486N" xml:space="preserve">
     <value>Attach</value>
@@ -976,30 +984,6 @@
   </data>
   <data name="481S" xml:space="preserve">
     <value>Name of this symbol</value>
-  </data>
-  <data name="482N" xml:space="preserve">
-    <value>Top Contact</value>
-  </data>
-  <data name="482S" xml:space="preserve">
-    <value>Allow connections on the top</value>
-  </data>
-  <data name="483N" xml:space="preserve">
-    <value>Left Contact</value>
-  </data>
-  <data name="483S" xml:space="preserve">
-    <value>Allow connections on the left side</value>
-  </data>
-  <data name="484N" xml:space="preserve">
-    <value>Right Contact</value>
-  </data>
-  <data name="484S" xml:space="preserve">
-    <value>Allow connection on the right side</value>
-  </data>
-  <data name="485N" xml:space="preserve">
-    <value>Bottom Contact</value>
-  </data>
-  <data name="485S" xml:space="preserve">
-    <value>Allow connection on the bottom</value>
   </data>
   <data name="491N" xml:space="preserve">
     <value>Center (X, Y)</value>

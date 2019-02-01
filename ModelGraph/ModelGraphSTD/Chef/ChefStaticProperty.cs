@@ -49,16 +49,9 @@ namespace ModelGraphSTD
 
         private PropertyOf<SymbolX, string> _symbolXNameProperty;
         private PropertyOf<SymbolX, string> _symbolXAttachProperty;
-        private PropertyOf<SymbolX, string> _symbolXTopContactProperty;
-        private PropertyOf<SymbolX, string> _symbolXLeftContacttProperty;
-        private PropertyOf<SymbolX, string> _symbolXRightContactProperty;
-        private PropertyOf<SymbolX, string> _symbolXBottomContactProperty;
 
         private PropertyOf<QueryX, string> _queryXRootWhereProperty;
-        private PropertyOf<QueryX, string> _queryXFacet1Property;
-        private PropertyOf<QueryX, string> _queryXConnect1Property;
-        private PropertyOf<QueryX, string> _queryXFacet2Property;
-        private PropertyOf<QueryX, string> _queryXConnect2Property;
+
         private PropertyOf<QueryX, string> _queryXRelationProperty;
         private PropertyOf<QueryX, bool> _queryXIsReversedProperty;
         private PropertyOf<QueryX, bool> _queryXIsPersistentProperty;
@@ -71,7 +64,11 @@ namespace ModelGraphSTD
         private PropertyOf<QueryX, string> _queryXDashStyleProperty;
         private PropertyOf<QueryX, string> _queryXLineColorProperty;
 
+        private PropertyOf<QueryX, string> _queryXFacet1Property;
+        private PropertyOf<QueryX, string> _queryXConnect1Property;
 
+        private PropertyOf<QueryX, string> _queryXFacet2Property;
+        private PropertyOf<QueryX, string> _queryXConnect2Property;
 
         private PropertyOf<Node, int[]> _nodeCenterXYProperty;
         private PropertyOf<Node, int[]> _nodeSizeWHProperty;
@@ -398,34 +395,6 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
-            {
-                var p = _symbolXTopContactProperty = new PropertyOf<SymbolX, string>(PropertyStore, Trait.SymbolXTopContact_P, _contactEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).NorthContact);
-                p.SetValFunc = (item, value) => TrySetSymbolTopContact(p.Cast(item), GetEnumZKey(p.EnumZ, value));
-                p.Value = new StringValue(p);
-                props.Add(p);
-            }
-            {
-                var p = _symbolXLeftContacttProperty = new PropertyOf<SymbolX, string>(PropertyStore, Trait.SymbolXLeftContactt_P, _contactEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).WestContact);
-                p.SetValFunc = (item, value) => TrySetSymbolLeftContact(p.Cast(item), GetEnumZKey(p.EnumZ, value));
-                p.Value = new StringValue(p);
-                props.Add(p);
-            }
-            {
-                var p = _symbolXRightContactProperty = new PropertyOf<SymbolX, string>(PropertyStore, Trait.SymbolXRightContact_P, _contactEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).EastContact);
-                p.SetValFunc = (item, value) => TrySetSymbolRightContact(p.Cast(item), GetEnumZKey(p.EnumZ, value));
-                p.Value = new StringValue(p);
-                props.Add(p);
-            }
-            {
-                var p = _symbolXBottomContactProperty = new PropertyOf<SymbolX, string>(PropertyStore, Trait.SymbolXBottomContact_P, _contactEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).SouthContact);
-                p.SetValFunc = (item, value) => TrySetSymbolBottomContact(p.Cast(item), GetEnumZKey(p.EnumZ, value));
-                p.Value = new StringValue(p);
-                props.Add(p);
-            }
             Store_Property.SetLink(SymbolStore, props);
             #endregion
 
@@ -447,9 +416,9 @@ namespace ModelGraphSTD
                 props.Add(p);
             }
             {
-                var p = _queryXConnect1Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXConnect1_P, _connectEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Connect1);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Connect1 = (Connect)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
+                var p = _queryXConnect1Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXConnect1_P);
+                p.GetValFunc = (item) => GetTargetString(p.Cast(item).PathParm.Target1);
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Target1 = GetTargetValue(value); return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
@@ -461,9 +430,9 @@ namespace ModelGraphSTD
                 props.Add(p);
             }
             {
-                var p = _queryXConnect2Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXConnect2_P, _connectEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).PathParm.Connect2);
-                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Connect2 = (Connect)GetEnumZKey(p.EnumZ, value); return RefreshGraphX(p.Cast(item)); ; };
+                var p = _queryXConnect2Property = new PropertyOf<QueryX, string>(PropertyStore, Trait.QueryXConnect2_P);
+                p.GetValFunc = (item) => GetTargetString(p.Cast(item).PathParm.Target2);
+                p.SetValFunc = (item, value) => { p.Cast(item).PathParm.Target2 = GetTargetValue(value); return RefreshGraphX(p.Cast(item)); ; };
                 p.Value = new StringValue(p);
                 props.Add(p);
             }
@@ -665,16 +634,10 @@ namespace ModelGraphSTD
 
             _symbolXNameProperty = null;
             _symbolXAttachProperty = null;
-            _symbolXTopContactProperty = null;
-            _symbolXLeftContacttProperty = null;
-            _symbolXRightContactProperty = null;
-            _symbolXBottomContactProperty = null;
 
             _queryXRootWhereProperty = null;
             _queryXFacet1Property = null;
-            _queryXConnect1Property = null;
             _queryXFacet2Property = null;
-            _queryXConnect2Property = null;
             _queryXRelationProperty = null;
             _queryXIsReversedProperty = null;
             _queryXIsPersistentProperty = null;
@@ -686,6 +649,12 @@ namespace ModelGraphSTD
             _queryXLineStyleProperty = null;
             _queryXDashStyleProperty = null;
             _queryXLineColorProperty = null;
+
+            _queryXFacet1Property = null;
+            _queryXConnect1Property = null;
+
+            _queryXFacet2Property = null;
+            _queryXConnect2Property = null;
 
             _nodeCenterXYProperty = null;
             _nodeSizeWHProperty = null;

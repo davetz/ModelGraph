@@ -15,7 +15,6 @@ namespace ModelGraphSTD
         public Graphic Graphic;
         public Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> Target_Contacts = new Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)>(4);
         public Target AllTargets = Target.None;
-        public FlipState FlipState;
         public byte Version;
 
         public Contact NorthContact;

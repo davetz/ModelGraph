@@ -290,8 +290,10 @@ namespace ModelGraphSTD
         //=========================================
         QueryXSelect_P = 0x460 | CanMultiline,
         QueryXWhere_P = 0x461 | CanMultiline,
+
         QueryXConnect1_P = 0x462,
         QueryXConnect2_P = 0x463,
+
         QueryXRelation_P = 0x466,
         QueryXIsReversed_P = 0x467,
         QueryXIsImmediate_P = 0x468,
@@ -311,13 +313,8 @@ namespace ModelGraphSTD
         QueryXDashStyle_P = 0x476,
         QueryXLineColor_P = 0x477,
 
-
         //=========================================
         SymbolXName_P = 0x481,
-        SymbolXTopContact_P = 0x482,
-        SymbolXLeftContactt_P = 0x483,
-        SymbolXRightContact_P = 0x484,
-        SymbolXBottomContact_P = 0x485,
         SymbolXAttatch_P = 0x486,
 
         //=========================================

@@ -113,7 +113,7 @@ namespace ModelGraph.Controls
                     var sym = _graph.Symbols[k];
                     foreach (var shape in _symbolShapes[k])
                     {
-                        shape.Draw(sender, ds, scale, center, sym.FlipState);
+                        shape.Draw(sender, ds, scale, center, node.FlipState);
                     }
                     //_drawSymbol[(int)node.FlipRotate & 7](node, sym, pen);
                 }
