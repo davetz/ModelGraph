@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_F;
+            var fileFormat = _fileFormat_G;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -227,10 +227,10 @@ namespace RepositoryUWP
                 if (qx.QueryKind == QueryType.Path && qx.IsHead == true && qx.PathParm != null)
                 {
                     if (qx.PathParm.Facet1 != Facet.None) b |= S5;
-                    if (qx.PathParm.Connect1 != Connect.Any) b |= S6;
+                    if (qx.PathParm.Target1 != Target.Any) b |= S6;
 
                     if (qx.PathParm.Facet2 != Facet.None) b |= S7;
-                    if (qx.PathParm.Connect2 != Connect.Any) b |= S8;
+                    if (qx.PathParm.Target2 != Target.Any) b |= S8;
 
                     if (qx.PathParm.DashStyle != DashStyle.Solid) b |= S9;
                     if (qx.PathParm.LineStyle != LineStyle.PointToPoint) b |= S10;
@@ -244,10 +244,10 @@ namespace RepositoryUWP
                 if ((b & S4) != 0) w.WriteByte(qx.ExclusiveKey);
 
                 if ((b & S5) != 0) w.WriteByte((byte)qx.PathParm.Facet1);
-                if ((b & S6) != 0) w.WriteByte((byte)qx.PathParm.Connect1);
+                if ((b & S6) != 0) w.WriteUInt16((ushort)qx.PathParm.Target1);
 
                 if ((b & S7) != 0) w.WriteByte((byte)qx.PathParm.Facet2);
-                if ((b & S8) != 0) w.WriteByte((byte)qx.PathParm.Connect2);
+                if ((b & S8) != 0) w.WriteUInt16((ushort)qx.PathParm.Target2);
 
                 if ((b & S9) != 0) w.WriteByte((byte)qx.PathParm.DashStyle);
                 if ((b & S10) != 0) w.WriteByte((byte)qx.PathParm.LineStyle);
@@ -274,10 +274,6 @@ namespace RepositoryUWP
                 if (!string.IsNullOrWhiteSpace(sx.Description)) b |= S4;
                 if (sx.Data != null && sx.Data.Length > 12) b |= S5;
                 if (sx.Attach != Attach.Normal) b |= S6;
-                if (sx.NorthContact != Contact.Any) b |= S7;
-                if (sx.WestContact != Contact.Any) b |= S8;
-                if (sx.EastContact != Contact.Any) b |= S9;
-                if (sx.SouthContact != Contact.Any) b |= S10;
 
                 w.WriteUInt16(b);
                 if ((b & S1) != 0) w.WriteUInt16(sx.GetState());
@@ -286,10 +282,16 @@ namespace RepositoryUWP
                 if ((b & S4) != 0) WriteString(w, sx.Description);
                 if ((b & S5) != 0) WriteBytes(w, sx.Data);
                 if ((b & S6) != 0) w.WriteByte((byte)sx.Attach);
-                if ((b & S7) != 0) w.WriteByte((byte)sx.NorthContact);
-                if ((b & S8) != 0) w.WriteByte((byte)sx.WestContact);
-                if ((b & S9) != 0) w.WriteByte((byte)sx.EastContact);
-                if ((b & S10) != 0) w.WriteByte((byte)sx.SouthContact);
+                var cnt = (byte)sx.Target_Contacts.Count;
+                w.WriteByte(cnt);
+                foreach (var e in sx.Target_Contacts)
+                {
+                    w.WriteUInt16((ushort)e.Key);           //Target
+                    w.WriteByte((byte)e.Value.contact);     //Contact
+                    w.WriteByte((byte)e.Value.point.dx);    //sbyte dx
+                    w.WriteByte((byte)e.Value.point.dy);    //sbyte dy
+                    w.WriteByte(e.Value.size);              //byte size
+                }
             }
             w.WriteByte((byte)Mark.SymbolXEnding); // itegrity marker
         }
