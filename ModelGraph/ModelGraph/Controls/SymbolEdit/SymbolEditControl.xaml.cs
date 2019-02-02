@@ -179,6 +179,7 @@ namespace ModelGraph.Controls
         private void EditorCanvas_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             InitContactControls();
+            _contactSizeChangeEnabled = true;
             EditorCanvas.Invalidate();
         }
 
@@ -438,67 +439,67 @@ namespace ModelGraph.Controls
                 {
                     case Target.N:
                         Contact_N = e.Value.contact;
-                        SetContactHighlight(Contact_N, ContactComboBox_N, ContactSizeSlider_N);
+                        SetContactHighlight(Contact_N, ContactComboBox_N, ContactSizeSlider_N, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.S:
                         Contact_S = e.Value.contact;
-                        SetContactHighlight(Contact_S, ContactComboBox_S, ContactSizeSlider_S);
+                        SetContactHighlight(Contact_S, ContactComboBox_S, ContactSizeSlider_S, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.E:
                         Contact_E = e.Value.contact;
-                        SetContactHighlight(Contact_E, ContactComboBox_E, ContactSizeSlider_E);
+                        SetContactHighlight(Contact_E, ContactComboBox_E, ContactSizeSlider_E, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.W:
                         Contact_W = e.Value.contact;
-                        SetContactHighlight(Contact_W, ContactComboBox_W, ContactSizeSlider_W);
+                        SetContactHighlight(Contact_W, ContactComboBox_W, ContactSizeSlider_W, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.NE:
                         Contact_NE = e.Value.contact;
-                        SetContactHighlight(Contact_NE, ContactComboBox_NE, ContactSizeSlider_NE);
+                        SetContactHighlight(Contact_NE, ContactComboBox_NE, ContactSizeSlider_NE, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.NW:
                         Contact_NW = e.Value.contact;
-                        SetContactHighlight(Contact_NW, ContactComboBox_NW, ContactSizeSlider_NW);
+                        SetContactHighlight(Contact_NW, ContactComboBox_NW, ContactSizeSlider_NW, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.SE:
                         Contact_SE = e.Value.contact;
-                        SetContactHighlight(Contact_SE, ContactComboBox_SE, ContactSizeSlider_SE);
+                        SetContactHighlight(Contact_SE, ContactComboBox_SE, ContactSizeSlider_SE, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.SW:
                         Contact_SW = e.Value.contact;
-                        SetContactHighlight(Contact_SW, ContactComboBox_SW, ContactSizeSlider_SW);
+                        SetContactHighlight(Contact_SW, ContactComboBox_SW, ContactSizeSlider_SW, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.EN:
                         Contact_EN = e.Value.contact;
-                        SetContactHighlight(Contact_EN, ContactComboBox_EN, ContactSizeSlider_EN);
+                        SetContactHighlight(Contact_EN, ContactComboBox_EN, ContactSizeSlider_EN, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.ES:
                         Contact_ES = e.Value.contact;
-                        SetContactHighlight(Contact_ES, ContactComboBox_ES, ContactSizeSlider_ES);
+                        SetContactHighlight(Contact_ES, ContactComboBox_ES, ContactSizeSlider_ES, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.WN:
                         Contact_WN = e.Value.contact;
-                        SetContactHighlight(Contact_WN, ContactComboBox_WN, ContactSizeSlider_WN);
+                        SetContactHighlight(Contact_WN, ContactComboBox_WN, ContactSizeSlider_WN, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.WS:
                         Contact_WS = e.Value.contact;
-                        SetContactHighlight(Contact_WS, ContactComboBox_WS, ContactSizeSlider_WS);
+                        SetContactHighlight(Contact_WS, ContactComboBox_WS, ContactSizeSlider_WS, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.NEC:
                         Contact_NEC = e.Value.contact;
-                        SetContactHighlight(Contact_NEC, ContactComboBox_NEC, ContactSizeSlider_NEC);
+                        SetContactHighlight(Contact_NEC, ContactComboBox_NEC, ContactSizeSlider_NEC, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.NWC:
                         Contact_NWC = e.Value.contact;
-                        SetContactHighlight(Contact_NWC, ContactComboBox_NWC, ContactSizeSlider_NWC);
+                        SetContactHighlight(Contact_NWC, ContactComboBox_NWC, ContactSizeSlider_NWC, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.SEC:
                         Contact_SEC = e.Value.contact;
-                        SetContactHighlight(Contact_SEC, ContactComboBox_SEC, ContactSizeSlider_SEC);
+                        SetContactHighlight(Contact_SEC, ContactComboBox_SEC, ContactSizeSlider_SEC, Shape.ToFloat(e.Value.size));
                         break;
                     case Target.SWC:
                         Contact_SWC = e.Value.contact;
-                        SetContactHighlight(Contact_SWC, ContactComboBox_SWC, ContactSizeSlider_SWC);
+                        SetContactHighlight(Contact_SWC, ContactComboBox_SWC, ContactSizeSlider_SWC, Shape.ToFloat(e.Value.size));
                         break;
                 }
             }
@@ -533,15 +534,22 @@ namespace ModelGraph.Controls
             void CheckContact(Contact cont, Target targ, Vector2 point, float size)
             {
                 if (cont == Contact.None)
-                    Target_Contacts.Remove(targ);
-                else if (Target_Contacts.TryGetValue(targ, value: out (Contact c, (sbyte, sbyte) p, byte s) e))
                 {
-                    var s = (byte)((cont == Contact.One) ? 0 : e.s);
-                    _contactTargets.Add((e.c, targ, Shape.ToVector(e.p), Shape.ToFloat(s)));
+                    Target_Contacts.Remove(targ);
                 }
                 else
                 {
-                    Target_Contacts.Add(targ, (cont, Shape.ToSByte(point), Shape.ToByte(size)));
+                    if (Target_Contacts.TryGetValue(targ, value: out (Contact c, (sbyte, sbyte) p, byte s) e))
+                    {
+                        Target_Contacts[targ] = (cont, e.p, e.s);
+
+                        point = Shape.ToVector(e.p);
+                        size = Shape.ToFloat(e.s);
+                    }
+                    else
+                    {
+                        Target_Contacts.Add(targ, (cont, Shape.ToSByte(point), Shape.ToByte(size)));
+                    }
                     _contactTargets.Add((cont, targ, point, size));
                 }
             }

@@ -187,21 +187,27 @@ namespace ModelGraph.Controls
             EditorCanvas.Invalidate();
         }
 
-        private void SetContactHighlight(Contact con, ComboBox combo, Slider slide)
+        private void SetContactHighlight(Contact con, ComboBox combo, Slider slide, float size = -1)
         {
+            if (size >= 0)
+                slide.Value = 100 * size;
             slide.Visibility = (con == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
             combo.Background = (con == Contact.None) ? (Brush)Resources["BackgroundNormal"] : (Brush)Resources["BackgroundPink"];
         }
 
         private void SetNewContactSize(Target targ, double value)
         {
-            var d = (float)(value / 100);
-            if (Target_Contacts.TryGetValue(targ, out (Contact c, (sbyte x, sbyte y) p, byte s) v))
+            if (_contactSizeChangeEnabled)
             {
-                Target_Contacts[targ] = (v.c, v.p, Shape.ToByte(d));
-                EditorCanvas.Invalidate();
+                var d = (float)(value / 100);
+                if (Target_Contacts.TryGetValue(targ, out (Contact c, (sbyte x, sbyte y) p, byte s) v))
+                {
+                    Target_Contacts[targ] = (v.c, v.p, Shape.ToByte(d));
+                    EditorCanvas.Invalidate();
+                }
             }
         }
+        private bool _contactSizeChangeEnabled;
 
         private void ContactSizeSlider_N_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
@@ -269,6 +275,7 @@ namespace ModelGraph.Controls
         {
             SetNewContactSize(Target.SWC, e.NewValue);
         }
+        
 
         #endregion
 
