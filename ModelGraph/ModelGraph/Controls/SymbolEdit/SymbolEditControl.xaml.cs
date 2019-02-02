@@ -118,6 +118,21 @@ namespace ModelGraph.Controls
                 EditorCanvas.RemoveFromVisualTree();
                 EditorCanvas = null;
             }
+            if (SymbolCanvas != null)
+            {
+                SymbolCanvas.RemoveFromVisualTree();
+                SymbolCanvas = null;
+            }
+            if (SelectorCanvas != null)
+            {
+                SelectorCanvas.RemoveFromVisualTree();
+                SelectorCanvas = null;
+            }
+            if (PickerCanvas != null)
+            {
+                PickerCanvas.RemoveFromVisualTree();
+                PickerCanvas = null;
+            }
         }
         public void Reload()
         {
@@ -134,6 +149,7 @@ namespace ModelGraph.Controls
             this.Height = RootGrid.Height = hieght;
         }
         #endregion
+
 
         #region SymbolEditControl_Unloaded  ===================================
         private void SymbolEditControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -162,6 +178,7 @@ namespace ModelGraph.Controls
 
         private void EditorCanvas_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            InitContactControls();
             EditorCanvas.Invalidate();
         }
 
@@ -412,6 +429,82 @@ namespace ModelGraph.Controls
         private Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> Target_Contacts;
         private List<(Contact cont, Target targ, Vector2 point, float size)> _contactTargets = new List<(Contact cont, Target targ, Vector2 point, float)>();
 
+        #region InitContactControls  ==========================================
+        private void InitContactControls()
+        {
+            foreach (var e in Target_Contacts)
+            {
+                switch (e.Key)
+                {
+                    case Target.N:
+                        Contact_N = e.Value.contact;
+                        SetContactHighlight(Contact_N, ContactComboBox_N, ContactSizeSlider_N);
+                        break;
+                    case Target.S:
+                        Contact_S = e.Value.contact;
+                        SetContactHighlight(Contact_S, ContactComboBox_S, ContactSizeSlider_S);
+                        break;
+                    case Target.E:
+                        Contact_E = e.Value.contact;
+                        SetContactHighlight(Contact_E, ContactComboBox_E, ContactSizeSlider_E);
+                        break;
+                    case Target.W:
+                        Contact_W = e.Value.contact;
+                        SetContactHighlight(Contact_W, ContactComboBox_W, ContactSizeSlider_W);
+                        break;
+                    case Target.NE:
+                        Contact_NE = e.Value.contact;
+                        SetContactHighlight(Contact_NE, ContactComboBox_NE, ContactSizeSlider_NE);
+                        break;
+                    case Target.NW:
+                        Contact_NW = e.Value.contact;
+                        SetContactHighlight(Contact_NW, ContactComboBox_NW, ContactSizeSlider_NW);
+                        break;
+                    case Target.SE:
+                        Contact_SE = e.Value.contact;
+                        SetContactHighlight(Contact_SE, ContactComboBox_SE, ContactSizeSlider_SE);
+                        break;
+                    case Target.SW:
+                        Contact_SW = e.Value.contact;
+                        SetContactHighlight(Contact_SW, ContactComboBox_SW, ContactSizeSlider_SW);
+                        break;
+                    case Target.EN:
+                        Contact_EN = e.Value.contact;
+                        SetContactHighlight(Contact_EN, ContactComboBox_EN, ContactSizeSlider_EN);
+                        break;
+                    case Target.ES:
+                        Contact_ES = e.Value.contact;
+                        SetContactHighlight(Contact_ES, ContactComboBox_ES, ContactSizeSlider_ES);
+                        break;
+                    case Target.WN:
+                        Contact_WN = e.Value.contact;
+                        SetContactHighlight(Contact_WN, ContactComboBox_WN, ContactSizeSlider_WN);
+                        break;
+                    case Target.WS:
+                        Contact_WS = e.Value.contact;
+                        SetContactHighlight(Contact_WS, ContactComboBox_WS, ContactSizeSlider_WS);
+                        break;
+                    case Target.NEC:
+                        Contact_NEC = e.Value.contact;
+                        SetContactHighlight(Contact_NEC, ContactComboBox_NEC, ContactSizeSlider_NEC);
+                        break;
+                    case Target.NWC:
+                        Contact_NWC = e.Value.contact;
+                        SetContactHighlight(Contact_NWC, ContactComboBox_NWC, ContactSizeSlider_NWC);
+                        break;
+                    case Target.SEC:
+                        Contact_SEC = e.Value.contact;
+                        SetContactHighlight(Contact_SEC, ContactComboBox_SEC, ContactSizeSlider_SEC);
+                        break;
+                    case Target.SWC:
+                        Contact_SWC = e.Value.contact;
+                        SetContactHighlight(Contact_SWC, ContactComboBox_SWC, ContactSizeSlider_SWC);
+                        break;
+                }
+            }
+        }
+        #endregion
+
         #region CheckContacts  ================================================
         private void CheckContacts()
         {
@@ -601,14 +694,14 @@ namespace ModelGraph.Controls
         private Contact _contact_NWC = Contact.None;
 
         public Contact Contact_E { get { return _contact_E; } set { Set(ref _contact_E, value); } }
-        private Contact _contact_E = Contact.Any;
+        private Contact _contact_E = Contact.None;
         public Contact Contact_EN { get { return _contact_EN; } set { Set(ref _contact_EN, value); } }
         private Contact _contact_EN = Contact.None;
         public Contact Contact_ES { get { return _contact_ES; } set { Set(ref _contact_ES, value); } }
         private Contact _contact_ES = Contact.None;
 
         public Contact Contact_W { get { return _contact_W; } set { Set(ref _contact_W, value); } }
-        private Contact _contact_W = Contact.One;
+        private Contact _contact_W = Contact.None;
         public Contact Contact_WN { get { return _contact_WN; } set { Set(ref _contact_WN, value); } }
         private Contact _contact_WN = Contact.None;
         public Contact Contact_WS { get { return _contact_WS; } set { Set(ref _contact_WS, value); } }

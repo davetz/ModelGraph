@@ -14,8 +14,8 @@
 
         <RotateTransform x:Key="Rotate90" Angle="90"  CenterX="8" CenterY="9"/>
         <ScaleTransform x:Key="FlipHorizontal" ScaleX="1" ScaleY="-1" CenterX="8" CenterY="10"/>
-        <SolidColorBrush x:Key="LockButtonLockedBrush" Color="LightPink"/>
-        <SolidColorBrush x:Key="LockButtonUnlockedBrush" Color="Transparent"/>
+        <SolidColorBrush x:Key="BackgroundPink" Color="LightPink"/>
+        <SolidColorBrush x:Key="BackgroundNormal" Color="Transparent"/>
         <Style x:Key="LockButtonStyle" TargetType="Button">
             <Setter Property="IsTabStop" Value="False" />
             <Setter Property="Visibility" Value="Visible" />
@@ -330,81 +330,97 @@
                 <TextBlock Text="SEC" Style="{StaticResource ContactLabelStyle}" Grid.Row="16" Grid.Column="0"/>
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="1" Grid.Column="1"
+                          x:Name="ContactComboBox_NWC"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_NWC, Mode=TwoWay}"
                            SelectionChanged ="Contact_NWC_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="2" Grid.Column="1"
+                          x:Name="ContactComboBox_NW"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_NW, Mode=TwoWay}"
                            SelectionChanged ="Contact_NW_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="3" Grid.Column="1"
+                          x:Name="ContactComboBox_N"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_N, Mode=TwoWay}"
                            SelectionChanged ="Contact_N_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="4" Grid.Column="1"
+                          x:Name="ContactComboBox_NE"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_NE, Mode=TwoWay}"
                            SelectionChanged ="Contact_NE_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="5" Grid.Column="1"
+                          x:Name="ContactComboBox_NEC"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_NEC, Mode=TwoWay}"
                            SelectionChanged ="Contact_NEC_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="6" Grid.Column="1"
+                          x:Name="ContactComboBox_EN"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_EN, Mode=TwoWay}"
                            SelectionChanged ="Contact_EN_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="7" Grid.Column="1"
+                          x:Name="ContactComboBox_E"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_E, Mode=TwoWay}"
                            SelectionChanged ="Contact_E_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="8" Grid.Column="1"
+                          x:Name="ContactComboBox_ES"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_ES, Mode=TwoWay}"
                            SelectionChanged ="Contact_ES_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="9" Grid.Column="1"
+                          x:Name="ContactComboBox_WN"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_WN, Mode=TwoWay}"
                            SelectionChanged ="Contact_WN_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="10" Grid.Column="1"
+                          x:Name="ContactComboBox_W"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_W, Mode=TwoWay}"
                            SelectionChanged ="Contact_W_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="11" Grid.Column="1"
+                          x:Name="ContactComboBox_WS"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_WS, Mode=TwoWay}"
                            SelectionChanged ="Contact_WS_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="12" Grid.Column="1"
+                          x:Name="ContactComboBox_SWC"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_SWC, Mode=TwoWay}"
                            SelectionChanged ="Contact_SWC_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="13" Grid.Column="1"
+                          x:Name="ContactComboBox_SW"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_SW, Mode=TwoWay}"
                            SelectionChanged ="Contact_SW_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="14" Grid.Column="1"
+                          x:Name="ContactComboBox_S"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_S, Mode=TwoWay}"
                            SelectionChanged ="Contact_S_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="15" Grid.Column="1"
+                          x:Name="ContactComboBox_SE"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_SE, Mode=TwoWay}"
                            SelectionChanged ="Contact_SE_SelectionChanged" />
 
                 <ComboBox Style="{StaticResource ContactComboBoxStyle}" Grid.Row="16" Grid.Column="1"
+                          x:Name="ContactComboBox_SEC"
                           ItemsSource="{Binding ElementName=control, Path=ContactList}"
                            SelectedItem="{Binding ElementName=control, Path=Contact_SEC, Mode=TwoWay}"
                            SelectionChanged ="Contact_SEC_SelectionChanged" />

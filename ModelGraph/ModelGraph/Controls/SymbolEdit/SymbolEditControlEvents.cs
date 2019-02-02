@@ -105,86 +105,92 @@ namespace ModelGraph.Controls
 
         private void Contact_N_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_N.Visibility = (Contact_N == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_N, ContactComboBox_N, ContactSizeSlider_N);
             EditorCanvas.Invalidate();
         }
         private void Contact_NE_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_NE.Visibility = (Contact_NE == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_NE, ContactComboBox_NE, ContactSizeSlider_NE);
             EditorCanvas.Invalidate();
         }
         private void Contact_NW_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_NW.Visibility = (Contact_NW== Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_NW, ContactComboBox_NW, ContactSizeSlider_NW);
             EditorCanvas.Invalidate();
         }
         private void Contact_NEC_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_NEC.Visibility = (Contact_NEC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_NEC, ContactComboBox_NEC, ContactSizeSlider_NEC);
             EditorCanvas.Invalidate();
         }
         private void Contact_NWC_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_NWC.Visibility = (Contact_NWC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_NWC, ContactComboBox_NWC, ContactSizeSlider_NWC);
             EditorCanvas.Invalidate();
         }
 
         private void Contact_E_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_E.Visibility = (Contact_E == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_E, ContactComboBox_E, ContactSizeSlider_E);
             EditorCanvas.Invalidate();
         }
         private void Contact_EN_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_EN.Visibility = (Contact_EN == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_EN, ContactComboBox_EN, ContactSizeSlider_EN);
             EditorCanvas.Invalidate();
         }
         private void Contact_ES_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_ES.Visibility = (Contact_ES == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_ES, ContactComboBox_ES, ContactSizeSlider_ES);
             EditorCanvas.Invalidate();
         }
 
         private void Contact_W_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_W.Visibility = (Contact_W == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_W, ContactComboBox_W, ContactSizeSlider_W);
             EditorCanvas.Invalidate();
         }
         private void Contact_WN_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_WN.Visibility = (Contact_WN == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_WN, ContactComboBox_WN, ContactSizeSlider_WN);
             EditorCanvas.Invalidate();
         }
         private void Contact_WS_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_WS.Visibility = (Contact_WS == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_WS, ContactComboBox_WS, ContactSizeSlider_WS);
             EditorCanvas.Invalidate();
         }
 
         private void Contact_S_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_S.Visibility = (Contact_S == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_S, ContactComboBox_S, ContactSizeSlider_S);
             EditorCanvas.Invalidate();
         }
         private void Contact_SE_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_SE.Visibility = (Contact_SE == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_SE, ContactComboBox_SE, ContactSizeSlider_SE);
             EditorCanvas.Invalidate();
         }
         private void Contact_SW_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_SW.Visibility = (Contact_SW == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_SW, ContactComboBox_SW, ContactSizeSlider_SW);
             EditorCanvas.Invalidate();
         }
         private void Contact_SEC_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_SEC.Visibility = (Contact_SEC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_SEC, ContactComboBox_SEC, ContactSizeSlider_SEC);
             EditorCanvas.Invalidate();
         }
         private void Contact_SWC_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ContactSizeSlider_SWC.Visibility = (Contact_SWC == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            SetContactHighlight(Contact_SWC, ContactComboBox_SWC, ContactSizeSlider_SWC);
             EditorCanvas.Invalidate();
+        }
+
+        private void SetContactHighlight(Contact con, ComboBox combo, Slider slide)
+        {
+            slide.Visibility = (con == Contact.Any) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+            combo.Background = (con == Contact.None) ? (Brush)Resources["BackgroundNormal"] : (Brush)Resources["BackgroundPink"];
         }
 
         private void SetNewContactSize(Target targ, double value)
@@ -490,7 +496,7 @@ namespace ModelGraph.Controls
         {
             Shape.LockSliders(SelectedShapes, false);
             LockButton.Content = "\uE785";
-            LockButton.Background = (Brush)Resources["LockButtonUnlockedBrush"];
+            LockButton.Background = (Brush)Resources["BackgroundNormal"];
             ToolTipService.SetToolTip(LockButton, "_002B".GetLocalized());
             DimensionSlider.IsEnabled = true;
             TernarySizeSlider.IsEnabled = true;
@@ -502,7 +508,7 @@ namespace ModelGraph.Controls
         {
             Shape.LockSliders(SelectedShapes, true);
             LockButton.Content = "\uE72E";
-            LockButton.Background = (Brush)Resources["LockButtonLockedBrush"];
+            LockButton.Background = (Brush)Resources["BackgroundPink"];
             ToolTipService.SetToolTip(LockButton, "_002A".GetLocalized());
             DimensionSlider.IsEnabled = false;
             TernarySizeSlider.IsEnabled = false;
