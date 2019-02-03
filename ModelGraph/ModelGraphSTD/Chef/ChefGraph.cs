@@ -340,15 +340,15 @@ namespace ModelGraphSTD
 
                     node.Symbol = (byte)(i + 2);
                     node.Aspect = Aspect.Central;
-                    if ((node.FlipRotate & FlipRotate.RotateClockWise) == 0)
+                    if (node.FlipState < FlipState.LeftRotate)
                     {
-                        node.DX = (byte)(sx.Width / 2);
-                        node.DY = (byte)(sx.Height / 2);
+                        node.DX = (byte)(sx.Width * gx.SymbolScale / 2);
+                        node.DY = (byte)(sx.Height * gx.SymbolScale / 2);
                     }
                     else
                     {
-                        node.DY = (byte)(sx.Width / 2);
-                        node.DX = (byte)(sx.Height / 2);
+                        node.DY = (byte)(sx.Width * gx.SymbolScale / 2);
+                        node.DX = (byte)(sx.Height * gx.SymbolScale / 2);
                     }
                 }
             }

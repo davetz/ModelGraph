@@ -168,7 +168,11 @@ namespace ModelGraph.Controls
         #region Serialize  ====================================================
         public static byte[] Serialize(IEnumerable<Shape> shapes)
         {
+            var(dx1, dy1, dx2, dy2, cdx, cdy, fw, fh) = Shape.GetExtent(shapes);
             var data = new List<byte>(shapes.Count() * 30);
+
+            data.Add(ToByte(fw)); // overal width
+            data.Add(ToByte(fh)); // overal height
 
             foreach (var shape in shapes)
             {
@@ -233,10 +237,10 @@ namespace ModelGraph.Controls
         static public void Deserialize(byte[] data, List<Shape> shapes)
         {
             shapes.Clear();
-            if (data is null) return;
+            if (data is null || data.Length < 2) return;
 
             var M = data.Length;
-            var I = 0;
+            var I = 2;
 
             while (IsMoreDataAvailable())
             {

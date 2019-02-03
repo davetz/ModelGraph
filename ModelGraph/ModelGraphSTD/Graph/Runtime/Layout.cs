@@ -21,9 +21,9 @@ namespace ModelGraphSTD
             sector.    
                  slice      sect         quad       side
                 =======    =======       ====       ======
-                           5\6|7/8        3|4         N
+                           5\6|7/8        2|3         N
                            ~~~+~~~        ~+~       W + E
-                           4/3|2\1        2|1         S
+                           4/3|2\1        1|0         S
         */
             var (count, edge) = n1.Graph.ConnectedEdges(n1);
             if (count == 0) return (count, null, null, null);
