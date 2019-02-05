@@ -163,19 +163,19 @@ namespace ModelGraph.Controls
                     return TransformedPoints(mb);
 
                 case FlipState.LeftRotate:
-                    var ml = Matrix3x2.CreateRotation(FullRadians / 4);
+                    var ml = Matrix3x2.CreateRotation(FullRadians / -4);
                     return TransformedPoints(ml);
 
                 case FlipState.LeftHorzFlip:
-                    var mlh = Matrix3x2.CreateRotation(FullRadians / 4) * Matrix3x2.CreateScale(-1, 1);
+                    var mlh = Matrix3x2.CreateRotation(FullRadians / -4) * Matrix3x2.CreateScale(-1, 1);
                     return TransformedPoints(mlh);
 
                 case FlipState.RightRotate:
-                    var mr = Matrix3x2.CreateRotation(-FullRadians / 4);
+                    var mr = Matrix3x2.CreateRotation(FullRadians / 4);
                     return TransformedPoints(mr);
 
                 case FlipState.RightHorzFlip:
-                    var mlr = Matrix3x2.CreateRotation(-FullRadians / 4) * Matrix3x2.CreateScale(-1, 1);
+                    var mlr = Matrix3x2.CreateRotation(FullRadians / 4) * Matrix3x2.CreateScale(-1, 1);
                     return TransformedPoints(mlr);
             }
             return null;

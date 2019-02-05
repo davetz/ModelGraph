@@ -7,6 +7,22 @@ namespace ModelGraphSTD
 {
     internal static class Layout
     {
+        #region ConnectedEdges  ===============================================
+        static internal (Edge edge, Target targ, Node Other, (float x, float y) bend, Attach atch, bool horz)[] ConnectedEdges(Node n)
+        {
+            var (N, edge) = n.Graph.ConnectedEdges(n);
+            if (N == 0) return null;
+
+            var output = new (Edge edge, Target targ, Node Other, (float x, float y) bend, Attach atch, bool horz)[N];
+            for (int i = 0; i < N; i++)
+            {
+                var (targ, other, bend, atch, horz) = edge[i].TargetOtherBendAttachHorz(n);
+                output[i] = (edge[i], targ, other, bend, atch, horz); 
+            }
+            return output;
+        }
+        #endregion
+
         #region SortedEdges  ==================================================
         internal static (int count, int[] nquad, int[] nsect, (Edge edge, Node other, ConnectFlip conf, (float x, float y) bend, double slope, Quad quad, Sect sect, Attach atch, bool horz)[])
         SortedEdges(Node n1)

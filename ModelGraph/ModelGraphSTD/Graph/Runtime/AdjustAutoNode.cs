@@ -134,33 +134,33 @@ namespace ModelGraphSTD
                     if (E[i].atch == Attach.RightAngle)
                     {
                         if (E[i].horz)
-                            E[i].edge.SetFace(node, (0, 0), (0, dby));
+                            E[i].edge.SetFace(node, (x, y), (x, y + dby));
                         else
-                            E[i].edge.SetFace(node, (0, 0), (dbx, 0)); 
+                            E[i].edge.SetFace(node, (x, y), (x + dbx, y)); 
                     }
                     else if (E[i].atch == Attach.SkewedAngle)
                     {
                         if (E[i].horz)
                         {
                             if (E[i].quad == Quad.Q4 || E[i].quad == Quad.Q1)
-                                E[i].edge.SetFace(node, (0, 0), (tmsku, dby));
+                                E[i].edge.SetFace(node, (x, y), (x + tmsku, y + dby));
                             else
-                                E[i].edge.SetFace(node, (0, 0), (-tmsku, dby));
+                                E[i].edge.SetFace(node, (x, y), (x - tmsku, y + dby));
                         }
                         else
                         {
                             if (E[i].quad == Quad.Q2 || E[i].quad == Quad.Q1)
-                                E[i].edge.SetFace(node, (0, 0), (dbx, tmsku));
+                                E[i].edge.SetFace(node, (x, y), (dbx, tmsku));
                             else
-                                E[i].edge.SetFace(node, (0, 0), (dbx, -tmsku));
+                                E[i].edge.SetFace(node, (x, y), (x + dbx, y - tmsku));
                         }
                     }
                     else
                     {
-                        if (E[i].sect == Sect.S8 || E[i].sect == Sect.S1) E[i].edge.SetFace(node, (0, 0));
-                        else if (E[i].sect == Sect.S2 || E[i].sect == Sect.S3) E[i].edge.SetFace(node, (0, 0));
-                        else if (E[i].sect == Sect.S4 || E[i].sect == Sect.S5) E[i].edge.SetFace(node, (0, 0));
-                        else if (E[i].sect == Sect.S6 || E[i].sect == Sect.S7) E[i].edge.SetFace(node, (0, 0));
+                        if (E[i].sect == Sect.S8 || E[i].sect == Sect.S1) E[i].edge.SetFace(node, (x, y));
+                        else if (E[i].sect == Sect.S2 || E[i].sect == Sect.S3) E[i].edge.SetFace(node, (x, y));
+                        else if (E[i].sect == Sect.S4 || E[i].sect == Sect.S5) E[i].edge.SetFace(node, (x, y));
+                        else if (E[i].sect == Sect.S6 || E[i].sect == Sect.S7) E[i].edge.SetFace(node, (x, y));
                     }
                 }
             }
@@ -168,22 +168,22 @@ namespace ModelGraphSTD
             void SetEast(int e)
             {
                 var ds = (short)(tmSpc * Layout.Offset(iEast++, nEast));
-                E[e].edge.SetFace(node, (dx1, ds), (dx2, ds));
+                E[e].edge.SetFace(node, (x + dx1, y + ds), (x + dx2, y + ds));
             }
             void SetWest(int e)
             {
                 var ds = (short)(tmSpc * Layout.Offset(iWest++, nWest));
-                E[e].edge.SetFace(node, (-dx1, ds), (-dx2, ds));
+                E[e].edge.SetFace(node, (x - dx1, y + ds), (x - dx2, y + ds));
             }
             void SetSouth(int e)
             {
                 var ds = (short)(tmSpc * Layout.Offset(iSouth++, nSouth));
-                E[e].edge.SetFace(node, (ds, dy1), (ds, dy2));
+                E[e].edge.SetFace(node, (x + ds, y + dy1), (x + ds, y + dy2));
             }
             void SetNorth(int e)
             {
                 var ds = (short)(tmSpc * Layout.Offset(iNorth++, nNorth));
-                E[e].edge.SetFace(node, (ds, -dy1), (ds, -dy2));
+                E[e].edge.SetFace(node, (x + ds, y - dy1), (x + ds, y - dy2));
             }
         }
     }

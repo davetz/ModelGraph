@@ -50,30 +50,101 @@ namespace ModelGraphSTD
         public float Width { get { return NoData ? 1f : Data[0] / 255f; } } //overall width factor 0..1f
         public float Height { get { return NoData ? 1f : Data[1] / 255f; } } //overall height factor 0..1f 
 
+        #region GetFlipTargetSurface  =========================================
+        internal List<(float x, float y, float dx, float dy, float siz)> GetFlipTargetSurface(FlipState flip, float cx, float cy, float scale)
+        {
+            var list = new List<(float x, float y, float dx, float dy, float siz)>(Target_Contacts.Count);
+            foreach (var e in Target_Contacts)
+            {
+                var fix = (int)flip;
+                var (tdx, tdy) = ToFloat(e.Value.point);
+                var (fdx, fdy) = _flipper[fix](tdx, tdy);
+                var x = fdx * scale + cx;
+                var y = fdy * scale + cy;
+                var sz = e.Value.size * scale / 255 + cy;
+                var (tx, ty) = _targetSurface[TIX(e.Key)];
+                var (dx, dy) = _flipper[fix](tx, ty);
+                list.Add((x, y, dx, dy, sz));
+            }
+            return list;
+        }
+        private const float Q = 0.7071067811865f; // 1 / SQRT(2)
+        private static readonly (float dx, float dy)[] _targetSurface =
+        {
+            (0, 1),  //EN
+            (0, 1),  //E
+            (0, 1),  //ES
+            (-Q, Q), //SEC
+            (1, 0),  //SE
+            (1, 0),  //S
+            (1, 0),  //SW
+            (Q, Q),  //SWC
+            (0, 1),  //WS
+            (0, 1),  //W
+            (0, 1),  //WN
+            (-Q, Q), //NWC
+            (1, 0),  //NW
+            (1, 0),  //N
+            (1, 0),  //NE
+            (Q, Q),  //NEC
+        };
+        #endregion
+
         #region GetFlipTargetConnect  =========================================
-        internal void GetFlipTargetConnect(FlipState flip, List<(Target trg, Contact con, (float dx, float dy) pnt, float siz)> list)
+        internal void GetFlipTargetConnect(FlipState flip, float cx, float cy, float scale, List<(Target trg, byte tix, Contact con, (float x, float y) pnt)> list)
         {
             list.Clear();
             foreach (var e in Target_Contacts)
             {
-                list.Add((e.Key, e.Value.contact, _flipper[(int)flip](e.Value.point.dx, e.Value.point.dy), (float)e.Value.size / 255f));
-            }
-        }
-        private static (float, float) ToNone(sbyte dx, sbyte dy) => ((float)dx / 127, (float)dy / 127);
-        private static (float, float) ToVertFlip(sbyte dx, sbyte dy) => ((float)dx / 127, (float)dy / -127);
-        private static (float, float) ToHorzFlip(sbyte dx, sbyte dy) => ((float)dx / -127, (float)dy / 127);
-        private static (float, float) ToVertHorzFlip(sbyte dx, sbyte dy) => ((float)dx / -127, (float)dy / -127);
-        private static (float, float) ToLeftRotate(sbyte dx, sbyte dy) => ((float)dy / -127, (float)dx / 127);
-        private static (float, float) ToLeftHorzFlip(sbyte dx, sbyte dy) => ((float)dy / 127, (float)dx / 127);
-        private static (float, float) ToRightRotate(sbyte dx, sbyte dy) => ((float)dy / 127, (float)dx / 127);
-        private static (float, float) ToRightHorzFlip(sbyte dx, sbyte dy) => ((float)dy / -127, (float)dx / 127);
+                var fix = (int)flip;
+                var (tdx, tdy) = ToFloat(e.Value.point);
+                var (fdx, fdy) = _flipper[fix](tdx, tdy);
+                var x = fdx * scale + cx;
+                var y = fdy * scale + cy;
 
-        private static Func<sbyte, sbyte, (float, float)>[] _flipper = { ToNone, ToVertFlip, ToHorzFlip, ToVertHorzFlip, ToLeftRotate, ToLeftHorzFlip, ToRightRotate, ToRightHorzFlip };
+                list.Add((e.Key, TIX(e.Key), e.Value.contact, (x, y)));
+            }           
+        }
+        private static byte TIX(Target tg)
+        {
+            if (tg == Target.E) return 1;
+            if (tg == Target.W) return 9;
+            if (tg == Target.N) return 13;
+            if (tg == Target.S) return 5;
+
+            if (tg == Target.EN) return 0;
+            if (tg == Target.ES) return 2;
+            if (tg == Target.WS) return 8;
+            if (tg == Target.WN) return 10;
+
+            if (tg == Target.NW) return 12;
+            if (tg == Target.NE) return 14;
+            if (tg == Target.SE) return 4;
+            if (tg == Target.SW) return 6;
+
+            if (tg == Target.SEC) return 3;
+            if (tg == Target.SWC) return 7;
+            if (tg == Target.NWC) return 11;
+            if (tg == Target.NEC) return 15;
+            return 0;
+        }
+        private static (float u, float v) ToFloat((sbyte dx, sbyte dy) p) => (p.dx / 127f, p.dy / 127f);
+        private static (float, float) ToNone(float x, float y) => (x, y);
+        private static (float, float) ToVertFlip(float x, float y) => (x, -y);
+        private static (float, float) ToHorzFlip(float x, float y) => (-x, y);
+        private static (float, float) ToVertHorzFlip(float x, float y) => (-x, -y);
+        private static (float, float) ToLeftRotate(float x, float y) => (y, -x);
+        private static (float, float) ToLeftHorzFlip(float x, float y) => (-y, -x);
+        private static (float, float) ToRightRotate(float x, float y) => (-y, x);
+        private static (float, float) ToRightHorzFlip(float x, float y) => (y, x);
+
+        private static Func<float, float, (float x, float y)>[] _flipper = { ToNone, ToVertFlip, ToHorzFlip, ToVertHorzFlip, ToLeftRotate, ToLeftHorzFlip, ToRightRotate, ToRightHorzFlip };
         #endregion
 
         #region GetFlipTargetPenalty  =========================================
         internal byte[][] GetFlipTargetPenalty(FlipState flip) => _flipTargetPenalty[(int)flip];
-
+        internal static byte MaxPenalty => 5;
+        internal static float[] PenaltyFactor = { 1, 1.1f, 1.2f, 1.3f, 1.4f, 100f };
         //=== non-flipped normal penalty of each dx/dy directional sector to the symbol's target contact point
         //========== dx/dy directional sector  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F ================
         private static readonly byte[] _EN = { 1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 1, 0, 0, 0 }; //EN

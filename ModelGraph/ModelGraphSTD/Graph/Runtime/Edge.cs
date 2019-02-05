@@ -15,13 +15,13 @@ namespace ModelGraphSTD
 
         public (float X, float Y)[] Bends;
 
-        public (short X, short Y) Delta11; //surface point1
-        public (short X, short Y) Delta12; //surface point2
-        public (short X, short Y) Delta13; //terminal point
+        public (float X, float Y) SP1;
+        public (float X, float Y) FP1;
+        public (float X, float Y) TP1;
 
-        public (short X, short Y) Delta21; //surface point1
-        public (short X, short Y) Delta22; //surface point2
-        public (short X, short Y) Delta23; //terminal point
+        public (float X, float Y) SP2;
+        public (float X, float Y) FP2;
+        public (float X, float Y) TP2;
 
         public short Tm1; // index of terminal point 1
         public short Bp1; // index of closest bend point after Tm1 (to the right) 
@@ -193,6 +193,32 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region TargetOtherBendAttachHorz  ==========================================
+        internal (Target targ, Node other, (float, float) bend, Attach atch, bool horz) TargetOtherBendAttachHorz(Node node)
+        {
+            if (Points == null) Refresh();
+            var l = Points.Length - 1;
+
+            if (node.Aspect == Aspect.Point && (Node1.IsGraphSymbol || Node2.IsGraphSymbol))
+            {
+                var dx1 = Points[0].X - Points[Tm1].X;
+                var dy1 = Points[0].Y - Points[Tm1].Y;
+                var dx2 = Points[l].X - Points[Tm2].X;
+                var dy2 = Points[l].Y - Points[Tm2].Y;
+
+                return (node == Node1) ?
+                    (QueryX.PathParm.Target1, Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), (dx2 * dx2 > dy2 * dy2)) :
+                    (QueryX.PathParm.Target2, Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), (dx1 * dx1 > dy1 * dy1));
+            }
+            else
+            {
+                return (node == Node1) ?
+                    (QueryX.PathParm.Target1, Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), false) :
+                    (QueryX.PathParm.Target2, Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), false);
+            }
+        }
+        #endregion
+
         #region GetConnect  ===================================================
         internal Connect GetConnect(Node node) => (node == Node1) ? Connect1 :  Connect2;
         #endregion
@@ -347,16 +373,13 @@ namespace ModelGraphSTD
         internal void SetFace(Node node, (float x, float y) d1, (float x, float y) d2, (float x, float y) d3)
         {
             if (node == Node1)
-            { Delta11 = S(d1); Delta12 = S(d2); Delta13 = S(d3); }
+            { SP1 = d1; FP1 = d2; TP1 = d3; }
             else
-            { Delta21 = S(d1); Delta22 = S(d2); Delta23 = S(d3); }
+            { SP2 = d1; FP2 = d2; TP2 = d3; }
 
             // do the refresh after both faces have changed
             if (NeedsRefresh) Refresh();
             NeedsRefresh = !NeedsRefresh;
-
-            // convert (float, float) => (short, short)
-            (short, short) S((float x, float y) p) => ((short)p.x, (short)p.y);
         }
         #endregion
 
@@ -414,30 +437,13 @@ namespace ModelGraphSTD
             (float cx1, float cy1, float w1, float h1) = Node1.Values();
             (float cx2, float cy2, float w2, float h2) = Node2.Values();
 
-            var (dx11, dy11) = Delta11;
-            var (dx12, dy12) = Delta12;
-            var (dx13, dy13) = Delta13;
-            var (dx21, dy21) = Delta21;
-            var (dx22, dy22) = Delta22;
-            var (dx23, dy23) = Delta23;
+            P[sp1] = SP1;
+            P[fp1] = FP1;
+            P[tp1] = TP1;
 
-            P[sp1].X = cx1 + dx11;
-            P[sp1].Y = cy1 + dy11;
-
-            P[fp1].X = cx1 + dx12;
-            P[fp1].Y = cy1 + dy12;
-
-            P[tp1].X = cx1 + dx13;
-            P[tp1].Y = cy1 + dy13;
-
-            P[sp2].X = cx2 + dx21;
-            P[sp2].Y = cy2 + dy21;
-
-            P[fp2].X = cx2 + dx22;
-            P[fp2].Y = cy2 + dy22;
-
-            P[tp2].X = cx2 + dx23;
-            P[tp2].Y = cy2 + dy23;
+            P[sp2] = SP2;
+            P[fp2] = FP2;
+            P[tp2] = TP2;
 
             #region Bend Points  ==============================================
             if (bendCount > 0)
@@ -452,13 +458,13 @@ namespace ModelGraphSTD
             #region Facet1 Points  ============================================
             if (len1 > 0)
             {
-                if (dx13 > dx12)
+                if (TP1.X > FP1.X)
                 {
-                    if (dy13 > dy12)
+                    if (TP1.Y > FP1.Y)
                     {//==================================== off south-east corner
                         NotImplemented();
                     }
-                    else if (dy13 < dy12)
+                    else if (TP1.Y < FP1.Y)
                     {//==================================== off north-east corner
                         var x = P[fp1].X;
                         var y = P[fp1].Y;
@@ -479,13 +485,13 @@ namespace ModelGraphSTD
                         }
                     }
                 }
-                else if (dx13 < dx12)
+                else if (TP1.X < FP1.X)
                 {
-                    if (dy13 > dy12)
+                    if (TP1.Y > FP1.Y)
                     {//==================================== off south-west corner
                         NotImplemented();
                     }
-                    else if (dy13 < dy12)
+                    else if (TP1.Y < FP1.Y)
                     {//==================================== off north-west corner
                         NotImplemented();
                     }
@@ -502,7 +508,7 @@ namespace ModelGraphSTD
                 }
                 else
                 {
-                    if (dy13 > dy12)
+                    if (TP1.Y > FP1.Y)
                     {//==================================== off south side
                         var x = P[fp1].X;
                         var y = P[fp1].Y;
@@ -512,7 +518,7 @@ namespace ModelGraphSTD
                             P[j].Y = y + facet1.DXY[i].X;
                         }
                     }
-                    else if (dy13 < dy12)
+                    else if (TP1.Y < FP1.Y)
                     {//==================================== off north side
                         var x = P[fp1].X;
                         var y = P[fp1].Y;
@@ -544,13 +550,13 @@ namespace ModelGraphSTD
             #region Facet2 Points  ============================================
             if (len2 > 0)
             {
-                if (dx23 > dx22)
+                if (TP2.X > FP2.X)
                 {
-                    if (dy23 > dy22)
+                    if (TP2.Y > FP2.Y)
                     {//==================================== off south-east corner
                         NotImplemented();
                     }
-                    else if (dy23 < dy22)
+                    else if (TP2.Y < FP2.Y)
                     {//==================================== off north-east corner
                         NotImplemented();
                     }
@@ -565,13 +571,13 @@ namespace ModelGraphSTD
                         }
                     }
                 }
-                else if (dx23 < dx22)
+                else if (TP2.X < FP2.X)
                 {
-                    if (dy23 > dy22)
+                    if (TP2.Y > FP2.Y)
                     {//==================================== off south-west corner
                         NotImplemented();
                     }
-                    else if (dy23 < dy22)
+                    else if (TP2.Y < FP2.Y)
                     {//==================================== off north-west corner
                         NotImplemented();
                     }
@@ -588,7 +594,7 @@ namespace ModelGraphSTD
                 }
                 else
                 {
-                    if (dy23 > dy22)
+                    if (TP2.Y > FP2.Y)
                     {//==================================== off south side
                         var x = P[fp2].X;
                         var y = P[fp2].Y;
@@ -598,7 +604,7 @@ namespace ModelGraphSTD
                             P[j].Y = y + facet2.DXY[i].X;
                         }
                     }
-                    else if (dy23 < dy22)
+                    else if (TP2.Y < FP2.Y)
                     {//==================================== off north side
                         var x = P[fp2].X;
                         var y = P[fp2].Y;
