@@ -2239,4 +2239,10 @@ The bulk of your modeling data work is best done in the custom tree and graph vi
   <data name="_002B" xml:space="preserve">
     <value>Polyline controls are enabled, Click to disable</value>
   </data>
+  <data name="456N" xml:space="preserve">
+    <value>Symbol Size</value>
+  </data>
+  <data name="456S" xml:space="preserve">
+    <value>Full size width/height of symbols (12 to 255)</value>
+  </data>
 </root>

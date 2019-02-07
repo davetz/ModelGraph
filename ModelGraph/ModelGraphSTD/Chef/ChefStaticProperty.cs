@@ -86,6 +86,7 @@ namespace ModelGraphSTD
         private PropertyOf<GraphX, int> _graphXTerminalLengthProperty;
         private PropertyOf<GraphX, int> _graphXTerminalSpacingProperty;
         private PropertyOf<GraphX, int> _graphXTerminalStretchProperty;
+        private PropertyOf<GraphX, int> _graphXSymbolSizeProperty;
 
         private void InitializeProperties()
         {
@@ -373,6 +374,13 @@ namespace ModelGraphSTD
                 var p = _graphXTerminalStretchProperty = new PropertyOf<GraphX, int>(PropertyStore, Trait.GraphTerminalStretch_P);
                 p.GetValFunc = (item) => p.Cast(item).TerminalSkew;
                 p.SetValFunc = (item, value) => { p.Cast(item).TerminalSkew = (byte)value; return true; };
+                p.Value = new Int32Value(p);
+                props.Add(p);
+            }
+            {
+                var p = _graphXSymbolSizeProperty = new PropertyOf<GraphX, int>(PropertyStore, Trait.GraphSymbolSize_P);
+                p.GetValFunc = (item) => p.Cast(item).SymbolSize;
+                p.SetValFunc = (item, value) => { p.Cast(item).SymbolSize = (byte)value; return true; };
                 p.Value = new Int32Value(p);
                 props.Add(p);
             }

@@ -286,6 +286,7 @@ namespace ModelGraphSTD
         GraphTerminalLength_P = 0x453,
         GraphTerminalSpacing_P = 0x454,
         GraphTerminalStretch_P = 0x455,
+        GraphSymbolSize_P = 0x456,
 
         //=========================================
         QueryXSelect_P = 0x460 | CanMultiline,

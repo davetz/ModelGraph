@@ -46,7 +46,7 @@ namespace ModelGraphSTD
                         if ((targetContacts[ti].trg & E[ei].targ) == 0) continue; // skip targets that won't mate with the edge
                         if (targetContacts[ti].con == Contact.One && testResult[ti].Count > 0) continue; //skip targes that are already at capacity
 
-                        var parm = EdgetTargetCostSlopSect(ei, ti);
+                        var parm = EdgetTarget_CostSlopSectorIndex(ei, ti);
                         if (parm.cost < bestParm.cost)
                         {
                             bestTi = ti;
@@ -133,9 +133,9 @@ namespace ModelGraphSTD
             }
             #endregion
 
-            #region EdgetTargetCostSlopeSect  =================================
+            #region EdgetTarget_CostSlopeSectorIndex  =========================
             // populate the edgeSect list for given target point
-            (float cost, float slope, int six) EdgetTargetCostSlopSect(int ei, int ti)
+            (float cost, float slope, int six) EdgetTarget_CostSlopSectorIndex(int ei, int ti)
             {
                 const float a = 0.4142135623730950f; //tan(22.5)
                 const float b = 1.0f;                //tan(45.0)

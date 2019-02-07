@@ -3870,6 +3870,7 @@ namespace ModelGraphSTD
                     AddProperyModel(prev, m, _graphXTerminalLengthProperty);
                     AddProperyModel(prev, m, _graphXTerminalSpacingProperty);
                     AddProperyModel(prev, m, _graphXTerminalStretchProperty);
+                    AddProperyModel(prev, m, _graphXSymbolSizeProperty);
 
                     return (true, true);
                 }
