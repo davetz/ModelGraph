@@ -63,6 +63,16 @@ namespace ModelGraphSTD
                         testCost += cost;
                         if (testCost > bestCost) break; //abort, this is a bad choice of flip state
 
+                        foreach (var pre in testResult)
+                        {
+                            if (pre.Count == 0) continue;
+                            for (int j = pre.Count - 1; j >= 0; j--)
+                            {
+                                if (pre[j].ei == ei)
+                                    pre.RemoveAt(j); // get rid of duplicate edge from a previous best try
+                            }
+                        }
+
                         testResult[bestTi].Add((ei, cost, slope, six));
                     }
                 }
@@ -100,7 +110,10 @@ namespace ModelGraphSTD
             {
                 var (x, y, dx, dy, siz) = targetSurface[ti];
 
-                foreach( var (ei, c, m, s) in bestResult[ti])
+                if (bestResult[ti].Count > 1)
+                    bestResult[ti].Sort((u, v) => (u.s < v.s) ? -1 : (u.s > v.s) ? 1 : (u.m < v.m) ? -1 : (u.m > v.m) ? 1 : 0);
+
+                foreach ( var (ei, c, m, s) in bestResult[ti])
                 {
                     E[ei].edge.SetFace(node, (x, y));
                 }
