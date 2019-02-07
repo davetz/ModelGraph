@@ -32,10 +32,6 @@ namespace ModelGraphSTD
             #region Constructors  =============================================
             internal SymbolFlip(SymbolX symbol)
             {
-                n = N = (byte)symbol.NorthContact;
-                s = S = (byte)symbol.SouthContact;
-                w = W = (byte)symbol.WestContact;
-                e = E = (byte)symbol.EastContact;
 
                 dx = DX = (byte)(symbol.Width / 2);
                 dy = DY = (byte)(symbol.Height / 2);

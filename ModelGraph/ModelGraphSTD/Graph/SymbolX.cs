@@ -12,18 +12,9 @@ namespace ModelGraphSTD
         public byte[] Data;
         public Attach Attach;
         public Graphic Graphic;
-        public Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> Target_Contacts = new Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)>(4);
-        public Target AllTargets = Target.None;
+        public List<(Target trg, TargetIndex tix, Contact con, (sbyte dx, sbyte dy) pnt, byte siz)> TargetContacts = new List<(Target, TargetIndex, Contact, (sbyte, sbyte), byte)>(4);
         public byte Version;
 
-        public Contact NorthContact;
-        public Contact WestContact;
-        public Contact EastContact;
-        public Contact SouthContact;
-        public Contact SouthEastContact;
-        public Contact SouthWestContact;
-        public Contact NorthEastContact;
-        public Contact NorthWestContact;
 
         #region Constructors  =================================================
         public SymbolX(Store owner)
@@ -53,16 +44,16 @@ namespace ModelGraphSTD
         #region GetFlipTargetSurface  =========================================
         internal List<(float x, float y, float dx, float dy, float siz)> GetFlipTargetSurface(FlipState flip, float cx, float cy, float scale)
         {
-            var list = new List<(float x, float y, float dx, float dy, float siz)>(Target_Contacts.Count);
-            foreach (var e in Target_Contacts)
+            var list = new List<(float x, float y, float dx, float dy, float siz)>(TargetContacts.Count);
+            foreach (var e in TargetContacts)
             {
                 var fix = (int)flip;
-                var (tdx, tdy) = ToFloat(e.Value.point);
+                var (tdx, tdy) = ToFloat(e.pnt);
                 var (fdx, fdy) = _flipper[fix](tdx, tdy);
                 var x = fdx * scale + cx;
                 var y = fdy * scale + cy;
-                var sz = e.Value.size * scale / 255 + cy;
-                var (tx, ty) = _targetSurface[TIX(e.Key)];
+                var sz = e.siz * scale / 255 + cy;
+                var (tx, ty) = _targetSurface[(int)e.tix];
                 var (dx, dy) = _flipper[fix](tx, ty);
                 list.Add((x, y, dx, dy, sz));
             }
@@ -90,42 +81,59 @@ namespace ModelGraphSTD
         };
         #endregion
 
-        #region GetFlipTargetConnect  =========================================
-        internal void GetFlipTargetConnect(FlipState flip, float cx, float cy, float scale, List<(Target trg, byte tix, Contact con, (float x, float y) pnt)> list)
+        #region GetFlipTargetContacts  =========================================
+        internal void GetFlipTargetContacts(FlipState flip, float cx, float cy, float scale, List<(Target trg, byte tix, Contact con, (float x, float y) pnt)> list)
         {
             list.Clear();
-            foreach (var e in Target_Contacts)
+            foreach (var (trg, tix, con, pnt, siz) in TargetContacts)
             {
                 var fix = (int)flip;
-                var (tdx, tdy) = ToFloat(e.Value.point);
+                var (tdx, tdy) = ToFloat(pnt);
                 var (fdx, fdy) = _flipper[fix](tdx, tdy);
                 var x = fdx * scale + cx;
                 var y = fdy * scale + cy;
 
-                list.Add((e.Key, TIX(e.Key), e.Value.contact, (x, y)));
+                list.Add((trg, (byte)tix, con, (x, y)));
             }           
         }
-        private static byte TIX(Target tg)
+        public void GetTargetContacts(Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> dict)
         {
-            if (tg == Target.E) return 1;
-            if (tg == Target.W) return 9;
-            if (tg == Target.N) return 13;
-            if (tg == Target.S) return 5;
+            dict.Clear();
+            foreach (var (trg, tix, con, pnt, siz) in TargetContacts)
+            {
+                dict[trg] = (con, pnt, siz);
+            }
+        }
+        public void SetTargetContacts(Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> dict)
+        {
+            TargetContacts.Clear();
+            foreach (var e in dict)
+            {
+                TargetContacts.Add((e.Key, GetTargetIndex(e.Key), e.Value.contact, e.Value.point, e.Value.size));
+            }
+            TargetContacts.Sort((u,v) => (u.tix < v.tix) ? -1 : (u.tix > v.tix) ? 1 : 0);
+        }
+        public static TargetIndex GetTargetIndex(Target tg)
+        {
+            if (tg == Target.E) return TargetIndex.E;
+            if (tg == Target.W) return TargetIndex.W;
+            if (tg == Target.N) return TargetIndex.N;
+            if (tg == Target.S) return TargetIndex.S;
 
-            if (tg == Target.EN) return 0;
-            if (tg == Target.ES) return 2;
-            if (tg == Target.WS) return 8;
-            if (tg == Target.WN) return 10;
+            if (tg == Target.EN) return TargetIndex.EN;
+            if (tg == Target.ES) return TargetIndex.ES;
+            if (tg == Target.WS) return TargetIndex.WS;
+            if (tg == Target.WN) return TargetIndex.WN;
 
-            if (tg == Target.NW) return 12;
-            if (tg == Target.NE) return 14;
-            if (tg == Target.SE) return 4;
-            if (tg == Target.SW) return 6;
+            if (tg == Target.NW) return TargetIndex.NW;
+            if (tg == Target.NE) return TargetIndex.NE;
+            if (tg == Target.SE) return TargetIndex.SE;
+            if (tg == Target.SW) return TargetIndex.SW;
 
-            if (tg == Target.SEC) return 3;
-            if (tg == Target.SWC) return 7;
-            if (tg == Target.NWC) return 11;
-            if (tg == Target.NEC) return 15;
+            if (tg == Target.SEC) return TargetIndex.SEC;
+            if (tg == Target.SWC) return TargetIndex.SWC;
+            if (tg == Target.NWC) return TargetIndex.NWC;
+            if (tg == Target.NEC) return TargetIndex.NEC;
             return 0;
         }
         private static (float u, float v) ToFloat((sbyte dx, sbyte dy) p) => (p.dx / 127f, p.dy / 127f);

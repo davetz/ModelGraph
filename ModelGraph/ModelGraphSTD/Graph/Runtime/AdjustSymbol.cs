@@ -15,66 +15,69 @@ namespace ModelGraphSTD
             if (edgeCount == 0) return;
 
             var symbol = Symbols[node.Symbol - 2];
-            var targetCount = symbol.Target_Contacts.Count;
+            var targetCount = symbol.TargetContacts.Count;
+            var targetContacts = new List<(Target trg, byte tix, Contact con, (float dx, float dy) pnt)>(targetCount);
+            var rejectIndex = targetCount; //references lists of edges that didn't mate with a contact
 
             var bestFlip = FlipState.None;
             var bestCost = float.MaxValue;
-            var testCost = 0f;
 
             var cx = node.X;
             var cy = node.Y;
             var scale = GraphX.SymbolScale;
 
-            var edgeSlopeSector = new List<(int ei, float ds, float m, int six)>(edgeCount);
-            var targetContacts = new List<(Target trg, byte tix, Contact con, (float dx, float dy) pnt)>(targetCount);
-
-            var edgeIsDone = new bool[edgeCount];
-
             var testResult = NewTestResult();
             var bestResult = testResult;
+            byte[][] penalty; // [edge sector index] [symbol target index]
 
             #region FindBestArrangement  ======================================
             foreach (var flip in _allFlipStates)
             {
-                symbol.GetFlipTargetConnect(flip, cx, cy, scale, targetContacts);
-                var penalty = symbol.GetFlipTargetPenalty(flip);
+                var testCost = 0f;
+                penalty = symbol.GetFlipTargetPenalty(flip);
+                symbol.GetFlipTargetContacts(flip, cx, cy, scale, targetContacts);
 
-                testCost = 0;
-                for (int i = 0; i < edgeCount; i++) { edgeIsDone[i] = false; }
-                for (int i = 0; i < targetCount; i++) { testResult[i].Clear(); }
-
-                for (int ti = 0; ti < targetContacts.Count; ti++)
+                for (int ei = 0; ei < edgeCount; ei++)
                 {
-                    var (x, y) = targetContacts[ti].pnt; //actual target coordinate
-                    InitEdgeSlopeSector(x, y); //list of (edge-index, slope-to-target, sector-of-slope-0..15)
-
-                    foreach (var (ei, ds, m, six) in edgeSlopeSector)
+                    (float cost, float slope, int six) bestParm = (float.MaxValue, 0, 0);
+                    var bestTi = -1;
+                    for (int ti = 0; ti < targetCount; ti++)
                     {
-                        var (trg, tix, con, pnt) = targetContacts[ti];
-                        var (edge, etrg, Other, bend, atch, horz) = E[ei];
+                        if ((targetContacts[ti].trg & E[ei].targ) == 0) continue; // skip targets that won't mate with the edge
+                        if (targetContacts[ti].con == Contact.One && testResult[ti].Count > 0) continue; //skip targes that are already at capacity
 
-                        if ((etrg & trg) == 0) continue; // this edge refuses to mate with target point
+                        var parm = EdgetTargetCostSlopSect(ei, ti);
+                        if (parm.cost < bestParm.cost)
+                        {
+                            bestTi = ti;
+                            bestParm = parm;
+                        }
+                    }
+                    if (bestTi < 0) // no targets will mathe with this edge 
+                    {
+                        testResult[rejectIndex].Add((ei, 0, 0, -1));   
+                    }
+                    else  //add this edge to the target's edge list
+                    {
+                        var (cost, slope, six) = bestParm;
+                        testCost += cost;
+                        if (testCost > bestCost) break; //abort, this is a bad choice of flip state
 
-                        var pi = penalty[six][tix]; // [from direction sector index] [to target location index]
-                        var cs = ds * _penaltyFactor[pi];
-                        testCost += cs;
-
-                        edgeIsDone[ei] = true;
-                        testResult[ti].Add((ei, cs, m, six)); // add the edge connection to the list
-
-                        if (con == Contact.One) break; //allow only one edge to connect to the target
+                        testResult[bestTi].Add((ei, cost, slope, six));
                     }
                 }
-
                 if (testCost < bestCost)
                 {
                     bestFlip = flip;
                     bestCost = testCost;
                     bestResult = testResult;
+
                     testResult = NewTestResult();
                 }
             }
             #endregion
+
+            #region AssignEdgeContacts  =======================================
             Debug.WriteLine($"Best Flip: {bestFlip}");
             node.FlipState = bestFlip;
             if (bestFlip < FlipState.LeftRotate)
@@ -102,12 +105,14 @@ namespace ModelGraphSTD
                     E[ei].edge.SetFace(node, (x, y));
                 }
             }
+            #endregion
 
             #region NewTestResult  ============================================
             List<(int ei, float c, float m, int s)>[] NewTestResult()
             {
-                var tr = new List<(int ei, float c, float m, int s)>[targetCount];
-                for (int i = 0; i < targetCount; i++)
+                var plusOneCount = targetCount + 1;
+                var tr = new List<(int ei, float c, float m, int s)>[plusOneCount];
+                for (int i = 0; i < plusOneCount; i++)
                 {
                     tr[i] = new List<(int ei, float c, float m, int s)>(5);
                 }
@@ -115,70 +120,71 @@ namespace ModelGraphSTD
             }
             #endregion
 
-            #region InitEdgeSlopeSector  ======================================
+            #region EdgetTargetCostSlopeSect  =================================
             // populate the edgeSect list for given target point
-            void InitEdgeSlopeSector(float x1, float y1)
+            (float cost, float slope, int six) EdgetTargetCostSlopSect(int ei, int ti)
             {
                 const float a = 0.4142135623730950f; //tan(22.5)
                 const float b = 1.0f;                //tan(45.0)
                 const float c = 2.4142135623730950f; //tan(67.5)
 
-                edgeSlopeSector.Clear();
-                for (int i = 0; i < edgeCount; i++)
+                var tix = targetContacts[ti].tix;
+                var (x1, y1) = targetContacts[ti].pnt;
+
+                var (x2, y2) = E[ei].bend;
+                var dx = x2 - x1;
+                var dy = y2 - y1;
+
+                bool isVert = (int)(dx + 0.5) == 0;
+                bool isHorz = (int)(dy + 0.5) == 0;
+
+                (float, float, int) costSlopeSix = (0, 0, 0);
+
+                if (isVert)
                 {
-                    if (edgeIsDone[i]) continue;
-
-                    var (x2, y2) = E[i].bend;
-                    var dx = x2 - x1;
-                    var dy = y2 - y1; 
-
-                    bool isVert = (int)(dx + 0.5) == 0;
-                    bool isHorz = (int)(dy + 0.5) == 0;
-
-                    if (isVert)
+                    if (isHorz)
                     {
-                        if (isHorz)
-                            edgeSlopeSector.Add((i, 0, 0f, 0));
-                        else if (dy > 0)
-                            edgeSlopeSector.Add((i, dy, 1023f, 3));
+                        costSlopeSix = (0, 0, 0);
+                    }
+                    else if (dy > 0)
+                        costSlopeSix = (dy, 1023, 3);
+                    else
+                        costSlopeSix = (-dy, -1023, 12);
+                }
+                else
+                {
+                    if (isHorz)
+                    {
+                        if (dx > 0)
+                            costSlopeSix = (dx, 0, 0);
                         else
-                            edgeSlopeSector.Add((i, -dy, -1023f, 12));
+                            costSlopeSix = (-dx, 0, 7);
                     }
                     else
                     {
-                        if (isHorz)
+                        var m = dy / dx;
+                        if (dx < 0)
                         {
-                            if (dx > 0)
-                                edgeSlopeSector.Add((i, dx, 0, 0));
+                            if (dy < 0)
+                                costSlopeSix = ((-dx - dy), m, (m < a) ? 8 : (m < b) ? 9 : (m < c) ? 10 : 11);
                             else
-                                edgeSlopeSector.Add((i, -dx, 0, 7));
+                                costSlopeSix = ((-dx + dy), m, (m < -c) ? 4 : (m < -b) ? 5 : (m < -a) ? 6 : 7);
                         }
                         else
                         {
-                            var m = dy / dx;
-                            if (dx < 0)
-                            {
-                                if (dy < 0)
-                                    edgeSlopeSector.Add((i, (-dx - dy), m, (m < a) ? 8 : (m < b) ? 9 : (m < c) ? 10 : 11));
-                                else
-                                    edgeSlopeSector.Add((i, (-dx + dy), m, (m < -c) ? 4 : (m < -b) ? 5 : (m < -a) ? 6 : 7));
-                            }
+                            if (dy < 0)
+                                costSlopeSix = ((dx - dy), m, (m < -c) ? 12 : (m < -b) ? 13 : (m < -a) ? 14 : 15);
                             else
-                            {
-                                if (dy < 0)
-                                    edgeSlopeSector.Add((i, (dx - dy), m, (m < -c) ? 12 : (m < -b) ? 13 : (m < -a) ? 14 : 15));
-                                else
-                                    edgeSlopeSector.Add((i, (dx + dy), m, (m < a) ? 0 : (m < b) ? 1 : (m < c) ? 2 : 3));
-                            }
+                                costSlopeSix = ((dx + dy), m, (m < a) ? 0 : (m < b) ? 1 : (m < c) ? 2 : 3);
                         }
                     }
                 }
-                edgeSlopeSector.Sort(CompareEntry);
+                var (cost, slope, six) = costSlopeSix;
 
-                int CompareEntry((int ei, float ds, float m, int s) u, (int ei, float ds, float m, int s) v)
-                {
-                    return (u.s < v.s) ? -1 : (u.s > v.s) ? 1 : (u.ds < v.ds) ? -1 : (u.ds > v.ds) ? 1 : 0; 
-                }
+                var pi = penalty[six][tix]; // [from direction sector index] [to target location index]
+                cost = cost * _penaltyFactor[pi]; //weighted cost
+
+                return (cost, slope, six);
             }
             #endregion
         }

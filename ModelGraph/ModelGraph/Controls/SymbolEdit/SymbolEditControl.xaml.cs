@@ -68,13 +68,12 @@ namespace ModelGraph.Controls
             if (model is null || model.Item is null || !(model.Item is SymbolX))
             {
                 _isScratchPad = true;
-                Target_Contacts = new Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)>();
             }
             else
             {
                 _rootModel = model;
                 _symbol = model.Item as SymbolX;
-                Target_Contacts = _symbol.Target_Contacts;
+                _symbol.GetTargetContacts(Target_Contacts);
             }
 
             this.InitializeComponent();
@@ -107,7 +106,6 @@ namespace ModelGraph.Controls
         public RootModel RootModel => _rootModel;
         public void Save()
         {
-            //            _symbol.Data = PackageSymbolData();
             EditorCanvas.Invalidate();
         }
 
@@ -427,7 +425,7 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Target_Contacts  ==============================================
-        private Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> Target_Contacts;
+        private Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> Target_Contacts = new Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)>(5);
         private List<(Contact cont, Target targ, Vector2 point, float size)> _contactTargets = new List<(Contact cont, Target targ, Vector2 point, float)>();
 
         #region InitContactControls  ==========================================

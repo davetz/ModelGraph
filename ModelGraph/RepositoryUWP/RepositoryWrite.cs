@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_G;
+            var fileFormat = _fileFormat_H;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -204,6 +204,7 @@ namespace RepositoryUWP
                 w.WriteByte(gx.TerminalSkew);
                 w.WriteByte(gx.TerminalLength);
                 w.WriteByte(gx.TerminalSpacing);
+                w.WriteByte(gx.SymbolSize);
             }
             w.WriteByte((byte)Mark.GraphXEnding); // itegrity marker
         }
@@ -282,15 +283,16 @@ namespace RepositoryUWP
                 if ((b & S4) != 0) WriteString(w, sx.Description);
                 if ((b & S5) != 0) WriteBytes(w, sx.Data);
                 if ((b & S6) != 0) w.WriteByte((byte)sx.Attach);
-                var cnt = (byte)sx.Target_Contacts.Count;
+                var cnt = (byte)sx.TargetContacts.Count;
                 w.WriteByte(cnt);
-                foreach (var e in sx.Target_Contacts)
+                foreach (var e in sx.TargetContacts)
                 {
-                    w.WriteUInt16((ushort)e.Key);           //Target
-                    w.WriteByte((byte)e.Value.contact);     //Contact
-                    w.WriteByte((byte)e.Value.point.dx);    //sbyte dx
-                    w.WriteByte((byte)e.Value.point.dy);    //sbyte dy
-                    w.WriteByte(e.Value.size);              //byte size
+                    w.WriteUInt16((ushort)e.trg);   //Target
+                    w.WriteByte((byte)e.tix);       //TargetIndex
+                    w.WriteByte((byte)e.con);       //Contact
+                    w.WriteByte((byte)e.pnt.dx);    //sbyte dx
+                    w.WriteByte((byte)e.pnt.dy);    //sbyte dy
+                    w.WriteByte(e.siz);             //byte size
                 }
             }
             w.WriteByte((byte)Mark.SymbolXEnding); // itegrity marker

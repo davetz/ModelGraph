@@ -30,4 +30,23 @@ namespace ModelGraphSTD
         Any = 0xFFFF,
         None = 0,
     }
+    public enum TargetIndex : byte
+    {
+        EN = 0,
+        E = 1,
+        ES = 2,
+        SEC = 3,
+        SE = 4,
+        S = 5,
+        SW = 6,
+        SWC = 7,
+        WS = 8,
+        W = 9,
+        WN = 10,
+        NWC = 11,
+        NW = 12,
+        N = 13,
+        NE = 14,
+        NEC = 15
+    }
 }

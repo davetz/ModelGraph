@@ -628,6 +628,7 @@ namespace ModelGraph.Controls
         private void SaveButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             _symbol.Data = Shape.Serialize(SymbolShapes);
+            _symbol.SetTargetContacts(Target_Contacts);
             _symbol.Version += 1;
 
             List<ModelCommand> buttonCommands = new List<ModelCommand>(2);
