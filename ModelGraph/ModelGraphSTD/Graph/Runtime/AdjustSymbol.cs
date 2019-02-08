@@ -31,8 +31,10 @@ namespace ModelGraphSTD
             byte[][] penalty; // [edge sector index] [symbol target index]
 
             #region FindBestArrangement  ======================================
-            foreach (var flip in _allFlipStates)
+            foreach (var (flip, autoFlip) in _allFlipStates)
             {
+                if (flip != FlipState.None && (symbol.AutoFlip & autoFlip) == 0) continue; //this arrangement is not allowed
+
                 var testCost = 0f;
                 penalty = symbol.GetFlipTargetPenalty(flip);
                 symbol.GetFlipTargetContacts(flip, cx, cy, scale, targetContacts);
@@ -206,11 +208,13 @@ namespace ModelGraphSTD
         private static readonly byte _maxPenalty = SymbolX.MaxPenalty;
         private static readonly float[] _penaltyFactor = SymbolX.PenaltyFactor;
 
-        private readonly static FlipState[] _allFlipStates =
-            {
-                FlipState.None, FlipState.VertFlip, FlipState.HorzFlip, FlipState.VertHorzFlip,
-                FlipState.LeftRotate, FlipState.LeftHorzFlip, FlipState.RightRotate, FlipState.RightHorzFlip
-            };
+        private readonly static (FlipState, AutoFlip)[] _allFlipStates =
+        {
+            (FlipState.None, AutoFlip.None), (FlipState.VertFlip, AutoFlip.FlipVert),
+            (FlipState.HorzFlip, AutoFlip.FlipHorz), (FlipState.VertHorzFlip, AutoFlip.FlipVertHorz),
+            (FlipState.LeftRotate, AutoFlip.RotateLeft), (FlipState.LeftHorzFlip, AutoFlip.RotateLeftFlip),
+            (FlipState.RightRotate, AutoFlip.RotateRight), (FlipState.RightHorzFlip, AutoFlip.RotateRightFlip),
+        };
         #endregion
     }
 }

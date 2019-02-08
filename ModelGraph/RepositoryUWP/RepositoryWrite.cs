@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_H;
+            var fileFormat = _fileFormat_I;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -275,6 +275,7 @@ namespace RepositoryUWP
                 if (!string.IsNullOrWhiteSpace(sx.Description)) b |= S4;
                 if (sx.Data != null && sx.Data.Length > 12) b |= S5;
                 if (sx.Attach != Attach.Normal) b |= S6;
+                if (sx.AutoFlip != AutoFlip.None) b |= S7;
 
                 w.WriteUInt16(b);
                 if ((b & S1) != 0) w.WriteUInt16(sx.GetState());
@@ -283,6 +284,7 @@ namespace RepositoryUWP
                 if ((b & S4) != 0) WriteString(w, sx.Description);
                 if ((b & S5) != 0) WriteBytes(w, sx.Data);
                 if ((b & S6) != 0) w.WriteByte((byte)sx.Attach);
+                if ((b & S7) != 0) w.WriteByte((byte)sx.AutoFlip);
                 var cnt = (byte)sx.TargetContacts.Count;
                 w.WriteByte(cnt);
                 foreach (var e in sx.TargetContacts)

@@ -24,7 +24,8 @@ namespace ModelGraph.Controls
     public enum Edit_Contact
     {
         Edit,
-        Contacts
+        Contacts,
+        AutoFlip,
     }
     #endregion
 
@@ -91,6 +92,7 @@ namespace ModelGraph.Controls
             else
             {
                 Shape.Deserialize(_symbol.Data, SymbolShapes);
+                InitAutoFlipCheckBoxes(_symbol.AutoFlip);
             }
         }
         #endregion
@@ -759,6 +761,22 @@ namespace ModelGraph.Controls
         public double _contactSize_SEC;
         public double ContactSize_SWC { get { return _contactSize_SWC; } set { Set(ref _contactSize_SWC, value); } }
         public double _contactSize_SWC;
+
+        public bool AutoFlipVert { get { return _autoFlipVert; } set { Set(ref _autoFlipVert, value); } }
+        public bool _autoFlipVert;
+        public bool AutoFlipHorz { get { return _autoFlipHorz; } set { Set(ref _autoFlipHorz, value); } }
+        public bool _autoFlipHorz;
+        public bool AutoFlipVertHorz { get { return _autoFlipVertHorz; } set { Set(ref _autoFlipVertHorz, value); } }
+        public bool _autoFlipVertHorz;
+        public bool AutoRotateLeft { get { return _autoRotateLeft; } set { Set(ref _autoRotateLeft, value); } }
+        public bool _autoRotateLeft;
+        public bool AutoRotateLeftFlip { get { return _autoRotateLeftFlip; } set { Set(ref _autoRotateLeftFlip, value); } }
+        public bool _autoRotateLeftFlip;
+        public bool AutoRotateRight { get { return _autoRotateRight; } set { Set(ref _autoRotateRight, value); } }
+        public bool _autoRotateRight;
+        public bool AutoRotateRightFlip { get { return _autoRotateRightFlip; } set { Set(ref _autoRotateRightFlip, value); } }
+        public bool _autoRotateRightFlip;
         #endregion
+
     }
 }

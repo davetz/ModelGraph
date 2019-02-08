@@ -10,11 +10,10 @@ namespace ModelGraphSTD
         public string Summary;
         public string Description;
         public byte[] Data;
-        public Attach Attach;
-        public Graphic Graphic;
         public List<(Target trg, TargetIndex tix, Contact con, (sbyte dx, sbyte dy) pnt, byte siz)> TargetContacts = new List<(Target, TargetIndex, Contact, (sbyte, sbyte), byte)>(4);
+        public Attach Attach;
+        public AutoFlip AutoFlip;
         public byte Version;
-
 
         #region Constructors  =================================================
         public SymbolX(Store owner)

@@ -143,6 +143,19 @@
             <Setter Property="FontSize" Value="14"/>
         </Style>
 
+
+        <Style x:Key="AutoFlipLabelStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="4,2,4,2"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style x:Key="AutoFlipCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Margin" Value="6,0,0,0"/>
+        </Style>
+
         <Style x:Key="PropetyComboBoxStyle" TargetType="ComboBox">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -221,7 +234,7 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <!--<Button x:Name="ScratchButton" Content="ScratchPad" Style="{StaticResource RightButtonStyle}" Click="ScratchButton_Click"/>-->
-                <Button x:Name="SaveButton" Content="Save" Style="{StaticResource RightButtonStyle}" Click="SaveButton_Click"/>
+                <Button x:Name="ApplyButton" Content="Apply" Style="{StaticResource RightButtonStyle}" Click="ApplyButton_Click"/>
                 <Button x:Name="ReloadButton" Content="Reload" Style="{StaticResource RightButtonStyle}" Click="ReloadButton_Click"/>
             </StackPanel>
         </Grid>
@@ -281,7 +294,7 @@
                 <ColorPicker x:Name="ColorPicker" Width="364" Height="550" VerticalAlignment="Top" Color="{x:Bind ShapeColor, Mode=TwoWay}" ColorChanged="ColorPicker_ColorChanged"/>
             </Grid>
 
-            <Grid Grid.Column="3"  x:Name="ContactGrid" VerticalAlignment="Top"  HorizontalAlignment="Center" Visibility="Visible">
+            <Grid Grid.Column="3"  x:Name="ContactGrid" VerticalAlignment="Top"  HorizontalAlignment="Center" Visibility="Collapsed">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="60"/>
                     <RowDefinition Height="32"/>
@@ -510,6 +523,106 @@
                                 ValueChanged="ContactSizeSlider_SEC_ValueChanged" />
 
 
+            </Grid>
+
+            <Grid Grid.Column="3"  x:Name="AutoFlipGrid" VerticalAlignment="Top"  HorizontalAlignment="Center" Visibility="Visible">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="240"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Automatically adjust (flip/rotate) the symbol to  minimize awkward or crossed edge connections"
+                           TextWrapping="Wrap" Style="{StaticResource PropetyHeaderStyle}" Grid.ColumnSpan="3"/>
+
+                <CheckBox Grid.Row="1" Grid.Column="0"
+                          Style="{StaticResource AutoFlipCheckBoxStyle}"
+                          IsChecked="{x:Bind AutoFlipVert, Mode=TwoWay}"/>
+
+                <CheckBox Grid.Row="2" Grid.Column="0"
+                          Style="{StaticResource AutoFlipCheckBoxStyle}"
+                          IsChecked="{x:Bind AutoFlipHorz, Mode=TwoWay}"/>
+                
+                <CheckBox Grid.Row="3" Grid.Column="0"
+                          Style="{StaticResource AutoFlipCheckBoxStyle}"
+                          IsChecked="{x:Bind AutoFlipVertHorz, Mode=TwoWay}"/>
+
+                <CheckBox Grid.Row="4" Grid.Column="0"
+                          Style="{StaticResource AutoFlipCheckBoxStyle}"
+                          IsChecked="{x:Bind AutoRotateLeft, Mode=TwoWay}"/>
+
+                <CheckBox Grid.Row="5" Grid.Column="0"
+                          Style="{StaticResource AutoFlipCheckBoxStyle}"
+                          IsChecked="{x:Bind AutoRotateLeftFlip, Mode=TwoWay}"/>
+
+                <CheckBox Grid.Row="6" Grid.Column="0"
+                          Style="{StaticResource AutoFlipCheckBoxStyle}"
+                          IsChecked="{x:Bind AutoRotateRight, Mode=TwoWay}"/>
+
+                <CheckBox Grid.Row="7" Grid.Column="0"
+                          Style="{StaticResource AutoFlipCheckBoxStyle}"
+                          IsChecked="{x:Bind AutoRotateRightFlip, Mode=TwoWay}"/>
+
+                <TextBlock Text="Flip Vertically" Style="{StaticResource AutoFlipLabelStyle}" Grid.Row="1" Grid.Column="1"/>
+                <TextBlock Text="Flip Horizontally" Style="{StaticResource AutoFlipLabelStyle}" Grid.Row="2" Grid.Column="1"/>
+                <TextBlock Text="Flip Both Ways" Style="{StaticResource AutoFlipLabelStyle}" Grid.Row="3" Grid.Column="1" />
+                <TextBlock Text="Rotate Left" Style="{StaticResource AutoFlipLabelStyle}" Grid.Row="4" Grid.Column="1"/>
+                <TextBlock Text="Rotate Left and Flip Horizontal" Style="{StaticResource AutoFlipLabelStyle}" Grid.Row="5" Grid.Column="1"/>
+
+                <TextBlock Text="Rotate Right" Style="{StaticResource AutoFlipLabelStyle}" Grid.Row="6" Grid.Column="1"/>
+                <TextBlock Text="Rotate Right and Flip Horizontal" Style="{StaticResource AutoFlipLabelStyle}" Grid.Row="7" Grid.Column="1" />
+
+                <Button x:Name="TestFlipVert" Grid.Row="1" Grid.Column="2"
+                        Style="{StaticResource RightButtonStyle}" Content="Test"
+                        PointerPressed="TestFlipVert_PointerPressed"
+                        PointerReleased="TestAutoFlipStop_PointerReleased"
+                        PointerExited="TestAutoFlipStop_PointerReleased" />
+
+                <Button x:Name="TestFlipHorz" Grid.Row="2" Grid.Column="2"
+                        Style="{StaticResource RightButtonStyle}" Content="Test"
+                        PointerPressed="TestFlipHorz_PointerPressed"
+                        PointerReleased="TestAutoFlipStop_PointerReleased"
+                        PointerExited="TestAutoFlipStop_PointerReleased" />
+
+                <Button x:Name="TestFlipVertHorz" Grid.Row="3" Grid.Column="2"
+                        Style="{StaticResource RightButtonStyle}" Content="Test"
+                        PointerPressed="TestFlipVertHorz_PointerPressed"
+                        PointerReleased="TestAutoFlipStop_PointerReleased"
+                        PointerExited="TestAutoFlipStop_PointerReleased" />
+
+                <Button x:Name="TestRotateLeft" Grid.Row="4" Grid.Column="2"
+                        Style="{StaticResource RightButtonStyle}" Content="Test"
+                        PointerPressed="TestRotateLeft_PointerPressed"
+                        PointerReleased="TestAutoFlipStop_PointerReleased"
+                        PointerExited="TestAutoFlipStop_PointerReleased" />
+
+                <Button x:Name="TestRotateLeftFlip" Grid.Row="5" Grid.Column="2"
+                        Style="{StaticResource RightButtonStyle}" Content="Test"
+                        PointerPressed="TestRotateLeftFlip_PointerPressed"
+                        PointerReleased="TestAutoFlipStop_PointerReleased"
+                        PointerExited="TestAutoFlipStop_PointerReleased" />
+
+                <Button x:Name="TestRotateRight" Grid.Row="6" Grid.Column="2"
+                        Style="{StaticResource RightButtonStyle}" Content="Test"
+                        PointerPressed="TestRotateRight_PointerPressed"
+                        PointerReleased="TestAutoFlipStop_PointerReleased"
+                        PointerExited="TestAutoFlipStop_PointerReleased" />
+
+                <Button x:Name="TestRotateRightFlip" Grid.Row="7" Grid.Column="2"
+                        Style="{StaticResource RightButtonStyle}" Content="Test"
+                        PointerPressed="TestRotateRightFlip_PointerPressed"
+                        PointerReleased="TestAutoFlipStop_PointerReleased"
+                        PointerExited="TestAutoFlipStop_PointerReleased" />
             </Grid>
 
         </Grid>

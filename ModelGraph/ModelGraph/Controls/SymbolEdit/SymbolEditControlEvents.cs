@@ -23,8 +23,7 @@ namespace ModelGraph.Controls
         {
             if (EditContact == Edit_Contact.Edit)
             {
-                SelectorCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                PickerCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                AutoFlipGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
                 ContactGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
                 SelectorCanvas.Visibility = Windows.UI.Xaml.Visibility.Visible;
                 PickerCanvas.Visibility = Windows.UI.Xaml.Visibility.Visible;
@@ -32,13 +31,24 @@ namespace ModelGraph.Controls
                 ColorPickerGrid.Visibility = Windows.UI.Xaml.Visibility.Visible;
                 SetIdleOnVoid();
             }
+            else if (EditContact == Edit_Contact.Contacts)
+            {
+                PropertyGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                ColorPickerGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                SelectorCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                PickerCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                AutoFlipGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                ContactGrid.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                SetContactsOnVoid();
+            }
             else
             {
                 PropertyGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
                 ColorPickerGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
                 SelectorCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
                 PickerCanvas.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                ContactGrid.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                ContactGrid.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                AutoFlipGrid.Visibility = Windows.UI.Xaml.Visibility.Visible;
                 SetContactsOnVoid();
             }
             EditorCanvas.Invalidate();
@@ -275,7 +285,76 @@ namespace ModelGraph.Controls
         {
             SetNewContactSize(Target.SWC, e.NewValue);
         }
-        
+
+        private void TestFlipVert_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            TestAutoFlipStart(FlipState.VertFlip);
+        }
+
+        private void TestFlipHorz_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            TestAutoFlipStart(FlipState.VertHorzFlip);
+        }
+
+        private void TestFlipVertHorz_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            TestAutoFlipStart(FlipState.VertHorzFlip);
+        }
+
+        private void TestRotateLeft_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            TestAutoFlipStart(FlipState.LeftRotate);
+        }
+
+        private void TestRotateLeftFlip_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            TestAutoFlipStart(FlipState.LeftHorzFlip);
+        }
+
+        private void TestRotateRight_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            TestAutoFlipStart(FlipState.RightRotate);
+        }
+
+        private void TestRotateRightFlip_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            TestAutoFlipStart(FlipState.RightHorzFlip);
+        }
+
+        private void TestAutoFlipStop_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            TestAutoFlipStop();
+        }
+
+        void TestAutoFlipStart(FlipState flip)
+        {
+        }
+        void TestAutoFlipStop()
+        {
+        }
+
+        private void InitAutoFlipCheckBoxes(AutoFlip flip)
+        {
+            _autoFlipVert = (flip & AutoFlip.FlipVert) != 0;
+            _autoFlipHorz = (flip & AutoFlip.FlipHorz) != 0;
+            _autoFlipVertHorz = (flip & AutoFlip.FlipVertHorz) != 0;
+            _autoRotateLeft = (flip & AutoFlip.RotateLeft) != 0;
+            _autoRotateLeftFlip = (flip & AutoFlip.RotateLeftFlip) != 0;
+            _autoRotateRight = (flip & AutoFlip.RotateRight) != 0;
+            _autoRotateRightFlip = (flip & AutoFlip.RotateRightFlip) != 0;
+        }
+        private void ApplyAutoFlip()
+        {
+            _symbol.AutoFlip =
+                (AutoFlipVert ? AutoFlip.FlipVert : AutoFlip.None) |
+                (AutoFlipHorz ? AutoFlip.FlipHorz : AutoFlip.None) |
+                (AutoFlipVertHorz ? AutoFlip.FlipVertHorz : AutoFlip.None) |
+                (AutoRotateLeft ? AutoFlip.RotateLeft : AutoFlip.None) |
+                (AutoRotateLeftFlip ? AutoFlip.RotateLeftFlip : AutoFlip.None) |
+                (AutoRotateRight ? AutoFlip.RotateRight : AutoFlip.None) |
+                (AutoRotateRightFlip ? AutoFlip.RotateRightFlip : AutoFlip.None);
+        }
+
 
         #endregion
 
@@ -625,11 +704,13 @@ namespace ModelGraph.Controls
 
         }
 
-        private void SaveButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void ApplyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             _symbol.Data = Shape.Serialize(SymbolShapes);
             _symbol.SetTargetContacts(Target_Contacts);
             _symbol.Version += 1;
+
+            ApplyAutoFlip();
 
             List<ModelCommand> buttonCommands = new List<ModelCommand>(2);
             _rootModel.PageButtonComands(buttonCommands);

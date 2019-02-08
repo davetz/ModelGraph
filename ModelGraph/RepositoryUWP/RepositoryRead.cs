@@ -50,7 +50,26 @@ namespace RepositoryUWP
 
             if (header == 0)
             {
-                if (fileFormat == _fileFormat_H)
+                if (fileFormat == _fileFormat_I)
+                {
+                    vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
+                    {
+                        null,               // 0
+                        ReadViewX_1,        // 1 ViewX
+                        ReadEnumX_1,        // 2 EnumX
+                        ReadTableX_1,       // 3 TableX
+                        ReadGraphX_4,       // 4 GraphX
+                        ReadQueryX_7,       // 5 QueryX
+                        ReadSymbolX_6,      // 6 SymbolX
+                        ReadColumnX_4,      // 7 ColumnX
+                        ReadComputeX_3,     // 8 ComputeX 
+                        null,               // 9 CommandX
+                        ReadRelationX_2,    // 10 RelationX
+                        ReadGraphParm_8,    // 11 GraphParam
+                        ReadRelationLink_1, // 12 RelationLink
+                    };
+                }
+                else if (fileFormat == _fileFormat_H)
                 {
                     vector = new Action<Chef, DataReader, Guid[], Item[], Dictionary<Guid, Item>>[]
                     {
@@ -1072,6 +1091,47 @@ namespace RepositoryUWP
                 if ((b & S4) != 0) sx.Description = ReadString(r);
                 if ((b & S5) != 0) sx.Data = ReadBytes(r);
                 if ((b & S6) != 0) sx.Attach = (Attach)r.ReadByte();
+                var cnt = r.ReadByte();
+                sx.TargetContacts.Clear();
+                for (int j = 0; j < cnt; j++)
+                {
+                    var tg = (Target)r.ReadUInt16();
+                    var ti = (TargetIndex)r.ReadByte();
+                    var cn = (Contact)r.ReadByte();
+                    var dx = (sbyte)r.ReadByte();
+                    var dy = (sbyte)r.ReadByte();
+                    var sz = r.ReadByte();
+                    sx.TargetContacts.Add((tg, ti, cn, (dx, dy), sz));
+                }
+            }
+            var mark = (Mark)r.ReadByte();
+            if (mark != Mark.SymbolXEnding) throw new Exception($"Expected SymbolXEnding marker, instead got {mark}");
+        }
+        #endregion
+
+        #region ReadSymbolX_6  ================================================
+        private void ReadSymbolX_6(Chef chef, DataReader r, Guid[] guids, Item[] items, Dictionary<Guid, Item> guidItems)
+        {
+            var store = chef.SymbolStore;
+            var count = r.ReadInt32();
+            if (count < 0) throw new Exception($"Invalid count {count}");
+
+            for (int i = 0; i < count; i++)
+            {
+                var index = r.ReadInt32();
+                if (index < 0 || index >= items.Length) throw new Exception($"Invalid index {index}");
+
+                var sx = new SymbolX(store, guids[index]);
+                items[index] = sx;
+
+                var b = r.ReadUInt16();
+                if ((b & S1) != 0) sx.SetState(r.ReadUInt16());
+                if ((b & S2) != 0) sx.Name = ReadString(r);
+                if ((b & S3) != 0) sx.Summary = ReadString(r);
+                if ((b & S4) != 0) sx.Description = ReadString(r);
+                if ((b & S5) != 0) sx.Data = ReadBytes(r);
+                if ((b & S6) != 0) sx.Attach = (Attach)r.ReadByte();
+                if ((b & S7) != 0) sx.AutoFlip = (AutoFlip)r.ReadByte();
                 var cnt = r.ReadByte();
                 sx.TargetContacts.Clear();
                 for (int j = 0; j < cnt; j++)
