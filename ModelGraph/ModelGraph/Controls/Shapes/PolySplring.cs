@@ -1,6 +1,7 @@
 ﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using ModelGraphSTD;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -31,7 +32,7 @@ namespace ModelGraph.Controls
         #endregion
 
         #region CreatePoints  =================================================
-        private enum PS { L1, L2, L3, L4}
+        private enum PS { L1, L2, L3, L4 }
         protected override void CreatePoints()
         {
             var D = Dimension;
@@ -41,7 +42,7 @@ namespace ModelGraph.Controls
             var N = 1 + D * 2; // number of points per spline
             DXY = new List<(float dx, float dy)>(N);
             float dx = -r1, dy = r2, adx, bdx, cdx;
-           
+
             var ps = (D < 7) ? PS.L1 : (D < 11) ? PS.L2 : (D < 15) ? PS.L3 : PS.L4;
             switch (ps)
             {
@@ -101,7 +102,7 @@ namespace ModelGraph.Controls
             {
                 if (Add(dx, tdy)) return true;
                 dx += tdx;
-                if(Add(dx, tdy)) return true;
+                if (Add(dx, tdy)) return true;
                 dx += tdx;
                 if (Add(dx, tdy)) return true;
                 if (Add(dx, 0)) return true;
@@ -110,7 +111,7 @@ namespace ModelGraph.Controls
             bool Add(float x, float y)
             {
                 DXY.Add(Limit(x, y));
-                return (++n >= N); 
+                return (++n >= N);
             }
         }
         #endregion
@@ -141,6 +142,30 @@ namespace ModelGraph.Controls
                         ds.FillGeometry(geo, color);
                     else
                         ds.DrawGeometry(geo, color, strokeWidth, StrokeStyle());
+                }
+            }
+        }
+        internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, FlipState flip)
+        {
+            var color = GetColor(Coloring.Normal);
+            var points = GetDrawingPoints(flip, scale, center);
+
+            using (var pb = new CanvasPathBuilder(cc))
+            {
+                pb.BeginFigure(points[0]);
+                var N = DXY.Count;
+                for (var i = 0; i < N - 2;)
+                {
+                    pb.AddCubicBezier(points[i], points[++i], points[++i]);
+                }
+                pb.EndFigure(CanvasFigureLoop.Open);
+
+                using (var geo = CanvasGeometry.CreatePath(pb))
+                {
+                    if (FillStroke == Fill_Stroke.Filled)
+                        ds.FillGeometry(geo, color);
+                    else
+                        ds.DrawGeometry(geo, color, StrokeWidth, StrokeStyle());
                 }
             }
         }

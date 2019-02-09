@@ -1,6 +1,7 @@
 ﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using ModelGraphSTD;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -96,6 +97,31 @@ namespace ModelGraph.Controls
                         ds.FillGeometry(geo, color);
                     else
                         ds.DrawGeometry(geo, color, strokeWidth, StrokeStyle());
+                }
+            }
+        }
+        internal override void Draw(CanvasControl cc, CanvasDrawingSession ds, float scale, Vector2 center, FlipState flip)
+        {
+            var color = GetColor(Coloring.Normal);
+
+            var points = GetDrawingPoints(center, scale);
+
+            using (var pb = new CanvasPathBuilder(cc))
+            {
+                pb.BeginFigure(points[0]);
+                var N = DXY.Count;
+                for (var i = 0; i < N - 2;)
+                {
+                    pb.AddCubicBezier(points[i], points[++i], points[++i]);
+                }
+                pb.EndFigure(CanvasFigureLoop.Open);
+
+                using (var geo = CanvasGeometry.CreatePath(pb))
+                {
+                    if (FillStroke == Fill_Stroke.Filled)
+                        ds.FillGeometry(geo, color);
+                    else
+                        ds.DrawGeometry(geo, color, StrokeWidth, StrokeStyle());
                 }
             }
         }
