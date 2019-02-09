@@ -248,58 +248,58 @@ namespace ModelGraph.Controls
                 var p = point * EditScale;
                 var c = Center + p;
                 _targetPoints.Add(c);
-                ds.DrawCircle(c, 8, Colors.Pink, 5);
+                ds.DrawCircle(c, 8, Colors.Cyan, 5);
 
                 #region DrawSimulatedEdge  ====================================
                 switch (targ)
                 {
                     case Target.N:
-                        ds.DrawLine(c.X, c.Y, c.X, Z, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, c.X, Z, Colors.Cyan, 3);
                         break;
                     case Target.S:
-                        ds.DrawLine(c.X, c.Y, c.X, E, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, c.X, E, Colors.Cyan, 3);
                         break;
                     case Target.E:
-                        ds.DrawLine(c.X, c.Y, E, c.Y, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, E, c.Y, Colors.Cyan, 3);
                         break;
                     case Target.W:
-                        ds.DrawLine(c.X, c.Y, Z, c.Y, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, Z, c.Y, Colors.Cyan, 3);
                         break;
                     case Target.NE:
-                        ds.DrawLine(c.X, c.Y, c.X, Z, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, c.X, Z, Colors.Cyan, 3);
                         break;
                     case Target.NW:
-                        ds.DrawLine(c.X, c.Y, c.X, Z, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, c.X, Z, Colors.Cyan, 3);
                         break;
                     case Target.SE:
-                        ds.DrawLine(c.X, c.Y, c.X, E, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, c.X, E, Colors.Cyan, 3);
                         break;
                     case Target.SW:
-                        ds.DrawLine(c.X, c.Y, c.X, E, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, c.X, E, Colors.Cyan, 3);
                         break;
                     case Target.EN:
-                        ds.DrawLine(c.X, c.Y, E, c.Y, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, E, c.Y, Colors.Cyan, 3);
                         break;
                     case Target.ES:
-                        ds.DrawLine(c.X, c.Y, E, c.Y, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, E, c.Y, Colors.Cyan, 3);
                         break;
                     case Target.WN:
-                        ds.DrawLine(c.X, c.Y, Z, c.Y, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, Z, c.Y, Colors.Cyan, 3);
                         break;
                     case Target.WS:
-                        ds.DrawLine(c.X, c.Y, Z, c.Y, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, Z, c.Y, Colors.Cyan, 3);
                         break;
                     case Target.NEC:
-                        ds.DrawLine(c.X, c.Y, E, Z, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, E, Z, Colors.Cyan, 3);
                         break;
                     case Target.NWC:
-                        ds.DrawLine(c.X, c.Y, Z, Z, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, Z, Z, Colors.Cyan, 3);
                         break;
                     case Target.SEC:
-                        ds.DrawLine(c.X, c.Y, E, E, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, E, E, Colors.Cyan, 3);
                         break;
                     case Target.SWC:
-                        ds.DrawLine(c.X, c.Y, Z, E, Colors.Pink, 3);
+                        ds.DrawLine(c.X, c.Y, Z, E, Colors.Cyan, 3);
                         break;
                 }
                 #endregion
@@ -443,7 +443,5 @@ namespace ModelGraph.Controls
         }
         #endregion
         #endregion
-
-
     }
 }

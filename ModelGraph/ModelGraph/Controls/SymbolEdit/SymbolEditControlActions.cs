@@ -547,11 +547,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.NWC, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.Y;
-                if (d <  -1f) d = -1f;
-                if (d > -0.1f) d = -0.1f;
-                var p = new Vector2(d, d);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.NWC);
                 Target_Contacts[Target.NWC] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -560,11 +556,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.NW, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.Y;
-                if (d < -1f) d = -1f;
-                if (d > -0.1f) d = -0.1f;
-                var p = new Vector2(-.5f, d);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.NW);
                 Target_Contacts[Target.NW] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -573,11 +565,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.N, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.Y;
-                if (d < -1f) d = -1f;
-                if (d > -0.1f) d = -0.1f;
-                var p = new Vector2(0, d);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.N);
                 Target_Contacts[Target.N] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -586,11 +574,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.NE, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.Y;
-                if (d < -1f) d = -1f;
-                if (d > -0.1f) d = -0.1f;
-                var p = new Vector2(.5f, d);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.NE);
                 Target_Contacts[Target.NE] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -615,11 +599,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.EN, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.X;
-                if (d > 1) d = 1;
-                if (d < 0.1f) d = 0.1f;
-                var p = new Vector2(d, -.5f);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.EN);
                 Target_Contacts[Target.EN] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -628,11 +608,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.E, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.X;
-                if (d > 1) d = 1;
-                if (d < 0.1f) d = 0.1f;
-                var p = new Vector2(d, 0);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.E);
                 Target_Contacts[Target.E] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -641,11 +617,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.ES, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.X;
-                if (d > 1) d = 1;
-                if (d < 0.1f) d = 0.1f;
-                var p = new Vector2(d, .5f);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.ES);
                 Target_Contacts[Target.ES] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -657,11 +629,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.WN, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.X;
-                if (d < -1f) d = -1f;
-                if (d > -0.1f) d = -0.1f;
-                var p = new Vector2(d, -.5f);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.WN);
                 Target_Contacts[Target.WN] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -670,11 +638,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.W, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.X;
-                if (d < -1f) d = -1f;
-                if (d > -0.1f) d = -0.1f;
-                var p = new Vector2(d, 0);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.W);
                 Target_Contacts[Target.W] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -683,11 +647,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.WS, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.X;
-                if (d < -1f) d = -1f;
-                if (d > -0.1f) d = -0.1f;
-                var p = new Vector2(d, .5f);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.WS);
                 Target_Contacts[Target.WS] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -699,11 +659,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.SWC, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.Y;
-                if (d > 1) d = 1;
-                if (d < 0.1f) d = 0.1f;
-                var p = new Vector2(-d, d);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.SWC);
                 Target_Contacts[Target.SWC] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -712,11 +668,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.SW, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.Y;
-                if (d > 1) d = 1;
-                if (d < 0.1f) d = 0.1f;
-                var p = new Vector2(-.5f, d);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.SW);
                 Target_Contacts[Target.SW] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -725,11 +677,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.S, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.Y;
-                if (d > 1) d = 1;
-                if (d < 0.1f) d = 0.1f;
-                var p = new Vector2(0, d);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.S);
                 Target_Contacts[Target.S] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -738,11 +686,7 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.SE, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.Y;
-                if (d > 1) d = 1;
-                if (d < 0.1f) d = 0.1f;
-                var p = new Vector2(.5f, d);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.SE);
                 Target_Contacts[Target.SE] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
@@ -751,15 +695,46 @@ namespace ModelGraph.Controls
         {
             if (Target_Contacts.TryGetValue(Target.SEC, out (Contact con, (sbyte dx, sbyte dy) pnt, byte siz) val))
             {
-                var d = ShapePoint2.Y;
-                if (d > 1) d = 1;
-                if (d < 0.1f) d = 0.1f;
-                var p = new Vector2(d, d);
-
+                var p = ClampPoint(ShapePoint2, TargetIndex.SEC);
                 Target_Contacts[Target.SEC] = (val.con, Shape.ToSByte(p), val.siz);
             }
             EditorCanvas.Invalidate();
         }
+        #endregion
+
+        #region ClampPoint  ===================================================
+        private static Vector2 ClampPoint (Vector2 p, TargetIndex tix)
+        {
+            var (x, y) = (p.X, p.Y);
+            var (x1, x2, y1, y2) = _targetLimits[(int)tix];
+            if (x < x1) x = x1;
+            if (x > x2) x = x2;
+            if (y < y1) y = y1;
+            if (y > y2) y = y2;
+            return new Vector2(x, y);
+        }
+        static (float x1, float x2, float y1, float y2)[] _targetLimits =
+        {
+            (0, 1, -1, 0),      //EN  - [0]
+            (0, 1, -.5f, .5f),  //E   - [1]
+            (0, 1, 0, 1),       //ES  - [2]
+
+            (0, 1, 0, 1),       //SEC - [3]
+            (0, 1, 0, 1),       //SE  - [4]
+            (-.5f, .5f, 0, 1),  //S   - [5]
+            (-1, 0, 0, 1),      //SW  - [6]
+            (-1, 0, 0, 1),      //SWC - [7]
+
+            (-1, 0, 0, 1),      //WS  - [8]
+            (-1, 0, -.5f, .5f), //W   - [9]
+            (-1, 0, -1, 0),     //WN  - [10]
+
+            (-1, 0, -1, 0),     //NWC - [11]
+            (-1, 0, 0, 1),      //NW  - [12]
+            (-.5f, .5f, -1, 0), //N   - [13]
+            (0, 1, -1, 0),      //NE  - [14]
+            (0, 1, -1, 0),      //NEC - [15]
+        };
         #endregion
 
         #endregion
