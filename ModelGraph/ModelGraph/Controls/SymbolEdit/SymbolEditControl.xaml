@@ -274,12 +274,6 @@
                         PointerMoved="EditorCanvas_PointerMoved"
                         PointerPressed="EditorCanvas_PointerPressed"
                         PointerReleased="EditorCanvas_PointerReleased">
-                    <canvas:CanvasControl.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Up" Invoked="KeyboardAccelerator_Invoked"/>
-                        <KeyboardAccelerator Key="Down" Invoked="KeyboardAccelerator_Invoked"/>
-                        <KeyboardAccelerator Key="Left" Invoked="KeyboardAccelerator_Invoked"/>
-                        <KeyboardAccelerator Key="Right" Invoked="KeyboardAccelerator_Invoked"/>
-                    </canvas:CanvasControl.KeyboardAccelerators>
                 </canvas:CanvasControl>
             </Grid>
 

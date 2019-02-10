@@ -6,6 +6,7 @@ using System.Numerics;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Input;
 
 namespace ModelGraph.Controls
 {
@@ -18,6 +19,13 @@ namespace ModelGraph.Controls
         I am in this particular state, what are the permited event actions?
      */
         #region EventAction  ==================================================
+        private void ClearEventActions()
+        {
+            _eventAction.Clear();
+            ClearKeyboardAccelerator();
+        }
+
+        #region PointerEvents  ================================================
         private enum PointerEvent
         {
             None = 0,
@@ -29,7 +37,6 @@ namespace ModelGraph.Controls
             Execute = 6,        // pointer double tap
         }
 
-        private void ClearEventActions() => _eventAction.Clear();
 
         private void SetEventAction(PointerEvent e, Action a) => _eventAction[EventKey(e)] = a;
         private void ClearEventAction(PointerEvent e) => _eventAction.Remove(EventKey(e));
@@ -38,15 +45,64 @@ namespace ModelGraph.Controls
             if (_eventAction.TryGetValue(EventKey(e), out Action action))
             {
                 action.Invoke();
-
                 EditorCanvas.Invalidate();
             }
         }
+        #endregion
 
-        private void SetEventAction(VirtualKey k, VirtualKeyModifiers m, Action a) => _eventAction[EventKey(k, m)] = a;
-        private void ClearEventAction(VirtualKey k, VirtualKeyModifiers m) => _eventAction.Remove(EventKey(k, m));
-        private void TryInvokeEventAction(VirtualKey k, VirtualKeyModifiers m)
+        #region KeyboardEvents  ===============================================
+        private void SetEventAction(VirtualKey k, VirtualKeyModifiers m, Action a)
         {
+            TryAddAccelerator(k, m);
+            _eventAction[EventKey(k, m)] = a;
+        }
+        private void ClearEventAction(VirtualKey k, VirtualKeyModifiers m)
+        {
+            _eventAction.Remove(EventKey(k, m));
+        }
+
+        #region KeyboardAccelerators  =========================================
+        private void ClearKeyboardAccelerator()
+        {
+            foreach (var acc in EditorCanvas.KeyboardAccelerators)
+            {
+                acc.Invoked -= KeyboardAccelerator_Invoked;
+            }
+            EditorCanvas.KeyboardAccelerators.Clear();
+        }
+        private void TryAddAccelerator(VirtualKey k, VirtualKeyModifiers m)
+        {
+            if (TryFindAccelerator(k, m, out KeyboardAccelerator _)) return;
+            var acc = new Windows.UI.Xaml.Input.KeyboardAccelerator
+            {
+                Key = k,
+                Modifiers = m
+            };
+            acc.Invoked += KeyboardAccelerator_Invoked;
+            EditorCanvas.KeyboardAccelerators.Add(acc);
+        }
+        private void TryRemoveAccelerator(VirtualKey k, VirtualKeyModifiers m)
+        {
+            if (TryFindAccelerator(k, m, out KeyboardAccelerator acc)) return;
+            acc.Invoked -= KeyboardAccelerator_Invoked;
+            EditorCanvas.KeyboardAccelerators.Remove(acc);
+        }
+        private bool TryFindAccelerator(VirtualKey k, VirtualKeyModifiers m, out KeyboardAccelerator acc)
+        {
+            foreach (var ka in EditorCanvas.KeyboardAccelerators)
+            {
+                if (ka.Key != k || ka.Modifiers != m) continue;
+                acc = ka;
+                return true;
+            }
+            acc = null;
+            return false;
+        }
+
+        private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            var k = args.KeyboardAccelerator.Key;
+            var m = args.KeyboardAccelerator.Modifiers;
             if (_eventAction.TryGetValue(EventKey(k, m), out Action action))
             {
                 action.Invoke();
@@ -54,6 +110,8 @@ namespace ModelGraph.Controls
                 EditorCanvas.Invalidate();
             }
         }
+        #endregion
+        #endregion
 
         #region Hidden  =======================================================
         private int EventKey(PointerEvent e) => 0xFFF00 | (int)e;
@@ -229,9 +287,10 @@ namespace ModelGraph.Controls
         }
         int _hoverPointIndex;
 
+        const float KD = 1 / 127f;
         private void AccessKey_Up()
         {
-            var ds = new Vector2(0, -1);
+            var ds = new Vector2(0, -KD);
             if (_hoverPointIndex == 0)
                 Shape.MoveCenter(SelectedShapes, ds);
             else
@@ -239,7 +298,7 @@ namespace ModelGraph.Controls
         }
         private void AccessKey_Down()
         {
-            var ds = new Vector2(0, 1);
+            var ds = new Vector2(0, KD);
             if (_hoverPointIndex == 0)
                 Shape.MoveCenter(SelectedShapes, ds);
             else
@@ -247,7 +306,7 @@ namespace ModelGraph.Controls
         }
         private void AccessKey_Left()
         {
-            var ds = new Vector2(-1, 0);
+            var ds = new Vector2(-KD, 0);
             if (_hoverPointIndex == 0)
                 Shape.MoveCenter(SelectedShapes, ds);
             else
@@ -255,7 +314,7 @@ namespace ModelGraph.Controls
         }
         private void AccessKey_Right()
         {
-            var ds = new Vector2(1, 0);
+            var ds = new Vector2(KD, 0);
             if (_hoverPointIndex == 0)
                 Shape.MoveCenter(SelectedShapes, ds);
             else

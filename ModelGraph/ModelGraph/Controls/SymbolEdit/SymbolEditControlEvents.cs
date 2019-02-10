@@ -722,13 +722,6 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region EditorKeyboardAccelerators  ===================================
-        private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-        {
-            TryInvokeEventAction(args.KeyboardAccelerator.Key, args.KeyboardAccelerator.Modifiers);
-        }
-        #endregion
-
         #region Picker_PointerEvents  =========================================
         private int _pickerIndex = -1;
         private void PickerCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
