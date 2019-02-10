@@ -16,7 +16,6 @@ namespace ModelGraph.Controls
         set of action vectors (function pointers).
         When entering a new state the action vectors are reprogramed.
         This makes the programing problem staight forward and piecemeal.
-        I am in this particular state, what are the permited event actions?
      */
         #region EventAction  ==================================================
         private void ClearEventActions()
@@ -37,9 +36,9 @@ namespace ModelGraph.Controls
             Execute = 6,        // pointer double tap
         }
 
-
         private void SetEventAction(PointerEvent e, Action a) => _eventAction[EventKey(e)] = a;
         private void ClearEventAction(PointerEvent e) => _eventAction.Remove(EventKey(e));
+
         private void TryInvokeEventAction(PointerEvent e)
         {
             if (_eventAction.TryGetValue(EventKey(e), out Action action))
@@ -59,6 +58,17 @@ namespace ModelGraph.Controls
         private void ClearEventAction(VirtualKey k, VirtualKeyModifiers m)
         {
             _eventAction.Remove(EventKey(k, m));
+        }
+
+        private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            var k = args.KeyboardAccelerator.Key;
+            var m = args.KeyboardAccelerator.Modifiers;
+            if (_eventAction.TryGetValue(EventKey(k, m), out Action action))
+            {
+                action.Invoke();
+                EditorCanvas.Invalidate();
+            }
         }
 
         #region KeyboardAccelerators  =========================================
@@ -97,18 +107,6 @@ namespace ModelGraph.Controls
             }
             acc = null;
             return false;
-        }
-
-        private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-        {
-            var k = args.KeyboardAccelerator.Key;
-            var m = args.KeyboardAccelerator.Modifiers;
-            if (_eventAction.TryGetValue(EventKey(k, m), out Action action))
-            {
-                action.Invoke();
-
-                EditorCanvas.Invalidate();
-            }
         }
         #endregion
         #endregion

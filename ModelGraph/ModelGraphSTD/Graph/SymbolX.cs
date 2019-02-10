@@ -61,22 +61,22 @@ namespace ModelGraphSTD
         private const float Q = 0.7071067811865f; // 1 / SQRT(2)
         private static readonly (float dx, float dy)[] _targetSurface =
         {
-            (0, 1),  //EN
-            (0, 1),  //E
-            (0, 1),  //ES
-            (-Q, Q), //SEC
-            (1, 0),  //SE
-            (1, 0),  //S
-            (1, 0),  //SW
-            (Q, Q),  //SWC
-            (0, 1),  //WS
-            (0, 1),  //W
-            (0, 1),  //WN
-            (-Q, Q), //NWC
-            (1, 0),  //NW
-            (1, 0),  //N
-            (1, 0),  //NE
-            (Q, Q),  //NEC
+            (1, 0),  //EN
+            (1, 0),  //E
+            (1, 0),  //ES
+            (Q, Q), //SEC
+            (0, 1),  //SE
+            (0, 1),  //S
+            (0, 1),  //SW
+            (-Q, Q),  //SWC
+            (-1, 0),  //WS
+            (-1, 0),  //W
+            (-1, 0),  //WN
+            (-Q, -Q), //NWC
+            (0, -1),  //NW
+            (0, -1),  //N
+            (0, -1),  //NE
+            (Q, -Q),  //NEC
         };
         #endregion
 

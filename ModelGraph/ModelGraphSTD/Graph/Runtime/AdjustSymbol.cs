@@ -110,14 +110,30 @@ namespace ModelGraphSTD
 
             for (int ti = 0; ti < targetCount; ti++)
             {
-                var (x, y, dx, dy, siz) = targetSurface[ti];
+                var n = bestResult[ti].Count;
+                if (n == 0) continue;
+                if (n > 1) bestResult[ti].Sort((u, v) => (u.s < v.s) ? -1 : (u.s > v.s) ? 1 : (u.m < v.m) ? -1 : (u.m > v.m) ? 1 : 0);
 
-                if (bestResult[ti].Count > 1)
-                    bestResult[ti].Sort((u, v) => (u.s < v.s) ? -1 : (u.s > v.s) ? 1 : (u.m < v.m) ? -1 : (u.m > v.m) ? 1 : 0);
+                var (x, y, dx, dy, s1) = targetSurface[ti];
+                var d1 = n;
+                var d2 = tmLen;
+                var s2 = n * tmSpc;
 
-                foreach ( var (ei, c, m, s) in bestResult[ti])
+                for (int i = 0; i < n; i++)
                 {
-                    E[ei].edge.SetFace(node, (x, y));
+                    var ei = bestResult[ti][i].ei;
+                    var os = Layout.Offset(i, n);
+                    var o1 = s1 * os;
+                    var o2 = s2 * os;
+
+                    var x1 = x + d1 * dx - o1 * dy;
+                    var y1 = y + s1 * dy + o1 * dx;
+                    var x2 = x + d2 * dx - o2 * dy;
+                    var y2 = y + s2 * dy + o2 * dx;
+                    var x3 = x + d2 * dx - o2 * dy;
+                    var y3 = y + s2 * dy + o2 * dx;
+
+                    E[ei].edge.SetFace(node, (x1, y1), (x2, y2), (x3, y3));
                 }
             }
             #endregion
