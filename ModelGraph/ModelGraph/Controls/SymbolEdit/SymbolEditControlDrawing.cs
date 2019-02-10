@@ -314,8 +314,8 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Target_Contacts  ==============================================
-        private Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> Target_Contacts = new Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)>(5);
-        private List<(Contact cont, Target targ, Vector2 point, float size)> _contactTargets = new List<(Contact cont, Target targ, Vector2 point, float)>();
+        private Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> Target_Contacts = new Dictionary<Target, (Contact, (sbyte, sbyte), byte)>(5);
+        private List<(Contact cont, Target targ, Vector2 point, float size)> _contactTargets = new List<(Contact, Target, Vector2, float)>();
 
         #region InitContactControls  ==========================================
         private void InitContactControls()

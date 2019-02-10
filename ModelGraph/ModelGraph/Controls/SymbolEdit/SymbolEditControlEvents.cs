@@ -1,13 +1,7 @@
 ﻿using ModelGraph.Helpers;
-using ModelGraph.Services;
 using ModelGraphSTD;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -552,7 +546,7 @@ namespace ModelGraph.Controls
                 SetDemeinsonSize(min, max, dim);
                 DimensionSlider.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
-            CheckPolylineLocked(locked);
+            CheckPolyLocked(locked);
             _changesEnabled = true;
         }
         private bool Changed(float v1, float v2) => _changesEnabled && v1 != v2;
@@ -567,7 +561,7 @@ namespace ModelGraph.Controls
             else
                 LockPolyline();
         }
-        private void CheckPolylineLocked(bool isLocked)
+        private void CheckPolyLocked(bool isLocked)
         {
             if (IsPolylineLocked)
             {
