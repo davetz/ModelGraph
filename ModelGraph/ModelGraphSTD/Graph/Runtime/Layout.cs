@@ -8,16 +8,40 @@ namespace ModelGraphSTD
     internal static class Layout
     {
         #region ConnectedEdges  ===============================================
-        static internal (Edge edge, Target targ, Node Other, (float x, float y) bend, Attach atch, bool horz)[] ConnectedEdges(Node n)
+        static internal (Edge edge, Target targ, Node other, (float x, float y) bend, int tuple, int order, Attach atch, bool horz)[] ConnectedEdges(Node n)
         {
-            var (N, edge) = n.Graph.ConnectedEdges(n);
+            var (N, edges) = n.Graph.ConnectedEdges(n);
             if (N == 0) return null;
 
-            var output = new (Edge edge, Target targ, Node Other, (float x, float y) bend, Attach atch, bool horz)[N];
+            var node_count = new Dictionary<Node,(int count, int tuple)>(N);
+            var output = new (Edge edge, Target targ, Node other, (float x, float y) bend, int tuple, int order, Attach atch, bool horz)[N];
+
+            bool haveTuples = false;
             for (int i = 0; i < N; i++)
             {
-                var (targ, other, bend, atch, horz) = edge[i].TargetOtherBendAttachHorz(n);
-                output[i] = (edge[i], targ, other, bend, atch, horz); 
+                var (targ, other, bend, atch, horz) = edges[i].TargetOtherBendAttachHorz(n);
+                if (node_count.TryGetValue(other, out (int count, int tuple) nc))
+                {
+                    var (count, tuple) = nc;
+                    count++;
+                    node_count[other] = (count, tuple);
+                    haveTuples = true;
+                }
+                else
+                {
+                    node_count[other] = (0, i + 1);
+                }
+                output[i] = (edges[i], targ, other, bend, 0, 0, atch, horz); 
+            }
+            if (haveTuples)
+            {
+                for (int i = 0; i < N; i++)
+                {
+                    var (edge, targ, other, bend, tuple, order, atch, horz) = output[i];
+                    var (cnt, tup) = node_count[other];
+                    if (cnt == 0) continue;
+                    output[i] = (edge, targ, other, bend, tup, edge.GetHashCode(), atch, horz);
+                }
             }
             return output;
         }
@@ -181,7 +205,7 @@ namespace ModelGraphSTD
                          4/3|2\1      clockwise arround that begining at sector-1
                               
                 This mitigation strategy works well, but even still, it doesn't
-                cover all the odd possible corner cases. (sigh)
+                cover all the odd possible corner cases. 
              */
                 if (n1.Aspect == n2.Aspect)
                 {

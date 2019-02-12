@@ -74,7 +74,6 @@ namespace ModelGraphSTD
                                     pre.RemoveAt(j); // get rid of duplicate edge from a previous best try
                             }
                         }
-
                         testResult[bestTi].Add((ei, cost, slope, six));
                     }
                 }
@@ -90,7 +89,6 @@ namespace ModelGraphSTD
             #endregion
 
             #region AssignEdgeContacts  =======================================
-            Debug.WriteLine($"Best Flip: {bestFlip}");
             node.FlipState = bestFlip;
             if (bestFlip < FlipState.LeftRotate)
             {
@@ -112,28 +110,70 @@ namespace ModelGraphSTD
             {
                 var n = bestResult[ti].Count;
                 if (n == 0) continue;
-                if (n > 1) bestResult[ti].Sort((u, v) => (u.s < v.s) ? -1 : (u.s > v.s) ? 1 : (u.m < v.m) ? -1 : (u.m > v.m) ? 1 : 0);
 
-                var (x, y, dx, dy, s1) = targetSurface[ti];
-                var d1 = n;
-                var d2 = tmLen;
-                var s2 = n * tmSpc;
+                var (x, y, dx, dy, w1) = targetSurface[ti];
+                if (n > 1)
+                {
+                    if ((dx > 0 && dy ==0) || (dy > 0 && dx == 0))
+                        bestResult[ti].Sort(FromEastSouth);
+                    else
+                        bestResult[ti].Sort(FromWestNorth);
+                }
+
+
+                var w2 = n * tmSpc / 2; // required width using terminal spacing 
+
+                var d1 = (w2 > w1) ? (w2 - w1) : 1;
+
+                if (w1 > w2) w1 = w2;
+
+                var d2 = d1 + tmLen;
 
                 for (int i = 0; i < n; i++)
                 {
                     var ei = bestResult[ti][i].ei;
                     var os = Layout.Offset(i, n);
-                    var o1 = s1 * os;
-                    var o2 = s2 * os;
+                    var o1 = w1 * os;
+                    var o2 = w2 * os;
 
-                    var x1 = x + d1 * dx - o1 * dy;
-                    var y1 = y + s1 * dy + o1 * dx;
-                    var x2 = x + d2 * dx - o2 * dy;
-                    var y2 = y + s2 * dy + o2 * dx;
-                    var x3 = x + d2 * dx - o2 * dy;
-                    var y3 = y + s2 * dy + o2 * dx;
+                    var x1 = x - dy * o1;
+                    var y1 = y + dx * o1;
+                    var x2 = (x + d1 * dx) - dy * o2;
+                    var y2 = (y + d1 * dy) + dx * o2;
+                    var x3 = (x + d2 * dx) - dy * o2;
+                    var y3 = (y + d2 * dy) + dx * o2;
 
                     E[ei].edge.SetFace(node, (x1, y1), (x2, y2), (x3, y3));
+                }
+                int FromEastSouth((int ei, float c, float m, int s) a, (int ei, float c, float m, int s) b)
+                {
+                    var tup1 = E[a.ei].tuple;
+                    if (tup1 != 0)
+                    {
+                        var tup2 = E[b.ei].tuple;
+                        if (tup2 == tup1)
+                        {
+                            var ord1 = E[a.ei].order;
+                            var ord2 = E[b.ei].order;
+                            return (ord1 < ord2) ? -1 : (ord1 > ord2) ? 1 : 0;
+                        }
+                    }
+                    return (a.s < b.s) ? -1 : (a.s > b.s) ? 1 : (a.m < b.m) ? -1 : (a.m > b.m) ? 1 : 0;
+                }
+                int FromWestNorth((int ei, float c, float m, int s) a, (int ei, float c, float m, int s) b)
+                {
+                    var tup1 = E[a.ei].tuple;
+                    if (tup1 != 0)
+                    {
+                        var tup2 = E[b.ei].tuple;
+                        if (tup2 == tup1)
+                        {
+                            var ord1 = E[a.ei].order;
+                            var ord2 = E[b.ei].order;
+                            return (ord1 < ord2) ? 1 : (ord1 > ord2) ? -1 : 0;
+                        }
+                    }
+                    return (a.s < b.s) ? 1 : (a.s > b.s) ? -1 : (a.m < b.m) ? 1 : (a.m > b.m) ? -1 : 0;
                 }
             }
             #endregion
