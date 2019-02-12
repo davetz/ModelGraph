@@ -13,23 +13,24 @@ namespace ModelGraphSTD
             var (N, edges) = n.Graph.ConnectedEdges(n);
             if (N == 0) return null;
 
-            var node_count = new Dictionary<Node,(int count, int tuple)>(N);
+            var node_tuple = new Dictionary<Node,int>(N);
             var output = new (Edge edge, Target targ, Node other, (float x, float y) bend, int tuple, int order, Attach atch, bool horz)[N];
 
             bool haveTuples = false;
             for (int i = 0; i < N; i++)
             {
                 var (targ, other, bend, atch, horz) = edges[i].TargetOtherBendAttachHorz(n);
-                if (node_count.TryGetValue(other, out (int count, int tuple) nc))
+                if (node_tuple.TryGetValue(other, out int tuple))
                 {
-                    var (count, tuple) = nc;
-                    count++;
-                    node_count[other] = (count, tuple);
-                    haveTuples = true;
+                    if (tuple < N)
+                    {
+                        node_tuple[other] = tuple + N;
+                        haveTuples = true;
+                    }
                 }
                 else
                 {
-                    node_count[other] = (0, i + 1);
+                    node_tuple[other] = i;
                 }
                 output[i] = (edges[i], targ, other, bend, 0, 0, atch, horz); 
             }
@@ -38,8 +39,8 @@ namespace ModelGraphSTD
                 for (int i = 0; i < N; i++)
                 {
                     var (edge, targ, other, bend, tuple, order, atch, horz) = output[i];
-                    var (cnt, tup) = node_count[other];
-                    if (cnt == 0) continue;
+                    var tup = node_tuple[other];
+                    if (tup < N) continue;
                     output[i] = (edge, targ, other, bend, tup, edge.GetHashCode(), atch, horz);
                 }
             }
