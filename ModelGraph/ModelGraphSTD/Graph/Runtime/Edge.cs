@@ -193,7 +193,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region TargetOtherBendAttachHorz  ==========================================
+        #region TargetOtherBendAttachHorz  ====================================
         internal (Target targ, Node other, (float, float) bend, Attach atch, bool horz) TargetOtherBendAttachHorz(Node node)
         {
             if (Points == null) Refresh();

@@ -51,7 +51,7 @@ namespace ModelGraphSTD
                 var (fdx, fdy) = _flipper[fix](tdx, tdy);
                 var x = fdx * scale + cx;
                 var y = fdy * scale + cy;
-                var sz = e.siz * scale / 255 + cy;
+                var sz = e.siz * scale / 255;
                 var (tx, ty) = _targetSurface[(int)e.tix];
                 var (dx, dy) = _flipper[fix](tx, ty);
                 list.Add((x, y, dx, dy, sz));

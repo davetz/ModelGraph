@@ -123,7 +123,7 @@ namespace ModelGraphSTD
 
                 var w2 = n * tmSpc / 2; // required width using terminal spacing 
 
-                var d1 = (w2 > w1) ? (w2 - w1) : 1;
+                var d1 = (w2 > w1) ? n : 1;
 
                 if (w1 > w2) w1 = w2;
 
@@ -209,51 +209,49 @@ namespace ModelGraphSTD
                 bool isVert = (int)(dx + 0.5) == 0;
                 bool isHorz = (int)(dy + 0.5) == 0;
 
-                (float, float, int) costSlopeSix = (0, 0, 0);
+                (float, int) slopeSix = (0, 0);
 
                 if (isVert)
                 {
                     if (isHorz)
                     {
-                        costSlopeSix = (0, 0, 0);
+                        slopeSix = (0, 0);
                     }
                     else if (dy > 0)
-                        costSlopeSix = (dy, 1023, 3);
+                        slopeSix = (1023, 3);
                     else
-                        costSlopeSix = (-dy, -1023, 12);
+                        slopeSix = (-1023, 12);
+                }
+                else if (isHorz)
+                {
+                    if (dx > 0)
+                        slopeSix = (0, 0);
+                    else
+                        slopeSix = (0, 7);
                 }
                 else
                 {
-                    if (isHorz)
+                    var m = dy / dx;
+                    if (dx < 0)
                     {
-                        if (dx > 0)
-                            costSlopeSix = (dx, 0, 0);
+                        if (dy < 0)
+                            slopeSix = (m, (m < a) ? 8 : (m < b) ? 9 : (m < c) ? 10 : 11);
                         else
-                            costSlopeSix = (-dx, 0, 7);
+                            slopeSix = (m, (m < -c) ? 4 : (m < -b) ? 5 : (m < -a) ? 6 : 7);
                     }
                     else
                     {
-                        var m = dy / dx;
-                        if (dx < 0)
-                        {
-                            if (dy < 0)
-                                costSlopeSix = ((-dx - dy), m, (m < a) ? 8 : (m < b) ? 9 : (m < c) ? 10 : 11);
-                            else
-                                costSlopeSix = ((-dx + dy), m, (m < -c) ? 4 : (m < -b) ? 5 : (m < -a) ? 6 : 7);
-                        }
+                        if (dy < 0)
+                            slopeSix = (m, (m < -c) ? 12 : (m < -b) ? 13 : (m < -a) ? 14 : 15);
                         else
-                        {
-                            if (dy < 0)
-                                costSlopeSix = ((dx - dy), m, (m < -c) ? 12 : (m < -b) ? 13 : (m < -a) ? 14 : 15);
-                            else
-                                costSlopeSix = ((dx + dy), m, (m < a) ? 0 : (m < b) ? 1 : (m < c) ? 2 : 3);
-                        }
+                            slopeSix = (m, (m < a) ? 0 : (m < b) ? 1 : (m < c) ? 2 : 3);
                     }
                 }
-                var (cost, slope, six) = costSlopeSix;
+                
+                var (slope, six) = slopeSix;
 
-                var pi = penalty[six][tix]; // [from direction sector index] [to target location index]
-                cost = cost * _penaltyFactor[pi]; //weighted cost
+                var pi = penalty[tix][six]; // [from direction sector index] [to target location index]
+                var cost = ((dx * dx) + (dy * dy)) * _penaltyFactor[pi]; //weighted cost
 
                 return (cost, slope, six);
             }
