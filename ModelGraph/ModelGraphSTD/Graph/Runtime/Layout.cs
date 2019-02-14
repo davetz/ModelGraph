@@ -8,18 +8,18 @@ namespace ModelGraphSTD
     internal static class Layout
     {
         #region ConnectedEdges  ===============================================
-        static internal (Edge edge, Target targ, Node other, (float x, float y) bend, int tuple, int order, Attach atch, bool horz)[] ConnectedEdges(Node n)
+        static internal (Edge edge, Target targ, Node other, (float x, float y) bend, int tuple, int order, Attach atch, bool horz, bool revr)[] ConnectedEdges(Node n)
         {
             var (N, edges) = n.Graph.ConnectedEdges(n);
             if (N == 0) return null;
 
             var node_tuple = new Dictionary<Node,int>(N);
-            var output = new (Edge edge, Target targ, Node other, (float x, float y) bend, int tuple, int order, Attach atch, bool horz)[N];
+            var output = new (Edge edge, Target targ, Node other, (float x, float y) bend, int tuple, int order, Attach atch, bool horz, bool revr)[N];
 
             bool haveTuples = false;
             for (int i = 0; i < N; i++)
             {
-                var (targ, other, bend, atch, horz) = edges[i].TargetOtherBendAttachHorz(n);
+                var (targ, other, bend, atch, horz, revr) = edges[i].TargetOtherBendAttachHorzRevr(n);
                 if (node_tuple.TryGetValue(other, out int tuple))
                 {
                     if (tuple < N)
@@ -32,16 +32,16 @@ namespace ModelGraphSTD
                 {
                     node_tuple[other] = i;
                 }
-                output[i] = (edges[i], targ, other, bend, 0, 0, atch, horz); 
+                output[i] = (edges[i], targ, other, bend, 0, 0, atch, horz, revr); 
             }
             if (haveTuples)
             {
                 for (int i = 0; i < N; i++)
                 {
-                    var (edge, targ, other, bend, tuple, order, atch, horz) = output[i];
+                    var (edge, targ, other, bend, tuple, order, atch, horz, revr) = output[i];
                     var tup = node_tuple[other];
                     if (tup < N) continue;
-                    output[i] = (edge, targ, other, bend, tup, edge.GetHashCode(), atch, horz);
+                    output[i] = (edge, targ, other, bend, tup, edge.GetHashCode(), atch, horz, revr);
                 }
             }
             return output;

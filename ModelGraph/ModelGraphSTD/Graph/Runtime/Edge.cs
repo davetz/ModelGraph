@@ -194,7 +194,9 @@ namespace ModelGraphSTD
         #endregion
 
         #region TargetOtherBendAttachHorz  ====================================
-        internal (Target targ, Node other, (float, float) bend, Attach atch, bool horz) TargetOtherBendAttachHorz(Node node)
+        // horz: means the far terminal attaches horizontaly
+        // revr: means reverse the sort comparison
+        internal (Target targ, Node other, (float, float) bend, Attach atch, bool horz, bool revr) TargetOtherBendAttachHorzRevr(Node node)
         {
             if (Points == null) Refresh();
             var l = Points.Length - 1;
@@ -207,14 +209,14 @@ namespace ModelGraphSTD
                 var dy2 = Points[l].Y - Points[Tm2].Y;
 
                 return (node == Node1) ?
-                    (QueryX.PathParm.Target1, Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), (dx2 * dx2 > dy2 * dy2)) :
-                    (QueryX.PathParm.Target2, Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), (dx1 * dx1 > dy1 * dy1));
+                    (QueryX.PathParm.Target1, Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), (dx2 * dx2) > (dy2 * dy2), (dx2 + dy2) > 0) :
+                    (QueryX.PathParm.Target2, Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), (dx1 * dx1) > (dy1 * dy1), (dx1 + dy1) > 0);
             }
             else
             {
                 return (node == Node1) ?
-                    (QueryX.PathParm.Target1, Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), false) :
-                    (QueryX.PathParm.Target2, Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), false);
+                    (QueryX.PathParm.Target1, Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), false, false) :
+                    (QueryX.PathParm.Target2, Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), false, false);
             }
         }
         #endregion

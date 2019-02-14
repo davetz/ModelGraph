@@ -158,7 +158,10 @@ namespace ModelGraphSTD
                             return (ord1 < ord2) ? -1 : (ord1 > ord2) ? 1 : 0;
                         }
                     }
-                    return (a.s < b.s) ? -1 : (a.s > b.s) ? 1 : (a.m < b.m) ? -1 : (a.m > b.m) ? 1 : 0;
+                    if (E[a.ei].revr)
+                        return (a.s < b.s) ? -1 : (a.s > b.s) ? 1 : (a.m < b.m) ? -1 : (a.m > b.m) ? 1 : 0;
+                    else
+                        return (a.s < b.s) ? 1 : (a.s > b.s) ? -1 : (a.m < b.m) ? 1 : (a.m > b.m) ? -1 : 0;
                 }
                 int FromWestNorth((int ei, float c, float m, int s) a, (int ei, float c, float m, int s) b)
                 {
@@ -173,7 +176,10 @@ namespace ModelGraphSTD
                             return (ord1 < ord2) ? 1 : (ord1 > ord2) ? -1 : 0;
                         }
                     }
-                    return (a.s < b.s) ? 1 : (a.s > b.s) ? -1 : (a.m < b.m) ? 1 : (a.m > b.m) ? -1 : 0;
+                    if (E[a.ei].revr)
+                        return (a.s < b.s) ? 1 : (a.s > b.s) ? -1 : (a.m < b.m) ? 1 : (a.m > b.m) ? -1 : 0;
+                    else
+                        return (a.s < b.s) ? -1 : (a.s > b.s) ? 1 : (a.m < b.m) ? -1 : (a.m > b.m) ? 1 : 0;
                 }
             }
             #endregion
@@ -206,8 +212,8 @@ namespace ModelGraphSTD
                 var dx = x2 - x1;
                 var dy = y2 - y1;
 
-                bool isVert = (int)(dx + 0.5) == 0;
-                bool isHorz = (int)(dy + 0.5) == 0;
+                bool isVert = dx == 0;
+                bool isHorz = dy == 0;
 
                 (float, int) slopeSix = (0, 0);
 
