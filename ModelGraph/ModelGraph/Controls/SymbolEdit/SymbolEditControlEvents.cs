@@ -577,7 +577,7 @@ namespace ModelGraph.Controls
             Shape.LockSliders(SelectedShapes, false);
             LockButton.Content = "\uE785";
             LockButton.Background = (Brush)Resources["BackgroundNormal"];
-            ToolTipService.SetToolTip(LockButton, "_002B".GetLocalized());
+            ToolTipService.SetToolTip(LockButton, "_02B".GetLocalized());
             DimensionSlider.IsEnabled = true;
             TernarySizeSlider.IsEnabled = true;
             MajorSizeSlider.IsEnabled = true;
@@ -589,7 +589,7 @@ namespace ModelGraph.Controls
             Shape.LockSliders(SelectedShapes, true);
             LockButton.Content = "\uE72E";
             LockButton.Background = (Brush)Resources["BackgroundPink"];
-            ToolTipService.SetToolTip(LockButton, "_002A".GetLocalized());
+            ToolTipService.SetToolTip(LockButton, "_02A".GetLocalized());
             DimensionSlider.IsEnabled = false;
             TernarySizeSlider.IsEnabled = false;
             MajorSizeSlider.IsEnabled = false;
@@ -606,13 +606,13 @@ namespace ModelGraph.Controls
             if (IsSelectOneOrMoreShapeMode)
             {
                 OneManyButton.Content = "\uE8C5";
-                ToolTipService.SetToolTip(OneManyButton, "_001A".GetLocalized());
+                ToolTipService.SetToolTip(OneManyButton, "_01A".GetLocalized());
                 IsSelectOneOrMoreShapeMode = false;
             }
             else
             {
                 OneManyButton.Content = "\uE8C4";
-                ToolTipService.SetToolTip(OneManyButton, "_001B".GetLocalized());
+                ToolTipService.SetToolTip(OneManyButton, "_01B".GetLocalized());
                 IsSelectOneOrMoreShapeMode = true;
             }
         }

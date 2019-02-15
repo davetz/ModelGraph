@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Windows.Foundation;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Color = Windows.UI.Color;
 
@@ -52,6 +55,7 @@ namespace ModelGraph.Controls
         private Vector2 ShapePoint2; // pointer up or pointer moved
         private Vector2 RawPoint1; // edit canvas pointer down
         private Vector2 RawPoint2; // edit canvas pointer up or pointer moved
+        private Size _desiredSize = new Size { Height = 752, Width = 1054 };
 
         #region Constructor  ==================================================
         public SymbolEditControl()
@@ -78,6 +82,7 @@ namespace ModelGraph.Controls
         }
         private void Initialize()
         {
+           
             ToggleOneManyButton();
             UnlockPolyline();
             SetSizeSliders();
@@ -174,6 +179,7 @@ namespace ModelGraph.Controls
 
         private void EditorCanvas_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            ApplicationView.GetForCurrentView().TryResizeView(_desiredSize);
             InitContactControls();
             _contactSizeChangeEnabled = true;
             EditorCanvas.Invalidate();

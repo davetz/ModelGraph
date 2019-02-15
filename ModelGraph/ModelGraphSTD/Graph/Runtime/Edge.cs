@@ -193,7 +193,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region TargetOtherBendAttachHorz  ====================================
+        #region TargetOtherBendAttachHorzRevr  ================================
         // horz: means the far terminal attaches horizontaly
         // revr: means reverse the sort comparison
         internal (Target targ, Node other, (float, float) bend, Attach atch, bool horz, bool revr) TargetOtherBendAttachHorzRevr(Node node)

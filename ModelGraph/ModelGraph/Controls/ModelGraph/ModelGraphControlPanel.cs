@@ -1,6 +1,7 @@
 ﻿using ModelGraph.Helpers;
 using ModelGraphSTD;
 using System;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -8,10 +9,11 @@ namespace ModelGraph.Controls
 {
     public sealed partial class ModelGraphControl
     {
-
+        #region InitializeControlPanel  =======================================
         private void InitializeControlPanel()
         {
         }
+        #endregion
 
         private void ReleaseControlPanel()
         {
@@ -51,91 +53,55 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        #region Aligning  =====================================================
+
+        private void AlignVertItem_Click(object sender, RoutedEventArgs e)
+        {
+        }
+        private void AlignHorzItem_Click(object sender, RoutedEventArgs e)
+        {
+        }
+        private void AlignWestItem_Click(object sender, RoutedEventArgs e)
+        {
+        }
+        private void AlignEastItem_Click(object sender, RoutedEventArgs e)
+        {
+        }
+        private void AlignNorthItem_Click(object sender, RoutedEventArgs e)
+        {
+        }
+        private void AlignSouthItem_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        #endregion
+
         #region Flipping  =====================================================
-        FlipRotate _flipRotate;
 
-        private void CycleFlip()
+        private void FlipVertItem_Click(object sender, RoutedEventArgs e)
         {
-            if (_flipRotate == FlipRotate.FlipVertical)
-            {
-                _flipRotate = FlipRotate.FlipHorizontal;
-            }
-            else if (_flipRotate == FlipRotate.FlipHorizontal)
-            {
-                _flipRotate = FlipRotate.FlipBothWays;
-            }
-            else
-            {
-                _flipRotate = FlipRotate.FlipVertical;
-            }
         }
 
-        private void FlipVertical_Click(object sender, RoutedEventArgs e)
+        private void FlipHorzItem_Click(object sender, RoutedEventArgs e)
         {
-            SetActionName(sender);
-           _flipRotate = FlipRotate.FlipVertical;
         }
 
-        private void FlipHorizontal_Click(object sender, RoutedEventArgs e)
+        private void FlipBothItem_Click(object sender, RoutedEventArgs e)
         {
-            SetActionName(sender);
-            _flipRotate = FlipRotate.FlipHorizontal;
         }
-
-        private void FlipBothWays_Click(object sender, RoutedEventArgs e)
-        {
-            SetActionName(sender);
-            _flipRotate = FlipRotate.FlipBothWays;
-        }
-
         #endregion
 
         #region Rotate  =======================================================
-        private void CycleRotate()
+        private void RotateLeftItem_Click(object sender, RoutedEventArgs e)
         {
-            if (_flipRotate == FlipRotate.RotateClockWise)
-            {
-                _flipRotate = FlipRotate.FlipBothWays;
-            }
-            else if (_flipRotate == FlipRotate.FlipBothWays)
-            {
-                _flipRotate = FlipRotate.RotateFlipVertical;
-            }
-            else
-            {
-                _flipRotate = FlipRotate.RotateClockWise;
-            }
-        }
-        private void RotateClockwise_Click(object sender, RoutedEventArgs e)
-        {
-            SetActionName(sender);
-            _flipRotate = FlipRotate.RotateClockWise;
         }
 
-        private void RotateFlipVertical_Click(object sender, RoutedEventArgs e)
+        private void RotateRightItem_Click(object sender, RoutedEventArgs e)
         {
-            SetActionName(sender);
-            _flipRotate = FlipRotate.RotateFlipVertical;
-        }
-
-        private void RotateFlipHorizontal_Click(object sender, RoutedEventArgs e)
-        {
-            SetActionName(sender);
-            _flipRotate = FlipRotate.RotateFlipHorizontal;
-        }
-
-        private void RotateFlipBothWays_Click(object sender, RoutedEventArgs e)
-        {
-            SetActionName(sender);
-            _flipRotate = FlipRotate.RotateFlipBothWays;
-        }
-        void SetActionName(Object obj)
-        {
-            var item = obj as MenuFlyoutItem;
-            ActionName.Text = item.Name;
         }
 
         #endregion
+
         #region UndoRedo  =====================================================
         private void UndoButton_Click(object sender, RoutedEventArgs e) => TryUndo();
         private void RedoButton_Click(object sender, RoutedEventArgs e) => TryRedo();

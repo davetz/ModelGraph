@@ -7,7 +7,7 @@
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d"
     d:DesignHeight="200"
-    d:DesignWidth="200"
+    d:DesignWidth="600"
     Unloaded="ModelGraphControl_Unloaded" >
 
     <Page.Resources>
@@ -40,17 +40,9 @@
             <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
         </Style>
 
-        <Style x:Key="FlipButtonStyle" TargetType="Button">
+        <Style x:Key="AlphaButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="2,0,0,0" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Content" Value="F" />
-            <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
-        </Style>
-
-        <Style x:Key="RotateButtonStyle" TargetType="Button">
-            <Setter Property="Margin" Value="2,0,0,0" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Content" Value="R" />
             <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
         </Style>
 
@@ -104,33 +96,101 @@
 
             <StackPanel x:Name="ControlPanel" Style="{StaticResource ControlPanelStyle}">
                 
-                <TextBlock x:Name="ActionName" Style="{StaticResource ActionNameStyle}" x:Uid="_gcpName"/>
-                <Button x:Name="PinButton" x:Uid="_gcpPin" Style="{StaticResource PinButtonStyle}" Click="PinButton_Click"/>
+                <TextBlock x:Name="ActionName" x:Uid="_401" Style="{StaticResource ActionNameStyle}" />
+                <Button x:Name="PinButton" x:Uid="_402" Style="{StaticResource PinButtonStyle}" Click="PinButton_Click"/>
 
-                <Button x:Name="FlipButton" x:Uid="_gcpFlipButton" Style="{StaticResource FlipButtonStyle}">
+                <Button x:Name="AlignButton" x:Uid="_410" Content="a" Style="{StaticResource AlphaButtonStyle}">
                     <Button.Flyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem x:Name="FlipVertical" x:Uid="941X" Click="FlipVertical_Click"/>
-                            <MenuFlyoutItem x:Name="FlipHorizontal" x:Uid="942X" Click="FlipHorizontal_Click"/>
-                            <MenuFlyoutItem x:Name="FlipBothWays" x:Uid="943X" Click="FlipBothWays_Click"/>
+                            <MenuFlyoutItem x:Name="AlignVertItem" x:Uid="_426" Click="AlignVertItem_Click"/>
+                            <MenuFlyoutItem x:Name="AlignHorzItem" x:Uid="_427" Click="AlignHorzItem_Click"/>
+                            <MenuFlyoutItem x:Name="AlignWestItem" x:Uid="_428" Click="AlignWestItem_Click"/>
+                            <MenuFlyoutItem x:Name="AlignEastItem" x:Uid="_429" Click="AlignEastItem_Click"/>
+                            <MenuFlyoutItem x:Name="AlignNorthItem" x:Uid="_430" Click="AlignNorthItem_Click"/>
+                            <MenuFlyoutItem x:Name="AlignSouthItem" x:Uid="_431" Click="AlignSouthItem_Click"/>
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>
 
-                <Button x:Name="RotateButton" x:Uid="_gcpRotateButton" Style="{StaticResource RotateButtonStyle}">
+                <Button x:Name="FlipButton"  x:Uid="_411"  Content="f" Style="{StaticResource AlphaButtonStyle}">
                     <Button.Flyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem x:Name="RotateClockwise" x:Uid="944X" Click="RotateClockwise_Click"/>
-                            <MenuFlyoutItem x:Name="RotateFlipVertical" x:Uid="945X" Click="RotateFlipVertical_Click"/>
-                            <MenuFlyoutItem x:Name="RotateFlipHorizontal" x:Uid="946X" Click="RotateFlipHorizontal_Click"/>
-                            <MenuFlyoutItem x:Name="RotateFlipBothWays" x:Uid="947X" Click="RotateFlipBothWays_Click"/>
+                            <MenuFlyoutItem x:Name="FlipVertItem" Click="FlipVertItem_Click"/>
+                            <MenuFlyoutItem x:Name="FlipHorzItem" Click="FlipHorzItem_Click"/>
+                            <MenuFlyoutItem x:Name="FlipBothItem" Click="FlipBothItem_Click"/>
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>
-                <Button x:Name="UndoButton" x:Uid="_gcpUndoButton" Style="{StaticResource UndoButtonStyle}" Click="UndoButton_Click"/>
-                <TextBlock x:Name="UndoCount" x:Uid="_gcpUndoCount" Style="{StaticResource UndoRedoCountStyle}" />
-                <Button x:Name="RedoButton" x:Uid="_gcpRedoButton" Style="{StaticResource RedoButtonStyle}"  Click="RedoButton_Click"/>
-                <TextBlock x:Name="RedoCount" x:Uid="_gcpRedoCount" Style="{StaticResource UndoRedoCountStyle}" />
+
+                <Button x:Name="RotateButton" x:Uid="_412" Content="r" Style="{StaticResource AlphaButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem x:Name="RotateLeftItem"  Click="RotateLeftItem_Click"/>
+                            <MenuFlyoutItem x:Name="RotateRightItem" Click="RotateRightItem_Click"/>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="GravityButton" x:Uid="_413" Content="g" Style="{StaticResource AlphaButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="MoveButton" x:Uid="_414" Content="m" Style="{StaticResource AlphaButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="LinkButton" x:Uid="_415" Content="l" Style="{StaticResource AlphaButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="UnlinkButton" x:Uid="_416" Content="u" Style="{StaticResource AlphaButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="CopyButton" x:Uid="_417" Content="c" Style="{StaticResource AlphaButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="CutButton" x:Uid="_418" Content="x" Style="{StaticResource AlphaButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="PasteButton" x:Uid="_419" Content="p" Style="{StaticResource AlphaButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+                
+                <Button x:Name="DeleteButton" x:Uid="_420" Content="d" Style="{StaticResource AlphaButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+                
+                <Button x:Name="UndoButton" x:Uid="_403" Style="{StaticResource UndoButtonStyle}" Click="UndoButton_Click"/>
+                <TextBlock x:Name="UndoCount" x:Uid="_404" Style="{StaticResource UndoRedoCountStyle}" />
+                <Button x:Name="RedoButton" x:Uid="_405" Style="{StaticResource RedoButtonStyle}"  Click="RedoButton_Click"/>
+                <TextBlock x:Name="RedoCount" x:Uid="406" Style="{StaticResource UndoRedoCountStyle}" />
 
             </StackPanel>
         </Grid>

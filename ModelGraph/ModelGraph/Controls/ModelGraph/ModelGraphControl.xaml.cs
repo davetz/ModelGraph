@@ -223,6 +223,16 @@ namespace ModelGraph.Controls
             return false;
         }
 
+        private void AlignVerticalItem_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
+        }
+
+        private void AlignHorizontalItem_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
+        }
+
         public async void Dispatch(UIRequest rq)
         {
             await ModelPageService.Current.Dispatch(rq, this);
