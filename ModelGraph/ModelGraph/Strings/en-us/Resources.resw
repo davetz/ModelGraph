@@ -2167,8 +2167,9 @@ NEC – NWC – SEC - SWC</value>
   <data name="_OpenModelFile.ToolTipService.ToolTip" xml:space="preserve">
     <value>Open a model data file</value>
   </data>
-  <data name="_AppDisplayName" xml:space="preserve">
+  <data name="_000" xml:space="preserve">
     <value>ModelGraph</value>
+    <comment>AppDisplayName</comment>
   </data>
   <data name="62EN" xml:space="preserve">
     <value>Metadata</value>
@@ -2310,30 +2311,64 @@ NEC – NWC – SEC - SWC</value>
     <value>Align Horizontal Center</value>
   </data>
   <data name="_432.Text" xml:space="preserve">
-    <value />
+    <value>Flip Vertical</value>
   </data>
   <data name="_428.Text" xml:space="preserve">
     <value>Align Right</value>
   </data>
   <data name="_433.Text" xml:space="preserve">
-    <value />
+    <value>Flip Horizontal</value>
   </data>
   <data name="_429.Text" xml:space="preserve">
     <value>Align Left</value>
   </data>
   <data name="_434.Text" xml:space="preserve">
-    <value />
+    <value>Rotate Left</value>
   </data>
   <data name="_430.Text" xml:space="preserve">
     <value>Align Top</value>
   </data>
   <data name="_435.Text" xml:space="preserve">
-    <value />
+    <value>Rotate Right</value>
   </data>
   <data name="_401.ToolTipService.ToolTip" xml:space="preserve">
     <value>Pinned action ready to execute (click on item or tap Enter key)</value>
   </data>
   <data name="_402.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Pin / Unpin action current action</value>
+    <value>Pin / Unpin current action</value>
+  </data>
+  <data name="_436.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_437.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_438.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_439.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_440.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_441.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_442.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_443.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_444.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_445.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="_001" xml:space="preserve">
+    <value>Windows10 UWP Relational Model Editor</value>
+    <comment>AppDiscription</comment>
   </data>
 </root>

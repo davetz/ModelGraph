@@ -9,6 +9,7 @@ namespace ModelGraph.Controls
 {
     public sealed partial class ModelGraphControl
     {
+
         #region InitializeControlPanel  =======================================
         private void InitializeControlPanel()
         {
@@ -51,54 +52,88 @@ namespace ModelGraph.Controls
                 ActionName.Text = "";
             }
         }
+        
         #endregion
 
         #region Aligning  =====================================================
 
         private void AlignVertItem_Click(object sender, RoutedEventArgs e)
         {
+            EnableAlignVert();
         }
         private void AlignHorzItem_Click(object sender, RoutedEventArgs e)
         {
+            EnableAlignHorz();
         }
         private void AlignWestItem_Click(object sender, RoutedEventArgs e)
         {
+            //ActionName.Text = AlignWestItem.Text;
         }
         private void AlignEastItem_Click(object sender, RoutedEventArgs e)
         {
+            //ActionName.Text = AlignEastItem.Text;
         }
         private void AlignNorthItem_Click(object sender, RoutedEventArgs e)
         {
+            //ActionName.Text = AlignNorthItem.Text;
         }
         private void AlignSouthItem_Click(object sender, RoutedEventArgs e)
         {
+            //ActionName.Text = AlignSouthItem.Text;
         }
-
+        private void EnableAlignVert()
+        {
+            ActionName.Text = AlignVertItem.Text;
+        }
+        private void EnableAlignHorz()
+        {
+            ActionName.Text = AlignHorzItem.Text;
+        }
         #endregion
 
         #region Flipping  =====================================================
 
         private void FlipVertItem_Click(object sender, RoutedEventArgs e)
         {
+            EnableFlipVert();
         }
 
         private void FlipHorzItem_Click(object sender, RoutedEventArgs e)
         {
+            EnableFlipHorz();
         }
-
-        private void FlipBothItem_Click(object sender, RoutedEventArgs e)
+        void EnableFlipVert()
         {
+            ActionName.Text = FlipVertItem.Text;
+        }
+        void EnableFlipHorz()
+        {
+            ActionName.Text = FlipHorzItem.Text;
         }
         #endregion
 
         #region Rotate  =======================================================
         private void RotateLeftItem_Click(object sender, RoutedEventArgs e)
         {
+            EnableRotateLeft();
         }
 
         private void RotateRightItem_Click(object sender, RoutedEventArgs e)
         {
+            EnableRotateRight();
         }
+        private void EnableRotateLeft()
+        {
+            ActionName.Text = RotateLeftItem.Text;
+        }
+        private void EnableRotateRight()
+        {
+            ActionName.Text = RotateRightItem.Text;
+        }
+
+        #endregion
+
+        #region Gravity  ======================================================
 
         #endregion
 

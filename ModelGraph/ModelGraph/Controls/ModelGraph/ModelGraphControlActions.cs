@@ -1,5 +1,6 @@
 ﻿using ModelGraphSTD;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -9,7 +10,20 @@ namespace ModelGraph.Controls
     public sealed partial class ModelGraphControl
     {
         #region Parameters  ===================================================
-        internal enum EventAction
+        internal enum EventId
+        {
+            End,
+            Drag,
+            Hover,
+            Wheel,
+            Arrow,
+            Cancel,
+            Begin1,
+            Begin3,
+            Execute,
+            ShortCut,
+        }
+        internal enum ActionState
         {
             Invalid,
 
@@ -27,18 +41,20 @@ namespace ModelGraph.Controls
             MovingRegion,
             TracingRegion,
         }
-        private EventAction _eventAction;
-        private bool SetEventAction(EventAction eventAction)
+        private bool SetActionState(ActionState state)
         {
-            if (_eventAction == eventAction)
+            if (_actionState == state)
             {
                 return false;
             }
+            _eventAction.Clear();
 
-            Debug.WriteLine($"{eventAction}");
-            _eventAction = eventAction;
+            Debug.WriteLine($"{state}");
+            _actionState = state;
             return true;
         }
+        private Dictionary<EventId, Action> _eventAction = new Dictionary<EventId, Action>();
+        private ActionState _actionState;
         private bool _enableHitTest;
 
         private Extent _rootDelta = new Extent(); // rolling point1, point2 delta (RoodCanvas)
@@ -54,18 +70,6 @@ namespace ModelGraph.Controls
         private int _wheelDelta;
 
         private Selector _selector;
-
-        private Action EndAction;      // mouse button up
-        private Action DragAction;     // mouse move with button 1 down
-        private Action HoverAction;    // mouse move with no buttons down
-        private Action WheelAction;    // mouse wheel changed
-        private Action ArrowAction;    // arrow key pressed
-        private Action CancelAction;   // escape key pressd
-        private Action Begin1Action;   // mouse button 1 down
-        private Action Begin3Action;   // mouse button 3 down
-        private Action ExecuteAction;  // mouse double click
-        private Action ShortCutAction; // keyboard key press A..Z, Insert, Delete,..
-
         #endregion
 
         #region OnVoid  =======================================================
@@ -73,30 +77,27 @@ namespace ModelGraph.Controls
         #region SetIdleOnVoid  ================================================
         private void SetIdleOnVoid()
         {
-            if (!SetEventAction(EventAction.IdleOnVoid)) return;
+            if (!SetActionState(ActionState.IdleOnVoid)) return;
 
             HideTootlip();
             //DisableAutoPan();
             //Cursor = Cursors.Arrow;
             _enableHitTest = true;
 
-            EndAction = () => { RemoveSelectors(); };
-            DragAction = () => { if (_drawRef.Length > 3) { _enableHitTest = false; _selector.StartPoint(_drawRef.Point1); SetTracingRegion(); } };
-            HoverAction = IdleHitTest;
-            WheelAction = WheelPanZoom;
-            ArrowAction = null;
-            CancelAction = () => { RemoveSelectors(); };
-            Begin1Action = () => { if (_modifier == Modifier.Shift) { SetAutoPanning(); } };
-            Begin3Action = null;
-            ExecuteAction = () => { RemoveSelectors(); _ignorePointerMoved = true; ZoomToExtent(_graph.Extent); };
-            ShortCutAction = null;
+            _eventAction[EventId.End] = () => { RemoveSelectors(); };
+            _eventAction[EventId.Drag] = () => { if (_drawRef.Length > 3) { _enableHitTest = false; _selector.StartPoint(_drawRef.Point1); SetTracingRegion(); } };
+            _eventAction[EventId.Hover] = IdleHitTest;
+            _eventAction[EventId.Wheel] = WheelPanZoom;
+            _eventAction[EventId.Cancel] = () => { RemoveSelectors(); };
+            _eventAction[EventId.Begin1] = () => { if (_modifier == Modifier.Shift) { SetAutoPanning(); } };
+            _eventAction[EventId.Execute] = () => { RemoveSelectors(); _ignorePointerMoved = true; ZoomToExtent(_graph.Extent); };
         }
         #endregion
 
         #region SetAutoPanning  ===============================================
         private void SetAutoPanning()
         {
-            if (!SetEventAction(EventAction.AutoPanning))
+            if (!SetActionState(ActionState.AutoPanning))
             {
                 return;
             }
@@ -106,16 +107,9 @@ namespace ModelGraph.Controls
             _enableHitTest = false;
             //EnableAutoPan();
 
-            EndAction = SetIdleOnVoid;
+            _eventAction[EventId.End] = SetIdleOnVoid;
             //DragAction = PositionAutoPan;
-            HoverAction = null;
-            WheelAction = null;
-            ArrowAction = null;
-            CancelAction = SetIdleOnVoid;
-            Begin1Action = null;
-            Begin3Action = null;
-            ExecuteAction = null;
-            ShortCutAction = null;
+            _eventAction[EventId.Cancel] = SetIdleOnVoid;
         }
         #endregion
 
@@ -151,23 +145,17 @@ namespace ModelGraph.Controls
         #region SetIdleOnNode  ================================================
         private void SetIdleOnNode()
         {
-            SetEventAction(EventAction.IdleOnNode);
+            SetActionState(ActionState.IdleOnNode);
 
             _enableHitTest = true;
 
             ShowNodeTooltip(_selector.HitNode);
             //Cursor = Cursors.Hand;
 
-            EndAction = null;
-            DragAction = null;
-            HoverAction = IdleHitTest;
-            WheelAction = null;
-            ArrowAction = () => { Move(_arrowDelta); PostRefresh(); }; 
-            CancelAction = null;
-            Begin1Action = SetMovingNode;
-            Begin3Action = null;
-            ExecuteAction = null;
-            ShortCutAction = IdleOnNodeShortCut;
+            _eventAction[EventId.Hover] = IdleHitTest;
+            _eventAction[EventId.Arrow] = () => { Move(_arrowDelta); PostRefresh(); };
+            _eventAction[EventId.Begin1] = SetMovingNode;
+            //ShortCutAction = IdleOnNodeShortCut;
         }
         private void IdleOnNodeShortCut()
         {
@@ -191,43 +179,28 @@ namespace ModelGraph.Controls
         #region SetIdleOnNodeResize  ==========================================
         private void SetIdleOnNodeResize()
         {
-            SetEventAction(EventAction.IdleOnNodeResize);
+            SetActionState(ActionState.IdleOnNodeResize);
 
             //HideTootlip();
             //Cursor = (_hitNode.Node.IsHorizontal) ? Cursors.SizeWE : Cursors.SizeNS;
             _enableHitTest = true;
 
-            EndAction = null;
-            DragAction = null;
-            HoverAction = IdleHitTest;
-            WheelAction = null;
+            _eventAction[EventId.Hover] = IdleHitTest;
             //ArrowAction = () => { NodeResize(_arrowDelta * 2); };
-            CancelAction = null;
-            Begin1Action = SetResizingNode;
-            Begin3Action = null;
-            ExecuteAction = null;
-            ShortCutAction = null;
+            _eventAction[EventId.Begin1] = SetResizingNode;
         }
         #endregion
 
         #region SetResizingNode  ==============================================
         private void SetResizingNode()
         {
-            SetEventAction(EventAction.ResizingNode);
+            SetActionState(ActionState.ResizingNode);
 
             //HideTootlip();
             _enableHitTest = false;
 
-            EndAction = () => { IdleHitTest(); };
+            _eventAction[EventId.End] = () => { IdleHitTest(); };
             //DragAction = () => { if (NodeResize(_moveDelta)) _prevMovePoint = _moveViewPoint; };
-            HoverAction = null;
-            WheelAction = null;
-            ArrowAction = null;
-            CancelAction = null;
-            Begin1Action = null;
-            Begin3Action = null;
-            ExecuteAction = null;
-            ShortCutAction = null;
         }
         //private bool NodeResize(Vector d) { var anyChange = _hitNode.Node.AddLength(d.X, d.Y, HitTop, HitLeft); if (anyChange) Model.PostRefreshGraph(); return anyChange; }
         #endregion
@@ -235,7 +208,7 @@ namespace ModelGraph.Controls
         #region SetMovingNode  ================================================
         private void SetMovingNode()
         {
-            if (!SetEventAction(EventAction.MovingNode))
+            if (!SetActionState(ActionState.MovingNode))
             {
                 return;
             }
@@ -244,16 +217,9 @@ namespace ModelGraph.Controls
             //Cursor = Cursors.ScrollAll;
             _enableHitTest = false;
 
-            EndAction = () => { SetIdleOnNode(); PostRefresh(); };
-            DragAction = () => { Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
-            HoverAction = null;
-            WheelAction = null;
-            ArrowAction = () => { Move(_arrowDelta); PostRefresh(); };
-            CancelAction = null;
-            Begin1Action = null;
-            Begin3Action = null;
-            ExecuteAction = null;
-            ShortCutAction = null;
+            _eventAction[EventId.End] = () => { SetIdleOnNode(); PostRefresh(); };
+            _eventAction[EventId.Drag] = () => { Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
+            _eventAction[EventId.Arrow] = () => { Move(_arrowDelta); PostRefresh(); };
         }
         #endregion
 
@@ -264,7 +230,7 @@ namespace ModelGraph.Controls
         #region SetIdleOnEdge  ================================================
         private void SetIdleOnEdge()
         {
-            if (!SetEventAction(EventAction.IdleOnEdge))
+            if (!SetActionState(ActionState.IdleOnEdge))
             {
                 return;
             }
@@ -273,16 +239,7 @@ namespace ModelGraph.Controls
             //Cursor = Cursors.Hand;
             _enableHitTest = true;
 
-            EndAction = null;
-            DragAction = null;
-            HoverAction = IdleHitTest;
-            WheelAction = null;
-            ArrowAction = null;
-            CancelAction = null;
-            Begin1Action = null;
-            Begin3Action = null;
-            ExecuteAction = null;
-            ShortCutAction = CycleEdgeParams;
+            _eventAction[EventId.Hover] = IdleHitTest;
         }
         private void CycleEdgeParams()
         {
@@ -342,7 +299,7 @@ namespace ModelGraph.Controls
         #region SetIdleOnRegion  ==============================================
         private void SetIdleOnRegion()
         {
-            if (!SetEventAction(EventAction.IdleOnRegion))
+            if (!SetActionState(ActionState.IdleOnRegion))
             {
                 return;
             }
@@ -351,16 +308,12 @@ namespace ModelGraph.Controls
             //Cursor = Cursors.Hand;
             _enableHitTest = true;
 
-            EndAction = null;
-            DragAction = null;
-            HoverAction = IdleHitTest;
-            WheelAction = null;
-            ArrowAction = () => { Move(_arrowDelta); UpdateRegionExtents(); PostRefresh(); };
-            CancelAction = () => { RemoveSelectors(); SetIdleOnVoid(); };
-            Begin1Action = SetMovingRegion;
-            Begin3Action = null;
-            ExecuteAction = () => { var e = Extent.Create(_selector.Nodes, 16); _ignorePointerMoved = true; ZoomToExtent(e); };
-            ShortCutAction = IdleOnRegionShortCuts;
+            _eventAction[EventId.Hover] = IdleHitTest;
+            _eventAction[EventId.Arrow] = () => { Move(_arrowDelta); UpdateRegionExtents(); PostRefresh(); };
+            _eventAction[EventId.Cancel] = () => { RemoveSelectors(); SetIdleOnVoid(); };
+            _eventAction[EventId.Begin1] = SetMovingRegion;
+            _eventAction[EventId.Execute] = () => { var e = Extent.Create(_selector.Nodes, 16); _ignorePointerMoved = true; ZoomToExtent(e); };
+            //ShortCutAction = IdleOnRegionShortCuts;
         }
         private void IdleOnRegionShortCuts()
         {
@@ -382,7 +335,7 @@ namespace ModelGraph.Controls
         #region SetMovingRegion  ==============================================
         private void SetMovingRegion()
         {
-            if (!SetEventAction(EventAction.MovingRegion))
+            if (!SetActionState(ActionState.MovingRegion))
             {
                 return;
             }
@@ -390,23 +343,17 @@ namespace ModelGraph.Controls
             //Cursor = Cursors.ScrollAll;
             _enableHitTest = false;
 
-            EndAction = () => { UpdateRegionExtents(); SetIdleOnRegion(); PostRefresh(); };
-            DragAction = () => { Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
-            HoverAction = null;
-            WheelAction = null;
-            ArrowAction = () => { Move(_arrowDelta); };
-            CancelAction = () => { RemoveSelectors(); SetIdleOnRegion(); }; ;
-            Begin1Action = null;
-            Begin3Action = null;
-            ExecuteAction = null;
-            ShortCutAction = null;
+            _eventAction[EventId.End] = () => { UpdateRegionExtents(); SetIdleOnRegion(); PostRefresh(); };
+            _eventAction[EventId.Drag] = () => { Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
+            _eventAction[EventId.Arrow] = () => { Move(_arrowDelta); };
+            _eventAction[EventId.Cancel] = () => { RemoveSelectors(); SetIdleOnRegion(); }; ;
         }
         #endregion
 
         #region SetTracingRegion  =============================================
         private void SetTracingRegion()
         {
-            if (!SetEventAction(EventAction.TracingRegion))
+            if (!SetActionState(ActionState.TracingRegion))
             {
                 return;
             }
@@ -414,16 +361,9 @@ namespace ModelGraph.Controls
             // Cursor = Cursors.Pen;
             _enableHitTest = false;
 
-            EndAction = () => { CloseRegion();  };
-            DragAction = () => { _selector.NextPoint(_drawRef.Point2); };
-            HoverAction = null;
-            WheelAction = null;
-            ArrowAction = null;
-            CancelAction = () => { RemoveSelectors(); SetIdleOnVoid(); }; ;
-            Begin1Action = null;
-            Begin3Action = null;
-            ExecuteAction = null;
-            ShortCutAction = null;
+            _eventAction[EventId.End] = () => { CloseRegion();  };
+            _eventAction[EventId.Drag] = () => { _selector.NextPoint(_drawRef.Point2); };
+            _eventAction[EventId.Cancel] = () => { RemoveSelectors(); SetIdleOnVoid(); }; ;
         }
         private void TraceRegion()
         {

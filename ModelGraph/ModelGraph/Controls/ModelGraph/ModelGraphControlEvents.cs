@@ -5,6 +5,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.System;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace ModelGraph.Controls
 {
@@ -25,14 +26,10 @@ namespace ModelGraph.Controls
 
             var cp = e.GetCurrentPoint(CanvasGrid);
 
-            if (cp.Properties.IsLeftButtonPressed && Begin1Action != null)
-            {
-                Begin1Action();
-            }
-            else if (cp.Properties.IsRightButtonPressed && Begin3Action != null)
-            {
-                Begin3Action();
-            }
+            if (cp.Properties.IsLeftButtonPressed && _eventAction.TryGetValue(EventId.Begin1, out Action begin1))
+                begin1?.Invoke();
+            else if (cp.Properties.IsRightButtonPressed && _eventAction.TryGetValue(EventId.Begin3, out Action begin3))
+                begin3.Invoke();
 
             // somewhere, up the visual tree, there is a rogue scrollView that gets focus
             var obj = FocusManager.GetFocusedElement();
@@ -58,9 +55,9 @@ namespace ModelGraph.Controls
             _drawRef.Point2 = _drawDelta.Point2 = DrawPoint(e);
 
 
-            if (_isPointerPressed && DragAction != null)
+            if (_isPointerPressed && _eventAction.TryGetValue(EventId.Drag, out Action drag))
             {
-                DragAction?.Invoke();
+                drag?.Invoke();
                 if (_enableHitTest)
                 {
                     HitTest(_drawRef.Point2);
@@ -68,13 +65,13 @@ namespace ModelGraph.Controls
 
                 EditorCanvas.Invalidate();
             }
-            else if (HoverAction != null)
+            else if (_eventAction.TryGetValue(EventId.Hover, out Action hover))
             {
                 HitTest(_drawRef.Point2);
                 if (_selector.IsChanged)
                 {
                     Debug.WriteLine($"- - - - - - - - - Hit { _selector.HitLocation}");
-                    HoverAction?.Invoke();
+                    hover?.Invoke();
                 }
             }
         }
@@ -87,10 +84,10 @@ namespace ModelGraph.Controls
             _rootRef.Point2 = _rootDelta.Point2 = GridPoint(e);
             _drawRef.Point2 = _drawDelta.Point2 = DrawPoint(e);
 
-            if (EndAction != null)
+            if (_eventAction.TryGetValue(EventId.End, out Action end))
             {
                 HitTest(_drawRef.Point2);
-                EndAction?.Invoke();
+                end?.Invoke();
             }
         }
 
@@ -101,7 +98,7 @@ namespace ModelGraph.Controls
             var cp = e.GetCurrentPoint(CanvasGrid);
 
             _wheelDelta = cp.Properties.MouseWheelDelta;
-            WheelAction?.Invoke();
+            if(_eventAction.TryGetValue(EventId.Wheel, out Action wheel)) wheel?.Invoke();
         }
         private (float X, float Y) GridPoint(PointerRoutedEventArgs e)
         {
@@ -118,34 +115,131 @@ namespace ModelGraph.Controls
         #endregion
 
         #region KeyboardEvents  ===============================================
+
         private void RootButton_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            _ignorePointerMoved = true;
-            e.Handled = true;
-            switch (e.Key)
-            {
-                case VirtualKey.LeftWindows:
-                case VirtualKey.RightWindows:
-                case VirtualKey.LeftMenu:
-                case VirtualKey.LeftShift:
-                case VirtualKey.LeftControl:
-                case VirtualKey.RightMenu:
-                case VirtualKey.RightShift:
-                case VirtualKey.RightControl: break;
-                case VirtualKey.Menu: _modifier |= Modifier.Menu; break;
-                case VirtualKey.Shift: _modifier |= Modifier.Shift; break;
-                case VirtualKey.Control: _modifier |= Modifier.Ctrl; break;
-                case VirtualKey.Enter: ExecuteAction?.Invoke(); break;
-                case VirtualKey.Escape: CancelAction?.Invoke(); break;
-                case VirtualKey.Up: _arrowDelta = (0, -1); ArrowAction?.Invoke(); break;
-                case VirtualKey.Down: _arrowDelta = (0, 1); ArrowAction?.Invoke(); break;
-                case VirtualKey.Left: _arrowDelta = (-1, 0); ArrowAction?.Invoke(); break;
-                case VirtualKey.Right: _arrowDelta = (1, 0); ArrowAction?.Invoke(); break;
-                case VirtualKey.Home: ZoomToExtent(_graph.Extent); break;
-                case VirtualKey.Z: if (_modifier == Modifier.Ctrl) { TryUndo(); } break;
-                case VirtualKey.Y: if (_modifier == Modifier.Ctrl) { TryRedo(); } break;
-                default: _keyName = e.Key.ToString(); ShortCutAction?.Invoke(); break;
-            }
+            //_ignorePointerMoved = true;
+            //e.Handled = true;
+            //switch (e.Key)
+            //{
+            //    case VirtualKey.LeftWindows:
+            //    case VirtualKey.RightWindows:
+            //    case VirtualKey.LeftMenu:
+            //    case VirtualKey.LeftShift:
+            //    case VirtualKey.LeftControl:
+            //    case VirtualKey.RightMenu:
+            //    case VirtualKey.RightShift:
+            //    case VirtualKey.RightControl: break;
+            //    case VirtualKey.Menu: _modifier |= Modifier.Menu; break;
+            //    case VirtualKey.Shift: _modifier |= Modifier.Shift; break;
+            //    case VirtualKey.Control: _modifier |= Modifier.Ctrl; break;
+            //    case VirtualKey.Enter: ExecuteAction?.Invoke(); break;
+            //    case VirtualKey.Escape: CancelAction?.Invoke(); break;
+            //    case VirtualKey.Home: ZoomToExtent(_graph.Extent); break;
+            //    case VirtualKey.Z: if (_modifier == Modifier.Ctrl) { TryUndo(); } break;
+            //    case VirtualKey.Y: if (_modifier == Modifier.Ctrl) { TryRedo(); } break;
+            //    default: _keyName = e.Key.ToString(); ShortCutAction?.Invoke(); break;
+            //}
+        }
+        private char _prevKey;
+
+        private void RootCanvas_DoubleTapped(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+        {
+        }
+        private void KeyboardAccelerator_A_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            _prevKey = 'A';
+        }
+        private void KeyboardAccelerator_F_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            _prevKey = 'F';
+        }
+        private void KeyboardAccelerator_R_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_prevKey == 'R') EnableRotateRight();
+            _prevKey = 'R';
+        }
+        private void KeyboardAccelerator_G_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_M_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_L_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_prevKey == 'R') EnableRotateLeft();
+            _prevKey = 'L';
+        }
+        private void KeyboardAccelerator_U_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_C_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_X_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_P_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_D_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_V_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_prevKey == 'A') EnableAlignVert();
+            else if (_prevKey == 'F') EnableFlipVert();
+            _prevKey = 'V';
+        }
+        private void KeyboardAccelerator_H_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_prevKey == 'A') EnableAlignHorz();
+            else if (_prevKey == 'F') EnableFlipHorz();
+            _prevKey = 'H';
+        }
+        private void KeyboardAccelerator_Up_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            _arrowDelta = (0, -1);
+            if (_eventAction.TryGetValue(EventId.Arrow, out Action arrow)) arrow?.Invoke();
+        }
+        private void KeyboardAccelerator_Left_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            _arrowDelta = (-1, 0);
+            if (_eventAction.TryGetValue(EventId.Arrow, out Action arrow)) arrow?.Invoke();
+        }
+        private void KeyboardAccelerator_Down_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            _arrowDelta = (0, 1);
+            if (_eventAction.TryGetValue(EventId.Arrow, out Action arrow)) arrow?.Invoke();
+        }
+        private void KeyboardAccelerator_Right_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            _arrowDelta = (1, 0);
+            if (_eventAction.TryGetValue(EventId.Arrow, out Action arrow)) arrow?.Invoke();
+        }
+        private void KeyboardAccelerator_Enter_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_Home_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_Escape_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+            _prevKey = ' ';
+            UpdateActionPinned(false);
+            if (_eventAction.TryGetValue(EventId.Cancel, out Action cancel)) cancel?.Invoke();
+        }
+        private void KeyboardAccelerator_Delete_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_Cut_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_Copy_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
+        }
+        private void KeyboardAccelerator_Paste_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+        {
         }
 
         private async void TryUndo()
@@ -158,11 +252,6 @@ namespace ModelGraph.Controls
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _graph.TryRedo(); _graph.AdjustGraph(); });
             PostRefresh();
         }
-        private void RootCanvas_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            ExecuteAction?.Invoke();
-        }
-
         private void RootButton_KeyUp(object sender, KeyRoutedEventArgs e)
         {
             _modifier = Modifier.None;

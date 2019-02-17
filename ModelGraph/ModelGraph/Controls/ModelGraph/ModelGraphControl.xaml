@@ -8,6 +8,7 @@
     mc:Ignorable="d"
     d:DesignHeight="200"
     d:DesignWidth="600"
+    KeyboardAcceleratorPlacementMode="Hidden"
     Unloaded="ModelGraphControl_Unloaded" >
 
     <Page.Resources>
@@ -34,6 +35,7 @@
 
         <Style x:Key="PinButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="2,0,10,0" />
+            <Setter Property="IsTabStop" Value="False"/>
             <Setter Property="FontSize" Value="10" />
             <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
             <Setter Property="Content" Value="&#xe718;" />
@@ -42,12 +44,14 @@
 
         <Style x:Key="AlphaButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="IsTabStop" Value="False"/>
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Background" Value="{ThemeResource SystemControlPageBackgroundChromeLowBrush}" />
         </Style>
 
         <Style x:Key="UndoButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="10,0,0,0" />
+            <Setter Property="IsTabStop" Value="False"/>
             <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Content" Value="&#xe7a6;" />
@@ -56,6 +60,7 @@
 
         <Style x:Key="RedoButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="IsTabStop" Value="False"/>
             <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Content" Value="&#xe7a7;" />
@@ -91,7 +96,34 @@
             <RowDefinition Height="30" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+        <Grid.KeyboardAccelerators>
+            <KeyboardAccelerator Key="A" Invoked="KeyboardAccelerator_A_Invoked"/>
+            <KeyboardAccelerator Key="F" Invoked="KeyboardAccelerator_F_Invoked"/>
+            <KeyboardAccelerator Key="R" Invoked="KeyboardAccelerator_R_Invoked"/>
+            <KeyboardAccelerator Key="G" Invoked="KeyboardAccelerator_G_Invoked"/>
+            <KeyboardAccelerator Key="M" Invoked="KeyboardAccelerator_M_Invoked"/>
+            <KeyboardAccelerator Key="L" Invoked="KeyboardAccelerator_L_Invoked"/>
+            <KeyboardAccelerator Key="U" Invoked="KeyboardAccelerator_U_Invoked"/>
+            <KeyboardAccelerator Key="C" Invoked="KeyboardAccelerator_C_Invoked"/>
+            <KeyboardAccelerator Key="X" Invoked="KeyboardAccelerator_X_Invoked"/>
+            <KeyboardAccelerator Key="P" Invoked="KeyboardAccelerator_P_Invoked"/>
+            <KeyboardAccelerator Key="D" Invoked="KeyboardAccelerator_D_Invoked"/>
+            <KeyboardAccelerator Key="V" Invoked="KeyboardAccelerator_V_Invoked"/>
+            <KeyboardAccelerator Key="H" Invoked="KeyboardAccelerator_H_Invoked"/>
+            <KeyboardAccelerator Key="Up" Invoked="KeyboardAccelerator_Up_Invoked"/>
+            <KeyboardAccelerator Key="Left" Invoked="KeyboardAccelerator_Left_Invoked"/>
+            <KeyboardAccelerator Key="Down" Invoked="KeyboardAccelerator_Down_Invoked"/>
+            <KeyboardAccelerator Key="Right" Invoked="KeyboardAccelerator_Right_Invoked"/>
+            <KeyboardAccelerator Key="Enter" Invoked="KeyboardAccelerator_Enter_Invoked"/>
+            <KeyboardAccelerator Key="Home" Invoked="KeyboardAccelerator_Home_Invoked"/>
+            <KeyboardAccelerator Key="Delete" Invoked="KeyboardAccelerator_Delete_Invoked"/>
+            <KeyboardAccelerator Key="Escape" Invoked="KeyboardAccelerator_Escape_Invoked"/>
+            <KeyboardAccelerator Key="X" Modifiers="Control" Invoked="KeyboardAccelerator_Cut_Invoked"/>
+            <KeyboardAccelerator Key="C" Modifiers="Control" Invoked="KeyboardAccelerator_Copy_Invoked"/>
+            <KeyboardAccelerator Key="V" Modifiers="Control" Invoked="KeyboardAccelerator_Paste_Invoked"/>
+        </Grid.KeyboardAccelerators>
+
+
         <Grid Grid.Row="0" x:Name="ControlGrid" >
 
             <StackPanel x:Name="ControlPanel" Style="{StaticResource ControlPanelStyle}">
@@ -104,10 +136,10 @@
                         <MenuFlyout>
                             <MenuFlyoutItem x:Name="AlignVertItem" x:Uid="_426" Click="AlignVertItem_Click"/>
                             <MenuFlyoutItem x:Name="AlignHorzItem" x:Uid="_427" Click="AlignHorzItem_Click"/>
-                            <MenuFlyoutItem x:Name="AlignWestItem" x:Uid="_428" Click="AlignWestItem_Click"/>
+                            <!--<MenuFlyoutItem x:Name="AlignWestItem" x:Uid="_428" Click="AlignWestItem_Click"/>
                             <MenuFlyoutItem x:Name="AlignEastItem" x:Uid="_429" Click="AlignEastItem_Click"/>
                             <MenuFlyoutItem x:Name="AlignNorthItem" x:Uid="_430" Click="AlignNorthItem_Click"/>
-                            <MenuFlyoutItem x:Name="AlignSouthItem" x:Uid="_431" Click="AlignSouthItem_Click"/>
+                            <MenuFlyoutItem x:Name="AlignSouthItem" x:Uid="_431" Click="AlignSouthItem_Click"/>-->
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>
@@ -115,9 +147,8 @@
                 <Button x:Name="FlipButton"  x:Uid="_411"  Content="f" Style="{StaticResource AlphaButtonStyle}">
                     <Button.Flyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem x:Name="FlipVertItem" Click="FlipVertItem_Click"/>
-                            <MenuFlyoutItem x:Name="FlipHorzItem" Click="FlipHorzItem_Click"/>
-                            <MenuFlyoutItem x:Name="FlipBothItem" Click="FlipBothItem_Click"/>
+                            <MenuFlyoutItem x:Name="FlipVertItem" x:Uid="_432" Click="FlipVertItem_Click"/>
+                            <MenuFlyoutItem x:Name="FlipHorzItem" x:Uid="_433" Click="FlipHorzItem_Click"/>
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>
@@ -125,8 +156,8 @@
                 <Button x:Name="RotateButton" x:Uid="_412" Content="r" Style="{StaticResource AlphaButtonStyle}">
                     <Button.Flyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem x:Name="RotateLeftItem"  Click="RotateLeftItem_Click"/>
-                            <MenuFlyoutItem x:Name="RotateRightItem" Click="RotateRightItem_Click"/>
+                            <MenuFlyoutItem x:Name="RotateLeftItem" x:Uid="_434"   Click="RotateLeftItem_Click"/>
+                            <MenuFlyoutItem x:Name="RotateRightItem" x:Uid="_435"  Click="RotateRightItem_Click"/>
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>
@@ -190,7 +221,7 @@
                 <Button x:Name="UndoButton" x:Uid="_403" Style="{StaticResource UndoButtonStyle}" Click="UndoButton_Click"/>
                 <TextBlock x:Name="UndoCount" x:Uid="_404" Style="{StaticResource UndoRedoCountStyle}" />
                 <Button x:Name="RedoButton" x:Uid="_405" Style="{StaticResource RedoButtonStyle}"  Click="RedoButton_Click"/>
-                <TextBlock x:Name="RedoCount" x:Uid="406" Style="{StaticResource UndoRedoCountStyle}" />
+                <TextBlock x:Name="RedoCount" x:Uid="_406" Style="{StaticResource UndoRedoCountStyle}" />
 
             </StackPanel>
         </Grid>
@@ -199,8 +230,7 @@
 
             <canvas:CanvasControl x:Name="EditorCanvas" Draw="EditorCanvas_Draw" IsTabStop="False" CreateResources="EditorCanvas_CreateResources" />
 
-            <Canvas x:Name="RootCanvas" Background="Transparent" DoubleTapped="RootCanvas_DoubleTapped">
-                <Button x:Name="RootButton" Width="4" Height="4" PreviewKeyDown="RootButton_KeyDown" KeyUp="RootButton_KeyUp"/>
+            <Canvas x:Name="RootCanvas" Background="Transparent" DoubleTapped="RootCanvas_DoubleTapped"  >
                 <Border x:Name="ToolTipBorder" Style="{StaticResource ToolTipBorderStyle}" IsTapEnabled="False">
                     <TextBlock x:Name="ItemToolTip" Style="{StaticResource ToolTipStyle}" IsTapEnabled="False"/>
                 </Border>

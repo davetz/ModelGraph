@@ -51,7 +51,7 @@ namespace ModelGraph.Views
 
         private string GetVersionDescription()
         {
-            var appName = "AppDisplayName".GetLocalized();
+            var appName = "_000".GetLocalized();
             var package = Package.Current;
             var packageId = package.Id;
             var version = packageId.Version;
