@@ -26,8 +26,12 @@ namespace ModelGraph.Controls
 
             var cp = e.GetCurrentPoint(CanvasGrid);
 
-            if (cp.Properties.IsLeftButtonPressed && _eventAction.TryGetValue(EventId.Begin1, out Action begin1))
-                begin1?.Invoke();
+            if (cp.Properties.IsLeftButtonPressed)
+            {
+                if (_eventAction.TryGetValue(EventId.Begin1, out Action begin1)) begin1?.Invoke();
+                _menuAction?.Invoke();
+                if (_isActionPinned == false) UpdateActionPinned(false);
+            }
             else if (cp.Properties.IsRightButtonPressed && _eventAction.TryGetValue(EventId.Begin3, out Action begin3))
                 begin3.Invoke();
 
@@ -187,14 +191,14 @@ namespace ModelGraph.Controls
         }
         private void KeyboardAccelerator_V_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (_prevKey == 'A') EnableAlignVert();
+            if (_prevKey == 'A') SetMenuAction(AlignButton, AlignVertItem, AlignVert);
             else if (_prevKey == 'F') EnableFlipVert();
             _prevKey = 'V';
         }
         private void KeyboardAccelerator_H_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (_prevKey == 'A') EnableAlignHorz();
-            else if (_prevKey == 'F') EnableFlipHorz();
+            if (_prevKey == 'A') SetMenuAction(AlignButton, AlignHorzItem, AlignHorz);
+            else if (_prevKey == 'F') SetMenuAction(FlipButton, FlipHorzItem, FlipHorz);
             _prevKey = 'H';
         }
         private void KeyboardAccelerator_Up_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
@@ -219,6 +223,8 @@ namespace ModelGraph.Controls
         }
         private void KeyboardAccelerator_Enter_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
+            _menuAction?.Invoke();
+            if (_isActionPinned == false) UpdateActionPinned(false);
         }
         private void KeyboardAccelerator_Home_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {

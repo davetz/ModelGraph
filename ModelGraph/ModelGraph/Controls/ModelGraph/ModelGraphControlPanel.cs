@@ -20,6 +20,15 @@ namespace ModelGraph.Controls
         {
         }
 
+        private Action _menuAction;
+        private void SetMenuAction(Button btn, MenuFlyoutItem itm, Action act)
+        {
+                ActionName.Text = itm.Text;
+                ToolTipService.SetToolTip(ActionName, ToolTipService.GetToolTip(btn));
+
+               _menuAction = act;
+        }
+
 
         #region ActionName  ===================================================
         const string _pin = "\ue718";
@@ -52,18 +61,17 @@ namespace ModelGraph.Controls
                 ActionName.Text = "";
             }
         }
-        
         #endregion
 
         #region Aligning  =====================================================
 
         private void AlignVertItem_Click(object sender, RoutedEventArgs e)
         {
-            EnableAlignVert();
+            SetMenuAction(AlignButton, AlignVertItem, AlignVert);
         }
         private void AlignHorzItem_Click(object sender, RoutedEventArgs e)
         {
-            EnableAlignHorz();
+            SetMenuAction(AlignButton, AlignHorzItem, AlignHorz);
         }
         private void AlignWestItem_Click(object sender, RoutedEventArgs e)
         {
@@ -80,14 +88,6 @@ namespace ModelGraph.Controls
         private void AlignSouthItem_Click(object sender, RoutedEventArgs e)
         {
             //ActionName.Text = AlignSouthItem.Text;
-        }
-        private void EnableAlignVert()
-        {
-            ActionName.Text = AlignVertItem.Text;
-        }
-        private void EnableAlignHorz()
-        {
-            ActionName.Text = AlignHorzItem.Text;
         }
         #endregion
 

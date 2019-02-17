@@ -505,6 +505,35 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region Flip  =========================================================
+        public void FlipVertical()
+        {
+            if (HitNode != null)
+            {
+                var x = HitNode.X;
+                TakeSnapshot();
+                foreach (var node in Nodes)
+                {
+                    node.VerticalFlip(x);
+                }
+                UpdateExtents();
+            }
+        }
+        public void FlipHorizontal()
+        {
+            if (HitNode != null)
+            {
+                var y = HitNode.Y;
+                TakeSnapshot();
+                foreach (var node in Nodes)
+                {
+                    node.HorizontalFlip(y);
+                }
+                UpdateExtents();
+            }
+        }
+        #endregion
+
         #region Snapshot  =====================================================
         public void EnableSnapshot() => _enableSnapshot = true;
 

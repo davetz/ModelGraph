@@ -65,7 +65,6 @@ namespace ModelGraph.Controls
         private Extent _drawRef = new Extent(); // point1 pointerPressed, point2 = poinnterMoved, pointerReleased (EditorCanvas)
 
         private Modifier _modifier;
-        private string _keyName;
         private (float X, float Y) _arrowDelta;
         private int _wheelDelta;
 
@@ -157,23 +156,6 @@ namespace ModelGraph.Controls
             _eventAction[EventId.Begin1] = SetMovingNode;
             //ShortCutAction = IdleOnNodeShortCut;
         }
-        private void IdleOnNodeShortCut()
-        {
-            if (_modifier == Modifier.None)
-            {
-                switch (_keyName)
-                {
-                    //    case "A": Allign(); break;
-                    case "G": ApplyGravity(); PostRefresh(); break;
-                }
-                //    if (_keyName == "V") _hitNode.Node.Aspect = Aspect.Vertical;
-                //    else if (_keyName == "H") _hitNode.Node.Aspect = Aspect.Horizontal;
-                //    else if (_keyName == "C") _hitNode.Node.Aspect = Aspect.Central;
-                //    else if (_keyName == "A") _hitNode.Node.Resizing = Resizing.Auto;
-                //    else if (_keyName == "M") _hitNode.Node.Resizing = Resizing.Manual;
-            }
-            //if (_hitNode.IsModified) Model.PostRefreshGraph();
-        }
         #endregion
 
         #region SetIdleOnNodeResize  ==========================================
@@ -241,55 +223,6 @@ namespace ModelGraph.Controls
 
             _eventAction[EventId.Hover] = IdleHitTest;
         }
-        private void CycleEdgeParams()
-        {
-            if (_keyName == "Delete")
-            {
-                //Model.DeleteEdge(_hitEdge.Edge);
-                //Model.PostGraphRefresh();
-                return;
-            }
-            //if (HitNearEnd1)
-            //{
-            //    switch (_keyName)
-            //    {
-            //        case "G":
-            //            var n = (int)_hitEdge.Edge.Gnarl1 + 1;
-            //            if (n > 7) n = 0;
-            //            _hitEdge.Edge.Gnarl1 = (FacetOf)n;
-            //            _hitEdge.Edge.SetIsModified();
-            //            Model.PostRefreshGraph();
-            //            break;
-            //        case "C":
-            //            n = (int)_hitEdge.Edge.Contact1 + 1;
-            //            if (n > 15) n = 0;
-            //            _hitEdge.Edge.Contact1 = (Contact)n;
-            //            _hitEdge.Edge.SetIsModified();
-            //            Model.PostRefreshGraph();
-            //            break;
-            //    }
-            //}
-            //else if (HitNearEnd2)
-            //{
-            //    switch (_keyName)
-            //    {
-            //        case "G":
-            //            var n = (int)_hitEdge.Edge.Gnarl2 + 1;
-            //            if (n > 7) n = 0;
-            //            _hitEdge.Edge.Gnarl2 = (FacetOf)n;
-            //            _hitEdge.Edge.SetIsModified();
-            //            Model.PostRefreshGraph();
-            //            break;
-            //        case "C":
-            //            n = (int)_hitEdge.Edge.Contact2 + 1;
-            //            if (n > 15) n = 0;
-            //            _hitEdge.Edge.Contact2 = (Contact)n;
-            //            _hitEdge.Edge.SetIsModified();
-            //            Model.PostRefreshGraph();
-            //            break;
-            //    }
-            //}
-        }
         #endregion
 
         #endregion
@@ -313,22 +246,6 @@ namespace ModelGraph.Controls
             _eventAction[EventId.Cancel] = () => { RemoveSelectors(); SetIdleOnVoid(); };
             _eventAction[EventId.Begin1] = SetMovingRegion;
             _eventAction[EventId.Execute] = () => { var e = Extent.Create(_selector.Nodes, 16); _ignorePointerMoved = true; ZoomToExtent(e); };
-            //ShortCutAction = IdleOnRegionShortCuts;
-        }
-        private void IdleOnRegionShortCuts()
-        {
-            if (_modifier == Modifier.None)
-            {
-                switch (_keyName)
-                {
-                    //    case "A": Allign(); break;
-                    case "V": AlignVertical(); PostRefresh(); break;
-                    case "H": AlignHorizontal(); PostRefresh(); break;
-                    case "R": Rotate(); PostRefresh(); break;
-                    case "G": ApplyGravity(); PostRefresh(); break;
-                        //    case "Delete": DeleteRegionNodes(); break;
-                }
-            }
         }
         #endregion
 
@@ -360,7 +277,7 @@ namespace ModelGraph.Controls
 
             // Cursor = Cursors.Pen;
             _enableHitTest = false;
-
+            
             _eventAction[EventId.End] = () => { CloseRegion();  };
             _eventAction[EventId.Drag] = () => { _selector.NextPoint(_drawRef.Point2); };
             _eventAction[EventId.Cancel] = () => { RemoveSelectors(); SetIdleOnVoid(); }; ;
@@ -402,13 +319,37 @@ namespace ModelGraph.Controls
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.ApplyGravity(); });
         }
-        private async void AlignVertical()
+        private async void AlignVert()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.AlignVertical(); });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                _selector.AlignVertical();
+                PostRefresh();
+            });
         }
-        private async void AlignHorizontal()
+        private async void AlignHorz()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.AlignHorizontal(); });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                _selector.AlignHorizontal();
+                PostRefresh();
+            });
+        }
+        private async void FlipVert()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                _selector.FlipVertical();
+                PostRefresh();
+            });
+        }
+        private async void FlipHorz()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                _selector.FlipHorizontal();
+                PostRefresh();
+            });
         }
         private async void UpdateRegionExtents()
         {
