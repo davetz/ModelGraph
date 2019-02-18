@@ -23,10 +23,11 @@ namespace ModelGraph.Controls
         private Action _menuAction;
         private void SetMenuAction(Button btn, MenuFlyoutItem itm, Action act)
         {
-                ActionName.Text = itm.Text;
-                ToolTipService.SetToolTip(ActionName, ToolTipService.GetToolTip(btn));
+            ActionHelp.Visibility = Visibility.Visible;
+            ActionName.Text = itm.Text;
+            ToolTipService.SetToolTip(ActionName, ToolTipService.GetToolTip(btn));
 
-               _menuAction = act;
+            _menuAction = act;
         }
 
 
@@ -43,7 +44,7 @@ namespace ModelGraph.Controls
         }
         internal Action<bool> SetIsPinned;
 
-        internal void ResetActionPinned()
+        internal void ClearMenuAction()
         {
             UpdateActionPinned(false);
         }
@@ -56,9 +57,11 @@ namespace ModelGraph.Controls
             }
             else
             {
+                _menuAction = null;
                 _isActionPinned = false;
                 PinButton.Content = _pin;
                 ActionName.Text = "";
+                ActionHelp.Visibility = Visibility.Collapsed;
             }
         }
         #endregion
@@ -95,20 +98,12 @@ namespace ModelGraph.Controls
 
         private void FlipVertItem_Click(object sender, RoutedEventArgs e)
         {
-            EnableFlipVert();
+            SetMenuAction(FlipButton, FlipVertItem, FlipVert);
         }
 
         private void FlipHorzItem_Click(object sender, RoutedEventArgs e)
         {
-            EnableFlipHorz();
-        }
-        void EnableFlipVert()
-        {
-            ActionName.Text = FlipVertItem.Text;
-        }
-        void EnableFlipHorz()
-        {
-            ActionName.Text = FlipHorzItem.Text;
+            SetMenuAction(FlipButton, FlipHorzItem, FlipHorz);
         }
         #endregion
 

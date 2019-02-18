@@ -29,8 +29,11 @@ namespace ModelGraph.Controls
             if (cp.Properties.IsLeftButtonPressed)
             {
                 if (_eventAction.TryGetValue(EventId.Begin1, out Action begin1)) begin1?.Invoke();
-                _menuAction?.Invoke();
-                if (_isActionPinned == false) UpdateActionPinned(false);
+                if (_menuAction != null)
+                {
+                    _menuAction.Invoke();
+                    if (_isActionPinned == false) ClearMenuAction();
+                }
             }
             else if (cp.Properties.IsRightButtonPressed && _eventAction.TryGetValue(EventId.Begin3, out Action begin3))
                 begin3.Invoke();
@@ -149,6 +152,7 @@ namespace ModelGraph.Controls
 
         private void RootCanvas_DoubleTapped(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
         {
+            if (_eventAction.TryGetValue(EventId.Execute, out Action execute)) execute?.Invoke();
         }
         private void KeyboardAccelerator_A_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
@@ -192,7 +196,7 @@ namespace ModelGraph.Controls
         private void KeyboardAccelerator_V_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
             if (_prevKey == 'A') SetMenuAction(AlignButton, AlignVertItem, AlignVert);
-            else if (_prevKey == 'F') EnableFlipVert();
+            else if (_prevKey == 'F') SetMenuAction(FlipButton, FlipVertItem, FlipVert);
             _prevKey = 'V';
         }
         private void KeyboardAccelerator_H_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
@@ -228,11 +232,12 @@ namespace ModelGraph.Controls
         }
         private void KeyboardAccelerator_Home_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
+
         }
         private void KeyboardAccelerator_Escape_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
             _prevKey = ' ';
-            UpdateActionPinned(false);
+            ClearMenuAction();
             if (_eventAction.TryGetValue(EventId.Cancel, out Action cancel)) cancel?.Invoke();
         }
         private void KeyboardAccelerator_Delete_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)

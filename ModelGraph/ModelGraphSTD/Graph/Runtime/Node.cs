@@ -138,13 +138,13 @@ namespace ModelGraphSTD
 
         internal void AlignBottom(float y) { Y = y - DY; }
 
-        internal void AlignVertical(float x) { X = x; }
+        internal void AlignVert(float x) { X = x; }
 
-        internal void AlignHorizontal(float y) { Y = y; }
+        internal void AlignHorz(float y) { Y = y; }
 
-        internal void VerticalFlip(float y) { Y = y + (y - Y); }
+        internal void FlipVert(float y) { Y = y + (y - Y); }
 
-        internal void HorizontalFlip(float x) { X = x + (x - X); }
+        internal void FlipHorz(float x) { X = x + (x - X); }
         #endregion
 
         #region Move, Resize, Flip, Rotate  ===================================
@@ -177,59 +177,6 @@ namespace ModelGraphSTD
             }
         }
 
-        internal void FlipVertical(SymbolX sym)
-        {
-            if (sym == null)
-            {
-
-            }
-            else
-            {
-
-            }
-        }
-
-        internal void FlipHorizontal(SymbolX sym)
-        {
-            if (sym == null)
-            {
-
-            }
-            else
-            {
-
-            }
-        }
-
-        internal void SetFlipRotate(FlipRotate val, SymbolX sym)
-        {
-            if (sym == null)
-            {
-
-            }
-            else
-            {
-                switch (val)
-                {
-                    case FlipRotate.None:
-                        break;
-                    case FlipRotate.FlipVertical:
-                        break;
-                    case FlipRotate.FlipHorizontal:
-                        break;
-                    case FlipRotate.FlipBothWays:
-                        break;
-                    case FlipRotate.RotateClockWise:
-                        break;
-                    case FlipRotate.RotateFlipVertical:
-                        break;
-                    case FlipRotate.RotateFlipHorizontal:
-                        break;
-                    case FlipRotate.RotateFlipBothWays:
-                        break;
-                }
-            }
-        }
 
         internal void SetOrientation(Aspect val, SymbolX sym)
         {

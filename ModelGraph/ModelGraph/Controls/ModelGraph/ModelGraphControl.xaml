@@ -33,6 +33,15 @@
             <Setter Property="Foreground" Value="Firebrick"/>
         </Style>
 
+        <Style x:Key="ActionHelpStyle" TargetType="TextBlock" >
+            <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Left"/>
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontStyle" Value="Normal" />
+            <Setter Property="Visibility" Value="Collapsed" />
+        </Style>
+
         <Style x:Key="PinButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="2,0,10,0" />
             <Setter Property="IsTabStop" Value="False"/>
@@ -127,7 +136,8 @@
         <Grid Grid.Row="0" x:Name="ControlGrid" >
 
             <StackPanel x:Name="ControlPanel" Style="{StaticResource ControlPanelStyle}">
-                
+
+                <TextBlock x:Name="ActionHelp" x:Uid="_407" Style="{StaticResource ActionHelpStyle}" />
                 <TextBlock x:Name="ActionName" x:Uid="_401" Style="{StaticResource ActionNameStyle}" />
                 <Button x:Name="PinButton" x:Uid="_402" Style="{StaticResource PinButtonStyle}" Click="PinButton_Click"/>
 

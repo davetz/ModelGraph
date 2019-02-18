@@ -477,60 +477,48 @@ namespace ModelGraphSTD
         #endregion
 
         #region Align  ========================================================
-        public void AlignVertical()
+        public void AlignVert()
         {
-            if (HitNode != null)
+            var x = HitPoint.x;
+            TakeSnapshot();
+            foreach (var node in Nodes)
             {
-                var x = HitNode.X;
-                TakeSnapshot();
-                foreach (var node in Nodes)
-                {
-                    node.AlignVertical(x);
-                }
-                UpdateExtents();
+                node.AlignVert(x);
             }
+            UpdateExtents();
         }
-        public void AlignHorizontal()
+        public void AlignHorz()
         {
-            if (HitNode != null)
+            var y = HitPoint.y;
+            TakeSnapshot();
+            foreach (var node in Nodes)
             {
-                var y = HitNode.Y;
-                TakeSnapshot();
-                foreach (var node in Nodes)
-                {
-                    node.AlignHorizontal(y);
-                }
-                UpdateExtents();
+                node.AlignHorz(y);
             }
+            UpdateExtents();
         }
         #endregion
 
         #region Flip  =========================================================
-        public void FlipVertical()
+        public void FlipHorz()
         {
-            if (HitNode != null)
+            var x = HitPoint.x;
+            TakeSnapshot();
+            foreach (var node in Nodes)
             {
-                var x = HitNode.X;
-                TakeSnapshot();
-                foreach (var node in Nodes)
-                {
-                    node.VerticalFlip(x);
-                }
-                UpdateExtents();
+                node.FlipHorz(x);
             }
+            UpdateExtents();
         }
-        public void FlipHorizontal()
+        public void FlipVert()
         {
-            if (HitNode != null)
+            var y = HitPoint.y;
+            TakeSnapshot();
+            foreach (var node in Nodes)
             {
-                var y = HitNode.Y;
-                TakeSnapshot();
-                foreach (var node in Nodes)
-                {
-                    node.HorizontalFlip(y);
-                }
-                UpdateExtents();
+                node.FlipVert(y);
             }
+            UpdateExtents();
         }
         #endregion
 

@@ -305,55 +305,43 @@ namespace ModelGraph.Controls
         #region SelectorAction  ===============================================
         private async void Move((float X, float Y) delta)
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.Move(delta); });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.Move(delta));
         }
         private async void Rotate()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.Rotate(); });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.Rotate());
         }
         private async void HitTest((float X, float Y) point)
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.HitTest(point); });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.HitTest(point));
         }
         private async void ApplyGravity()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.ApplyGravity(); });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.ApplyGravity());
         }
         private async void AlignVert()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
-                _selector.AlignVertical();
-                PostRefresh();
-            });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.AlignVert());
+            PostRefresh();
         }
         private async void AlignHorz()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
-                _selector.AlignHorizontal();
-                PostRefresh();
-            });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.AlignHorz());
+            PostRefresh();
         }
         private async void FlipVert()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
-                _selector.FlipVertical();
-                PostRefresh();
-            });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.FlipVert());
+            PostRefresh();
         }
         private async void FlipHorz()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
-                _selector.FlipHorizontal();
-                PostRefresh();
-            });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>  _selector.FlipHorz());
+            PostRefresh();
         }
         private async void UpdateRegionExtents()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _selector.UpdateExtents(); });
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.UpdateExtents());
         }
         #endregion
 

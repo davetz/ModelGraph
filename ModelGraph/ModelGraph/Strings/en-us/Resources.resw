@@ -2302,37 +2302,37 @@ NEC – NWC – SEC - SWC</value>
     <value>Undo the previous action</value>
   </data>
   <data name="_426.Text" xml:space="preserve">
-    <value>Align Vertical Center</value>
+    <value>Align Vertically</value>
   </data>
   <data name="_431.Text" xml:space="preserve">
-    <value>Align Bottom</value>
+    <value>Align Bottoms</value>
   </data>
   <data name="_427.Text" xml:space="preserve">
-    <value>Align Horizontal Center</value>
+    <value>Align Horizontally</value>
   </data>
   <data name="_432.Text" xml:space="preserve">
-    <value>Flip Vertical</value>
+    <value>Flip Vertically</value>
   </data>
   <data name="_428.Text" xml:space="preserve">
-    <value>Align Right</value>
+    <value>Align Rights</value>
   </data>
   <data name="_433.Text" xml:space="preserve">
-    <value>Flip Horizontal</value>
+    <value>Flip Horizontally</value>
   </data>
   <data name="_429.Text" xml:space="preserve">
-    <value>Align Left</value>
+    <value>Align Lefts</value>
   </data>
   <data name="_434.Text" xml:space="preserve">
     <value>Rotate Left</value>
   </data>
   <data name="_430.Text" xml:space="preserve">
-    <value>Align Top</value>
+    <value>Align Tops</value>
   </data>
   <data name="_435.Text" xml:space="preserve">
     <value>Rotate Right</value>
   </data>
   <data name="_401.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Pinned action ready to execute (click on item or tap Enter key)</value>
+    <value>Pinned action ready to execute</value>
   </data>
   <data name="_402.ToolTipService.ToolTip" xml:space="preserve">
     <value>Pin / Unpin current action</value>
@@ -2364,8 +2364,8 @@ NEC – NWC – SEC - SWC</value>
   <data name="_444.Text" xml:space="preserve">
     <value />
   </data>
-  <data name="_445.Text" xml:space="preserve">
-    <value />
+  <data name="_407.Text" xml:space="preserve">
+    <value>Click on the drawing where to execute - -</value>
   </data>
   <data name="_001" xml:space="preserve">
     <value>Windows10 UWP Relational Model Editor</value>
