@@ -2368,7 +2368,7 @@ NEC – NWC – SEC - SWC</value>
     <value>Click on the drawing where to execute - -</value>
   </data>
   <data name="_001" xml:space="preserve">
-    <value>Windows10 UWP Relational Model Editor</value>
+    <value>UWP Relational Modeler Desktop Application</value>
     <comment>AppDiscription</comment>
   </data>
 </root>

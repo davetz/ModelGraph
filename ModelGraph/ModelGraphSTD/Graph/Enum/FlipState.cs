@@ -2,7 +2,6 @@
 
 namespace ModelGraphSTD
 {
-    [Flags]
     public enum FlipState : byte //reorientate the symbol to minimize crossed edge connections
     {
         None = 0,
@@ -14,15 +13,16 @@ namespace ModelGraphSTD
         RightRotate = 6,     //rotate 90 degree clockwise
         RightHorzFlip = 7,   //after rotate flip horizontal
     }
+    [Flags]
     public enum AutoFlip : byte //automaticlly reorientate the symbol to minimize crossed edge connections
     {
         None = 0,
-        VertFlip = 0x01,        //flip vertically
-        HorzFlip = 0x02,        //flip horizontally
-        VertHorzFlip = 0x04,    //flip both vertical and horizontal
-        LeftRotate = 0x08,      //rotate 90 degress counter clockwise
-        LeftHorzFlip = 0x10,  //after rotate flip horizontal
-        RightRotate = 0x20,     //rotate 90 degree clockwise
-        RightHorzFlip = 0x40, //after rotate flip horizontal
+        VertFlip = 0x01,       //flip vertically
+        HorzFlip = 0x02,       //flip horizontally
+        VertHorzFlip = 0x04,   //flip both vertical and horizontal
+        LeftRotate = 0x08,     //rotate 90 degress counter clockwise
+        LeftHorzFlip = 0x10,   //after rotate flip horizontal
+        RightRotate = 0x20,    //rotate 90 degree clockwise
+        RightHorzFlip = 0x40,  //after rotate flip horizontal
     }
 }
