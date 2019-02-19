@@ -463,9 +463,9 @@ namespace ModelGraphSTD
         #endregion
 
         #region FlipRotate  ===================================================
-        public void Rotate() => RotateFlip(FlipRotate.RotateClockWise);
-        public void RotateFlip(FlipRotate flip) => RotateFlip(HitPoint, flip);
-        public void RotateFlip((float X, float Y) focus, FlipRotate flip)
+        public void Rotate() => RotateFlip(FlipState.RightRotate);
+        public void RotateFlip(FlipState flip) => RotateFlip(HitPoint, flip);
+        public void RotateFlip((float X, float Y) focus, FlipState flip)
         {
             if (IsRegionHit)
             {

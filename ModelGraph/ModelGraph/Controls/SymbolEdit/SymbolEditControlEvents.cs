@@ -329,24 +329,24 @@ namespace ModelGraph.Controls
 
         private void InitAutoFlipCheckBoxes(AutoFlip flip)
         {
-            _autoFlipVert = (flip & AutoFlip.FlipVert) != 0;
-            _autoFlipHorz = (flip & AutoFlip.FlipHorz) != 0;
-            _autoFlipVertHorz = (flip & AutoFlip.FlipVertHorz) != 0;
-            _autoRotateLeft = (flip & AutoFlip.RotateLeft) != 0;
-            _autoRotateLeftFlip = (flip & AutoFlip.RotateLeftFlip) != 0;
-            _autoRotateRight = (flip & AutoFlip.RotateRight) != 0;
-            _autoRotateRightFlip = (flip & AutoFlip.RotateRightFlip) != 0;
+            _autoFlipVert = (flip & AutoFlip.VertFlip) != 0;
+            _autoFlipHorz = (flip & AutoFlip.HorzFlip) != 0;
+            _autoFlipVertHorz = (flip & AutoFlip.VertHorzFlip) != 0;
+            _autoRotateLeft = (flip & AutoFlip.LeftRotate) != 0;
+            _autoRotateLeftFlip = (flip & AutoFlip.LeftHorzFlip) != 0;
+            _autoRotateRight = (flip & AutoFlip.RightRotate) != 0;
+            _autoRotateRightFlip = (flip & AutoFlip.RightHorzFlip) != 0;
         }
         private void ApplyAutoFlip()
         {
             _symbol.AutoFlip =
-                (AutoFlipVert ? AutoFlip.FlipVert : AutoFlip.None) |
-                (AutoFlipHorz ? AutoFlip.FlipHorz : AutoFlip.None) |
-                (AutoFlipVertHorz ? AutoFlip.FlipVertHorz : AutoFlip.None) |
-                (AutoRotateLeft ? AutoFlip.RotateLeft : AutoFlip.None) |
-                (AutoRotateLeftFlip ? AutoFlip.RotateLeftFlip : AutoFlip.None) |
-                (AutoRotateRight ? AutoFlip.RotateRight : AutoFlip.None) |
-                (AutoRotateRightFlip ? AutoFlip.RotateRightFlip : AutoFlip.None);
+                (AutoFlipVert ? AutoFlip.VertFlip : AutoFlip.None) |
+                (AutoFlipHorz ? AutoFlip.HorzFlip : AutoFlip.None) |
+                (AutoFlipVertHorz ? AutoFlip.VertHorzFlip : AutoFlip.None) |
+                (AutoRotateLeft ? AutoFlip.LeftRotate : AutoFlip.None) |
+                (AutoRotateLeftFlip ? AutoFlip.LeftHorzFlip : AutoFlip.None) |
+                (AutoRotateRight ? AutoFlip.RightRotate : AutoFlip.None) |
+                (AutoRotateRightFlip ? AutoFlip.RightHorzFlip : AutoFlip.None);
         }
 
 

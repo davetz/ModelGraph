@@ -101,10 +101,10 @@ namespace ModelGraphSTD
         #endregion
 
         #region RotateFlip  ===================================================
-        public void RotateFlip((float X, float Y) focus, FlipRotate flip)
+        public void RotateFlip((float X, float Y) focus, FlipState flip)
         {
-            Point1 = XYPair.RotateFlip(Point1, focus, flip);
-            Point2 = XYPair.RotateFlip(Point2, focus, flip);
+            Point1 = XYTuple.RotateFlip(Point1, focus, flip);
+            Point2 = XYTuple.RotateFlip(Point2, focus, flip);
         }
         #endregion
 
@@ -175,9 +175,9 @@ namespace ModelGraphSTD
         public float DY => Y2 - Y1;
         public (float X, float Y) Delta => (DX, DY);
         public float Length => (float)Math.Sqrt(Diagonal);
-        public float Diagonal => XYPair.Diagonal(Delta);
-        public (float x, float y) OrthoginalDisplacedPoint(float ds) => XYPair.OrthoginalDisplacedPoint(DX, DY, X2, Y2, ds);
-        public (Quad quad, Sect sect, double slope) QuadSectSlope => XYPair.QuadSectSlope((X1, Y1), (X2, Y2));
+        public float Diagonal => XYTuple.Diagonal(Delta);
+        public (float x, float y) OrthoginalDisplacedPoint(float ds) => XYTuple.OrthoginalDisplacedPoint(DX, DY, X2, Y2, ds);
+        public (Quad quad, Sect sect, double slope) QuadSectSlope => XYTuple.QuadSectSlope((X1, Y1), (X2, Y2));
         public bool TryGetDelta(out (float X, float Y) delta)
         {
             delta = Delta;

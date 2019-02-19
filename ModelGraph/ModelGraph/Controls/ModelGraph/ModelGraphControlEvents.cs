@@ -6,6 +6,7 @@ using Windows.UI.Xaml.Input;
 using Windows.System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using Windows.UI.Xaml;
 
 namespace ModelGraph.Controls
 {
@@ -29,11 +30,7 @@ namespace ModelGraph.Controls
             if (cp.Properties.IsLeftButtonPressed)
             {
                 if (_eventAction.TryGetValue(EventId.Begin1, out Action begin1)) begin1?.Invoke();
-                if (_menuAction != null)
-                {
-                    _menuAction.Invoke();
-                    if (_isActionPinned == false) ClearMenuAction();
-                }
+                TryEXecuteMenuAction();
             }
             else if (cp.Properties.IsRightButtonPressed && _eventAction.TryGetValue(EventId.Begin3, out Action begin3))
                 begin3.Invoke();
@@ -121,6 +118,12 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        private void PinButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateActionPinned(!_isActionPinned);
+        }
+
+
         #region KeyboardEvents  ===============================================
 
         private void RootButton_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -129,14 +132,6 @@ namespace ModelGraph.Controls
             //e.Handled = true;
             //switch (e.Key)
             //{
-            //    case VirtualKey.LeftWindows:
-            //    case VirtualKey.RightWindows:
-            //    case VirtualKey.LeftMenu:
-            //    case VirtualKey.LeftShift:
-            //    case VirtualKey.LeftControl:
-            //    case VirtualKey.RightMenu:
-            //    case VirtualKey.RightShift:
-            //    case VirtualKey.RightControl: break;
             //    case VirtualKey.Menu: _modifier |= Modifier.Menu; break;
             //    case VirtualKey.Shift: _modifier |= Modifier.Shift; break;
             //    case VirtualKey.Control: _modifier |= Modifier.Ctrl; break;
@@ -227,9 +222,7 @@ namespace ModelGraph.Controls
         }
         private void KeyboardAccelerator_Enter_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
-            _menuAction?.Invoke();
-            if (_isActionPinned == false) UpdateActionPinned(false);
-        }
+            TryEXecuteMenuAction();        }
         private void KeyboardAccelerator_Home_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
 

@@ -5,7 +5,7 @@ namespace ModelGraphSTD
     internal class Snapshot
     {
         private readonly List<(Edge edge, ((float x, float y)[], Facet, Facet) snapshot)> _edges;
-        private readonly List<(Node node, (float, float, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipRotate, Aspect) snapshot)> _nodes;
+        private readonly List<(Node node, (float, float, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipState, Aspect) snapshot)> _nodes;
 
         internal Snapshot(Selector selector)
         {/*
@@ -15,7 +15,7 @@ namespace ModelGraphSTD
             {
                 if (selector.Nodes.Count > 0)
                 {
-                    _nodes = new List<(Node node, (float, float, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipRotate, Aspect))>(selector.Nodes.Count);
+                    _nodes = new List<(Node node, (float, float, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipState, Aspect))>(selector.Nodes.Count);
                     foreach (var node in selector.Nodes)
                     {
                         _nodes.Add((node, node.Snapshot));
@@ -36,7 +36,7 @@ namespace ModelGraphSTD
             }
             else if (selector.IsNodeHit)
             {
-                _nodes = new List<(Node node, (float, float, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipRotate, Aspect))>(1);
+                _nodes = new List<(Node node, (float, float, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipState, Aspect))>(1);
                 _nodes.Add((selector.HitNode, selector.HitNode.Snapshot));
             }
             else if (selector.IsEdgeHit)
@@ -56,7 +56,7 @@ namespace ModelGraphSTD
          */
             if (snap._nodes != null)
             {
-                _nodes = new List<(Node node, (float, float, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipRotate, Aspect))>(snap._nodes.Count);
+                _nodes = new List<(Node node, (float, float, byte, byte, byte, byte, Labeling, Sizing, BarWidth, FlipState, Aspect))>(snap._nodes.Count);
                 foreach (var n in snap._nodes)
                 {
                     _nodes.Add((n.node, n.node.Snapshot));

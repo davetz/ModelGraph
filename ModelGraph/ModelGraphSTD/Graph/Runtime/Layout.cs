@@ -93,7 +93,7 @@ namespace ModelGraphSTD
                 E[i].atch = atch;
                 E[i].horz = horz;
 
-                var (quad, sect, slope) = XYPair.QuadSectSlope(n1.Center, E[i].bend);
+                var (quad, sect, slope) = XYTuple.QuadSectSlope(n1.Center, E[i].bend);
                 E[i].quad = quad;
                 E[i].sect = sect;
                 E[i].slope = slope;

@@ -18,14 +18,13 @@ namespace ModelGraphSTD
         public Sizing Sizing;
         public BarWidth BarWidth;
         public FlipState FlipState;
-        public FlipRotate FlipRotate; //[DELETE]
         public Aspect Aspect;
 
         #region Snapshot  =====================================================
-        internal (float X, float Y, byte DX, byte DY, byte Color, byte Symbol, Labeling Labeling, Sizing Resizing, BarWidth BarWidth, FlipRotate FlipRotate, Aspect Orientation)
+        internal (float X, float Y, byte DX, byte DY, byte Color, byte Symbol, Labeling Labeling, Sizing Resizing, BarWidth BarWidth, FlipState FlipRotate, Aspect Orientation)
             Snapshot
         {
-            get { return (X, Y, DX, DY, Color, Symbol, Labeling, Sizing, BarWidth, FlipRotate, Aspect); }
+            get { return (X, Y, DX, DY, Color, Symbol, Labeling, Sizing, BarWidth, FlipState, Aspect); }
             set
             {
                 X = value.X;
@@ -37,7 +36,7 @@ namespace ModelGraphSTD
                 Labeling = value.Labeling;
                 Sizing = value.Resizing;
                 BarWidth = value.BarWidth;
-                FlipRotate = value.FlipRotate;
+                FlipState = value.FlipRotate;
                 Aspect = value.Orientation;
             }
         }
@@ -189,7 +188,7 @@ namespace ModelGraphSTD
                     case Aspect.Vertical: Aspect = Aspect.Horizontal; break;
                     case Aspect.Horizontal: Aspect = Aspect.Vertical; break;
                 }
-                FlipRotate = FlipRotate.None;
+                FlipState = FlipState.None;
             }
             else
             {
@@ -284,20 +283,20 @@ namespace ModelGraphSTD
             X = X + delta.X;
             Y = Y + delta.Y;
         }
-        public void RotateFlip((float X, float Y) focus, FlipRotate flip)
+        public void RotateFlip((float X, float Y) focus, FlipState flip)
         {
-            FlipRotate = flip;
+            FlipState = flip;
 
-            var p = XYPair.RotateFlip((X, Y), focus, flip);
+            var p = XYTuple.RotateFlip((X, Y), focus, flip);
             X = p.X;
             Y = p.Y;
 
             switch (flip)
             {
-                case ModelGraphSTD.FlipRotate.RotateClockWise:
-                case ModelGraphSTD.FlipRotate.RotateFlipVertical:
-                case ModelGraphSTD.FlipRotate.RotateFlipHorizontal:
-                case ModelGraphSTD.FlipRotate.RotateFlipBothWays:
+                case ModelGraphSTD.FlipState.RightRotate:
+                case ModelGraphSTD.FlipState.LeftHorzFlip:
+                case ModelGraphSTD.FlipState.RightHorzFlip:
+                case ModelGraphSTD.FlipState.LeftRotate:
 
                     var t1 = DX;
                     DX = DY;

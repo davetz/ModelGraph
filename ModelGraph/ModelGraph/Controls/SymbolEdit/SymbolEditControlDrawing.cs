@@ -306,7 +306,7 @@ namespace ModelGraph.Controls
 
                 if (cont == Contact.Any && size > 0)
                 {
-                    var (p1, p2) = XYPair.GetScaledNormal(targ, point, size, Center, EditScale);
+                    var (p1, p2) = XYTuple.GetScaledNormal(targ, point, size, Center, EditScale);
                     ds.DrawLine(p1, p2, Color.FromArgb(0x80, 0xFF, 0, 0), 20);
                 }
             }

@@ -1598,7 +1598,7 @@ namespace RepositoryUWP
                                 node.DY = r.ReadByte();
                                 r.ReadByte();
                                 node.Aspect = (Aspect)r.ReadByte();
-                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.FlipState = (FlipState)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
@@ -1758,7 +1758,7 @@ namespace RepositoryUWP
                                 node.DY = r.ReadByte();
                                 r.ReadByte();
                                 node.Aspect = (Aspect)r.ReadByte();
-                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.FlipState = (FlipState)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
@@ -1921,7 +1921,7 @@ namespace RepositoryUWP
                                 node.DY = r.ReadByte();
                                 r.ReadByte();
                                 node.Aspect = (Aspect)r.ReadByte();
-                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.FlipState = (FlipState)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
@@ -2082,7 +2082,7 @@ namespace RepositoryUWP
                                 node.DY = r.ReadByte();
                                 r.ReadByte();
                                 node.Aspect = (Aspect)r.ReadByte();
-                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.FlipState = (FlipState)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
@@ -2243,7 +2243,7 @@ namespace RepositoryUWP
                                 node.DY = r.ReadByte();
                                 r.ReadByte();
                                 node.Aspect = (Aspect)r.ReadByte();
-                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.FlipState = (FlipState)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
@@ -2405,7 +2405,7 @@ namespace RepositoryUWP
                                 node.DY = r.ReadByte();
                                 node.Symbol = r.ReadByte();
                                 node.Aspect = (Aspect)r.ReadByte();
-                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.FlipState = (FlipState)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
@@ -2559,7 +2559,7 @@ namespace RepositoryUWP
                                 node.DX = r.ReadByte();
                                 node.DY = r.ReadByte();
                                 node.Aspect = (Aspect)r.ReadByte();
-                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.FlipState = (FlipState)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
@@ -2714,7 +2714,7 @@ namespace RepositoryUWP
                                 node.DX = r.ReadByte();
                                 node.DY = r.ReadByte();
                                 node.Aspect = (Aspect)r.ReadByte();
-                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.FlipState = (FlipState)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();
@@ -2869,7 +2869,7 @@ namespace RepositoryUWP
                                 node.DX = r.ReadByte();
                                 node.DY = r.ReadByte();
                                 node.Aspect = (Aspect)r.ReadByte();
-                                node.FlipRotate = (FlipRotate)r.ReadByte();
+                                node.FlipState = (FlipState)r.ReadByte();
                                 node.Labeling = (Labeling)r.ReadByte();
                                 node.Sizing = (Sizing)r.ReadByte();
                                 node.BarWidth = (BarWidth)r.ReadByte();

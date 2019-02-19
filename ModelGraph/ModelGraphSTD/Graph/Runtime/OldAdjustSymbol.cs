@@ -345,7 +345,7 @@ namespace ModelGraphSTD
 
             node.DX = symFlip.DX;
             node.DY = symFlip.DY;
-            node.FlipRotate = (FlipRotate)bestFlip;
+            node.FlipState = (FlipState)bestFlip;
 
             bestSideEdge[East].Sort(CompareEastQuadSlope);
             bestSideEdge[South].Sort(CompareSouthQuadSlope);

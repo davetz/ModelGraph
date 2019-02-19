@@ -133,21 +133,21 @@ namespace ModelGraphSTD
         #endregion
 
         #region RotateFlip  ===================================================
-        internal void RotateFlip((float x, float y) focus, FlipRotate flip)
+        internal void RotateFlip((float x, float y) focus, FlipState flip)
         {
             var len = Points.Length;
             for (int i = 0; i < len; i++)
             {
-                Points[i] = XYPair.RotateFlip(Points[i], focus, flip);
+                Points[i] = XYTuple.RotateFlip(Points[i], focus, flip);
             }
 
             len = (Bends == null) ? 0 : Bends.Length;
             for (int i = 0; i < len; i++)
             {
-                Bends[i] = XYPair.RotateFlip(Bends[i], focus, flip);
+                Bends[i] = XYTuple.RotateFlip(Bends[i], focus, flip);
             }
         }
-        internal void RotateFlip((float x, float y) focus, FlipRotate flip, int index1, int index2)
+        internal void RotateFlip((float x, float y) focus, FlipState flip, int index1, int index2)
         {
             if (HasBends)
             {
@@ -156,13 +156,13 @@ namespace ModelGraphSTD
                     var j = i - Tm1 - 1;
                     if (j >= 0 && j < Bends.Length)
                     {
-                        Bends[j] = XYPair.RotateFlip(Bends[j], focus, flip);
+                        Bends[j] = XYTuple.RotateFlip(Bends[j], focus, flip);
                     }
                 }
             }
             for (int i = index1; i < index2; i++)
             {
-                Points[i] = XYPair.RotateFlip(Points[i], focus, flip);
+                Points[i] = XYTuple.RotateFlip(Points[i], focus, flip);
             }
         }
         #endregion

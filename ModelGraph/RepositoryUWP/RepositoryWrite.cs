@@ -541,7 +541,7 @@ namespace RepositoryUWP
                                         w.WriteByte(nd.DX);
                                         w.WriteByte(nd.DY);
                                         w.WriteByte((byte)nd.Aspect);
-                                        w.WriteByte((byte)nd.FlipRotate);
+                                        w.WriteByte((byte)nd.FlipState);
                                         w.WriteByte((byte)nd.Labeling);
                                         w.WriteByte((byte)nd.Sizing);
                                         w.WriteByte((byte)nd.BarWidth);

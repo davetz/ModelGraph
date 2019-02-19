@@ -546,8 +546,8 @@ namespace ModelGraphSTD
             }
             {
                 var p = _nodeFlipRotateProperty = new PropertyOf<Node, string>(PropertyZStore, Trait.NodeFlipRotate_P, _flipRotateEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).FlipRotate);
-                p.SetValFunc = (item, value) => { p.Cast(item).FlipRotate = (FlipRotate)GetEnumZKey(p.EnumZ, value); return true; };
+                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).FlipState);
+                p.SetValFunc = (item, value) => { p.Cast(item).FlipState = (FlipState)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
             {

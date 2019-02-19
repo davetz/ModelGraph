@@ -270,10 +270,10 @@ namespace ModelGraphSTD
 
         private readonly static (FlipState, AutoFlip)[] _allFlipStates =
         {
-            (FlipState.None, AutoFlip.None), (FlipState.VertFlip, AutoFlip.FlipVert),
-            (FlipState.HorzFlip, AutoFlip.FlipHorz), (FlipState.VertHorzFlip, AutoFlip.FlipVertHorz),
-            (FlipState.LeftRotate, AutoFlip.RotateLeft), (FlipState.LeftHorzFlip, AutoFlip.RotateLeftFlip),
-            (FlipState.RightRotate, AutoFlip.RotateRight), (FlipState.RightHorzFlip, AutoFlip.RotateRightFlip),
+            (FlipState.None, AutoFlip.None), (FlipState.VertFlip, AutoFlip.VertFlip),
+            (FlipState.HorzFlip, AutoFlip.HorzFlip), (FlipState.VertHorzFlip, AutoFlip.VertHorzFlip),
+            (FlipState.LeftRotate, AutoFlip.LeftRotate), (FlipState.LeftHorzFlip, AutoFlip.LeftHorzFlip),
+            (FlipState.RightRotate, AutoFlip.RightRotate), (FlipState.RightHorzFlip, AutoFlip.RightHorzFlip),
         };
         #endregion
     }

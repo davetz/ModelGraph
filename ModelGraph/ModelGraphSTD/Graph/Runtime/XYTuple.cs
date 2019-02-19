@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace ModelGraphSTD
 {
-    public static class XYPair
+    public static class XYTuple
     {
         static readonly int _ds = GraphDefault.HitMargin;
 
@@ -11,32 +11,32 @@ namespace ModelGraphSTD
         public static (float X, float Y) Rotate((float x, float y) p, (float x, float y) b) => ((b.x - (p.y - b.y)), (b.y + (p.x - b.x)));
         public static (float X, float Y) VerticalFlip((float x, float y) p, float y) => ((y + (y - p.y)), (p.x));
         public static (float X, float Y) HorizontalFlip((float x, float y) p, float x) => ((x + (x - p.x)), p.y);
-        public static (float X, float Y) RotateFlip((float x, float y) point, (float x, float y) focus, FlipRotate flip)
+        public static (float X, float Y) RotateFlip((float x, float y) point, (float x, float y) focus, FlipState flip)
         {
             switch (flip)
             {
-                case ModelGraphSTD.FlipRotate.None:
+                case ModelGraphSTD.FlipState.None:
                     return focus;
 
-                case ModelGraphSTD.FlipRotate.FlipVertical:
+                case ModelGraphSTD.FlipState.VertFlip:
                     return VerticalFlip(point, focus.y);
 
-                case ModelGraphSTD.FlipRotate.FlipHorizontal:
+                case ModelGraphSTD.FlipState.HorzFlip:
                     return HorizontalFlip(point, focus.x);
 
-                case ModelGraphSTD.FlipRotate.FlipBothWays:
+                case ModelGraphSTD.FlipState.VertHorzFlip:
                     return VerticalFlip(HorizontalFlip(point, focus.x), focus.y);
 
-                case ModelGraphSTD.FlipRotate.RotateClockWise:
+                case ModelGraphSTD.FlipState.RightRotate:
                     return Rotate(point, focus);
 
-                case ModelGraphSTD.FlipRotate.RotateFlipVertical:
+                case ModelGraphSTD.FlipState.LeftHorzFlip:
                     return VerticalFlip(Rotate(point, focus), focus.y);
 
-                case ModelGraphSTD.FlipRotate.RotateFlipHorizontal:
+                case ModelGraphSTD.FlipState.RightHorzFlip:
                     return HorizontalFlip(Rotate(point, focus), focus.x);
 
-                case ModelGraphSTD.FlipRotate.RotateFlipBothWays:
+                case ModelGraphSTD.FlipState.LeftRotate:
                     return VerticalFlip(HorizontalFlip(Rotate(point, focus), focus.x), focus.y);
             }
             return focus;

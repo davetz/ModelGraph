@@ -20,7 +20,14 @@ namespace ModelGraph.Controls
         {
         }
 
+
+
+        #region MenuAction  ===================================================
+        const string _pin = "\ue718";
+        const string _pinned = "\ue840";
+        bool _isActionPinned;
         private Action _menuAction;
+
         private void SetMenuAction(Button btn, MenuFlyoutItem itm, Action act)
         {
             ActionHelp.Visibility = Visibility.Visible;
@@ -31,23 +38,22 @@ namespace ModelGraph.Controls
         }
 
 
-        #region ActionName  ===================================================
-        const string _pin = "\ue718";
-        const string _pinned = "\ue840";
-        bool _isActionPinned;
-
-
-        private void PinButton_Click(object sender, RoutedEventArgs e)
+        internal void TryEXecuteMenuAction()
         {
-            UpdateActionPinned(!_isActionPinned);
-            SetIsPinned?.Invoke(_isActionPinned);
+            if (_menuAction is null) return;
+            _menuAction.Invoke();
+            if (_isActionPinned) return;
+            ClearMenuAction();
         }
-        internal Action<bool> SetIsPinned;
-
-        internal void ClearMenuAction()
+        private void ClearMenuAction()
         {
-            UpdateActionPinned(false);
+            _menuAction = null;
+            _isActionPinned = false;
+            PinButton.Content = _pin;
+            ActionName.Text = "";
+            ActionHelp.Visibility = Visibility.Collapsed;
         }
+
         private void UpdateActionPinned(bool value)
         {
             if (value)
@@ -56,13 +62,7 @@ namespace ModelGraph.Controls
                 PinButton.Content = _pinned;
             }
             else
-            {
-                _menuAction = null;
-                _isActionPinned = false;
-                PinButton.Content = _pin;
-                ActionName.Text = "";
-                ActionHelp.Visibility = Visibility.Collapsed;
-            }
+                ClearMenuAction();
         }
         #endregion
 
