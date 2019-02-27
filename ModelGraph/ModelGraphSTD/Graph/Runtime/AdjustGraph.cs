@@ -88,7 +88,7 @@ namespace ModelGraphSTD
                     AdjustAutoNode(node);
             }
             else if (node.IsGraphSymbol)
-                OldAdjustSymbol(node);
+                AdjustSymbol(node);
         }
 
     }
