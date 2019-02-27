@@ -123,7 +123,7 @@ namespace ModelGraphSTD
                     else if (E[i].sect == Sect.S4 || E[i].sect == Sect.S5) SetWest(i);
                 }
             }
-            else
+            else if (node.Aspect == Aspect.Point)
             {
                 for (int i = 0; i < count; i++)
                 {
@@ -150,7 +150,7 @@ namespace ModelGraphSTD
                         else
                         {
                             if (E[i].quad == Quad.Q2 || E[i].quad == Quad.Q1)
-                                E[i].edge.SetFace(node, (x, y), (dbx, tmsku));
+                                E[i].edge.SetFace(node, (x, y), (x + dbx, y + tmsku));
                             else
                                 E[i].edge.SetFace(node, (x, y), (x + dbx, y - tmsku));
                         }
@@ -164,6 +164,8 @@ namespace ModelGraphSTD
                     }
                 }
             }
+            else
+                throw new System.InvalidOperationException("Node has invalid aspect");
 
             void SetEast(int e)
             {

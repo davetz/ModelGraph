@@ -379,7 +379,7 @@ namespace ModelGraphSTD
             else
             { SP2 = d1; FP2 = d2; TP2 = d3; }
 
-            // do the refresh after both faces have changed
+            // do the refresh only once, after both faces have changed
             if (NeedsRefresh) Refresh();
             NeedsRefresh = !NeedsRefresh;
         }
