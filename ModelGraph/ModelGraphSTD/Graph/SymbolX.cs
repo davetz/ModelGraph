@@ -154,25 +154,22 @@ namespace ModelGraphSTD
         internal static float[] PenaltyFactor = { 1, 1.1f, 1.2f, 1.3f, 1.4f, 100f };
         //=== non-flipped normal penalty of each dx/dy directional sector to the symbol's target contact point
         //========== dx/dy directional sector  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F ================
-        private static readonly byte[] _EN = { 1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 1, 0, 0, 0 }; //EN
-        private static readonly byte[] _E  = { 0, 0, 0, 3, 5, 5, 5, 5, 5, 5, 5, 5, 3, 0, 0, 0 }; //E
-        private static readonly byte[] _ES = { 0, 0, 0, 1, 5, 5, 5, 5, 5, 5, 5, 5, 4, 3, 2, 1 }; //ES
-
-        private static readonly byte[] _SEC = { 0, 0, 0, 0, 0, 0, 1, 2, 5, 5, 5, 5, 2, 1, 0, 0 }; //SEC
-        private static readonly byte[] _SE  = { 1, 0, 0, 0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 5 }; //SE
-        private static readonly byte[] _S   = { 3, 0, 0, 0, 0, 0, 0, 3, 5, 5, 5, 5, 5, 5, 5, 5 }; //S
-        private static readonly byte[] _SW  = { 4, 3, 2, 1, 0, 0, 0, 1, 5, 5, 5, 5, 5, 5, 5, 5 }; //SW
-        private static readonly byte[] _SWC = { 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 5, 5, 5, 5 }; //SWC
-
-        private static readonly byte[] _WS  = { 5, 5, 5, 5, 1, 0, 0, 0, 1, 2, 3, 4, 5, 5, 5, 0 }; //WS
-        private static readonly byte[] _W   = { 5, 5, 5, 3, 0, 0, 0, 0, 0, 0, 0, 3, 5, 5, 5, 5 }; //W
-        private static readonly byte[] _WN  = { 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 5, 5 }; //WN
-
-        private static readonly byte[] _NWC = { 5, 5, 5, 5, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2 }; //NWC
-        private static readonly byte[] _NW  = { 5, 5, 5, 5, 5, 5, 5, 5, 1, 0, 0, 0, 2, 3, 3, 4 }; //NW
-        private static readonly byte[] _N   = { 5, 5, 5, 5, 5, 5, 5, 5, 3, 0, 0, 0, 0, 0, 0, 3 }; //N
-        private static readonly byte[] _NE  = { 5, 5, 5, 5, 5, 5, 5, 5, 4, 3, 2, 1, 0, 0, 0, 1 }; //NE 
-        private static readonly byte[] _NEC = { 0, 0, 1, 2, 5, 5, 5, 5, 2, 1, 0, 0, 0, 0, 0, 0 }; //NEC
+        private static readonly byte[] _ES  = { 0, 0, 1, 2, 3, 5, 5, 5, 5, 5, 5, 5, 5, 3, 2, 1 }; //ES
+        private static readonly byte[] _SEC = { 1, 0, 0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 4, 3, 2 }; //SEC  
+        private static readonly byte[] _SE  = { 2, 1, 0, 0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 3 }; //SE
+        private static readonly byte[] _S   = { 3, 2, 1, 0, 0, 1, 2, 3, 5, 5, 5, 5, 5, 5, 5, 5 }; //S
+        private static readonly byte[] _SW  = { 4, 3, 2, 1, 0, 0, 1, 2, 3, 5, 5, 5, 5, 5, 5, 5 }; //SW
+        private static readonly byte[] _SWC = { 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 5, 5, 5, 5 }; //SWC  
+        private static readonly byte[] _WS  = { 5, 5, 5, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 5, 5, 5 }; //WS
+        private static readonly byte[] _W   = { 5, 5, 5, 5, 3, 2, 1, 0, 0, 1, 2, 3, 5, 5, 5, 5 }; //W
+        private static readonly byte[] _WN  = { 5, 5, 5, 5, 5, 3, 2, 1, 0, 0, 1, 2, 3, 5, 5, 5 }; //WN
+        private static readonly byte[] _NWC = { 5, 5, 5, 5, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5 }; //NWC  
+        private static readonly byte[] _NW  = { 5, 5, 5, 5, 5, 5, 5, 3, 2, 1, 0, 0, 1, 2, 3, 5 }; //NW
+        private static readonly byte[] _N   = { 5, 5, 5, 5, 5, 5, 5, 5, 3, 2, 1, 0, 0, 1, 2, 3 }; //N
+        private static readonly byte[] _NE  = { 3, 5, 5, 5, 5, 5, 5, 5, 5, 3, 2, 1, 0, 0, 1, 2 }; //NE 
+        private static readonly byte[] _NEC = { 2, 3, 4, 5, 5, 5, 5, 5, 5, 4, 3, 2, 1, 0, 0, 1 }; //NEC 
+        private static readonly byte[] _EN  = { 1, 2, 3, 5, 5, 5, 5, 5, 5, 5, 5, 3, 2, 1, 0, 0 }; //EN
+        private static readonly byte[] _E   = { 0, 1, 2, 3, 5, 5, 5, 5, 5, 5, 5, 5, 3, 2, 1, 0 }; //E
 
         //==============================  EN   E   ES     SEC   SE   S   SW   SWC     WS   W   WN     NWC   NW   N   NE   NEC
         private static byte[][] _pNo = { _EN, _E, _ES,   _SEC, _SE, _S, _SW, _SWC,   _WS, _W, _WN,   _NWC, _NW, _N, _NE, _NEC };//
