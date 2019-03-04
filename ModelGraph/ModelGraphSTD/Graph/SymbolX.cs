@@ -81,7 +81,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region GetFlipTargetContacts  =========================================
-        internal void GetFlipTargetContacts(FlipState flip, float cx, float cy, float scale, List<(Target trg, byte tix, Contact con, (float x, float y) pnt)> list)
+        internal void GetFlipTargetContacts(FlipState flip, float cx, float cy, float scale, float tmLen, List<(Target trg, byte tix, Contact con, (float x, float y) pnt)> list)
         {
             list.Clear();
             foreach (var (trg, tix, con, pnt, siz) in TargetContacts)
@@ -89,8 +89,12 @@ namespace ModelGraphSTD
                 var fix = (int)flip;
                 var (tdx, tdy) = ToFloat(pnt);
                 var (fdx, fdy) = _flipper[fix](tdx, tdy);
-                var x = fdx * scale + cx;
-                var y = fdy * scale + cy;
+
+                var (tx, ty) = _targetSurface[(int)tix];
+                var (dx, dy) = _flipper[fix](tx, ty);
+
+                var x = fdx * scale + cx + dx * tmLen;
+                var y = fdy * scale + cy + dy * tmLen;
 
                 list.Add((trg, (byte)tix, con, (x, y)));
             }           
