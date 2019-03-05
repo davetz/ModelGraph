@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 
 namespace ModelGraphSTD
 {
@@ -462,17 +463,41 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region FlipRotate  ===================================================
-        public void Rotate() => RotateFlip(FlipState.RightRotate);
-        public void RotateFlip(FlipState flip) => RotateFlip(HitPoint, flip);
-        public void RotateFlip((float X, float Y) focus, FlipState flip)
+        #region Rotate  =======================================================
+        public void RotateLeft45()
         {
+            Rotate(XYTuple.RotateLeft45Matrix(HitPoint));
+        }
+        public void RotateRight45()
+        {
+            Rotate(XYTuple.RotateRight45Matrix(HitPoint));
+        }
+        public void RotateLeft90()
+        {
+            Rotate(XYTuple.RotateLeft90Matrix(HitPoint));
+        }
+        public void RotateRight90()
+        {
+            Rotate(XYTuple.RotateRight90Matrix(HitPoint));
+        }
+        public void Rotate(Matrix3x2 mx)
+        {
+            TakeSnapshot();
             if (IsRegionHit)
             {
-                foreach (var ext in Regions) { ext.RotateFlip(focus, flip); }
-                foreach (var node in Nodes) { node.RotateFlip(focus, flip); }
-                foreach (var edge in Edges) { edge.RotateFlip(focus, flip); }
+                foreach (var node in Nodes) { node.Center = XYTuple.Transform(mx, node.Center); }
+                foreach (var edge in Edges)
+                {
+                    if (edge.HasBends)
+                    {
+                        for (int i = 0; i < edge.Bends.Length; i++)
+                        {
+                            edge.Bends[i] = XYTuple.Transform(mx, edge.Bends[i]);
+                        }
+                    }
+                }
             }
+            UpdateExtents();
         }
         #endregion
 

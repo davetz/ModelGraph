@@ -132,41 +132,6 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region RotateFlip  ===================================================
-        internal void RotateFlip((float x, float y) focus, FlipState flip)
-        {
-            var len = Points.Length;
-            for (int i = 0; i < len; i++)
-            {
-                Points[i] = XYTuple.RotateFlip(Points[i], focus, flip);
-            }
-
-            len = (Bends == null) ? 0 : Bends.Length;
-            for (int i = 0; i < len; i++)
-            {
-                Bends[i] = XYTuple.RotateFlip(Bends[i], focus, flip);
-            }
-        }
-        internal void RotateFlip((float x, float y) focus, FlipState flip, int index1, int index2)
-        {
-            if (HasBends)
-            {
-                for (int i = index1; i < index2; i++)
-                {
-                    var j = i - Tm1 - 1;
-                    if (j >= 0 && j < Bends.Length)
-                    {
-                        Bends[j] = XYTuple.RotateFlip(Bends[j], focus, flip);
-                    }
-                }
-            }
-            for (int i = index1; i < index2; i++)
-            {
-                Points[i] = XYTuple.RotateFlip(Points[i], focus, flip);
-            }
-        }
-        #endregion
-
         #region OtherBendAttachHorz  ==========================================
         internal (Node other, (float, float) bend, Attach atch, bool horz) OtherBendAttachHorz(Node node)
         {

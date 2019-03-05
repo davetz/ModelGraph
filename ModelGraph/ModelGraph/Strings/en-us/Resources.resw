@@ -2323,13 +2323,13 @@ NEC – NWC – SEC - SWC</value>
     <value>Align Lefts</value>
   </data>
   <data name="_434.Text" xml:space="preserve">
-    <value>Rotate Left</value>
+    <value>Rotate Left 45</value>
   </data>
   <data name="_430.Text" xml:space="preserve">
     <value>Align Tops</value>
   </data>
   <data name="_435.Text" xml:space="preserve">
-    <value>Rotate Right</value>
+    <value>Rotate Right 45</value>
   </data>
   <data name="_401.ToolTipService.ToolTip" xml:space="preserve">
     <value>Pinned action ready to execute</value>
@@ -2338,10 +2338,10 @@ NEC – NWC – SEC - SWC</value>
     <value>Pin / Unpin current action</value>
   </data>
   <data name="_436.Text" xml:space="preserve">
-    <value />
+    <value>Rotate Left 90</value>
   </data>
   <data name="_437.Text" xml:space="preserve">
-    <value />
+    <value>Rotate Right 90</value>
   </data>
   <data name="_438.Text" xml:space="preserve">
     <value />

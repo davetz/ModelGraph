@@ -1,46 +1,44 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace ModelGraphSTD
 {
     public static class XYTuple
     {
+        static float Radians45Degree = (float)(Math.PI / 4);
+        static float Radians90Degree = (float)(Math.PI / 2);
         static readonly int _ds = GraphDefault.HitMargin;
-
+        static internal Matrix3x2 RotateLeft45Matrix((float x, float y) f)
+        {
+            var cp = new Vector2(f.x, f.y);
+            return Matrix3x2.CreateRotation(-Radians45Degree, cp);
+        }
+        static internal Matrix3x2 RotateLeft90Matrix((float x, float y) f)
+        {
+            var cp = new Vector2(f.x, f.y);
+            return Matrix3x2.CreateRotation(-Radians90Degree, cp);
+        }
+        static internal Matrix3x2 RotateRight45Matrix((float x, float y) f)
+        {
+            var cp = new Vector2(f.x, f.y);
+            return Matrix3x2.CreateRotation(Radians45Degree, cp);
+        }
+        static internal Matrix3x2 RotateRight90Matrix((float x, float y) f)
+        {
+            var cp = new Vector2(f.x, f.y);
+            return Matrix3x2.CreateRotation(Radians90Degree, cp);
+        }
+        static internal (float X, float Y) Transform(Matrix3x2 mx, (float x, float y) p)
+        {
+            var pt = new Vector2(p.x, p.y);
+            pt = Vector2.Transform(pt, mx);
+            return (pt.X, pt.Y);
+        }
         public static (float X, float Y) Move((float x, float y) p, (float dx, float dy) b) => ((p.x + b.dx), (p.y + b.dy));
-        public static (float X, float Y) Rotate((float x, float y) p, (float x, float y) b) => ((b.x - (p.y - b.y)), (b.y + (p.x - b.x)));
         public static (float X, float Y) VerticalFlip((float x, float y) p, float y) => ((y + (y - p.y)), (p.x));
         public static (float X, float Y) HorizontalFlip((float x, float y) p, float x) => ((x + (x - p.x)), p.y);
-        public static (float X, float Y) RotateFlip((float x, float y) point, (float x, float y) focus, FlipState flip)
-        {
-            switch (flip)
-            {
-                case ModelGraphSTD.FlipState.None:
-                    return focus;
 
-                case ModelGraphSTD.FlipState.VertFlip:
-                    return VerticalFlip(point, focus.y);
-
-                case ModelGraphSTD.FlipState.HorzFlip:
-                    return HorizontalFlip(point, focus.x);
-
-                case ModelGraphSTD.FlipState.VertHorzFlip:
-                    return VerticalFlip(HorizontalFlip(point, focus.x), focus.y);
-
-                case ModelGraphSTD.FlipState.RightRotate:
-                    return Rotate(point, focus);
-
-                case ModelGraphSTD.FlipState.LeftHorzFlip:
-                    return VerticalFlip(Rotate(point, focus), focus.y);
-
-                case ModelGraphSTD.FlipState.RightHorzFlip:
-                    return HorizontalFlip(Rotate(point, focus), focus.x);
-
-                case ModelGraphSTD.FlipState.LeftRotate:
-                    return VerticalFlip(HorizontalFlip(Rotate(point, focus), focus.x), focus.y);
-            }
-            return focus;
-        }
         public static float Diagonal((float dx, float dy) p) => ((p.dx * p.dx) + (p.dy * p.dy));
         public static float Diagonal((float x, float y) p1, (float x, float y) p2) => Diagonal((p2.x - p1.x, p2.y - p1.y));
         public static (double ux, double uy) OrthoginalUnitVector(float dx, float dy)

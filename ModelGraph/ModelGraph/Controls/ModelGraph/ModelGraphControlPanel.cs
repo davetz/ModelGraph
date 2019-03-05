@@ -108,24 +108,24 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Rotate  =======================================================
-        private void RotateLeftItem_Click(object sender, RoutedEventArgs e)
+        private void RotateLeft45Item_Click(object sender, RoutedEventArgs e)
         {
-            EnableRotateLeft();
+            SetMenuAction(RotateButton, RotateLeft45Item, RotateLeft45);
         }
 
-        private void RotateRightItem_Click(object sender, RoutedEventArgs e)
+        private void RotateRight45Item_Click(object sender, RoutedEventArgs e)
         {
-            EnableRotateRight();
+            SetMenuAction(RotateButton, RotateRight45Item, RotateRight45);
         }
-        private void EnableRotateLeft()
+        private void RotateLeft90Item_Click(object sender, RoutedEventArgs e)
         {
-            ActionName.Text = RotateLeftItem.Text;
-        }
-        private void EnableRotateRight()
-        {
-            ActionName.Text = RotateRightItem.Text;
+            SetMenuAction(RotateButton, RotateLeft90Item, RotateLeft90);
         }
 
+        private void RotateRight90Item_Click(object sender, RoutedEventArgs e)
+        {
+            SetMenuAction(RotateButton, RotateRight90Item, RotateRight90);
+        }
         #endregion
 
         #region Gravity  ======================================================

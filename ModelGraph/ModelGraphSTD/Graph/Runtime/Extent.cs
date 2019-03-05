@@ -100,15 +100,6 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region RotateFlip  ===================================================
-        public void RotateFlip((float X, float Y) focus, FlipState flip)
-        {
-            Point1 = XYTuple.RotateFlip(Point1, focus, flip);
-            Point2 = XYTuple.RotateFlip(Point2, focus, flip);
-        }
-        #endregion
-
-
         #region Shape  ========================================================
         public bool IsTall { get { return DY > DX; } }
         public bool IsWide { get { return DX > DY; } }

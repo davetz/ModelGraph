@@ -166,8 +166,10 @@
                 <Button x:Name="RotateButton" x:Uid="_412" Content="r" Style="{StaticResource AlphaButtonStyle}">
                     <Button.Flyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem x:Name="RotateLeftItem" x:Uid="_434"   Click="RotateLeftItem_Click"/>
-                            <MenuFlyoutItem x:Name="RotateRightItem" x:Uid="_435"  Click="RotateRightItem_Click"/>
+                            <MenuFlyoutItem x:Name="RotateLeft45Item" x:Uid="_434"   Click="RotateLeft45Item_Click"/>
+                            <MenuFlyoutItem x:Name="RotateLeft90Item" x:Uid="_436"   Click="RotateLeft90Item_Click"/>
+                            <MenuFlyoutItem x:Name="RotateRight45Item" x:Uid="_435"  Click="RotateRight45Item_Click"/>
+                            <MenuFlyoutItem x:Name="RotateRight90Item" x:Uid="_437"  Click="RotateRight90Item_Click"/>
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>

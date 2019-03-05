@@ -159,7 +159,7 @@ namespace ModelGraph.Controls
         }
         private void KeyboardAccelerator_R_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (_prevKey == 'R') EnableRotateRight();
+            if (_prevKey == 'R') SetMenuAction(RotateButton, RotateRight90Item, RotateRight90);
             _prevKey = 'R';
         }
         private void KeyboardAccelerator_G_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
@@ -170,7 +170,7 @@ namespace ModelGraph.Controls
         }
         private void KeyboardAccelerator_L_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (_prevKey == 'R') EnableRotateLeft();
+            if (_prevKey == 'R') SetMenuAction(RotateButton, RotateLeft90Item, RotateLeft90);
             _prevKey = 'L';
         }
         private void KeyboardAccelerator_U_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)

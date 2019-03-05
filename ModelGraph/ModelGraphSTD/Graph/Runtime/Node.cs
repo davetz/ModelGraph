@@ -70,7 +70,7 @@ namespace ModelGraphSTD
         #endregion
 
         #region Center, Extent, Radius  =======================================
-        public (float x, float y) Center => (X, Y);
+        public (float x, float y) Center { get { return (X, Y); } set { X = value.x; Y = value.y; } }
         public (float X1, float Y1, float X2, float Y2) Extent => (X - DX, Y - DY, X + DX, Y + DY);
         public (float X1, float Y1, float X2, float Y2, float DX, float DY, Node node) FullExtent(int ds)
         {
@@ -128,7 +128,7 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region Align, Flip  =================================================
+        #region Flip, Align  ==================================================
         internal void AlignTop(float y) { Y = y + DY; }
 
         internal void AlignLeft(float x) { X = x + DX; }
@@ -146,8 +146,7 @@ namespace ModelGraphSTD
         internal void FlipHorz(float x) { X = x + (x - X); }
         #endregion
 
-        #region Move, Resize, Flip, Rotate  ===================================
-
+        #region Move, Resize  =================================================
         internal void Resize((float X, float Y) delta)
         {
             var dx = DX + delta.X;
@@ -155,51 +154,10 @@ namespace ModelGraphSTD
             DX = (byte)((dx < _min) ? _min : ((dx > _max) ? _max : dx));
             DY = (byte)((dy < _min) ? _min : ((dy > _max) ? _max : dx));
         }
-
-        internal void Rotate((float X, float Y) p, SymbolX sym)
+        internal void Move((float X, float Y) delta)
         {
-            var x = X;
-            var y = Y;
-            var dx = DX;
-            var dy = DY;
-            X = (p.X + (y - p.Y));
-            Y = (p.Y - (x - p.X));
-            DX = dy;
-            DY = dx;
-
-            switch (Aspect)
-            {
-                case Aspect.Point:
-                case Aspect.Central: break;
-                case Aspect.Vertical: Aspect = Aspect.Horizontal; break;
-                case Aspect.Horizontal: Aspect = Aspect.Vertical; break;
-            }
-        }
-
-
-        internal void SetOrientation(Aspect val, SymbolX sym)
-        {
-            if (sym == null)
-            {
-                switch (Aspect)
-                {
-                    case Aspect.Point:
-                    case Aspect.Central: break;
-                    case Aspect.Vertical: Aspect = Aspect.Horizontal; break;
-                    case Aspect.Horizontal: Aspect = Aspect.Vertical; break;
-                }
-                FlipState = FlipState.None;
-            }
-            else
-            {
-                switch (Aspect)
-                {
-                    case Aspect.Point:
-                    case Aspect.Central: break;
-                    case Aspect.Vertical: Aspect = Aspect.Horizontal; break;
-                    case Aspect.Horizontal: Aspect = Aspect.Vertical; break;
-                }
-            }
+            X = X + delta.X;
+            Y = Y + delta.Y;
         }
         #endregion
 
@@ -277,33 +235,6 @@ namespace ModelGraphSTD
 
         internal bool HasOpenPaths => (OpenPathIndex >= 0);
         internal int OpenPathCount => (Graph == null) ? 0 : Graph.OpenPathCount(OpenPathIndex);
-
-        internal void Move((float X, float Y) delta)
-        {
-            X = X + delta.X;
-            Y = Y + delta.Y;
-        }
-        public void RotateFlip((float X, float Y) focus, FlipState flip)
-        {
-            FlipState = flip;
-
-            var p = XYTuple.RotateFlip((X, Y), focus, flip);
-            X = p.X;
-            Y = p.Y;
-
-            switch (flip)
-            {
-                case ModelGraphSTD.FlipState.RightRotate:
-                case ModelGraphSTD.FlipState.LeftHorzFlip:
-                case ModelGraphSTD.FlipState.RightHorzFlip:
-                case ModelGraphSTD.FlipState.LeftRotate:
-
-                    var t1 = DX;
-                    DX = DY;
-                    DY = t1; 
-                    break;
-            }
-        }
         public override string ToString() => GetChef().GetIdentity(Item, IdentityStyle.Double);
         #endregion
     }

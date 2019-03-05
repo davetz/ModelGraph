@@ -306,10 +306,27 @@ namespace ModelGraph.Controls
         private async void Move((float X, float Y) delta)
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.Move(delta));
+            PostRefresh();
         }
-        private async void Rotate()
+        private async void RotateLeft45()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.Rotate());
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.RotateLeft45());
+            PostRefresh();
+        }
+        private async void RotateRight45()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.RotateRight45());
+            PostRefresh();
+        }
+        private async void RotateLeft90()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.RotateLeft90());
+            PostRefresh();
+        }
+        private async void RotateRight90()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.RotateRight90());
+            PostRefresh();
         }
         private async void HitTest((float X, float Y) point)
         {
