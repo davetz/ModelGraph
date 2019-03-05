@@ -2146,25 +2146,22 @@ NEC – NWC – SEC - SWC</value>
   <data name="DFFN" xml:space="preserve">
     <value>Dash Style</value>
   </data>
-  <data name="_CompareNav.Content" xml:space="preserve">
+  <data name="_103.Content" xml:space="preserve">
     <value>Compare</value>
   </data>
-  <data name="_HomeNav.Content" xml:space="preserve">
+  <data name="_102.Content" xml:space="preserve">
     <value>Home</value>
   </data>
-  <data name="_ModelPage" xml:space="preserve">
-    <value>Model Page</value>
-  </data>
-  <data name="_CreateNewModel.Content" xml:space="preserve">
+  <data name="_100.Content" xml:space="preserve">
     <value>Create New Model</value>
   </data>
-  <data name="_CreateNewModel.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="_100.ToolTipService.ToolTip" xml:space="preserve">
     <value>Create a new model</value>
   </data>
-  <data name="_OpenModelFile.Content" xml:space="preserve">
+  <data name="_101.Content" xml:space="preserve">
     <value>Open Model Data File</value>
   </data>
-  <data name="_OpenModelFile.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="_101.ToolTipService.ToolTip" xml:space="preserve">
     <value>Open a model data file</value>
   </data>
   <data name="_000" xml:space="preserve">

@@ -367,7 +367,7 @@ namespace ModelGraph.Controls
         {
             HideTootlip();
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { _graph.AdjustGraph(_selector); }); 
-            _model.PostRefresh();
+            RootModel.PostRefresh();
             UpdateUndoRedoControls();
             _selector.EnableSnapshot();
         }

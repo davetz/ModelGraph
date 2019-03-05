@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Windows.Foundation;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using ModelGraph.Controls;
 using ModelGraph.Helpers;
 using ModelGraph.Services;
 using ModelGraphSTD;
@@ -11,6 +10,7 @@ using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.ViewManagement;
 
 namespace ModelGraph.Views
 {
@@ -18,6 +18,7 @@ namespace ModelGraph.Views
     public sealed partial class ShellPage : Page, INotifyPropertyChanged
     {
         private NavigationViewItem _selected;
+        private Size _desiredSize = new Size { Height = 600, Width = 600 };
 
         public NavigationViewItem Selected
         {
@@ -39,8 +40,9 @@ namespace ModelGraph.Views
             NavigationService.Navigated += Frame_Navigated;
             ModelPageService.InsertModelPage = InsertModelPage;
             ModelPageService.RemoveModelPage = RemoveModelPage;
-            KeyboardAccelerators.Add(ActivationService.AltLeftKeyboardAccelerator);
-            KeyboardAccelerators.Add(ActivationService.BackKeyboardAccelerator);
+            ApplicationView.GetForCurrentView().TryResizeView(_desiredSize);
+            //KeyboardAccelerators.Add(ActivationService.AltLeftKeyboardAccelerator);
+            //KeyboardAccelerators.Add(ActivationService.BackKeyboardAccelerator);
         }
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
@@ -157,6 +159,7 @@ namespace ModelGraph.Views
             if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 6))
             {
                 navigationView.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
+                navigationView.IsPaneOpen = false;
             }
         }
 

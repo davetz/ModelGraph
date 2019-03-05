@@ -123,7 +123,6 @@ namespace ModelGraph.Controls
             UpdateActionPinned(!_isActionPinned);
         }
 
-
         #region KeyboardEvents  ===============================================
 
         private void RootButton_KeyDown(object sender, KeyRoutedEventArgs e)

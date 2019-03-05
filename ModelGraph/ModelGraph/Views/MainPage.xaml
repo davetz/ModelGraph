@@ -16,14 +16,13 @@
 
     </Page.Resources>
     <Grid
-        x:Name="ContentArea"
-        Margin="{StaticResource MediumLeftRightMargin}">
+        x:Name="ContentArea">
         <Grid
             Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
             <StackPanel>
                 <StackPanel Margin="5">
-                    <Button Name ="New" Style="{StaticResource ButtonStyle}" x:Uid="_CreateNewModel" Click="NewButton_Click"></Button>
-                    <Button Name ="Open" Style="{StaticResource ButtonStyle}" x:Uid="_OpenModelFile" Click="OpenButton_Click"></Button>
+                    <Button Name ="New" Style="{StaticResource ButtonStyle}" x:Uid="_100" Click="NewButton_Click"></Button>
+                    <Button Name ="Open" Style="{StaticResource ButtonStyle}" x:Uid="_101" Click="OpenButton_Click"></Button>
                 </StackPanel>
             </StackPanel>
 

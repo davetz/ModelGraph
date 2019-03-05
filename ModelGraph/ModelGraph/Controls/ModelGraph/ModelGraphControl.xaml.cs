@@ -6,6 +6,8 @@ using ModelGraphSTD;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using ModelGraph.Services;
 using System.Collections.Generic;
+using Windows.Foundation;
+using Windows.UI.ViewManagement;
 
 namespace ModelGraph.Controls
 {
@@ -13,20 +15,19 @@ namespace ModelGraph.Controls
     {
         private Chef _chef;
         private Graph _graph;
-        private RootModel _model;
-        public RootModel RootModel => _model;
+        private readonly Size _desiredSize = new Size { Height = 800, Width = 800 };
+        public RootModel RootModel { get; }
 
         public ModelGraphControl(RootModel model)
         {
             _chef = model.Chef;
-            _model = model;
+            RootModel = model;
             _graph = model.Graph;
 
             _selector = new Selector(_graph);
 
             InitializeComponent();
             InitializeControlPanel();
-
             Loaded += ModelGraphControl_Loaded;
         }
 

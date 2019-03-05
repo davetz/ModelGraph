@@ -6,9 +6,9 @@ namespace ModelGraphSTD
 {
     public static class XYTuple
     {
-        static float Radians45Degree = (float)(Math.PI / 4);
-        static float Radians90Degree = (float)(Math.PI / 2);
         static readonly int _ds = GraphDefault.HitMargin;
+        static readonly float Radians45Degree = (float)(Math.PI / 4);
+        static readonly float Radians90Degree = (float)(Math.PI / 2);
         static internal Matrix3x2 RotateLeft45Matrix((float x, float y) f)
         {
             var cp = new Vector2(f.x, f.y);

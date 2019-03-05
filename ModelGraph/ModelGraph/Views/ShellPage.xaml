@@ -15,17 +15,19 @@
         ItemInvoked="OnItemInvoked"
         IsSettingsVisible="True"
         AlwaysShowHeader="False"
-
+        CompactModeThresholdWidth="300"
+        ExpandedModeThresholdWidth="800"
+        
         Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
         <NavigationView.MenuItems>
-            <NavigationViewItem x:Name="Home" x:Uid="_HomeNav" helpers:NavHelper.NavigateTo="views:MainPage">
+            <NavigationViewItem x:Name="Home" x:Uid="_102" helpers:NavHelper.NavigateTo="views:MainPage">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xE80F;"/>
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
             <NavigationViewItemSeparator/>
             <NavigationViewItemSeparator x:Name="Seperator"/>
-            <NavigationViewItem x:Name="Compare" x:Uid="_CompareNav" helpers:NavHelper.NavigateTo="views:ComparePage">
+            <NavigationViewItem x:Name="Compare" x:Uid="_103" helpers:NavHelper.NavigateTo="views:ComparePage">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xE773;"/>
                 </NavigationViewItem.Icon>
@@ -40,7 +42,7 @@
                     Text="{Binding}" />
             </DataTemplate>
         </NavigationView.HeaderTemplate>
-        <Grid>
+        <Grid Margin="8,0,8,0">
             <Frame x:Name="shellFrame" />
         </Grid>
     </NavigationView>
