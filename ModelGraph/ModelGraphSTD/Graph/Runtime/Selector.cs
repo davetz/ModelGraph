@@ -416,51 +416,50 @@ namespace ModelGraphSTD
         #endregion
 
         #region Gravity  ======================================================
-        public void ApplyGravity()
+        public void GravityInside()
         {
-            if (IsNodeHit && !IsRegionHit)
-            {
-                var tm = Graph.GraphX.TerminalLength;
+           if (IsNodeHit && IsRegionHit)
+           {
+                var d = Graph.GraphX.TerminalLength + 1;
+                var ds = IsVertical() ? (0, d) : (d, 0);
 
-                Nodes.Add(HitNode);
-                HitLocation |= HitLocation.Region;
-                if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> edges))
-                {
-                    foreach (var edge in edges)
-                    {
-                        var other = (edge.Node1 == HitNode) ? edge.Node2 : edge.Node1;
-                        if (Nodes.Contains(other)) continue;
-                        if (Graph.Node_Edges.TryGetValue(other, out List<Edge> otherEdges) && otherEdges.Count > 2) continue;
 
-                        var ds = (HitNode.IsSymbolX && other.IsSymbolX) ? 2 * tm : tm;
-                        Nodes.Add(other);
-                        var (x1, y1) = HitNode.Center;
-                        var (x2, y2) = other.Center;
-                        var dx = x2 - x1;
-                        var dy = y2 - y1;
-                        if (dx * dx > dy * dy)
-                        {
-                            other.Y = HitNode.Y;
-                            other.X = (dx > 0) ? HitNode.X + ds + HitNode.DX : HitNode.X - ds - HitNode.DX;
-                        }
-                        else
-                        {
-                            other.X = HitNode.X;
-                            other.Y = (dy > 0) ? HitNode.Y + ds + HitNode.DX: HitNode.Y - ds - HitNode.DY;
-                        } 
-                    }
-                }                
-            }
 
-            if (IsNodeHit && IsRegionHit)
-            {
-                if (Graph.Node_Edges.TryGetValue(HitNode, out List<Edge> edges))
-                {
-                   
-                }
-            }
+                UpdateExtents();
+           }
+        }
+        public void GravityDisperse()
+        {
             UpdateExtents();
         }
+
+        #region IsForward  ====================================================
+        bool IsForward(Node n1, Node n2, (int x, int y) d)
+        {
+            if (d.y == 0)
+            {
+                var dx = n2.X - n1.X;
+                return dx > 0;
+            }
+            else
+            {
+                var dy = n2.Y - n1.Y;
+                return dy > 0;
+            }
+        }
+        #endregion
+
+        #region IsVertical  ===================================================
+        private bool IsVertical()
+        {
+            var e = new Extent();
+            foreach (var node in Nodes)
+            {
+                e.Expand(node.Center);
+            }
+            return e.IsVertical;
+        }
+        #endregion
         #endregion
 
         #region Rotate  =======================================================

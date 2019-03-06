@@ -332,10 +332,6 @@ namespace ModelGraph.Controls
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.HitTest(point));
         }
-        private async void ApplyGravity()
-        {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.ApplyGravity());
-        }
         private async void AlignVert()
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.AlignVert());
@@ -354,6 +350,16 @@ namespace ModelGraph.Controls
         private async void FlipHorz()
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>  _selector.FlipHorz());
+            PostRefresh();
+        }
+        private async void GravityInside()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.GravityInside());
+            PostRefresh();
+        }
+        private async void GravityDisperse()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.GravityDisperse());
             PostRefresh();
         }
         private async void UpdateRegionExtents()

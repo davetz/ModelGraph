@@ -181,20 +181,22 @@ namespace ModelGraphSTD
             if (qx.IsTail)
             {
                 var q1 = q2.GetHeadQuery();
-                switch (qx.QueryKind)
+                if (q2.ItemCount == 1 && q1.Item != q2.Items[0])
                 {
-                    case QueryType.Path:
-                        g.PathQuerys.Add((q1, q2));
-                        break;
-                    case QueryType.Group:
-                        g.GroupQuerys.Add((q1, q2));
-                        break;
-                    case QueryType.Egress:
-                        g.SegueQuerys.Add((q1, q2));
-                        break;
+                    switch (qx.QueryKind)
+                    {
+                        case QueryType.Path:
+                            g.PathQuerys.Add((q1, q2));
+                            break;
+                        case QueryType.Group:
+                            g.GroupQuerys.Add((q1, q2));
+                            break;
+                        case QueryType.Egress:
+                            g.SegueQuerys.Add((q1, q2));
+                            break;
+                    }
                 }
             }
-
             return q2;
         }
         private void AddOpenQueryPair(Graph g, Query  q2)

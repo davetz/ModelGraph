@@ -177,6 +177,8 @@
                 <Button x:Name="GravityButton" x:Uid="_413" Content="g" Style="{StaticResource AlphaButtonStyle}">
                     <Button.Flyout>
                         <MenuFlyout>
+                            <MenuFlyoutItem x:Name="GravityInsideItem" x:Uid="_450"   Click="GravityInsideItem_Click"/>
+                            <MenuFlyoutItem x:Name="GravityDisperseItem" x:Uid="_451"   Click="GravityDisperseItem_Click"/>
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>

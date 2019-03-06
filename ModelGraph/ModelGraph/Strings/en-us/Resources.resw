@@ -2262,17 +2262,17 @@ NEC – NWC – SEC - SWC</value>
   <data name="_419.ToolTipService.ToolTip" xml:space="preserve">
     <value>Pase</value>
   </data>
-  <data name="_420.Content" xml:space="preserve">
-    <value />
+  <data name="_450.Text" xml:space="preserve">
+    <value>Gravity Inside</value>
   </data>
-  <data name="_420.ToolTipService.ToolTip" xml:space="preserve">
-    <value />
+  <data name="_450.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimize space between connected nodes inside the select region</value>
   </data>
-  <data name="_421.Content" xml:space="preserve">
-    <value />
+  <data name="_451.Text" xml:space="preserve">
+    <value>Gravity Disperse</value>
   </data>
-  <data name="_421.ToolTipService.ToolTip" xml:space="preserve">
-    <value />
+  <data name="_451.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Equally space nodes inside the selected reegion</value>
   </data>
   <data name="_422.Content" xml:space="preserve">
     <value />

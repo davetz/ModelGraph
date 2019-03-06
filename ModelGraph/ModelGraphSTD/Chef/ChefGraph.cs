@@ -432,7 +432,7 @@ namespace ModelGraphSTD
                         var qt = qx;
                         while (QueryX_QueryX.TryGetChild(qt, out QueryX qn)) { qt = qn; }
 
-                        GetHeadTail(qx, out Store h, out Store tail);
+                        GetHeadTail(qt, out Store h, out Store tail);
                         gx.NodeOwners.Add(tail);
                     }
 

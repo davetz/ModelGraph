@@ -28,6 +28,14 @@ namespace ModelGraph.Controls
         bool _isActionPinned;
         private Action _menuAction;
 
+        private void SetMenuAction(MenuFlyoutItem itm, Action act)
+        {
+            ActionHelp.Visibility = Visibility.Visible;
+            ActionName.Text = itm.Text;
+            ToolTipService.SetToolTip(ActionName, ToolTipService.GetToolTip(itm));
+
+            _menuAction = act;
+        }
         private void SetMenuAction(Button btn, MenuFlyoutItem itm, Action act)
         {
             ActionHelp.Visibility = Visibility.Visible;
@@ -129,7 +137,14 @@ namespace ModelGraph.Controls
         #endregion
 
         #region Gravity  ======================================================
-
+        private void GravityInsideItem_Click(object sender, RoutedEventArgs e)
+        {
+            SetMenuAction(GravityInsideItem, GravityInside);
+        }
+        private void GravityDisperseItem_Click(object sender, RoutedEventArgs e)
+        {
+            SetMenuAction(GravityDisperseItem, GravityDisperse);
+        }
         #endregion
 
         #region UndoRedo  =====================================================

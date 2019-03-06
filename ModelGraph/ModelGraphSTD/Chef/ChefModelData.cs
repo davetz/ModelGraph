@@ -5961,7 +5961,8 @@ namespace ModelGraphSTD
                         anyChange |= AddProperyModel(prev, m, _queryXRelationProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXIsReversedProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXIsBreakPointProperty);
-                        anyChange |= AddProperyModel(prev, m, _queryXRootWhereProperty);
+                        anyChange |= AddProperyModel(prev, m, _queryXExclusiveKeyProperty);
+                                                anyChange |= AddProperyModel(prev, m, _queryXRootWhereProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXLineColorProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXLineStyleProperty);
                         anyChange |= AddProperyModel(prev, m, _queryXDashStyleProperty);
