@@ -2266,7 +2266,7 @@ NEC – NWC – SEC - SWC</value>
     <value>Gravity Inside</value>
   </data>
   <data name="_450.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Minimize space between connected nodes inside the select region</value>
+    <value>Minimize space between nodes inside the select region</value>
   </data>
   <data name="_451.Text" xml:space="preserve">
     <value>Gravity Disperse</value>

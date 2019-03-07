@@ -420,13 +420,65 @@ namespace ModelGraphSTD
         {
            if (IsNodeHit && IsRegionHit)
            {
-                var d = Graph.GraphX.TerminalLength + 1;
-                var ds = IsVertical() ? (0, d) : (d, 0);
+                TakeSnapshot();
 
+                var tmLen = Graph.GraphX.TerminalLength + 4;
+                var nodes = new List<Node>(Nodes);
+                if (IsVertical())
+                {
+                    nodes.Sort((a, b) => a.Y < b.Y ? -1 : a.Y > b.Y ? 1 : 0);
 
+                    var I = nodes.IndexOf(HitNode);
+                    for (int i = I, j = I - 1; i > 0; i--, j--)
+                    {
+                        var n1 = nodes[i];
+                        var n2 = nodes[j];
+                        var d = n1.DY + n2.DY;
+                        if (n1.IsGraphSymbol) d += tmLen;
+                        if (n2.IsGraphSymbol) d += tmLen;
+                        n2.Y = n1.Y - d;
+                        n2.X = n1.X;
+                    }
+                    for (int i = I, j = I + 1; j < nodes.Count; i++, j++)
+                    {
+                        var n1 = nodes[i];
+                        var n2 = nodes[j];
+                        var d = n1.DY + n2.DY;
+                        if (n1.IsGraphSymbol) d += tmLen;
+                        if (n2.IsGraphSymbol) d += tmLen;
+                        n2.Y = n1.Y + d;
+                        n2.X = n1.X;
+                    }
+                }
+                else
+                {
+                    nodes.Sort((a, b) => a.X < b.X ? -1 : a.X > b.X ? 1 : 0);
+
+                    var I = nodes.IndexOf(HitNode);
+                    for (int i = I, j = I - 1; i > 0; i--, j--)
+                    {
+                        var n1 = nodes[i];
+                        var n2 = nodes[j];
+                        var d = n1.DX + n2.DX;
+                        if (n1.IsGraphSymbol) d += tmLen;
+                        if (n2.IsGraphSymbol) d += tmLen;
+                        n2.X = n1.X - d;
+                        n2.Y = n1.Y;
+                    }
+                    for (int i = I, j = I + 1; j < nodes.Count; i++, j++)
+                    {
+                        var n1 = nodes[i];
+                        var n2 = nodes[j];
+                        var d = n1.DX + n2.DX;
+                        if (n1.IsGraphSymbol) d += tmLen;
+                        if (n2.IsGraphSymbol) d += tmLen;
+                        n2.X = n1.X + d;
+                        n2.Y = n1.Y;
+                    }
+                }
 
                 UpdateExtents();
-           }
+            }
         }
         public void GravityDisperse()
         {
@@ -457,7 +509,7 @@ namespace ModelGraphSTD
             {
                 e.Expand(node.Center);
             }
-            return e.IsVertical;
+            return e.DY > e.DX;
         }
         #endregion
         #endregion
