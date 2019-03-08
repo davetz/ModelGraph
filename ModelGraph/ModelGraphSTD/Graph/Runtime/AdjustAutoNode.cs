@@ -11,13 +11,13 @@ namespace ModelGraphSTD
             var N = (E is null) ? 0 : E.Length;
             if (N == 0) return;
 
+            var (x, y) = node.Center;
+
             var gx = node.Graph.GraphX;
             var tmSpc = gx.TerminalSpacing / 2;
             var tmLen = gx.TerminalLength;
             var tmsku = gx.TerminalSkew;
             var barSize = ((node.BarWidth == BarWidth.Thin) ? gx.ThinBusSize : (node.BarWidth == BarWidth.Wide) ? gx.WideBusSize : gx.ExtraBusSize) / 2;
-
-            var (x, y) = node.Center;
 
             var EIN = new List<int>(N); //sorted edge index list north side
             var EIS = new List<int>(N); //sorted edge index list south side
@@ -70,40 +70,6 @@ namespace ModelGraphSTD
                     E[EIW[i]].edge.SetFace(node, (x - d1, y + ds), (x - d2, y + ds));
                 }
                 #endregion
-
-                #region Compare  ==============================================
-                int CompE(int a, int b)
-                {
-                    if (F[a].slope < F[b].slope) return -1;
-                    if (F[a].slope > F[b].slope) return 1;
-                    return 0;
-                }
-                int CompS(int a, int b)
-                {
-                    if (F[a].index < F[b].index) return -1;
-                    if (F[a].index > F[b].index) return 1;
-                    if (F[a].index < 4)
-                        if (F[a].slope < F[b].slope) return -1;
-                    if (F[a].slope > F[b].slope) return 1;
-                    return 0;
-                }
-                int CompN(int a, int b)
-                {
-                    if (F[a].index > F[b].index) return -1;
-                    if (F[a].index < F[b].index) return 1;
-                    if (F[a].slope < F[b].slope) return -1;
-                    if (F[a].slope > F[b].slope) return 1;
-                    return 0;
-                }
-                int CompW(int a, int b)
-                {
-                    if (F[a].index > F[b].index) return -1;
-                    if (F[a].index < F[b].index) return 1;
-                    if (F[a].slope > F[b].slope) return -1;
-                    if (F[a].slope < F[b].slope) return 1;
-                    return 0;
-                }
-                #endregion
                 #endregion
             }
             else if (node.Aspect == Aspect.Horizontal)
@@ -143,58 +109,6 @@ namespace ModelGraphSTD
                 }
                 #endregion
 
-                #region Compare  ==============================================
-                int CompN(int a, int b)
-                {
-                    if (F[a].index < F[b].index) return -1;
-                    if (F[a].index > F[b].index) return 1;
-                    if (F[a].index < 12)
-                    {
-                        if (F[a].slope < F[b].slope) return -1;
-                        if (F[a].slope > F[b].slope) return 1;
-                        return 0;
-                    }
-                    else
-                    {
-                        if (F[a].slope > F[b].slope) return -1;
-                        if (F[a].slope < F[b].slope) return 1;
-                        return 0;
-                    }
-                }
-                int CompE(int a, int b)
-                {
-                    if (F[a].index > F[b].index) return -1;
-                    if (F[a].index < F[b].index) return 1;
-                    if (F[a].slope < F[b].slope) return -1;
-                    if (F[a].slope > F[b].slope) return 1;
-                    return 0;
-                }
-                int CompW(int a, int b)
-                {
-                    if (F[a].index > F[b].index) return -1;
-                    if (F[a].index < F[b].index) return 1;
-                    if (F[a].slope > F[b].slope) return -1;
-                    if (F[a].slope < F[b].slope) return 1;
-                    return 0;
-                }
-                int CompS(int a, int b)
-                {
-                    if (F[a].index > F[b].index) return -1;
-                    if (F[a].index < F[b].index) return 1;
-                    if (F[a].index < 4)
-                    {
-                        if (F[a].slope > F[b].slope) return -1;
-                        if (F[a].slope < F[b].slope) return 1;
-                        return 0;
-                    }
-                    else
-                    {
-                        if (F[a].slope < F[b].slope) return -1;
-                        if (F[a].slope > F[b].slope) return 1;
-                        return 0;
-                    }
-                }
-                #endregion
                 #endregion
             }
             else if (node.Aspect == Aspect.Central)
@@ -249,39 +163,6 @@ namespace ModelGraphSTD
                     E[EIS[i]].edge.SetFace(node, (x + ds, y + d1), (x + ds, y + d2));
                 }
                 #endregion
-
-                #region Compare  ==============================================
-                int CompE(int a, int b)
-                {
-                    if (F[a].slope < F[b].slope) return -1;
-                    if (F[a].slope > F[b].slope) return 1;
-                    return 0;
-                }
-                int CompS(int a, int b)
-                {
-                    if (F[a].index < F[b].index) return -1;
-                    if (F[a].index > F[b].index) return 1;
-                    if (F[a].slope < F[b].slope) return -1;
-                    if (F[a].slope > F[b].slope) return 1;
-                    return 0;
-                }
-                int CompW(int a, int b)
-                {
-                    if (F[a].index < F[b].index) return -1;
-                    if (F[a].index > F[b].index) return 1;
-                    if (F[a].slope < F[b].slope) return -1;
-                    if (F[a].slope > F[b].slope) return 1;
-                    return 0;
-                }
-                int CompN(int a, int b)
-                {
-                    if (F[a].index > F[b].index) return -1;
-                    if (F[a].index < F[b].index) return 1;
-                    if (F[a].slope < F[b].slope) return -1;
-                    if (F[a].slope > F[b].slope) return 1;
-                    return 0;
-                }
-                #endregion
                 #endregion
             }
             else
@@ -293,6 +174,93 @@ namespace ModelGraphSTD
                 }
                 #endregion
             }
+
+            #region Compare  ==============================================
+            int CompE(int a, int b)
+            {
+                var tup1 = E[a].tuple;
+                if (tup1 != 0)
+                {
+                    var tup2 = E[b].tuple;
+                    if (tup2 == tup1)
+                    {
+                        var ord1 = E[a].order;
+                        var ord2 = E[b].order;
+                        if (E[a].revr ^ E[b].revr)
+                            return (ord1 > ord2) ? -1 : (ord1 < ord2) ? 1 : 0;
+                        else
+                            return (ord1 < ord2) ? -1 : (ord1 > ord2) ? 1 : 0;
+                    }
+                }
+                if (F[a].slope < F[b].slope) return -1;
+                if (F[a].slope > F[b].slope) return 1;
+                return 0;
+            }
+            int CompW(int a, int b)
+            {
+                var tup1 = E[a].tuple;
+                if (tup1 != 0)
+                {
+                    var tup2 = E[b].tuple;
+                    if (tup2 == tup1)
+                    {
+                        var ord1 = E[a].order;
+                        var ord2 = E[b].order;
+                        if (E[a].revr ^ E[b].revr)
+                            return (ord1 > ord2) ? -1 : (ord1 < ord2) ? 1 : 0;
+                        else
+                            return (ord1 < ord2) ? -1 : (ord1 > ord2) ? 1 : 0;
+                    }
+                }
+                if (F[a].slope > F[b].slope) return -1;
+                if (F[a].slope < F[b].slope) return 1;
+                return 0;
+            }
+            int CompS(int a, int b)
+            {
+                var tup1 = E[a].tuple;
+                if (tup1 != 0)
+                {
+                    var tup2 = E[b].tuple;
+                    if (tup2 == tup1)
+                    {
+                        var ord1 = E[a].order;
+                        var ord2 = E[b].order;
+                        if (E[a].revr ^ E[b].revr)
+                            return (ord1 < ord2) ? -1 : (ord1 > ord2) ? 1 : 0;
+                        else
+                            return (ord1 > ord2) ? -1 : (ord1 < ord2) ? 1 : 0;
+                    }
+                }
+                if (F[a].index > F[b].index) return -1;
+                if (F[a].index < F[b].index) return 1;
+                if (F[a].slope > F[b].slope) return -1;
+                if (F[a].slope < F[b].slope) return 1;
+                return 0;
+            }
+            int CompN(int a, int b)
+            {
+                var tup1 = E[a].tuple;
+                if (tup1 != 0)
+                {
+                    var tup2 = E[b].tuple;
+                    if (tup2 == tup1)
+                    {
+                        var ord1 = E[a].order;
+                        var ord2 = E[b].order;
+                        if (E[a].revr ^ E[b].revr)
+                            return (ord1 < ord2) ? -1 : (ord1 > ord2) ? 1 : 0;
+                        else
+                            return (ord1 > ord2) ? -1 : (ord1 < ord2) ? 1 : 0;
+                    }
+                }
+                if (F[a].index < F[b].index) return -1;
+                if (F[a].index > F[b].index) return 1;
+                if (F[a].slope < F[b].slope) return -1;
+                if (F[a].slope > F[b].slope) return 1;
+                return 0;
+            }
+            #endregion
 
             #region Legacy  ===================================================
             //int iEast, nEast, iWest, nWest, iSouth, nSouth, iNorth, nNorth;
