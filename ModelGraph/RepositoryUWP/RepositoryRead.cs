@@ -727,8 +727,8 @@ namespace RepositoryUWP
 
                 if (qx.QueryKind == QueryType.Path && qx.IsHead) qx.PathParm = new PathParm();
 
-                if ((b & B4) != 0) qx.PathParm.Connect1 = (Connect)r.ReadByte();
-                if ((b & B5) != 0) qx.PathParm.Connect2 = (Connect)r.ReadByte();
+                if ((b & B4) != 0) r.ReadByte();
+                if ((b & B5) != 0) r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
@@ -758,8 +758,8 @@ namespace RepositoryUWP
 
                 if (qx.QueryKind == QueryType.Path && qx.IsHead) qx.PathParm = new PathParm();
 
-                if ((b & B5) != 0) qx.PathParm.Connect1 = (Connect)r.ReadByte();
-                if ((b & B6) != 0) qx.PathParm.Connect2 = (Connect)r.ReadByte();
+                if ((b & B5) != 0) r.ReadByte();
+                if ((b & B6) != 0) r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
@@ -789,8 +789,8 @@ namespace RepositoryUWP
 
                 if (qx.QueryKind == QueryType.Path && qx.IsHead) qx.PathParm = new PathParm();
 
-                if ((b & B5) != 0) qx.PathParm.Connect1 = (Connect)r.ReadByte();
-                if ((b & B6) != 0) qx.PathParm.Connect2 = (Connect)r.ReadByte();
+                if ((b & B5) != 0) r.ReadByte();
+                if ((b & B6) != 0) r.ReadByte();
                 if ((b & B7) != 0) r.ReadByte();
                 if ((b & B8) != 0) r.ReadByte();
             }
@@ -825,11 +825,11 @@ namespace RepositoryUWP
 
                 if ((b & S5) != 0) qx.PathParm.Facet1 = (Facet)r.ReadByte();
                 if ((b & S6) != 0) r.ReadByte();
-                if ((b & S7) != 0) qx.PathParm.Connect1 = (Connect)r.ReadByte();
+                if ((b & S7) != 0) r.ReadByte();
 
                 if ((b & S8) != 0) qx.PathParm.Facet2 = (Facet)r.ReadByte();
                 if ((b & S9) != 0) r.ReadByte();
-                if ((b & S10) != 0) qx.PathParm.Connect2 = (Connect)r.ReadByte();
+                if ((b & S10) != 0) r.ReadByte();
             }
             var mark = (Mark)r.ReadByte();
             if (mark != Mark.QueryXEnding) throw new Exception($"Expected QueryXEnding marker, instead got {mark}");
@@ -862,11 +862,11 @@ namespace RepositoryUWP
 
                 if ((b & S5) != 0) qx.PathParm.Facet1 = (Facet)r.ReadByte();
                 if ((b & S6) != 0) r.ReadByte();
-                if ((b & S7) != 0) qx.PathParm.Connect1 = (Connect)r.ReadByte();
+                if ((b & S7) != 0) r.ReadByte();
 
                 if ((b & S8) != 0) qx.PathParm.Facet2 = (Facet)r.ReadByte();
                 if ((b & S9) != 0) r.ReadByte();
-                if ((b & S10) != 0) qx.PathParm.Connect2 = (Connect)r.ReadByte();
+                if ((b & S10) != 0) r.ReadByte();
 
                 if ((b & S11) != 0) qx.PathParm.DashStyle = (DashStyle)r.ReadByte();
                 if ((b & S12) != 0) qx.PathParm.LineStyle = (LineStyle)r.ReadByte();
@@ -902,10 +902,10 @@ namespace RepositoryUWP
                 if (qx.QueryKind == QueryType.Path && qx.IsHead) qx.PathParm = new PathParm();
 
                 if ((b & S5) != 0) qx.PathParm.Facet1 = (Facet)r.ReadByte();
-                if ((b & S6) != 0) qx.PathParm.Connect1 = (Connect)r.ReadByte();
+                if ((b & S6) != 0) r.ReadByte();
 
                 if ((b & S7) != 0) qx.PathParm.Facet2 = (Facet)r.ReadByte();
-                if ((b & S8) != 0) qx.PathParm.Connect2 = (Connect)r.ReadByte();
+                if ((b & S8) != 0) r.ReadByte();
 
                 if ((b & S9) != 0) qx.PathParm.DashStyle = (DashStyle)r.ReadByte();
                 if ((b & S10) != 0) qx.PathParm.LineStyle = (LineStyle)r.ReadByte();

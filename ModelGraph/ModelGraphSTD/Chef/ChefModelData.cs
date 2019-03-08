@@ -8601,8 +8601,6 @@ namespace ModelGraphSTD
 
                     AddProperyModel(prev, m, _edgeFacet1Property);
                     AddProperyModel(prev, m, _edgeFacet2Property);
-                    AddProperyModel(prev, m, _edgeConnect1Property);
-                    AddProperyModel(prev, m, _edgeConnect2Property);
 
                     return (true, true);
                 }

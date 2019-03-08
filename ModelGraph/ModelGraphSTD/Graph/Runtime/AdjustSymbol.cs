@@ -315,63 +315,15 @@ namespace ModelGraphSTD
             // populate the edgeSect list for given target point
             (float cost, float slope, int x1, int y1, int x2, int y2, int six) EdgetTarget_CostSlopSectorIndex(int ei, int ti)
             {
-                const float a = 0.4142135623730950f; //tan(22.5)
-                const float b = 1.0f;                //tan(45.0)
-                const float c = 2.4142135623730950f; //tan(67.5)
-
+                var (dx, dy, slope, six) = XYTuple.SlopeIndex(targetContacts[ti].pnt, E[ei].bend);
                 var tix = targetContacts[ti].tix;
-                var (x1, y1) = targetContacts[ti].pnt;
-
-                var (x2, y2) = E[ei].bend;
-                var dx = x2 - x1;
-                var dy = y2 - y1;
-
-                bool isVert = dx == 0;
-                bool isHorz = dy == 0;
-
-                (float, int) slopeSix = (0, 0);
-
-                if (isVert)
-                {
-                    if (isHorz)
-                    {
-                        slopeSix = (0, 0);
-                    }
-                    else if (dy > 0)
-                        slopeSix = (1023, 3);
-                    else
-                        slopeSix = (-1023, 12);
-                }
-                else if (isHorz)
-                {
-                    if (dx > 0)
-                        slopeSix = (0, 0);
-                    else
-                        slopeSix = (0, 7);
-                }
-                else
-                {
-                    var m = dy / dx;
-                    if (dx < 0)
-                    {
-                        if (dy < 0)
-                            slopeSix = (m, (m < a) ? 8 : (m < b) ? 9 : (m < c) ? 10 : 11);
-                        else
-                            slopeSix = (m, (m < -c) ? 4 : (m < -b) ? 5 : (m < -a) ? 6 : 7);
-                    }
-                    else
-                    {
-                        if (dy < 0)
-                            slopeSix = (m, (m < -c) ? 12 : (m < -b) ? 13 : (m < -a) ? 14 : 15);
-                        else
-                            slopeSix = (m, (m < a) ? 0 : (m < b) ? 1 : (m < c) ? 2 : 3);
-                    }
-                }
-                
-                var (slope, six) = slopeSix;
 
                 var pi = penalty[tix][six]; // [from direction sector index] [to target location index]
                 var cost = ((dx * dx) + (dy * dy)) * _penaltyFactor[pi]; //weighted cost
+
+                var (x1, y1) = targetContacts[ti].pnt;
+                var (x2, y2) = E[ei].bend;
+
                 return (cost, slope, (int)x1, (int)y1, (int)x2, (int)y2, six);
             }
             #endregion

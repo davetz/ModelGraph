@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace ModelGraphSTD
 {
     public static class XYTuple
     {
-        static readonly int _ds = GraphDefault.HitMargin;
+        #region Rotation  =====================================================
         static readonly float Radians45Degree = (float)(Math.PI / 4);
         static readonly float Radians90Degree = (float)(Math.PI / 2);
         static internal Matrix3x2 RotateLeft45Matrix((float x, float y) f)
@@ -35,69 +34,74 @@ namespace ModelGraphSTD
             pt = Vector2.Transform(pt, mx);
             return (pt.X, pt.Y);
         }
-        public static (float X, float Y) Move((float x, float y) p, (float dx, float dy) b) => ((p.x + b.dx), (p.y + b.dy));
-        public static (float X, float Y) VerticalFlip((float x, float y) p, float y) => ((y + (y - p.y)), (p.x));
-        public static (float X, float Y) HorizontalFlip((float x, float y) p, float x) => ((x + (x - p.x)), p.y);
+        #endregion
 
-        public static float Diagonal((float dx, float dy) p) => ((p.dx * p.dx) + (p.dy * p.dy));
-        public static float Diagonal((float x, float y) p1, (float x, float y) p2) => Diagonal((p2.x - p1.x, p2.y - p1.y));
-        public static (double ux, double uy) OrthoginalUnitVector(float dx, float dy)
-        {
-            var M = System.Math.Sqrt(dx * dx + dy * dy);
-            return (dy / M, -dx / M);
-        }
-        public static (float x, float y) OrthoginalDisplacedPoint(float dx, float dy, float x0, float y0, float ds)
-        {
-            var (ux, uy) = OrthoginalUnitVector(dx, dy);
-            return ((float)(ds * ux + x0), (float)(ds* uy + y0));
-        }
-        public static (Quad quad, Sect sect) QuadSect((float x, float y) p)
-        {
-            if (p.x < 0)
-            {
-                if (p.y < 0)
-                    return (-p.x < -p.y) ? (Quad.Q3, Sect.S6) : (Quad.Q3, Sect.S5);
-                else
-                    return (-p.x < p.y) ? (Quad.Q2, Sect.S3) : (Quad.Q2, Sect.S4);
-            }
-            else
-            {
-                if (p.y < 0)
-                    return (p.x < -p.y) ? (Quad.Q4, Sect.S7) : (Quad.Q4, Sect.S8);
-                else
-                    return (p.x < p.y) ? (Quad.Q1, Sect.S2) : (Quad.Q1, Sect.S1);
-            }
-        }
-        public static (Quad quad, Sect sect, double slope) QuadSectSlope((float x, float y) p1, (float x, float y) p2)
-        {
-            var x1 = (double)p1.x;
-            var y1 = (double)p1.y;
-            var x2 = (double)p2.x;
-            var y2 = (double)p2.y;
+        #region SlopeIndex  ===================================================
+        public static (float dx, float dy, float slope, int index) SlopeIndex((float x1, float y1) startPoint, (float x2, float y2) endPoint)
+        {/*
+            . 11|12 .     Draw a circle arround the startPoint. Divided the circle into 16 sectors numbered 0 to 15        
+           8    |    15   The endPoint is contained within one of those 16 sectors, (sector lines are ourward pointing rays)
+           -----o------   The sector index tells you the direction from the startPoint to the endPoint 
+           7    |     0   ============================================================================
+            .  4|3   .    dx = (x2 - x1),    dy = (y2 - y1),    slope = (dy / dx)           
+         */
+            const float a = 0.4142135623730950f; //tan(22.5)
+            const float b = 1.0f;                //tan(45.0)
+            const float c = 2.4142135623730950f; //tan(67.5)
+
+            var (x1, y1) = startPoint;
+            var (x2, y2) = endPoint;
 
             var dx = x2 - x1;
             var dy = y2 - y1;
+
             bool isVert = dx == 0;
             bool isHorz = dy == 0;
+
+            (float, int) slope_index = (0, 0);
 
             if (isVert)
             {
                 if (isHorz)
-                    return (Quad.Any, Sect.Any, 0.0);
+                {
+                    slope_index = (0, 0);
+                }
+                else if (dy > 0)
+                    slope_index = (1023, 3);
                 else
-                    return (dy > 0) ? (Quad.Q1, Sect.S2, 1023.0) : (Quad.Q4, Sect.S7, -1024.0);
+                    slope_index = (-1023, 12);
+            }
+            else if (isHorz)
+            {
+                if (dx > 0)
+                    slope_index = (0, 0);
+                else
+                    slope_index = (0, 7);
             }
             else
             {
-                if (isHorz)
-                    return (dx > 0) ? (Quad.Q1, Sect.S1, 0.0) : (Quad.Q2, Sect.S4, 0.0);
+                var m = dy / dx;
+                if (dx < 0)
+                {
+                    if (dy < 0)
+                        slope_index = (m, (m < a) ? 8 : (m < b) ? 9 : (m < c) ? 10 : 11);
+                    else
+                        slope_index = (m, (m < -c) ? 4 : (m < -b) ? 5 : (m < -a) ? 6 : 7);
+                }
                 else
                 {
-                    var (quad, sect) = QuadSect(((int)dx, (int)dy));
-                    return (quad, sect, dy / dx);
+                    if (dy < 0)
+                        slope_index = (m, (m < -c) ? 12 : (m < -b) ? 13 : (m < -a) ? 14 : 15);
+                    else
+                        slope_index = (m, (m < a) ? 0 : (m < b) ? 1 : (m < c) ? 2 : 3);
                 }
             }
+            var (slope, index) = slope_index;
+            return (dx, dy, slope, index);
         }
+        #endregion
+
+        #region ScaledNormal  =================================================
         public static ((float dx, float dy) p1, (float dx2, float dy2) p2) GetScaledNormal(Target targ, float x, float y, float d)
         {
             float s;
@@ -154,5 +158,8 @@ namespace ModelGraphSTD
 
             Vector2 ToVector((float x, float y) q) => new Vector2(q.x, q.y);
         }
+        #endregion  
+
+        public static float Diagonal((float dx, float dy) p) => ((p.dx * p.dx) + (p.dy * p.dy));
     }
 }

@@ -80,8 +80,6 @@ namespace ModelGraphSTD
 
         private PropertyOf<Edge, string> _edgeFacet1Property;
         private PropertyOf<Edge, string> _edgeFacet2Property;
-        private PropertyOf<Edge, string> _edgeConnect1Property;
-        private PropertyOf<Edge, string> _edgeConnect2Property;
 
         private PropertyOf<GraphX, int> _graphXTerminalLengthProperty;
         private PropertyOf<GraphX, int> _graphXTerminalSpacingProperty;
@@ -583,16 +581,6 @@ namespace ModelGraphSTD
                 p.SetValFunc = (item, value) => { p.Cast(item).Facet2 = (Facet)GetEnumZKey(p.EnumZ, value); return true; };
                 p.Value = new StringValue(p);
             }
-            {
-                var p = _edgeConnect1Property = new PropertyOf<Edge, string>(PropertyZStore, Trait.EdgeConnect1_P, _connectEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Connect1);
-                p.Value = new StringValue(p);
-            }
-            {
-                var p = _edgeConnect2Property = new PropertyOf<Edge, string>(PropertyZStore, Trait.EdgeConnect2_P, _connectEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Connect2);
-                p.Value = new StringValue(p);
-            }
             #endregion
         }
 
@@ -674,8 +662,6 @@ namespace ModelGraphSTD
 
             _edgeFacet1Property = null;
             _edgeFacet2Property = null;
-            _edgeConnect1Property = null;
-            _edgeConnect2Property = null;
 
             _graphXTerminalLengthProperty = null;
             _graphXTerminalSpacingProperty = null;

@@ -167,18 +167,6 @@ namespace ModelGraphSTD
         public (float X, float Y) Delta => (DX, DY);
         public float Length => (float)Math.Sqrt(Diagonal);
         public float Diagonal => XYTuple.Diagonal(Delta);
-        public (float x, float y) OrthoginalDisplacedPoint(float ds) => XYTuple.OrthoginalDisplacedPoint(DX, DY, X2, Y2, ds);
-        public (Quad quad, Sect sect, double slope) QuadSectSlope => XYTuple.QuadSectSlope((X1, Y1), (X2, Y2));
-        public bool TryGetDelta(out (float X, float Y) delta)
-        {
-            delta = Delta;
-            if (X2 == X1 && Y2 == Y1)
-                return false;
-
-            X1 = X2;
-            Y1 = Y2;
-            return true;
-        }
         #endregion
 
         #region Normalize  ====================================================

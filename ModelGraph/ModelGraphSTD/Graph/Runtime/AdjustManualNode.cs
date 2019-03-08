@@ -5,8 +5,9 @@ namespace ModelGraphSTD
     {
         private void AdjustManualNode(Node node)
         {
-            var (count, nquad, nsect, E) = Layout.SortedEdges(node);
-            if (count == 0) return;
+            var E = Layout.ConnectedEdges(node);
+            var N = (E is null) ? 0 : E.Length;
+            if (N == 0) return;
 
             var gx = node.Graph.GraphX;
             var spSkew = 8;// gx.SurfaceSkew;
@@ -49,7 +50,7 @@ namespace ModelGraphSTD
                 (-dx4, +dy4)  o             o  (+dx4, +dy4)                          
              * ================================================
              */
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < N; i++)
             {
                 var (x2, y2) = E[i].bend; // closest edge bend point towards the destination node
 

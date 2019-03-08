@@ -27,8 +27,6 @@ namespace ModelGraphSTD
 
                 { _edgeFacet1Property, _facetEnum },
                 { _edgeFacet2Property, _facetEnum },
-                { _edgeConnect1Property, _connectEnum },
-                { _edgeConnect2Property, _connectEnum },
 
                 { _symbolXAttachProperty, _attatchEnum },
 

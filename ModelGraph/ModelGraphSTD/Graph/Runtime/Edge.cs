@@ -54,9 +54,6 @@ namespace ModelGraphSTD
         internal GraphX GraphX { get { return (Owner == null) ? null : Owner.Owner as GraphX; } }
         internal QueryX QueryX => _queryX;
 
-        internal Connect Connect1 { get { return QueryX.PathParm.Connect1; } }
-        internal Connect Connect2 { get { return QueryX.PathParm.Connect2; } }
-
         public override string ToString()
         {
             var chef = GetChef();
@@ -184,10 +181,6 @@ namespace ModelGraphSTD
                     (QueryX.PathParm.Target2, Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), false, false);
             }
         }
-        #endregion
-
-        #region GetConnect  ===================================================
-        internal Connect GetConnect(Node node) => (node == Node1) ? Connect1 :  Connect2;
         #endregion
 
         #region HitTest  ======================================================
