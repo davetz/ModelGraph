@@ -49,4 +49,12 @@ namespace ModelGraphSTD
         NE = 14,
         NEC = 15
     }
+    public enum TupleSort : byte
+    {
+        Any = 0,
+        East = 1,
+        South = 2,
+        West = 3,
+        North = 4,
+    }
 }

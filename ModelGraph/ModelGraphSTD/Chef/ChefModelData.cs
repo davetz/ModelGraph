@@ -8546,7 +8546,6 @@ namespace ModelGraphSTD
                         anyChange |= AddProperyModel(prev, m, _nodeCenterXYProperty);
                         anyChange |= AddProperyModel(prev, m, _nodeSizeWHProperty);
                         anyChange |= AddProperyModel(prev, m, _nodeOrientationProperty);
-                        anyChange |= AddProperyModel(prev, m, _nodeFlipRotateProperty);
                         anyChange |= AddProperyModel(prev, m, _nodeLabelingProperty);
                         anyChange |= AddProperyModel(prev, m, _nodeResizingProperty);
                         anyChange |= AddProperyModel(prev, m, _nodeBarWidthProperty);

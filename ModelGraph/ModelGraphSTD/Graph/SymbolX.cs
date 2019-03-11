@@ -41,9 +41,9 @@ namespace ModelGraphSTD
         public float Height { get { return NoData ? 1f : Data[1] / 255f; } } //overall height factor 0..1f 
 
         #region GetFlipTargetSurface  =========================================
-        internal List<(float x, float y, float dx, float dy, float siz)> GetFlipTargetSurface(FlipState flip, float cx, float cy, float scale)
+        internal List<(float x, float y, float dx, float dy, float siz, TupleSort ts)> GetFlipTargetSurface(FlipState flip, float cx, float cy, float scale)
         {
-            var list = new List<(float x, float y, float dx, float dy, float siz)>(TargetContacts.Count);
+            var list = new List<(float x, float y, float dx, float dy, float siz, TupleSort ts)>(TargetContacts.Count);
             foreach (var e in TargetContacts)
             {
                 var fix = (int)flip;
@@ -54,7 +54,9 @@ namespace ModelGraphSTD
                 var sz = e.siz * scale / 255;
                 var (tx, ty) = _targetSurface[(int)e.tix];
                 var (dx, dy) = _flipper[fix](tx, ty);
-                list.Add((x, y, dx, dy, sz));
+                var ts = dx == 0 ? (dy > 1 ? TupleSort.South : dy < 1 ? TupleSort.North : TupleSort.Any) : dy == 0 ? (dx > 1 ? TupleSort.East : dx < 1 ? TupleSort.West : TupleSort.Any) : TupleSort.Any;
+
+                list.Add((x, y, dx, dy, sz, ts));
             }
             return list;
         }

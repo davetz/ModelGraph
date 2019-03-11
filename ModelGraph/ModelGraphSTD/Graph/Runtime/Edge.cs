@@ -31,6 +31,9 @@ namespace ModelGraphSTD
         public Facet Facet1;
         public Facet Facet2;
 
+        public TupleSort TSort1; // used when sorting parallel edge connections (tuples)
+        public TupleSort TSort2; // used when sorting parallel edge connections (tuples)
+
         public byte LineColor;
 
 
@@ -129,56 +132,31 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region OtherBendAttachHorz  ==========================================
-        internal (Node other, (float, float) bend, Attach atch, bool horz) OtherBendAttachHorz(Node node)
-        {
-            if (Points == null) Refresh();
-            var l = Points.Length - 1;
-
-            if (node.Aspect == Aspect.Point && (Node1.IsGraphSymbol || Node2.IsGraphSymbol))
-            {
-                var dx1 = Points[0].X - Points[Tm1].X;
-                var dy1 = Points[0].Y - Points[Tm1].Y;
-                var dx2 = Points[l].X - Points[Tm2].X;
-                var dy2 = Points[l].Y - Points[Tm2].Y;
-
-                return (node == Node1) ?
-                    (Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), (dx2 * dx2 > dy2 * dy2)) :
-                    (Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), (dx1 * dx1 > dy1 * dy1));
-            }
-            else
-            {
-                return (node == Node1) ?
-                    (Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), false) :
-                    (Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), false) ;
-            }
-        }
-        #endregion
-
-        #region TargetOtherBendAttachHorzRevr  ================================
+        #region TargetOtherBendAttachTSort  ===================================
         // horz: means the far terminal attaches horizontaly
         // revr: means reverse the sort comparison
-        internal (Target targ, Node other, (float, float) bend, Attach atch, bool horz, bool revr) TargetOtherBendAttachHorzRevr(Node node)
+        internal (Target targ, Node other, (float, float) bend, bool isBend, Attach atch, TupleSort tsor) TargetOtherBendAttachTSort(Node node)
         {
             if (Points == null) Refresh();
-            var l = Points.Length - 1;
+            var symbols = Graph.Symbols;
 
-            if (node.Aspect == Aspect.Point && (Node1.IsGraphSymbol || Node2.IsGraphSymbol))
+            if (node == Node1)
             {
-                var dx1 = Points[0].X - Points[Tm1].X;
-                var dy1 = Points[0].Y - Points[Tm1].Y;
-                var dx2 = Points[l].X - Points[Tm2].X;
-                var dy2 = Points[l].Y - Points[Tm2].Y;
-
-                return (node == Node1) ?
-                    (QueryX.PathParm.Target1, Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), (dx2 * dx2) > (dy2 * dy2), (dx2 + dy2) > 0) :
-                    (QueryX.PathParm.Target2, Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), (dx1 * dx1) > (dy1 * dy1), (dx1 + dy1) > 0);
+                var other = Node2;
+                var si = other.Symbol - 2;
+                var atch = (si < 0 || si >= symbols.Length) ? Attach.Normal : symbols[si].Attach;
+                var bend = Points[Bp1];
+                var targ = QueryX.PathParm.Target1; 
+                return (targ, other, bend, HasBends, atch, TSort2);
             }
             else
             {
-                return (node == Node1) ?
-                    (QueryX.PathParm.Target1, Node2, (Node2.Aspect == Aspect.Point) ? Points[l] : Points[Bp1], Graph.GetAttach(Node2), false, false) :
-                    (QueryX.PathParm.Target2, Node1, (Node1.Aspect == Aspect.Point) ? Points[0] : Points[Bp2], Graph.GetAttach(Node1), false, false);
+                var other = Node1;
+                var si = other.Symbol - 2;
+                var atch = (si < 0 || si >= symbols.Length) ? Attach.Normal : symbols[si].Attach;
+                var bend = Points[Bp2];
+                var targ = QueryX.PathParm.Target2;
+                return (targ, other, bend, HasBends, atch, TSort1);
             }
         }
         #endregion
@@ -328,19 +306,20 @@ namespace ModelGraphSTD
         #endregion
 
         #region SetFace  ======================================================
-        internal void SetFace(Node node, (float x, float y) d) => SetFace(node, d, d, d);
-        internal void SetFace(Node node, (float x, float y) d1, (float x, float y) d3) => SetFace(node, d1, d1, d3);
-        internal void SetFace(Node node, (float x, float y) d1, (float x, float y) d2, (float x, float y) d3)
+        internal void SetFace(Node node, (float x, float y) d, TupleSort ts) => SetFace(node, d, d, d, ts);
+        internal void SetFace(Node node, (float x, float y) d1, (float x, float y) d3, TupleSort ts) => SetFace(node, d1, d1, d3, ts);
+        internal void SetFace(Node node, (float x, float y) d1, (float x, float y) d2, (float x, float y) d3, TupleSort ts)
         {
             if (node == Node1)
-            { SP1 = d1; FP1 = d2; TP1 = d3; }
+            { SP1 = d1; FP1 = d2; TP1 = d3; TSort1 = ts; }
             else
-            { SP2 = d1; FP2 = d2; TP2 = d3; }
+            { SP2 = d1; FP2 = d2; TP2 = d3; TSort2 = ts; }
 
             // do the refresh only once, after both faces have changed
-            if (NeedsRefresh) Refresh();
-            NeedsRefresh = !NeedsRefresh;
+            if (_needsRefresh) Refresh();
+            _needsRefresh = !_needsRefresh;
         }
+        private bool _needsRefresh;
         #endregion
 
         #region Facets  =======================================================
@@ -397,10 +376,12 @@ namespace ModelGraphSTD
             (float cx1, float cy1, float w1, float h1) = Node1.Values();
             (float cx2, float cy2, float w2, float h2) = Node2.Values();
 
+            if (SP1.X == 0 && TP1.X == 0 && SP1.Y == 0 && TP1.Y == 0) SP1 = FP1 = TP1 = Node1.Center;
             P[sp1] = SP1;
             P[fp1] = FP1;
             P[tp1] = TP1;
 
+            if (SP2.X == 0 && TP2.X == 0 && SP2.Y == 0 && TP2.Y == 0) SP2 = FP2 = TP2 = Node2.Center;
             P[sp2] = SP2;
             P[fp2] = FP2;
             P[tp2] = TP2;

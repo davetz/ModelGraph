@@ -9,7 +9,6 @@
 
         EnumZ _orientationEnum;
         EnumZ _labelingEnum;
-        EnumZ _flipRotateEnum;
         EnumZ _resizingEnum;
         EnumZ _barWidthEnum;
 
@@ -95,16 +94,6 @@
             new PairZ(_resizingEnum, Trait.Resizing_Auto);
             new PairZ(_resizingEnum, Trait.Resizing_Fixed);
             new PairZ(_resizingEnum, Trait.Resizing_Manual);
-
-            _flipRotateEnum = new EnumZ(EnumZStore, Trait.FlipRotateEnum);
-            new PairZ(_flipRotateEnum, Trait.FlipRotate_None);
-            new PairZ(_flipRotateEnum, Trait.FlipRotate_FlipVertical);
-            new PairZ(_flipRotateEnum, Trait.FlipRotate_FlipHorizontal);
-            new PairZ(_flipRotateEnum, Trait.FlipRotate_FlipBothWays);
-            new PairZ(_flipRotateEnum, Trait.FlipRotate_RotateClockwise);
-            new PairZ(_flipRotateEnum, Trait.FlipRotate_RotateFlipVertical);
-            new PairZ(_flipRotateEnum, Trait.FlipRotate_RotateFlipHorizontal);
-            new PairZ(_flipRotateEnum, Trait.FlipRotate_RotateFlipBothWays);
 
             _barWidthEnum = new EnumZ(EnumZStore, Trait.BarWidthEnum);
             new PairZ(_barWidthEnum, Trait.BarWidth_Thin);
@@ -213,7 +202,6 @@
 
             _orientationEnum = null;
             _labelingEnum = null;
-            _flipRotateEnum = null;
             _resizingEnum = null;
             _barWidthEnum = null;
 

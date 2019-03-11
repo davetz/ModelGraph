@@ -225,7 +225,7 @@ namespace ModelGraphSTD
                 var n = bestResult[ti].Count;
                 if (n == 0) continue;
 
-                var (x, y, dx, dy, w1) = targetSurface[ti];
+                var (x, y, dx, dy, w1, ts) = targetSurface[ti];
                 if (n > 1)
                 {
                     if ((dx > 0 && dy ==0) || (dy > 0 && dx == 0))
@@ -245,6 +245,7 @@ namespace ModelGraphSTD
 
                 for (int i = 0; i < n; i++)
                 {
+
                     var ei = bestResult[ti][i].ei;
                     var os = Layout.Offset(i, n);
                     var o1 = w1 * os;
@@ -257,7 +258,7 @@ namespace ModelGraphSTD
                     var x3 = (x + d2 * dx) - dy * o2;
                     var y3 = (y + d2 * dy) + dx * o2;
 
-                    E[ei].edge.SetFace(node, (x1, y1), (x2, y2), (x3, y3));
+                    E[ei].edge.SetFace(node, (x1, y1), (x2, y2), (x3, y3), ts);
                 }
                 int FromEastSouth((int ei, float c, float m, int x1, int y1, int x2, int y2, int s) a, (int ei, float c, float m, int x1, int y1, int x2, int y2, int s) b)
                 {
@@ -272,7 +273,7 @@ namespace ModelGraphSTD
                             return (ord1 < ord2) ? -1 : (ord1 > ord2) ? 1 : 0;
                         }
                     }
-                    if (E[a.ei].revr)
+                    if (E[a.ei].tsort == TupleSort.West || E[a.ei].tsort == TupleSort.North)
                         return (a.s < b.s) ? -1 : (a.s > b.s) ? 1 : (a.m < b.m) ? -1 : (a.m > b.m) ? 1 : 0;
                     else
                         return (a.s < b.s) ? 1 : (a.s > b.s) ? -1 : (a.m < b.m) ? 1 : (a.m > b.m) ? -1 : 0;
@@ -290,7 +291,7 @@ namespace ModelGraphSTD
                             return (ord1 < ord2) ? 1 : (ord1 > ord2) ? -1 : 0;
                         }
                     }
-                    if (E[a.ei].revr)
+                    if (E[a.ei].tsort == TupleSort.West || E[a.ei].tsort == TupleSort.North)
                         return (a.s < b.s) ? 1 : (a.s > b.s) ? -1 : (a.m < b.m) ? 1 : (a.m > b.m) ? -1 : 0;
                     else
                         return (a.s < b.s) ? -1 : (a.s > b.s) ? 1 : (a.m < b.m) ? -1 : (a.m > b.m) ? 1 : 0;

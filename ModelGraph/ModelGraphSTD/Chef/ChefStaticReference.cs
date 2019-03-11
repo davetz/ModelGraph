@@ -20,7 +20,6 @@ namespace ModelGraphSTD
                 { _relationXPairingProperty, _pairingEnum },
 
                 { _nodeOrientationProperty, _orientationEnum },
-                { _nodeFlipRotateProperty, _flipRotateEnum },
                 { _nodeLabelingProperty, _labelingEnum },
                 { _nodeResizingProperty, _resizingEnum },
                 { _nodeBarWidthProperty, _barWidthEnum },

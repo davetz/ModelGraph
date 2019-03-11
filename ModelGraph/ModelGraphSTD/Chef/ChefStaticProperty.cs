@@ -76,7 +76,6 @@ namespace ModelGraphSTD
         private PropertyOf<Node, string> _nodeResizingProperty;
         private PropertyOf<Node, string> _nodeBarWidthProperty;
         private PropertyOf<Node, string> _nodeOrientationProperty;
-        private PropertyOf<Node, string> _nodeFlipRotateProperty;
 
         private PropertyOf<Edge, string> _edgeFacet1Property;
         private PropertyOf<Edge, string> _edgeFacet2Property;
@@ -543,12 +542,6 @@ namespace ModelGraphSTD
                 p.Value = new StringValue(p);
             }
             {
-                var p = _nodeFlipRotateProperty = new PropertyOf<Node, string>(PropertyZStore, Trait.NodeFlipRotate_P, _flipRotateEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).FlipState);
-                p.SetValFunc = (item, value) => { p.Cast(item).FlipState = (FlipState)GetEnumZKey(p.EnumZ, value); return true; };
-                p.Value = new StringValue(p);
-            }
-            {
                 var p = _nodeLabelingProperty = new PropertyOf<Node, string>(PropertyZStore, Trait.NodeLabeling_P, _labelingEnum);
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Labeling);
                p.SetValFunc = (item, value) => { p.Cast(item).Labeling = (Labeling)GetEnumZKey(p.EnumZ, value); return true; };
@@ -658,7 +651,6 @@ namespace ModelGraphSTD
             _nodeResizingProperty = null;
             _nodeBarWidthProperty = null;
             _nodeOrientationProperty = null;
-            _nodeFlipRotateProperty = null;
 
             _edgeFacet1Property = null;
             _edgeFacet2Property = null;

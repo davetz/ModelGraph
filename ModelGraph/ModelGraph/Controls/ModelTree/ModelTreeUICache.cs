@@ -39,7 +39,7 @@ namespace ModelGraph.Controls
         #region ValidateCache  ================================================
         void ValidateCache(int M) // M == _viewList.Count
         {
-            if (M == 0) return;
+            if (M == 0 || M > _viewList.Count) return;
 
             ValidateCacheSize();
 
@@ -70,6 +70,7 @@ namespace ModelGraph.Controls
                 for (int i = 0; i < M; i++)
                 {
                     var m = _viewList[i];
+                    if (m is null) continue;
                     if (_modelCacheIndex.TryGetValue(m, out int j)) return (true, i, j);
                 }
                 return (false, -1, -1);
@@ -825,6 +826,7 @@ namespace ModelGraph.Controls
         #region AddStackPanel  ================================================
         private void AddStackPanel(int viewIndex, ItemModel m)
         {
+            if (m is null) return;
             var index = _cacheIndex[viewIndex];
 
             var sp = _stackPanelCache[index];

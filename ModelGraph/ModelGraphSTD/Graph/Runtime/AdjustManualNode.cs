@@ -14,7 +14,7 @@ namespace ModelGraphSTD
             var tpSkew = gx.TerminalSkew;
             var tmLen = gx.TerminalLength;
 
-            (float x, float y, float w, float h) = node.Values();
+            var (x, y, w, h) = node.Values();
             var d0 = 2;
             var xE = x + w - d0; // east side
             var xW = x - w + d0; // west side
@@ -69,45 +69,45 @@ namespace ModelGraphSTD
                         if (y2 > yS)
                         {//========================== going south
                             if (dyS / dxE < 1)
-                                E[i].edge.SetFace(node, (dx1, dy0), (dx2, dy), (dx4, dy));      // skewed south east heading east 
+                                E[i].edge.SetFace(node, (dx1, dy0), (dx2, dy), (dx4, dy), TupleSort.East);      // skewed south east heading east 
                             else
-                                E[i].edge.SetFace(node, (0, dy1), (0, dy3));    // off south end heading south
+                                E[i].edge.SetFace(node, (0, dy1), (0, dy3), TupleSort.South);    // off south end heading south
                         }
                         else if (y2 < yN)
                         {//========================== going north
                             if (dyN / dxE > -1)
-                                E[i].edge.SetFace(node, (dx1, -dy0), (dx2, dy), (dx4, dy));   // skewed north east heading east 
+                                E[i].edge.SetFace(node, (dx1, -dy0), (dx2, dy), (dx4, dy), TupleSort.East);   // skewed north east heading east 
                             else
-                                E[i].edge.SetFace(node, (0, -dy1), (0, -dy3));    // off north end heading north
+                                E[i].edge.SetFace(node, (0, -dy1), (0, -dy3), TupleSort.North);    // off north end heading north
                         }
                         else
-                            E[i].edge.SetFace(node, (dx1, dy), (dx3, dy));        // off east side heading straight east
+                            E[i].edge.SetFace(node, (dx1, dy), (dx3, dy), TupleSort.East);        // off east side heading straight east
                     }
                     else if (x2 < xW)
                     {//========================== on the west side of major axis
                         if (y2 > yS)
                         {//========================== going south
                             if (dyS / dxW > -1)
-                                E[i].edge.SetFace(node, (-dx1, dy0), (-dx2, dy), (-dx4, dy));      // skewed south west heading west 
+                                E[i].edge.SetFace(node, (-dx1, dy0), (-dx2, dy), (-dx4, dy), TupleSort.West);      // skewed south west heading west 
                             else
-                                E[i].edge.SetFace(node, (0, dy1), (0, dy3));    // off south end heading south
+                                E[i].edge.SetFace(node, (0, dy1), (0, dy3), TupleSort.South);    // off south end heading south
                         }
                         else if (y2 < yN)
                         {//========================== going north
                             if (dyN / dxW < 1)
-                                E[i].edge.SetFace(node, (-dx1, -dy0), (-dx2, dy), (-dx4, dy));   // skewed north west heading west 
+                                E[i].edge.SetFace(node, (-dx1, -dy0), (-dx2, dy), (-dx4, dy), TupleSort.West);   // skewed north west heading west 
                             else
-                                E[i].edge.SetFace(node, (0, -dy1), (0, -dy3));    // off north end heading north
+                                E[i].edge.SetFace(node, (0, -dy1), (0, -dy3), TupleSort.North);    // off north end heading north
                         }
                         else
-                            E[i].edge.SetFace(node, (-dx1, dy), (-dx3, dy));        // off west side heading straight west
+                            E[i].edge.SetFace(node, (-dx1, dy), (-dx3, dy), TupleSort.West);        // off west side heading straight west
                     }
                     else
                     {//========================== directly on the major axis
                         if (y2 > yS)
-                            E[i].edge.SetFace(node, (0, dy1), (0, dy3));    // off south end heading south
+                            E[i].edge.SetFace(node, (0, dy1), (0, dy3), TupleSort.South);    // off south end heading south
                         else
-                            E[i].edge.SetFace(node, (0, -dy1), (0, -dy3));  // off north end heading north
+                            E[i].edge.SetFace(node, (0, -dy1), (0, -dy3), TupleSort.North);  // off north end heading north
                     }
                 }
                 else if (node.Aspect == Aspect.Horizontal)
@@ -117,45 +117,45 @@ namespace ModelGraphSTD
                         if (x2 > xE)
                         {//========================== heading east
                             if (dyS / dxE < 1)
-                                E[i].edge.SetFace(node, (dx1, 0), (dx3, 0));    // off east end heading east
+                                E[i].edge.SetFace(node, (dx1, 0), (dx3, 0), TupleSort.East);    // off east end heading east
                             else
-                                E[i].edge.SetFace(node, (dx0, dy1), (dx, dy2), (dx, dy4));      // skewed south east heading south 
+                                E[i].edge.SetFace(node, (dx0, dy1), (dx, dy2), (dx, dy4), TupleSort.South);      // skewed south east heading south 
                         }
                         else if (x2 < xW)
                         {//========================== heading west
                             if (dyN / dxE > -1)
-                                E[i].edge.SetFace(node, (-dx1, 0), (-dx3, 0));  // off west end heading west
+                                E[i].edge.SetFace(node, (-dx1, 0), (-dx3, 0), TupleSort.West);  // off west end heading west
                             else
-                                E[i].edge.SetFace(node, (-dx0, dy1), (dx, dy2), (dx, dy4));   // skewed south west heading south 
+                                E[i].edge.SetFace(node, (-dx0, dy1), (dx, dy2), (dx, dy4), TupleSort.South);   // skewed south west heading south 
                         }
                         else
-                            E[i].edge.SetFace(node, (dx, dy1), (dx, dy3));      // off south side heading straight south
+                            E[i].edge.SetFace(node, (dx, dy1), (dx, dy3), TupleSort.South);      // off south side heading straight south
                     }
                     else if (y2 < yN)
                     {//========================== on the north side of major axis
                         if (x2 > xE)
                         {//========================== heading east
                             if (dyN / dxE < -1)
-                                E[i].edge.SetFace(node, (dx0, -dy1), (dx, -dy2), (dx, -dy4));      // skewed north east heading north 
+                                E[i].edge.SetFace(node, (dx0, -dy1), (dx, -dy2), (dx, -dy4), TupleSort.North);      // skewed north east heading north 
                             else
-                                E[i].edge.SetFace(node, (dx1, 0), (dx3, 0));    // off east end heading east
+                                E[i].edge.SetFace(node, (dx1, 0), (dx3, 0), TupleSort.East);    // off east end heading east
                         }
                         else if (x2 < xW)
                         {//========================== heading west
                             if (dyN / dxW < 1)
-                                E[i].edge.SetFace(node, (-dx1, 0), (-dx3, 0));  // off west end heading west
+                                E[i].edge.SetFace(node, (-dx1, 0), (-dx3, 0), TupleSort.West);  // off west end heading west
                             else
-                                E[i].edge.SetFace(node, (-dx0, -dy1), (dx, -dy2), (dx, -dy4));   // skewed north west heading north 
+                                E[i].edge.SetFace(node, (-dx0, -dy1), (dx, -dy2), (dx, -dy4), TupleSort.North);   // skewed north west heading north 
                         }
                         else
-                            E[i].edge.SetFace(node, (dx, -dy1), (dx, -dy3));      // off north side heading straight north
+                            E[i].edge.SetFace(node, (dx, -dy1), (dx, -dy3), TupleSort.North);      // off north side heading straight north
                     }
                     else
                     {//========================== directly on the major axis
                         if (x2 > xE)
-                            E[i].edge.SetFace(node, (dx1, 0), (dx3, 0));    // off east end heading east
+                            E[i].edge.SetFace(node, (dx1, 0), (dx3, 0), TupleSort.East);    // off east end heading east
                         else
-                            E[i].edge.SetFace(node, (-dx1, 0), (-dx3, 0));  // off west end heading west
+                            E[i].edge.SetFace(node, (-dx1, 0), (-dx3, 0), TupleSort.West);  // off west end heading west
                     }
                 }
                 else if (node.Aspect == Aspect.Central)
@@ -165,50 +165,50 @@ namespace ModelGraphSTD
                         if (y2 > yS)
                         {//========================== going south
                             if (dyS / dxE < 1)
-                                E[i].edge.SetFace(node, (dx1, dy0), (dx2, dy), (dx4, dy));      // skewed south east heading east 
+                                E[i].edge.SetFace(node, (dx1, dy0), (dx2, dy), (dx4, dy), TupleSort.East);      // skewed south east heading east 
                             else
-                                E[i].edge.SetFace(node, (dx0, dy1), (dx, dy2), (dx, dy4));      // skewed south east heading south 
+                                E[i].edge.SetFace(node, (dx0, dy1), (dx, dy2), (dx, dy4), TupleSort.South);      // skewed south east heading south 
                         }
                         else if (y2 < yN)
                         {//========================== going north
                             if (dyN / dxE > -1)
-                                E[i].edge.SetFace(node, (dx1, -dy0), (dx2, dy), (dx4, dy));   // skewed north east heading east 
+                                E[i].edge.SetFace(node, (dx1, -dy0), (dx2, dy), (dx4, dy), TupleSort.East);   // skewed north east heading east 
                             else
-                                E[i].edge.SetFace(node, (dx0, -dy1), (dx, -dy2), (dx, -dy4));      // skewed north east heading north 
+                                E[i].edge.SetFace(node, (dx0, -dy1), (dx, -dy2), (dx, -dy4), TupleSort.North);      // skewed north east heading north 
                         }
                         else
-                            E[i].edge.SetFace(node, (dx1, dy), (dx3, dy));        // off east side heading straight east
+                            E[i].edge.SetFace(node, (dx1, dy), (dx3, dy), TupleSort.East);        // off east side heading straight east
                     }
                     else if (x2 < xW)
                     {//========================== on the west side of major axis
                         if (y2 > yS)
                         {//========================== going south
                             if (dyS / dxW < -1)
-                                E[i].edge.SetFace(node, (-dx0, dy1), (dx, dy2), (dx, dy4));   // skewed south west heading south 
+                                E[i].edge.SetFace(node, (-dx0, dy1), (dx, dy2), (dx, dy4), TupleSort.South);   // skewed south west heading south 
                             else
-                                E[i].edge.SetFace(node, (-dx1, dy0), (-dx2, dy), (-dx4, dy));      // skewed south west heading west 
+                                E[i].edge.SetFace(node, (-dx1, dy0), (-dx2, dy), (-dx4, dy), TupleSort.West);      // skewed south west heading west 
                         }
                         else if (y2 < yN)
                         {//========================== going north
                             if (dyN / dxW < 1)
-                                E[i].edge.SetFace(node, (-dx1, -dy0), (-dx2, dy), (-dx4, dy));   // skewed north west heading west 
+                                E[i].edge.SetFace(node, (-dx1, -dy0), (-dx2, dy), (-dx4, dy), TupleSort.West);   // skewed north west heading west 
                             else
-                                E[i].edge.SetFace(node, (-dx0, -dy1), (dx, -dy2), (dx, -dy4));   // skewed north west heading north 
+                                E[i].edge.SetFace(node, (-dx0, -dy1), (dx, -dy2), (dx, -dy4), TupleSort.North);   // skewed north west heading north 
                         }
                         else
-                            E[i].edge.SetFace(node, (-dx1, dy), (-dx3, dy));        // off west side heading straight west
+                            E[i].edge.SetFace(node, (-dx1, dy), (-dx3, dy), TupleSort.West);        // off west side heading straight west
                     }
                     else
                     {//========================== directly on the major axis
                         if (y2 > yS)
-                            E[i].edge.SetFace(node, (dx, dy1), (dx, dy3));      // off south side heading straight south
+                            E[i].edge.SetFace(node, (dx, dy1), (dx, dy3), TupleSort.South);      // off south side heading straight south
                         else
-                            E[i].edge.SetFace(node, (dx, -dy1), (dx, -dy3));      // off north side heading straight north
+                            E[i].edge.SetFace(node, (dx, -dy1), (dx, -dy3), TupleSort.North);      // off north side heading straight north
                     }
                 }
                 else
                 {
-                    E[i].edge.SetFace(node, (0,0));
+                    E[i].edge.SetFace(node, (0,0), TupleSort.Any);
                 }
             }
         }
