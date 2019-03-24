@@ -57,21 +57,6 @@ namespace ModelGraphSTD
                 foreach (var node in nodes) { if (node.Aspect == Aspect.Point) AdjustNode(node); }
             }
             SetExtent();
-
-            void AdjustNode(Node node)
-            {
-                if (node.IsGraphNode)
-                {
-                    if (node.Aspect == Aspect.Point)
-                        AdjustAutoNode(node);
-                    else if (node.IsManualSizing || node.IsFixedSizing)
-                        AdjustManualNode(node);
-                    else
-                        AdjustAutoNode(node);
-                }
-                else if (node.IsGraphSymbol)
-                    AdjustSymbol(node);
-            }
         }
     }
 }

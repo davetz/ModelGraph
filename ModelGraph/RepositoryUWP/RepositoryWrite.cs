@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_J;
+            var fileFormat = _fileFormat_K;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -576,23 +576,19 @@ namespace RepositoryUWP
                                                 w.WriteSingle(eg.Bends[i].Y - y0);
                                             }
                                         }
-                                        var x1 = eg.Node1.X;
-                                        var y1 = eg.Node1.Y;
-                                        var x2 = eg.Node2.X;
-                                        var y2 = eg.Node2.Y;
-                                        w.WriteInt16((short)(eg.SP1.X - x1));
-                                        w.WriteInt16((short)(eg.SP1.Y - y1));
-                                        w.WriteInt16((short)(eg.FP1.X - x1));
-                                        w.WriteInt16((short)(eg.FP1.Y - y1));
-                                        w.WriteInt16((short)(eg.TP1.X - x1));
-                                        w.WriteInt16((short)(eg.TP1.Y - y1));
+                                        w.WriteByte((byte)eg.SP1.dx);
+                                        w.WriteByte((byte)eg.SP1.dy);
+                                        w.WriteByte((byte)eg.FP1.dx);
+                                        w.WriteByte((byte)eg.FP1.dy);
+                                        w.WriteInt16(eg.TP1.dx);
+                                        w.WriteInt16(eg.TP1.dy);
 
-                                        w.WriteInt16((short)(eg.SP2.X - x2));
-                                        w.WriteInt16((short)(eg.SP2.Y - y2));
-                                        w.WriteInt16((short)(eg.FP2.X - x2));
-                                        w.WriteInt16((short)(eg.FP2.Y - y2));
-                                        w.WriteInt16((short)(eg.TP2.X - x2));
-                                        w.WriteInt16((short)(eg.TP2.Y - y2));
+                                        w.WriteByte((byte)eg.SP2.dx);
+                                        w.WriteByte((byte)eg.SP2.dy);
+                                        w.WriteByte((byte)eg.FP2.dx);
+                                        w.WriteByte((byte)eg.FP2.dy);
+                                        w.WriteInt16(eg.TP2.dx);
+                                        w.WriteInt16(eg.TP2.dy);
                                     }
                                     #endregion
                                 }

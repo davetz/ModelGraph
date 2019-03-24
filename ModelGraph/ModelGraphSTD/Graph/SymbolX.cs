@@ -40,25 +40,222 @@ namespace ModelGraphSTD
         public float Width { get { return NoData ? 1f : Data[0] / 255f; } } //overall width factor 0..1f
         public float Height { get { return NoData ? 1f : Data[1] / 255f; } } //overall height factor 0..1f 
 
-        #region GetFlipTargetSurface  =========================================
-        internal List<(float x, float y, float dx, float dy, float siz, TupleSort ts)> GetFlipTargetSurface(FlipState flip, float cx, float cy, float scale)
+        #region GetFlipTarget  ================================================
+        internal (float sdx, float sdy, byte tsiz, byte tix, Direction tdir) GetFlipTarget(int ti, FlipState flip, float scale)
         {
-            var list = new List<(float x, float y, float dx, float dy, float siz, TupleSort ts)>(TargetContacts.Count);
+            var e = TargetContacts[ti];
+
+            var fix = (int)flip;
+            var tix = (int)e.tix;
+            var (tdx, tdy) = ToFloat(e.pnt);
+            var (fdx, fdy) = _flipper[fix](tdx, tdy);
+            var sdx = fdx * scale;
+            var sdy = fdy * scale;
+            var siz = (byte)(e.siz * scale / 255);
+            var ftd = _flipDirection[fix][tix];
+
+            return (sdx, sdy, siz, (byte)tix, ftd);
+        }
+        internal List<(TargetIndex tix, Direction std, float sdx, float sdy, float siz)> GetFlipTargetSurface(FlipState flip, float scale)
+        {
+            var list = new List<(TargetIndex tix, Direction td, float dx, float dy, float siz)>(TargetContacts.Count);
             foreach (var e in TargetContacts)
             {
                 var fix = (int)flip;
+                var tix = (int)e.tix;
                 var (tdx, tdy) = ToFloat(e.pnt);
                 var (fdx, fdy) = _flipper[fix](tdx, tdy);
-                var x = fdx * scale + cx;
-                var y = fdy * scale + cy;
-                var sz = e.siz * scale / 255;
-                var (tx, ty) = _targetSurface[(int)e.tix];
-                var (dx, dy) = _flipper[fix](tx, ty);
-                var ts = dx == 0 ? (dy > 1 ? TupleSort.South : dy < 1 ? TupleSort.North : TupleSort.Any) : dy == 0 ? (dx > 1 ? TupleSort.East : dx < 1 ? TupleSort.West : TupleSort.Any) : TupleSort.Any;
-
-                list.Add((x, y, dx, dy, sz, ts));
+                var sdx = fdx * scale;
+                var sdy = fdy * scale;
+                var siz = e.siz * scale / 255;
+                var ftd = _flipDirection[fix][tix];
+                list.Add((e.tix, ftd, sdx, sdy, siz));
             }
             return list;
+        }
+        private static readonly Direction[] _flipNoneDirection =
+        {
+            Direction.E,   //EN
+            Direction.E,   //E
+            Direction.E,   //ES
+            Direction.SEC, //SEC
+            Direction.S,   //SE
+            Direction.S,   //S
+            Direction.S,   //SW
+            Direction.SWC, //SWC
+            Direction.W,   //WS
+            Direction.W,   //W
+            Direction.W,   //WN
+            Direction.NWC, //NWC
+            Direction.N,   //NW
+            Direction.N,   //N
+            Direction.N,   //NE
+            Direction.NEC, //NEC
+        };
+        private static readonly Direction[] _vertFlipDirection =
+        {
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.NEC,
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.NWC,
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.SWC,
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.SEC,
+        };
+        private static readonly Direction[] _horzFlipDirection =
+        {
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.SWC,
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.SEC,
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.NEC,
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.NWC,
+        };
+        private static readonly Direction[] _bothFlipDirection =
+        {
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.NEC,
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.NWC,
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.SWC,
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.SEC,
+        };
+        private static readonly Direction[] _rotateLeftDirection =
+        {
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.SWC,
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.NWC,
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.NEC,
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.SEC,
+        };
+        private static readonly Direction[] _leftHorzDirection =
+        {
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.SEC,
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.NEC,
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.NWC,
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.SWC,
+        };
+        private static readonly Direction[] _rotateRightDirection =
+        {
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.NEC,
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.SEC,
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.SWC,
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.NWC,
+        };
+        private static readonly Direction[] _rightHorzDirection =
+        {
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.NWC,
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.SWC,
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.SEC,
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.NEC,
+        };
+        private static readonly Direction[][] _flipDirection =
+        {
+            _flipNoneDirection,
+            _vertFlipDirection,
+            _horzFlipDirection,
+            _bothFlipDirection,
+            _rotateLeftDirection,
+            _leftHorzDirection,
+            _rotateRightDirection,
+            _rightHorzDirection,
+        };
+        #endregion
+
+        #region GetFlipTargetContacts  ========================================
+        internal void GetFlipTargetContacts(FlipState flip, float cx, float cy, float scale, float tmLen, List<(Target trg, byte tix, Contact con, (float x, float y) pnt)> list)
+        {
+            list.Clear();
+            foreach (var (trg, tix, con, pnt, siz) in TargetContacts)
+            {
+                var fix = (int)flip;
+                var (tdx, tdy) = ToFloat(pnt);
+                var (fdx, fdy) = _flipper[fix](tdx, tdy);
+
+                var (tx, ty) = _targetSurface[(int)tix];
+                var (dx, dy) = _flipper[fix](tx, ty);
+
+                var x = fdx * scale + cx + dx * tmLen;
+                var y = fdy * scale + cy + dy * tmLen;
+
+                list.Add((trg, (byte)tix, con, (x, y)));
+            }           
         }
         private const float Q = 0.7071067811865f; // 1 / SQRT(2)
         private static readonly (float dx, float dy)[] _targetSurface =
@@ -80,27 +277,7 @@ namespace ModelGraphSTD
             (0, -1),  //NE
             (Q, -Q),  //NEC
         };
-        #endregion
 
-        #region GetFlipTargetContacts  =========================================
-        internal void GetFlipTargetContacts(FlipState flip, float cx, float cy, float scale, float tmLen, List<(Target trg, byte tix, Contact con, (float x, float y) pnt)> list)
-        {
-            list.Clear();
-            foreach (var (trg, tix, con, pnt, siz) in TargetContacts)
-            {
-                var fix = (int)flip;
-                var (tdx, tdy) = ToFloat(pnt);
-                var (fdx, fdy) = _flipper[fix](tdx, tdy);
-
-                var (tx, ty) = _targetSurface[(int)tix];
-                var (dx, dy) = _flipper[fix](tx, ty);
-
-                var x = fdx * scale + cx + dx * tmLen;
-                var y = fdy * scale + cy + dy * tmLen;
-
-                list.Add((trg, (byte)tix, con, (x, y)));
-            }           
-        }
         public void GetTargetContacts(Dictionary<Target, (Contact contact, (sbyte dx, sbyte dy) point, byte size)> dict)
         {
             dict.Clear();

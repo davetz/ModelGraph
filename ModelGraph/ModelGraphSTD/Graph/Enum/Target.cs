@@ -1,11 +1,9 @@
 ﻿using System;
 
 namespace ModelGraphSTD
-{
-    /// <summary>
-    /// Allowed directional connections to a symbol 
-    /// </summary>
-    public enum Target : ushort
+{    
+    [Flags]
+    public enum Target : ushort // Allowed directional connections to a symbol 
     {
         N = 0x1,
         S = 0x2,
@@ -30,31 +28,35 @@ namespace ModelGraphSTD
         Any = 0xFFFF,
         None = 0,
     }
-    public enum TargetIndex : byte
+    public enum TargetIndex : byte // symbol's target contact
     {
-        EN = 0,
-        E = 1,
-        ES = 2,
-        SEC = 3,
-        SE = 4,
-        S = 5,
-        SW = 6,
-        SWC = 7,
-        WS = 8,
-        W = 9,
-        WN = 10,
-        NWC = 11,
-        NW = 12,
-        N = 13,
-        NE = 14,
-        NEC = 15
+        EN = 0,   // upper east        - horizontal 
+        E = 1,    // center east       - horizontal 
+        ES = 2,   // lower east        - horizontal 
+        SEC = 3,  // south east corner - diagonal
+        SE = 4,   // right sidesouth   - vertical  
+        S = 5,    // centersouth       - vertical  
+        SW = 6,   // left side south   - vertical 
+        SWC = 7,  // south west corner - diagonal
+        WS = 8,   // lower west        - horizontal
+        W = 9,    // center west       - horizontal
+        WN = 10,  // upper west        - horizontal
+        NWC = 11, // north west corner - diagonal
+        NW = 12,  // left side north   - vertical
+        N = 13,   // center north      - vertical
+        NE = 14,  // right side north  - vertical
+        NEC = 15  // north east corner - diagonal 
     }
-    public enum TupleSort : byte
+    public enum Direction : byte // terminal's outward direction
     {
         Any = 0,
-        East = 1,
-        South = 2,
-        West = 3,
-        North = 4,
+        E = 1,   // straight east   - horizontal
+        S = 2,   // straight south  - vertical
+        W = 3,   // straight west   - horizontal
+        N = 4,   // straight north  - vertical
+        SEC = 5, // south east corner - diagonal
+        SWC = 6, // south west corner - diagonal
+        NWC = 7, // north west corner - diagonal
+        NEC = 8, // north east corner - diagonal
     }
 }

@@ -1,8 +1,4 @@
-﻿
-using System;
-using System.Numerics;
-
-namespace ModelGraphSTD
+﻿namespace ModelGraphSTD
 {
     public class Edge : NodeEdge
     {
@@ -15,25 +11,26 @@ namespace ModelGraphSTD
 
         public (float X, float Y)[] Bends;
 
-        public (float X, float Y) SP1;
-        public (float X, float Y) FP1;
-        public (float X, float Y) TP1;
-
-        public (float X, float Y) SP2;
-        public (float X, float Y) FP2;
-        public (float X, float Y) TP2;
-
         public short Tm1; // index of terminal point 1
         public short Bp1; // index of closest bend point after Tm1 (to the right) 
         public short Bp2; // index of closest bend point after Tm2 (to the left)
         public short Tm2; // index of terminal point 2
 
+        internal (short dx, short dy) TP1; // terminal poiint displacement from facet point
+        internal (short dx, short dy) TP2; // terminal poiint displacement from facet point
+
         public Facet Facet1;
         public Facet Facet2;
 
-        public TupleSort TSort1; // used when sorting parallel edge connections (tuples)
-        public TupleSort TSort2; // used when sorting parallel edge connections (tuples)
+        internal Direction TD1; // outward direction of terminal-1
+        internal Direction TD2; // outward direction of terminal-2
 
+        internal (sbyte dx, sbyte dy) SP1; // surface point displacment from node center
+        internal (sbyte dx, sbyte dy) FP1; // facet point displacment from surface point
+
+        internal (sbyte dx, sbyte dy) SP2; // surface point displacment from node center
+        internal (sbyte dx, sbyte dy) FP2; // facet point displacment from surface point
+        
         public byte LineColor;
 
 
@@ -132,31 +129,27 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region TargetOtherBendAttachTSort  ===================================
-        // horz: means the far terminal attaches horizontaly
-        // revr: means reverse the sort comparison
-        internal (Target targ, Node other, (float, float) bend, bool isBend, Attach atch, TupleSort tsor) TargetOtherBendAttachTSort(Node node)
+        #region OtherBendTargetAttachDirection  ===============================
+        internal (Node other, (float, float) bend, Target targ, Attach atch, Direction tdir) OtherBendTargetAttachDirection(Node node)
         {
             if (Points == null) Refresh();
             var symbols = Graph.Symbols;
 
             if (node == Node1)
             {
-                var other = Node2;
-                var si = other.Symbol - 2;
+                var si = Node2.Symbol - 2;
                 var atch = (si < 0 || si >= symbols.Length) ? Attach.Normal : symbols[si].Attach;
                 var bend = Points[Bp1];
                 var targ = QueryX.PathParm.Target1; 
-                return (targ, other, bend, HasBends, atch, TSort2);
+                return (Node2, bend, targ, atch, TD2);
             }
             else
             {
-                var other = Node1;
-                var si = other.Symbol - 2;
+                var si = Node1.Symbol - 2;
                 var atch = (si < 0 || si >= symbols.Length) ? Attach.Normal : symbols[si].Attach;
                 var bend = Points[Bp2];
                 var targ = QueryX.PathParm.Target2;
-                return (targ, other, bend, HasBends, atch, TSort1);
+                return (Node1, bend, targ, atch, TD1);
             }
         }
         #endregion
@@ -306,15 +299,24 @@ namespace ModelGraphSTD
         #endregion
 
         #region SetFace  ======================================================
-        internal void SetFace(Node node, (float x, float y) d, TupleSort ts) => SetFace(node, d, d, d, ts);
-        internal void SetFace(Node node, (float x, float y) d1, (float x, float y) d3, TupleSort ts) => SetFace(node, d1, d1, d3, ts);
-        internal void SetFace(Node node, (float x, float y) d1, (float x, float y) d2, (float x, float y) d3, TupleSort ts)
+        internal void SetFace(Node node, (float dx, float dy) d, Direction td) => SetFace(node, d, d, d, td);
+        internal void SetFace(Node node, (float dx, float dy) d1, (float dx, float dy) d3, Direction td) => SetFace(node, d1, d1, d3, td);
+        internal void SetFace(Node node, (float dx, float dy) d1, (float dx, float dy) d2, (float dx, float dy) d3, Direction td)
         {
             if (node == Node1)
-            { SP1 = d1; FP1 = d2; TP1 = d3; TSort1 = ts; }
+            {
+                SP1 = ((sbyte)d1.dx, (sbyte)d1.dy);
+                FP1 = ((sbyte)d2.dx, (sbyte)d2.dy);
+                TP1 = ((short)d3.dx, (short)d3.dy);
+                TD1 = td;
+            }
             else
-            { SP2 = d1; FP2 = d2; TP2 = d3; TSort2 = ts; }
-
+            {
+                SP2 = ((sbyte)d1.dx, (sbyte)d1.dy);
+                FP2 = ((sbyte)d2.dx, (sbyte)d2.dy);
+                TP2 = ((short)d3.dx, (short)d3.dy);
+                TD2 = td;
+            }
             // do the refresh only once, after both faces have changed
             if (_needsRefresh) Refresh();
             _needsRefresh = !_needsRefresh;
@@ -355,7 +357,7 @@ namespace ModelGraphSTD
             var len2 = facet2.Length;
 
             var len = len1 + bendCount + len2 + 6; // allow for pseudo points sp1 fp1 tp1 tp2 fp2 sp2 (x,y)
-            var P = new(float X, float Y)[len];        // line coordinate values (x,y), (x,y),..
+            var P = new (float X, float Y)[len];        // line coordinate values (x,y), (x,y),..
 
             var sp1 = 0;               // index of surface point 1 value
             var fp1 = 1;               // index of facet point 1 value
@@ -376,15 +378,13 @@ namespace ModelGraphSTD
             (float cx1, float cy1, float w1, float h1) = Node1.Values();
             (float cx2, float cy2, float w2, float h2) = Node2.Values();
 
-            if (SP1.X == 0 && TP1.X == 0 && SP1.Y == 0 && TP1.Y == 0) SP1 = FP1 = TP1 = Node1.Center;
-            P[sp1] = SP1;
-            P[fp1] = FP1;
-            P[tp1] = TP1;
+            P[sp1] = (cx1 + SP1.dx, cy1 + SP1.dy); // surface point 1
+            P[fp1] = (cx1 + FP1.dx, cy1 + FP1.dy); // facet point 1
+            P[tp1] = (cx1 + TP1.dx, cy1 + TP1.dy); // terminal point 1
 
-            if (SP2.X == 0 && TP2.X == 0 && SP2.Y == 0 && TP2.Y == 0) SP2 = FP2 = TP2 = Node2.Center;
-            P[sp2] = SP2;
-            P[fp2] = FP2;
-            P[tp2] = TP2;
+            P[sp2] = (cx2 + SP2.dx, cy2 + SP2.dy); // surface point 2
+            P[fp2] = (cx2 + FP2.dx, cy2 + FP2.dy); // facet point 2
+            P[tp2] = (cx2 + TP2.dx, cy2 + TP2.dy); // terminal point 2
 
             #region Bend Points  ==============================================
             if (bendCount > 0)
@@ -399,91 +399,15 @@ namespace ModelGraphSTD
             #region Facet1 Points  ============================================
             if (len1 > 0)
             {
-                if (TP1.X > FP1.X)
+                var (Xdx, Xdy, Ydx, Ydy) = _facetDirectionVectors[(int)TD1];
+                var x = P[fp1].X;
+                var y = P[fp1].Y;
+                for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
                 {
-                    if (TP1.Y > FP1.Y)
-                    {//==================================== off south-east corner
-                        NotImplemented();
-                    }
-                    else if (TP1.Y < FP1.Y)
-                    {//==================================== off north-east corner
-                        var x = P[fp1].X;
-                        var y = P[fp1].Y;
-                        for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
-                        {
-                            P[j].X = x + facet1.DXY[i].X + facet1.DXY[i].Y;
-                            P[j].Y = y + facet1.DXY[i].Y + facet1.DXY[i].X;
-                        }
-                    }
-                    else
-                    {//==================================== off east side
-                        var x = P[fp1].X;
-                        var y = P[fp1].Y;
-                        for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
-                        {
-                            P[j].X = x + facet1.DXY[i].X;
-                            P[j].Y = y + facet1.DXY[i].Y;
-                        }
-                    }
-                }
-                else if (TP1.X < FP1.X)
-                {
-                    if (TP1.Y > FP1.Y)
-                    {//==================================== off south-west corner
-                        NotImplemented();
-                    }
-                    else if (TP1.Y < FP1.Y)
-                    {//==================================== off north-west corner
-                        NotImplemented();
-                    }
-                    else
-                    {//==================================== off west side
-                        var x = P[fp1].X;
-                        var y = P[fp1].Y;
-                        for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
-                        {
-                            P[j].X = x - facet1.DXY[i].X;
-                            P[j].Y = y - facet1.DXY[i].Y;
-                        }
-                    }
-                }
-                else
-                {
-                    if (TP1.Y > FP1.Y)
-                    {//==================================== off south side
-                        var x = P[fp1].X;
-                        var y = P[fp1].Y;
-                        for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
-                        {
-                            P[j].X = x + facet1.DXY[i].Y;
-                            P[j].Y = y + facet1.DXY[i].X;
-                        }
-                    }
-                    else if (TP1.Y < FP1.Y)
-                    {//==================================== off north side
-                        var x = P[fp1].X;
-                        var y = P[fp1].Y;
-                        for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
-                        {
-                            P[j].X = x - facet1.DXY[i].Y;
-                            P[j].Y = y - facet1.DXY[i].X;
-                        }
-                    }
-                    else
-                    {//==================================== all balled-up in a knot
-                        NotImplemented();
-                    }
-                }
+                    var (dx, dy) = facet1.DXY[i];
 
-                void NotImplemented()
-                {
-                    var x = P[fp1].X;
-                    var y = P[fp1].Y;
-                    for (int i = 0, j = (fp1 + 1); i < len1; j++, i++)
-                    {
-                        P[j].X = x;
-                        P[j].Y = y;
-                    }
+                    P[j].X = x + dx * Xdx + dy * Xdy;
+                    P[j].Y = y + dx * Ydx + dy * Ydy;
                 }
             }
             #endregion
@@ -491,91 +415,37 @@ namespace ModelGraphSTD
             #region Facet2 Points  ============================================
             if (len2 > 0)
             {
-                if (TP2.X > FP2.X)
+                var (Xdx, Xdy, Ydx, Ydy) = _facetDirectionVectors[(int)TD2];
+                var x = P[fp2].X;
+                var y = P[fp2].Y;
+                for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
                 {
-                    if (TP2.Y > FP2.Y)
-                    {//==================================== off south-east corner
-                        NotImplemented();
-                    }
-                    else if (TP2.Y < FP2.Y)
-                    {//==================================== off north-east corner
-                        NotImplemented();
-                    }
-                    else
-                    {//==================================== off east side
-                        var x = P[fp2].X;
-                        var y = P[fp2].Y;
-                        for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
-                        {
-                            P[j].X = x + facet2.DXY[i].X;
-                            P[j].Y = y + facet2.DXY[i].Y;
-                        }
-                    }
-                }
-                else if (TP2.X < FP2.X)
-                {
-                    if (TP2.Y > FP2.Y)
-                    {//==================================== off south-west corner
-                        NotImplemented();
-                    }
-                    else if (TP2.Y < FP2.Y)
-                    {//==================================== off north-west corner
-                        NotImplemented();
-                    }
-                    else
-                    {//==================================== off west side
-                        var x = P[fp2].X;
-                        var y = P[fp2].Y;
-                        for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
-                        {
-                            P[j].X = x - facet2.DXY[i].X;
-                            P[j].Y = y - facet2.DXY[i].Y;
-                        }
-                    }
-                }
-                else
-                {
-                    if (TP2.Y > FP2.Y)
-                    {//==================================== off south side
-                        var x = P[fp2].X;
-                        var y = P[fp2].Y;
-                        for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
-                        {
-                            P[j].X = x + facet2.DXY[i].Y;
-                            P[j].Y = y + facet2.DXY[i].X;
-                        }
-                    }
-                    else if (TP2.Y < FP2.Y)
-                    {//==================================== off north side
-                        var x = P[fp2].X;
-                        var y = P[fp2].Y;
-                        for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
-                        {
-                            P[j].X = x - facet2.DXY[i].Y;
-                            P[j].Y = y - facet2.DXY[i].X;
-                        }
-                    }
-                    else
-                    {//==================================== all balled-up in a knot
-                        NotImplemented();
-                    }
-                }
+                    var (dx, dy) = facet2.DXY[i];
 
-                void NotImplemented()
-                {
-                    var x = P[fp2].X;
-                    var y = P[fp2].Y;
-                    for (int i = 0, j = (fp2 - 1); i < len2; j--, i++)
-                    {
-                        P[j].X = x;
-                        P[j].Y = y;
-                    }
+                    P[j].X = x + dx * Xdx + dy * Xdy;
+                    P[j].Y = y + dx * Ydx + dy * Ydy;
                 }
             }
             #endregion
 
             Extent.SetExtent(P, 2);
         }
+        #endregion
+
+        #region FacetDirectionVectors  ========================================
+        private const float q = 0.7071067811865f; // 1 / SQRT(2)
+        private static (float Xdx, float Xdy, float Ydx, float Ydy)[] _facetDirectionVectors =
+        {
+            (0, 0, 0, 0),    // Direction.Any
+            (1, 0, 0, 1),    // Direction.E
+            (0, 1, -1, 0),   // Direction.S
+            (-1, 0, 0, -1),  // Direction.W
+            (0, -1, 1, 0),   // Direction.N
+            (q, q, -q, q),   // Direction.SEC
+            (-q, q, -q, -q), // Direction.SWC
+            (-q, -q, q, -q), // Direction.NWC
+            (q, -q, q, q),   // Direction.NEC
+        };
         #endregion
     }
 }

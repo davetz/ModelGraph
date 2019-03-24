@@ -36,11 +36,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region SlopeIndex  ===================================================
-        public static (float dx, float dy, float slope, int index) SlopeIndex((float x1, float y1) startPoint, (float x2, float y2) endPoint)
+        #region SlopeSlice  ===================================================
+        public static (float dx, float dy, float slope, int slice) SlopeSlice((float x1, float y1) startPoint, (float x2, float y2) endPoint)
         {/*
-            . 11|12 .     Draw a circle arround the startPoint. Divided the circle into 16 sectors numbered 0 to 15        
-           8    |    15   The endPoint is contained within one of those 16 sectors, (sector lines are ourward pointing rays)
+            . 11|12 .     Draw a circle arround the startPoint. Divided the circle into 16 slices numbered 0 to 15        
+           8    |    15   The endPoint is contained within reported slice, (slice lines are ourward pointing rays)
            -----o------   The sector index tells you the direction from the startPoint to the endPoint 
            7    |     0   ============================================================================
             .  4|3   .    dx = (x2 - x1),    dy = (y2 - y1),    slope = (dy / dx)           
@@ -58,25 +58,25 @@ namespace ModelGraphSTD
             bool isVert = dx == 0;
             bool isHorz = dy == 0;
 
-            (float, int) slope_index = (0, 0);
+            (float, int) slope_slice = (0, 0);
 
             if (isVert)
             {
                 if (isHorz)
                 {
-                    slope_index = (0, 0);
+                    slope_slice = (0, 0);
                 }
                 else if (dy > 0)
-                    slope_index = (1023, 3);
+                    slope_slice = (1023, 3);
                 else
-                    slope_index = (-1023, 12);
+                    slope_slice = (-1023, 12);
             }
             else if (isHorz)
             {
                 if (dx > 0)
-                    slope_index = (0, 0);
+                    slope_slice = (0, 0);
                 else
-                    slope_index = (0, 7);
+                    slope_slice = (0, 7);
             }
             else
             {
@@ -84,20 +84,20 @@ namespace ModelGraphSTD
                 if (dx < 0)
                 {
                     if (dy < 0)
-                        slope_index = (m, (m < a) ? 8 : (m < b) ? 9 : (m < c) ? 10 : 11);
+                        slope_slice = (m, (m < a) ? 8 : (m < b) ? 9 : (m < c) ? 10 : 11);
                     else
-                        slope_index = (m, (m < -c) ? 4 : (m < -b) ? 5 : (m < -a) ? 6 : 7);
+                        slope_slice = (m, (m < -c) ? 4 : (m < -b) ? 5 : (m < -a) ? 6 : 7);
                 }
                 else
                 {
                     if (dy < 0)
-                        slope_index = (m, (m < -c) ? 12 : (m < -b) ? 13 : (m < -a) ? 14 : 15);
+                        slope_slice = (m, (m < -c) ? 12 : (m < -b) ? 13 : (m < -a) ? 14 : 15);
                     else
-                        slope_index = (m, (m < a) ? 0 : (m < b) ? 1 : (m < c) ? 2 : 3);
+                        slope_slice = (m, (m < a) ? 0 : (m < b) ? 1 : (m < c) ? 2 : 3);
                 }
             }
-            var (slope, index) = slope_index;
-            return (dx, dy, slope, index);
+            var (slope, slice) = slope_slice;
+            return (dx, dy, slope, slice);
         }
         #endregion
 
