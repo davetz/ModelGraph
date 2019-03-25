@@ -438,13 +438,13 @@
         {
             (0, 0, 0, 0),    // Direction.Any
             (1, 0, 0, 1),    // Direction.E
-            (0, 1, -1, 0),   // Direction.S
+            (0, 1, 1, 0),   // Direction.S
             (-1, 0, 0, -1),  // Direction.W
-            (0, -1, 1, 0),   // Direction.N
-            (q, q, -q, q),   // Direction.SEC
-            (-q, q, -q, -q), // Direction.SWC
-            (-q, -q, q, -q), // Direction.NWC
-            (q, -q, q, q),   // Direction.NEC
+            (0, 1, -1, 0),   // Direction.N
+            (q, -q, q, q),   // Direction.SEC
+            (-q, -q, q, -q), // Direction.SWC
+            (-q, q, -q, -q), // Direction.NWC
+            (q, q, -q, q),   // Direction.NEC
         };
         #endregion
     }

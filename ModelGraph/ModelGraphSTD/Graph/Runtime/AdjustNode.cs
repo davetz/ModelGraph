@@ -806,9 +806,9 @@ namespace ModelGraphSTD
                             n++;
                         }
                         w1 = F[I[i]].tsiz;
-                        w2 = n * tmSpc / 2; // required width using terminal spacing
+                        w2 = n * tmSpc / 4f;   // required width using terminal spacing
                         d1 = (w2 > w1) ? n : 1;
-                        if (w1 > w2) w1 = w2;
+                        if (node.Sizing == Sizing.Auto || w1 > w2) w1 = w2;
                         d2 = d1 + tmLen;
                     }
                     var (odx, ody) = _terminalOutwardDirection[(int)dir];
@@ -882,12 +882,12 @@ namespace ModelGraphSTD
         {
             (0, 0),   //Any
             (1, 0),   //E
-            (Q, Q),   //SEC
             (0, 1),   //S
-            (-Q, Q),  //SWC
             (-1, 0),  //W
-            (-Q, -Q), //NWC
             (0, -1),  //N
+            (Q, Q),   //SEC
+            (-Q, Q),  //SWC
+            (-Q, -Q), //NWC
             (Q, -Q),  //NEC
         };
         // indexed by (int)Direction
@@ -895,12 +895,12 @@ namespace ModelGraphSTD
         {
             (0, 0),   //Any
             (0, 1),   //E
-            (-Q, -Q), //SEC
             (1, 0),   //S
-            (Q, Q),   //SWC
             (0, 1),   //W
-            (-Q, Q),  //NWC
             (1, 0),   //N
+            (-Q, -Q), //SEC
+            (Q, Q),   //SWC
+            (-Q, Q),  //NWC
             (Q, Q),   //NEC
         };
         private const float Q = 0.7071067811865f; // 1 / SQRT(2)
