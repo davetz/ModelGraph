@@ -47,7 +47,7 @@ namespace ModelGraphSTD
             var spSkew = 8;// gx.SurfaceSkew;
             var tpSkew = gx.TerminalSkew;
             var tmLen = gx.TerminalLength;
-            var tmSpc = gx.TerminalSpacing / 2;
+            var tmSpc = gx.TerminalSpacing / 2f;
             var barSize = ((node.BarWidth == BarWidth.Thin) ? gx.ThinBusSize : (node.BarWidth == BarWidth.Wide) ? gx.WideBusSize : gx.ExtraBusSize) / 2;
 
             var si = node.Symbol - 2;
@@ -806,7 +806,7 @@ namespace ModelGraphSTD
                             n++;
                         }
                         w1 = F[I[i]].tsiz;
-                        w2 = n * tmSpc / 4f;   // required width using terminal spacing
+                        w2 = tmSpc;   // required width using terminal spacing
                         d1 = (w2 > w1) ? n : 1;
                         if (node.Sizing == Sizing.Auto || w1 > w2) w1 = w2;
                         d2 = d1 + tmLen;
@@ -814,7 +814,7 @@ namespace ModelGraphSTD
                     var (odx, ody) = _terminalOutwardDirection[(int)dir];
                     var (tdx, tdy) = _terminalTangentDirection[(int)dir];
                     var (dx, dy) = F[I[i]].delta;
-                    os = Layout.Offset(k++, n);
+                    os = (k++ * 2) + 1 - n;
                     o1 = w1 * os;
                     o2 = w2 * os;
 
