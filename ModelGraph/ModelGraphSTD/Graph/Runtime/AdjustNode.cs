@@ -790,19 +790,21 @@ namespace ModelGraphSTD
                 var k = 0;
                 var n = 0;
                 var dir = Direction.Any;
-
+                byte tix = 255;
                 float d1, d2, w1, w2, os, o1, o2;
                 d1 = d2 = w1 = w2 = os = o1 = o2 = 0;
 
                 for (int i = 0; i < N; i++)
                 {
-                    if (F[I[i]].tdir != dir)
+                    if (F[I[i]].tix != tix || F[I[i]].tdir != dir)
                     {
                         dir = F[I[i]].tdir;
+                        tix = F[I[i]].tix;
+
                         k = n = 0; 
                         for (int j = i; j < N; j++)
                         {
-                            if (F[I[j]].tdir != dir) break;
+                            if (F[I[j]].tix != tix || F[I[j]].tdir != dir) break;
                             n++;
                         }
                         w1 = F[I[i]].tsiz;
@@ -849,6 +851,9 @@ namespace ModelGraphSTD
                 switch (adir)
                 {
                     case 1:
+                    case 5:
+                    case 6:
+                    case 7:
                         return CompareF(F[a].slope, F[b].slope);
                     case 2:
                         if (F[a].slice > F[b].slice) return -1;
@@ -859,12 +864,6 @@ namespace ModelGraphSTD
                     case 4:
                         if (F[a].slice < F[b].slice) return -1;
                         if (F[a].slice > F[b].slice) return 1;
-                        return CompareF(F[a].slope, F[b].slope);
-                    case 5:
-                        return CompareF(F[a].slope, F[b].slope);
-                    case 6:
-                        return CompareF(F[a].slope, F[b].slope);
-                    case 7:
                         return CompareF(F[a].slope, F[b].slope);
                     default:
                         return 0;
