@@ -56,23 +56,6 @@ namespace ModelGraphSTD
 
             return (sdx, sdy, siz, (byte)tix, ftd);
         }
-        internal List<(TargetIndex tix, Direction std, float sdx, float sdy, float siz)> GetFlipTargetSurface(FlipState flip, float scale)
-        {
-            var list = new List<(TargetIndex tix, Direction td, float dx, float dy, float siz)>(TargetContacts.Count);
-            foreach (var e in TargetContacts)
-            {
-                var fix = (int)flip;
-                var tix = (int)e.tix;
-                var (tdx, tdy) = ToFloat(e.pnt);
-                var (fdx, fdy) = _flipper[fix](tdx, tdy);
-                var sdx = fdx * scale;
-                var sdy = fdy * scale;
-                var siz = e.siz * scale / 255;
-                var ftd = _flipDirection[fix][tix];
-                list.Add((e.tix, ftd, sdx, sdy, siz));
-            }
-            return list;
-        }
         private static readonly Direction[] _flipNoneDirection =
         {
             Direction.E,   //EN
@@ -149,46 +132,46 @@ namespace ModelGraphSTD
             Direction.S,
             Direction.SEC,
         };
-        private static readonly Direction[] _rotateLeftDirection =
-        {
-            Direction.S,
-            Direction.S,
-            Direction.S,
-            Direction.SWC,
-            Direction.W,
-            Direction.W,
-            Direction.W,
-            Direction.NWC,
-            Direction.N,
-            Direction.N,
-            Direction.N,
-            Direction.NEC,
-            Direction.E,
-            Direction.E,
-            Direction.E,
-            Direction.SEC,
-        };
-        private static readonly Direction[] _leftHorzDirection =
-        {
-            Direction.N,
-            Direction.N,
-            Direction.N,
-            Direction.SEC,
-            Direction.W,
-            Direction.W,
-            Direction.W,
-            Direction.NEC,
-            Direction.S,
-            Direction.S,
-            Direction.S,
-            Direction.NWC,
-            Direction.E,
-            Direction.E,
-            Direction.E,
-            Direction.SWC,
-        };
         private static readonly Direction[] _rotateRightDirection =
         {
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.SWC,
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.NWC,
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.NEC,
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.SEC,
+        };
+        private static readonly Direction[] _rightHorzDirection =
+        {
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.SEC,
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.NEC,
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.NWC,
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.SWC,
+        };
+        private static readonly Direction[] _rotateLeftDirection =
+        {
             Direction.N,
             Direction.N,
             Direction.N,
@@ -206,7 +189,7 @@ namespace ModelGraphSTD
             Direction.W,
             Direction.NWC,
         };
-        private static readonly Direction[] _rightHorzDirection =
+        private static readonly Direction[] _leftHorzDirection =
         {
             Direction.S,
             Direction.S,
