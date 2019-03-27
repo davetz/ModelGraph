@@ -132,44 +132,6 @@ namespace ModelGraphSTD
             Direction.S,
             Direction.SEC,
         };
-        private static readonly Direction[] _rotateRightDirection =
-        {
-            Direction.S,
-            Direction.S,
-            Direction.S,
-            Direction.SWC,
-            Direction.W,
-            Direction.W,
-            Direction.W,
-            Direction.NWC,
-            Direction.N,
-            Direction.N,
-            Direction.N,
-            Direction.NEC,
-            Direction.E,
-            Direction.E,
-            Direction.E,
-            Direction.SEC,
-        };
-        private static readonly Direction[] _rightHorzDirection =
-        {
-            Direction.N,
-            Direction.N,
-            Direction.N,
-            Direction.SEC,
-            Direction.W,
-            Direction.W,
-            Direction.W,
-            Direction.NEC,
-            Direction.S,
-            Direction.S,
-            Direction.S,
-            Direction.NWC,
-            Direction.E,
-            Direction.E,
-            Direction.E,
-            Direction.SWC,
-        };
         private static readonly Direction[] _rotateLeftDirection =
         {
             Direction.N,
@@ -207,6 +169,44 @@ namespace ModelGraphSTD
             Direction.W,
             Direction.W,
             Direction.NEC,
+        };
+        private static readonly Direction[] _rotateRightDirection =
+        {
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.SWC,
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.NWC,
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.NEC,
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.SEC,
+        };
+        private static readonly Direction[] _rightHorzDirection =
+        {
+            Direction.N,
+            Direction.N,
+            Direction.N,
+            Direction.SEC,
+            Direction.W,
+            Direction.W,
+            Direction.W,
+            Direction.NEC,
+            Direction.S,
+            Direction.S,
+            Direction.S,
+            Direction.NWC,
+            Direction.E,
+            Direction.E,
+            Direction.E,
+            Direction.SWC,
         };
         private static readonly Direction[][] _flipDirection =
         {

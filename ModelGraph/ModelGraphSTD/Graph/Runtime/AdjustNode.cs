@@ -28,7 +28,7 @@ namespace ModelGraphSTD
                 var (dx, dy, slope, slice) = XYTuple.SlopeSlice(node.Center, bend);
 
                 E[i] = (bend, other, 0, targ, atch, tdir);
-                F[i] = ((0, 0), slope, (byte)slice, 0, 0, Direction.Any);
+                F[i] = ((dx, dy), slope, (byte)slice, 0, 0, Direction.Any);
 
                 var isTuple = node_tuple.ContainsKey(other);
                 node_tuple[other] = isTuple;
