@@ -14,11 +14,10 @@ namespace ModelGraphSTD
         internal abstract List<Item> GetItems();
         internal abstract int Count { get; }
 
-        internal bool TryLookUpProperty(string name, out Property property, out int index)
+        internal bool TryLookUpProperty(string name, out Property property)
         {
             property = null;
-            index = 0;
-            return GetChef().TryLookUpProperty(this, name, out property, out index);
+            return GetChef().TryLookUpProperty(this, name, out property);
         }
     }
 }

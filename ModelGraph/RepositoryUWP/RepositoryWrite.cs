@@ -34,7 +34,7 @@ namespace RepositoryUWP
         #region Write  ========================================================
         private void Write(Chef chef, DataWriter w)
         {
-            var fileFormat = _fileFormat_K;
+            var fileFormat = _fileFormat_L;
             var itemCount = chef.GetGuidItemIndex(out Guid[] guids, out Dictionary<Item, int> itemIndex);
             var relationList = chef.GetRelationList();
 
@@ -347,12 +347,9 @@ namespace RepositoryUWP
                 if (!string.IsNullOrWhiteSpace(cx.Description)) S |= S3;
                 if (cx.Separator != ComputeX.DefaultSeparator) S |= S4;
                 if (cx.CompuType != CompuType.RowValue) S |= S5;
-                if (cx.NumericSet != NumericSet.Count) S |= S6;
 
                 if (cx.Results != Results.OneValue) S |= S7;        //01-27-2018 _fileFormat_4
                 if (cx.Sorting != Sorting.Unsorted) S |= S8;
-                if (cx.TakeSet != TakeSet.First) S |= S9;
-                if (cx.TakeLimit != 0) S |= S10;
 
                 w.WriteUInt16(S);                                   //01-27-2018 _fileFormat_4
                 if ((S & S1) != 0) WriteString(w, cx.Name);
@@ -360,12 +357,9 @@ namespace RepositoryUWP
                 if ((S & S3) != 0) WriteString(w, cx.Description);
                 if ((S & S4) != 0) WriteString(w, (cx.Separator ?? string.Empty));
                 if ((S & S5) != 0) w.WriteByte((byte)cx.CompuType);
-                if ((S & S6) != 0) w.WriteByte((byte)cx.NumericSet);
 
                 if ((S & S7) != 0) w.WriteByte((byte)cx.Results);   //01-27-2018 _fileFormat_4
                 if ((S & S8) != 0) w.WriteByte((byte)cx.Sorting);
-                if ((S & S9) != 0) w.WriteByte((byte)cx.TakeSet);
-                if ((S & S10) != 0) w.WriteByte(cx.TakeLimit);
             }
             w.WriteByte((byte)Mark.ComputeXEnding); // itegrity marker
         }

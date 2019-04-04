@@ -92,13 +92,5 @@ namespace ModelGraphSTD
             return false;
         }
         #endregion
-
-        #region AsValue  ======================================================
-        internal override bool AsBool() => throw new NotImplementedException();
-        internal override Int64 AsInt64() => throw new NotImplementedException();
-        internal override double AsDouble() => throw new NotImplementedException();
-        internal override string AsString() => throw new NotImplementedException();
-        internal override DateTime AsDateTime() => throw new NotImplementedException();
-        #endregion
     }
 }

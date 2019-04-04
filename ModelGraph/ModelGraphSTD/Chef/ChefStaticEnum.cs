@@ -16,8 +16,6 @@
         EnumZ _facetEnum;
         EnumZ _connectEnum;
         EnumZ _contactEnum;
-        EnumZ _numericSetEnum;
-        EnumZ _numericTermEnum;
         EnumZ _computeTypeEnum;
         EnumZ _attatchEnum;
         EnumZ _lineStyleEnum;
@@ -157,25 +155,9 @@
             new PairZ(_dashStyleEnum, Trait.DashStyle_DashDot);
             new PairZ(_dashStyleEnum, Trait.DashStyle_DashDotDot);
 
-            _numericSetEnum = new EnumZ(EnumZStore, Trait.NumericSetEnum);
-            new PairZ(_numericSetEnum, Trait.NumericSet_Count);
-            new PairZ(_numericSetEnum, Trait.NumericSet_Count_Min_Max);
-            new PairZ(_numericSetEnum, Trait.NumericSet_Count_Min_Max_Sum);
-            new PairZ(_numericSetEnum, Trait.NumericSet_Count_Min_Max_Sum_Ave);
-            new PairZ(_numericSetEnum, Trait.NumericSet_Count_Min_Max_Sum_Ave_Std);
-
-            _numericTermEnum = new EnumZ(EnumZStore, Trait.NumericTermEnum);
-            new PairZ(_numericTermEnum, Trait.NumericTerm_Count);
-            new PairZ(_numericTermEnum, Trait.NumericTerm_Min);
-            new PairZ(_numericTermEnum, Trait.NumericTerm_Max);
-            new PairZ(_numericTermEnum, Trait.NumericTerm_Sum);
-            new PairZ(_numericTermEnum, Trait.NumericTerm_Ave);
-            new PairZ(_numericTermEnum, Trait.NumericTerm_Std);
-
             _computeTypeEnum = new EnumZ(EnumZStore, Trait.CompuTypeEnum);
             new PairZ(_computeTypeEnum, Trait.CompuType_RowValue);
             new PairZ(_computeTypeEnum, Trait.CompuType_RelatedValue);
-            new PairZ(_computeTypeEnum, Trait.CompuType_NumericValueSet);
             new PairZ(_computeTypeEnum, Trait.CompuType_CompositeString);
             new PairZ(_computeTypeEnum, Trait.CompuType_CompositeReversed);
 
@@ -209,8 +191,6 @@
             _facetEnum = null;
             _connectEnum = null;
             _contactEnum = null;
-            _numericSetEnum = null;
-            _numericTermEnum = null;
             _computeTypeEnum = null;
             _attatchEnum = null;
             _lineStyleEnum = null;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace ModelGraphSTD
@@ -7,8 +6,8 @@ namespace ModelGraphSTD
     ComputeStep is a node in an expression tree. The expression tree is used in
     a query's where/select clause. When employed in a select statement, it computes
     a value based on an item's properties. In the context of a where clause it can
-    qualify specific relational paths based on the properties of the encountered rows
-    while traversing the relational path.
+    qualify specific relational paths based on row properties encountered rows
+    while traversing the path.
 
     The evaluation function is set durring the where/select clause
     validation. The actual value-types and choice of evaluation function
@@ -114,10 +113,10 @@ namespace ModelGraphSTD
             bool result = true;
             if (StepType == StepType.Property && Evaluate is LiteralParse e)
             {
-                if (sto.TryLookUpProperty(e.Text, out Property property, out int index))
+                if (sto.TryLookUpProperty(e.Text, out Property property))
                 {
                     StepType = StepType.Property;
-                    Evaluate = new LiteralProperty(this, property, index, getItem);
+                    Evaluate = new LiteralProperty(this, property, getItem);
                 }
                 else
                 {

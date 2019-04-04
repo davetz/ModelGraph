@@ -44,25 +44,25 @@ namespace ModelGraphSTD
         }
         internal static void Release(ItemModel m)
         {
-            if (m is null) return;
-            Release(m.ChildModels);
-            m.Item = null;
-            m.Aux1 = null;
-            m.Aux2 = null;
-            m.Get = null;
-            m.ParentModel = null;
-            m.ChildModels = null;
-            m.ViewModels = null;
+            //if (m is null) return;
+            //Release(m.ChildModels);
+            //m.Item = null;
+            //m.Aux1 = null;
+            //m.Aux2 = null;
+            //m.Get = null;
+            //m.ParentModel = null;
+            //m.ChildModels = null;
+            //m.ViewModels = null;
         }
         internal static void Release(List<ItemModel> childModels)
         {
-            if (childModels is null) return;
+            //if (childModels is null) return;
 
-            foreach (var child in childModels)
-            {
-                Release(child);
-            }
-            childModels.Clear();            
+            //foreach (var child in childModels)
+            //{
+            //    Release(child);
+            //}
+            //childModels.Clear();            
         }
         #endregion
 

@@ -6,7 +6,7 @@ namespace ModelGraphSTD
     {
         internal SumDouble(ComputeStep step) { _step = step; }
 
-        internal override string Text => "Min";
+        internal override string Text => "Sum";
 
         protected override double GetVal()
         {

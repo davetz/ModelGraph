@@ -17,7 +17,7 @@ namespace ModelGraphSTD
             {
                 val += v[i];
             }
-            if (N > 0) val = val / N;
+            if (N > 1) val = val / N;
 
             return val;
         }

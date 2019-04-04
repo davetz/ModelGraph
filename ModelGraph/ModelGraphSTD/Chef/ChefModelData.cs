@@ -751,6 +751,7 @@ namespace ModelGraphSTD
         #region ValidateModel  ================================================
         bool ValidateModel(ItemModel m, List<ItemModel> previous)
         {
+            if (m is null || m.Item is null) return false;
             if (m.Item.AutoExpandLeft)
             {
                 m.IsExpandedLeft = true;
@@ -5734,37 +5735,50 @@ namespace ModelGraphSTD
                 Validate = (m,prev) =>
                 {
                     var qx = m.QueryX;
-                    if (!QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list)) return (false, false);
+                    if (!m.IsExpandedLeft && m.IsExpandedRight && m.ChildModelCount == 1) return (true, false);
+
+                    //if (!QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list)) return (false, false);
 
                     m.InitChildModels(prev);
 
                     var anyChange = false;
-                    foreach (var qc in list)
+                    if (m.IsExpandedRight)
                     {
-                        if (qc.IsPath)
+                        anyChange |= AddProperyModel(prev, m, _queryXRootWhereProperty);
+                    }
+
+                    if (m.IsExpandedLeft)
+                    {
+                        if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list))
                         {
-                            if (qc.IsHead)
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathHead_M, qc, null, null, MetaGraphPathHead_X);
-                            else
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, MetaGraphPathLink_X);
-                        }
-                        else if (qc.IsGroup)
-                        {
-                            if (qc.IsHead)
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupHead_M, qc, null, null, MetaGraphGroupHead_X);
-                            else
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, MetaGraphGroupLink_X);
-                        }
-                        else if (qc.IsSegue)
-                        {
-                            if (qc.IsHead)
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressHead_M, qc, null, null, MetaGraphEgressHead_X);
-                            else
-                                anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, MetaGraphEgressLink_X);
-                        }
-                        else
-                        {
-                            anyChange |= AddChildModel(prev, m, Trait.MetaGraphLink_M, qc, null, null, MetaGraphLink_X);
+                            foreach (var qc in list)
+                            {
+                                if (qc.IsPath)
+                                {
+                                    if (qc.IsHead)
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathHead_M, qc, null, null, MetaGraphPathHead_X);
+                                    else
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphPathLink_M, qc, null, null, MetaGraphPathLink_X);
+                                }
+                                else if (qc.IsGroup)
+                                {
+                                    if (qc.IsHead)
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupHead_M, qc, null, null, MetaGraphGroupHead_X);
+                                    else
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphGroupLink_M, qc, null, null, MetaGraphGroupLink_X);
+                                }
+                                else if (qc.IsSegue)
+                                {
+                                    if (qc.IsHead)
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressHead_M, qc, null, null, MetaGraphEgressHead_X);
+                                    else
+                                        anyChange |= AddChildModel(prev, m, Trait.MetaGraphEgressLink_M, qc, null, null, MetaGraphEgressLink_X);
+                                }
+                                else
+                                {
+                                    anyChange |= AddChildModel(prev, m, Trait.MetaGraphLink_M, qc, null, null, MetaGraphLink_X);
+                                }
+                            }
                         }
                     }
                     return(true, anyChange);

@@ -36,8 +36,6 @@ namespace ModelGraphSTD
         private PropertyOf<ComputeX, string> _computeXValueTypeProperty;
         private PropertyOf<ComputeX, string> _computeXResultsProperty;
         private PropertyOf<ComputeX, string> _computeXSortingProperty;
-        private PropertyOf<ComputeX, string> _computeXTakeSetProperty;
-        private PropertyOf<ComputeX, byte> _computeXTakeLimitProperty;
 
         private PropertyOf<RelationX, string> _relationXNameProperty;
         private PropertyOf<RelationX, string> _relationXSummaryProperty;
@@ -237,13 +235,6 @@ namespace ModelGraphSTD
                 props.Add(p);
             }
             {
-                var p = _computeXNumericSetProperty = new PropertyOf<ComputeX, string>(PropertyStore, Trait.ComputeXNumericSet_P, _numericSetEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).NumericSet);
-                p.SetValFunc = (item, value) => TrySetNumericSetProperty(p.Cast(item), GetEnumZKey(p.EnumZ, value));
-                p.Value = new StringValue(p);
-                props.Add(p);
-            }
-            {
                 var p = _computeXWhereProperty = new PropertyOf<ComputeX, string>(PropertyStore, Trait.ComputeXWhere_P);
                 p.GetValFunc = (item) => GetWhereProperty(p.Cast(item));
                 p.SetValFunc = (item, value) => TrySetWhereProperty(p.Cast(item), value);
@@ -284,20 +275,6 @@ namespace ModelGraphSTD
                 p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).Sorting);
                 p.SetValFunc = (item, value) => TrySetSortingProperty(p.Cast(item), GetEnumZKey(p.EnumZ, value));
                 p.Value = new StringValue(p);
-                props.Add(p);
-            }
-            {
-                var p = _computeXTakeSetProperty = new PropertyOf<ComputeX, string>(PropertyStore, Trait.ComputeXTakeSet_P, _computeTakeSetEnum);
-                p.GetValFunc = (item) => GetEnumZName(p.EnumZ, (int)p.Cast(item).TakeSet);
-                p.SetValFunc = (item, value) => TrySetTakeSetProperty(p.Cast(item), GetEnumZKey(p.EnumZ, value));
-                p.Value = new StringValue(p);
-                props.Add(p);
-            }
-            {
-                var p = _computeXTakeLimitProperty = new PropertyOf<ComputeX, byte>(PropertyStore, Trait.ComputeXTakeLimit_P);
-                p.GetValFunc = (item) => p.Cast(item).TakeLimit;
-                p.SetValFunc = (item, value) => { p.Cast(item).TakeLimit = (byte)value; return true; };
-                p.Value = new ByteValue(p);
                 props.Add(p);
             }
             Store_Property.SetLink(ComputeXStore, props);
@@ -610,8 +587,6 @@ namespace ModelGraphSTD
             _computeXValueTypeProperty = null;
             _computeXResultsProperty = null;
             _computeXSortingProperty = null;
-            _computeXTakeSetProperty = null;
-            _computeXTakeLimitProperty = null;
 
             _relationXNameProperty = null;
             _relationXSummaryProperty = null;
@@ -663,10 +638,9 @@ namespace ModelGraphSTD
 
         #region LookUpProperty  ===============================================
         static char[] _dotSplit = ".".ToCharArray();
-        internal bool TryLookUpProperty(Store store, string name, out Property prop, out int index)
+        internal bool TryLookUpProperty(Store store, string name, out Property prop)
         {
             prop = null;
-            index = (int)NumericTerm.None;
 
             if (string.IsNullOrWhiteSpace(name)) return false;
 
@@ -686,21 +660,7 @@ namespace ModelGraphSTD
                     {
                         var n = cd.Name;
                         if (string.IsNullOrWhiteSpace(n)) continue;
-
-                        if (cd.CompuType == CompuType.NumericValueSet)
-                        {
-                            var parts = name.Split(_dotSplit);
-                            if (parts.Length == 2 && (string.Compare(parts[0], n, true) == 0))
-                            {
-                                if (string.Compare(parts[1], "COUNT") == 0) { prop = cd; index = (int)NumericTerm.Count; return true; }
-                                if (string.Compare(parts[1], "MIN") == 0) { prop = cd; index = (int)NumericTerm.Min; return true; }
-                                if (string.Compare(parts[1], "MAX") == 0) { prop = cd; index = (int)NumericTerm.Max; return true; }
-                                if (string.Compare(parts[1], "SUM") == 0) { prop = cd; index = (int)NumericTerm.Sum; return true; }
-                                if (string.Compare(parts[1], "AVE") == 0) { prop = cd; index = (int)NumericTerm.Ave; return true; }
-                                if (string.Compare(parts[1], "STD") == 0) { prop = cd; index = (int)NumericTerm.Std; return true; }
-                            }
-                        }
-                        else if (string.Compare(n, name, true) == 0) { prop = cd; return true; }
+                        if (string.Compare(n, name, true) == 0) { prop = cd; return true; }
                     }
                 }
             }

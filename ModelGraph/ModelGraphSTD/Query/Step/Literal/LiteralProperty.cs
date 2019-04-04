@@ -2,18 +2,15 @@
 using System.Text;
 
 namespace ModelGraphSTD
-{/*
- */
+{
     internal class LiteralProperty : EvaluateStep
     {
         private Func<Item> _getItem;
-        private int _index;
 
-        internal LiteralProperty(ComputeStep step, Property property, int index, Func<Item> getItem)
+        internal LiteralProperty(ComputeStep step, Property property, Func<Item> getItem)
         {
             Property = property;
             _getItem = getItem;
-            _index = index;
             _step = step;
         }
         internal Property Property { get; }

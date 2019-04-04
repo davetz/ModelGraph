@@ -15,11 +15,8 @@ namespace ModelGraphSTD
         internal string Separator = DefaultSeparator;
 
         internal CompuType CompuType; // type of computation
-        internal NumericSet NumericSet; //specify a numeric calculation
         internal Results Results; //specify scalar or array results
         internal Sorting Sorting; //specify results sorting mode
-        internal TakeSet TakeSet; //specify where the limited set of values comes from
-        internal byte TakeLimit; //specify the number of values to take
 
         #region Constructors  =================================================
         internal ComputeX(StoreOf<ComputeX> owner)

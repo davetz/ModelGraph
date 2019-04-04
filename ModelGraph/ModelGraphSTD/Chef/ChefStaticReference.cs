@@ -36,10 +36,8 @@ namespace ModelGraphSTD
                 { _queryXFacet2Property, _facetEnum },
 
                 { _computeXCompuTypeProperty, _computeTypeEnum },
-                { _computeXNumericSetProperty, _numericSetEnum },
                 { _computeXResultsProperty, _computeResultsEnum },
                 { _computeXSortingProperty, _computeSortingEnum },
-                { _computeXTakeSetProperty, _computeTakeSetEnum }
             };
         }
     }
