@@ -1,18 +1,42 @@
 ﻿using System.Collections.Generic;
 
 namespace ModelGraphSTD
-{/*
- */
+{
     public class Error : Item
     {
-        internal Item Item1;
-        internal Item Item2;
+        internal Item Item;
+        internal Item Aux1;
+        internal Item Aux2;
         internal List<string> Errors = new List<string>(1);
 
         #region Constructor  ==================================================
-        internal Error(Store owner, Trait trait, string error = null)
+        internal Error(StoreOf<Error> owner, Item item, Trait trait, string error = null)
         {
             Owner = owner;
+            Item = item;
+            Trait = trait;
+
+            if (error != null) Errors.Add(error);
+
+            owner.Add(this);
+        }
+        internal Error(StoreOf<Error> owner, Item item, Item aux1, Trait trait, string error = null)
+        {
+            Owner = owner;
+            Item = item;
+            Aux1 = aux1;
+            Trait = trait;
+
+            if (error != null) Errors.Add(error);
+
+            owner.Add(this);
+        }
+        internal Error(StoreOf<Error> owner, Item item, Item aux1, Item aux2, Trait trait, string error = null)
+        {
+            Owner = owner;
+            Item = item;
+            Aux1 = aux1;
+            Aux2 = aux2;
             Trait = trait;
 
             if (error != null) Errors.Add(error);
@@ -26,6 +50,8 @@ namespace ModelGraphSTD
         {
             Errors.Add(error);
         }
+        internal void Clear() => Errors.Clear();
+
         internal int Count => Errors.Count;
         internal string GetError(int index = 0)
         {

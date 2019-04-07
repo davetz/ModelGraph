@@ -1,115 +1,103 @@
 ﻿using System.Collections.Generic;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public partial class Chef
     {
-        private Dictionary<Item, List<Error>> _itemError;
+        private Dictionary<Item, List<Error>> _itemError = new Dictionary<Item, List<Error>>();
 
-        #region ResetError  ===================================================
-        //
-        void ResetError()
+        #region RepositoryError  ==============================================
+        public void AddRepositorReadError(string text)
         {
-            _itemError = new Dictionary<Item,List<Error>>();
+            var error = new Error(ErrorStore, this, Trait.ImportError);
+            error.Item = this;
+            error.Add(text);
+            AddError(error);
+        }
+        public void AddRepositorWriteError(string text)
+        {
+            var error = new Error(ErrorStore, this, Trait.ExportError);
+            error.Item = this;
+            error.Add(text);
+            AddError(error);
         }
         #endregion
 
-        #region HasError  =====================================================
-        internal bool HasItemError(Item item)
+        #region ClearItemErrors  ==============================================
+        void ClearItemErrors()
         {
-            return _itemError.ContainsKey(item);
+            _itemError.Clear();
         }
         #endregion
 
-        #region SetError  =====================================================
-        //
-        internal void SetError(Error error)
+        #region AddError  =====================================================
+        internal void AddError(Error error)
         {
-            var item = error.Item1;
+            var item = error.Item;
             if (!_itemError.TryGetValue(item, out List<Error> errors))
             {
                 errors = new List<Error>(2);
                 _itemError.Add(item, errors);
             }
             errors.Add(error);
+            item.HasError = true;
         }
         #endregion
 
-        #region GetError  =====================================================
-        internal string GetError(Item item)
+        #region TryGetError  ==================================================
+        internal Error TryGetError(Item item)
         {
-            if (!_itemError.TryGetValue(item, out List<Error> errors)) return null;
-            if (errors.Count == 0)
+            if (_itemError.TryGetValue(item, out List<Error> errors))
             {
+                if (errors.Count > 0) return errors[0];
                 _itemError.Remove(item);
-                return null;
             }
-            return errors[0].GetError();        
+            return null;
+        }
+        internal Error TryGetError(Item item, Item aux1)
+        {
+            if (aux1 is null) return TryGetError(item);
+
+            if (_itemError.TryGetValue(item, out List<Error> errors))
+            {
+                foreach (var error in errors)
+                {
+                    if (error.Aux1 == aux1) return error;
+                }
+            }
+            return null;
+        }
+        internal Error TryGetError(Item item, Item aux1, Item aux2)
+        {
+            if (aux1 is null) return TryGetError(item);
+            if (aux2 is null) return TryGetError(item, aux1);
+
+            if (_itemError.TryGetValue(item, out List<Error> errors))
+            {
+                foreach (var error in errors)
+                {
+                    if (error.Aux1 == aux1 && error.Aux2 == aux2) return error;
+                }
+            }
+            return null;
         }
         #endregion
 
-        #region GetErrors  ====================================================
-        internal int GetErrorCount()
+        #region ClearError  ===================================================
+        internal void ClearError(Item item, Error error)
         {
-            int count = 0;
-            foreach (var e1 in _itemError)
+            if (_itemError.TryGetValue(item, out List<Error> errors))
             {
-                count += e1.Value.Count;
+                if (error != null)
+                {
+                    errors.Remove(error);
+                    ErrorStore.Remove(error);
+                    item.HasError = errors.Count > 0;
+                }
             }
-            return count;
-        }
-        internal bool TryGetErrors(out List<Error> items)
-        {
-            var errors = new List<Error>(GetErrorCount());
-
-            foreach (var e1 in _itemError)
-            {
-                errors.AddRange(e1.Value);
-            }
-            items = errors;
-            return (items.Count > 0);
+            else
+                item.HasError = false;
         }
         #endregion
-
-        #region ClearErrors  ===================================================
-        internal void ClearErrors(Error error)
-        {
-            ClearErrors(error.Item1, error.Item2, error.Trait);
-        }
-        internal void ClearErrors(Item item)
-        {
-            _itemError.Remove(item);
-        }
-        internal void ClearErrors(Item item1, Item item2)
-        {
-            if (!_itemError.TryGetValue(item1, out List<Error> errors)) return;
-
-            var last = errors.Count - 1;
-            for (int i = last; i >= 0; i--)
-            {
-                if (errors[i].Item2 != item2) continue;
-                errors.RemoveAt(i);
-            }
-            if (errors.Count == 0)
-                _itemError.Remove(item1);
-        }
-        internal void ClearErrors(Item item, Item related, Trait trait)
-        {
-            if (!_itemError.TryGetValue(item, out List<Error> errors)) return;
-
-            var last = errors.Count - 1;
-            for (int i = last; i >= 0; i--)
-            {
-                if (errors[i].Trait != trait) continue;
-                if (errors[i].Item2 != related) continue;
-                errors.RemoveAt(i);
-            }
-            if (errors.Count == 0)
-                _itemError.Remove(item);
-        }
-        #endregion
-
     }
 }

@@ -22,7 +22,7 @@ namespace ModelGraphSTD
         internal byte ChildDelta;  // version of child model list
         private Flags _flags;
         public byte Depth;
-        
+        public bool HasError => Item.HasError;
 
         #region Constructor  ==================================================
         internal ItemModel() { } // supports RootModel constructor
@@ -359,7 +359,6 @@ namespace ModelGraphSTD
             ChildModels.Clear();
         }
         public int FilterCount { get { return (ViewModels == null) ? 0 : ViewModels.Count; } }
-        public bool HasError { get { return false; } }
         public bool IsModified { get { return false; } }
         public string ModelIdentity => GetModelIdentity();
 

@@ -24,6 +24,7 @@ namespace ModelGraphSTD
 
         GetStorageFile = 0x1000, // Command
 
+
         KeyMask = 0xFFF,
         FlagMask = 0xF000,
         EnumMask = 0x3F,
@@ -100,20 +101,13 @@ namespace ModelGraphSTD
 
         #endregion
 
-        #region Item  ================================================(100-2FF)
+        #region Item  ================================================(100-1FF)
 
         //=========================================
         Dummy = 0x100,
         NodeParm = 0x101,
 
         DataChef = 0x112,
-
-        //=========================================
-        ErrorImport = 0x121,
-        ErrorExport = 0x122,
-        ErrorChildren = 0x123,
-        ErrorProperty = 0x124,
-        ErrorRelation = 0x125,
 
         //=========================================
         ChangeRoot = 0x131,
@@ -188,6 +182,20 @@ namespace ModelGraphSTD
 
         LinkPath = 0x1EE, // used to lookup kind resource string "_Link"
         RadialPath = 0x1EF, // used to lookup kind resource string "_Radial"
+
+        #endregion
+
+        #region Error  ===============================================(200-2FF)
+
+        ImportError = 0x200,
+        ExportError = 0x201,
+        ComputeMissingSelectError = 0x202,
+        ComputeMissingRelatedSelectError = 0x203,
+        ComputeInvalidSelectError = 0x204,
+        ComputeInvalidRelatedSelectError = 0x205,
+        ComputeInvalidRelatedWhereError = 0x206,
+        QueryInvalidSelectError = 0x207,
+        QueryInvalidWhereError = 0x208,
 
         #endregion
 

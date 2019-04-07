@@ -45,7 +45,7 @@ namespace ModelGraphSTD
         #region Initialize  ===================================================
         private void Initialize()
         {
-            ResetError();
+            ClearItemErrors();
             InitializeItemIdentity();
             InitializeGraphParams();
 

@@ -27,6 +27,7 @@ namespace ModelGraph.Controls
         TextBlock[] _filterModeCache = new TextBlock[initialSize];
         TextBlock[] _filterCountCache = new TextBlock[initialSize];
         TextBlock[] _propertyNameCache = new TextBlock[initialSize];
+        TextBlock[] _itemHasErrorCache = new TextBlock[initialSize];
         TextBlock[] _modelIdentityCache = new TextBlock[initialSize];
 
         TextBox[] _filterTextCache = new TextBox[initialSize];
@@ -97,6 +98,7 @@ namespace ModelGraph.Controls
                 _filterModeCache = ExpandTextBlockCache(_filterModeCache);
                 _filterCountCache = ExpandTextBlockCache(_filterCountCache);
                 _propertyNameCache = ExpandTextBlockCache(_propertyNameCache);
+                _itemHasErrorCache = ExpandTextBlockCache(_itemHasErrorCache);
                 _modelIdentityCache = ExpandTextBlockCache(_modelIdentityCache);
 
                 _filterTextCache = ExpandTextBoxCache(_filterTextCache);
@@ -185,6 +187,7 @@ namespace ModelGraph.Controls
                 ClearFilterMode(i);
                 ClearFilterText(i);
                 ClearFilterCount(i);
+                ClearItemHasError(i);
                 ClearPropertyName(i);
                 ClearTextProperty(i);
                 ClearCheckProperty(i);
@@ -792,6 +795,41 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        #region AddItemHasError  ==============================================
+        private void AddItemHasError(int index, ItemModel model)
+        {
+            var obj = _itemHasErrorCache[index];
+            if (obj == null)
+            {
+                obj = _itemHasErrorCache[index] = new TextBlock();
+
+                obj.Style = _itemHasErrorStyle;
+                obj.Text = _itemHasErrorText;
+                obj.PointerExited += TextBlockHightlight_PointerExited;
+                obj.PointerEntered += TextBlockHighlight_PointerEntered;
+                obj.PointerReleased += ExpandChoice_PointerReleased;
+                ToolTipService.SetToolTip(obj, _itemHasErrorTip);
+            }
+
+            obj.DataContext = model;
+
+            _stackPanelCache[index].Children.Add(obj);
+        }
+        private void ClearItemHasError(int index)
+        {
+            var obj = _itemHasErrorCache[index];
+            if (obj != null)
+            {
+                obj.PointerExited -= TextBlockHightlight_PointerExited;
+                obj.PointerEntered -= TextBlockHighlight_PointerEntered;
+                obj.PointerReleased -= ExpandChoice_PointerReleased;
+                obj.DataContext = null;
+
+                _itemHasErrorCache[index] = null;
+            }
+        }
+        #endregion
+
 
         #region AddModelIdentity  =============================================
         private void AddModelIdentity(int index, ItemModel model)
@@ -860,18 +898,21 @@ namespace ModelGraph.Controls
                     //=========================================================
                     AddPropertyName(index, name, m);
                     AddTextProperty(index, m);
+                    if (m.HasError) AddItemHasError(index, m);
                     break;
 
                 case ModelType.CheckProperty:
                     //=========================================================
                     AddPropertyName(index, name, m);
                     AddCheckProperty(index, m);
+                    if (m.HasError) AddItemHasError(index, m);
                     break;
 
                 case ModelType.ComboProperty:
                     //=========================================================
                     AddPropertyName(index, name, m);
                     AddComboProperty(index, m);
+                    if (m.HasError) AddItemHasError(index, m);
                     break;
 
                 default:

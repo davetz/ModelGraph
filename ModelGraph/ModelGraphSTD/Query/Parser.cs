@@ -125,7 +125,6 @@ namespace ModelGraphSTD
         }
         #endregion
 
-
         #region RemoveRedundantParens  ========================================
         internal Parser RemoveRedundantParens()
         {/*

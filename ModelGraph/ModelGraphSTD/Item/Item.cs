@@ -81,7 +81,6 @@ namespace ModelGraphSTD
         internal bool IsChoice { get { return GetFlag(State.IsChoice); } set { SetFlag(State.IsChoice, value); } }
         internal bool NeedsRefresh { get { return GetFlag(State.NeedsRefresh); } set { SetFlag(State.NeedsRefresh, value); } }
 
-
         internal bool IsQueryGraphLink => !IsRoot && QueryKind == QueryType.Graph;
         internal bool IsQueryGraphRoot => IsRoot && QueryKind == QueryType.Graph;
 
@@ -102,6 +101,10 @@ namespace ModelGraphSTD
         const byte B3 = 0x4;
         internal bool AutoExpandRight { get { return (_flags & B4) != 0; } set { _flags = value ? (byte)(_flags | B4) : (byte)(_flags & ~B4); } }
         const byte B4 = 0x8;
+        internal bool InDebugMode { get { return (_flags & B7) != 0; } set { _flags = value ? (byte)(_flags | B7) : (byte)(_flags & ~B7); } }
+        const byte B7 = 0x40;
+        internal bool HasError { get { return (_flags & B8) != 0; } set { _flags = value ? (byte)(_flags | B8) : (byte)(_flags & ~B8); } }
+        const byte B8 = 0x80;
         #endregion
 
         #region StringKeys  ===================================================

@@ -29,15 +29,13 @@ namespace ModelGraph.Controls
         #region SetSize  ======================================================
         public void SetSize(double width, double height)
         {
-            if (height > 0)
+            if (_treeCanvas != null && height > 0)
             {
-                TreeCanvas.Width = Width = width;
-                TreeCanvas.Height = Height = height;
+                _treeCanvas.Width = Width = width;
+                _treeCanvas.Height = Height = height;
 
                 _root.ViewCapacity = (int)(Height / _elementHieght);
                 _root.PostRefreshViewList(_select);
-
-                _viewIsReady = true;
             }
         }
         bool ViewIsNotReady()
@@ -49,9 +47,13 @@ namespace ModelGraph.Controls
 
         void TreeCanvas_Loaded(object sender, RoutedEventArgs e)
         {
-            TreeCanvas.Loaded -= TreeCanvas_Loaded;
+            _treeCanvas = sender as Canvas;
+            _treeCanvas.Loaded -= TreeCanvas_Loaded;
+
+            _viewIsReady = true;
             _root.PostRefreshViewList(_select);
         }
+        private Canvas _treeCanvas;
         #endregion
 
         #region Fields  =======================================================
@@ -79,6 +81,7 @@ namespace ModelGraph.Controls
         Style _filterModeStyle;
         Style _filterTextStyle;
         Style _filterCountStyle;
+        Style _itemHasErrorStyle;
         Style _propertyNameStyle;
         Style _textPropertyStyle;
         Style _checkPropertyStyle;
@@ -117,6 +120,8 @@ namespace ModelGraph.Controls
         const string _filterCanShow = "\uE71C";
         const string _filterIsShowing = "\uE71C\uEBE7";
 
+        const string _itemHasErrorText = "\uE783";
+
         string _sortModeTip;
         string _usageModeTip;
         string _leftExpandTip;
@@ -125,9 +130,18 @@ namespace ModelGraph.Controls
         string _filterCountTip;
         string _rightExpandTip;
         string _filterExpandTip;
+        string _itemHasErrorTip;
 
         // position all unused cache elements offScreen
         const int notVisible = 32767;
+        #endregion
+
+        #region IPageControl  =================================================
+        public async void Dispatch(UIRequest rq)
+        {
+            await ModelPageService.Current.Dispatch(rq, this);
+        }
+        public RootModel RootModel => _root;
         #endregion
 
         #region IModelControl  ================================================
@@ -164,6 +178,7 @@ namespace ModelGraph.Controls
             _filterModeStyle = Resources["FilterModeStyle"] as Style;
             _filterTextStyle = Resources["FilterTextStyle"] as Style;
             _filterCountStyle = Resources["FilterCountStyle"] as Style;
+            _itemHasErrorStyle = Resources["ItemHasErrorStyle"] as Style;
             _propertyNameStyle = Resources["PropertyNameStyle"] as Style;
             _textPropertyStyle = Resources["TextPropertyStyle"] as Style;
             _checkPropertyStyle = Resources["CheckPropertyStyle"] as Style;
@@ -179,6 +194,7 @@ namespace ModelGraph.Controls
             _filterCountTip = "009S".GetLocalized();
             _rightExpandTip = "00AS".GetLocalized();
             _filterExpandTip = "00BS".GetLocalized();
+            _itemHasErrorTip = "00FS".GetLocalized();
 
             _itemButtons = new Button[]
             {
@@ -275,211 +291,70 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region KeyButton  ====================================================
-        bool _isCtrlDown;
-        bool _isShiftDown;
-        void KeyButton_LostFocus(object sender, RoutedEventArgs e)
+        #region KeyboardAccelerators  =========================================
+        private void KeyPageUp_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            // there is a rouge scrollViewer in the visual tree
-            // that takes the keyboard focus on pointerRelease events
-            var obj = FocusManager.GetFocusedElement();
-            if (obj != null && obj.GetType() == typeof(ScrollViewer))
+            ChangeScroll(2 - Count);
+        }
+        private void KeyPageDown_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            ChangeScroll(Count - 2);
+        }
+
+        private void KeyUp_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            TryGetPrevModel();
+        }
+        private void KeyDown_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            TryGetNextModel();
+        }
+
+        private void KeyEnd_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            PostRefreshViewList(_select, 0, ChangeType.GoToEnd);
+        }
+        private void KeyHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            PostRefreshViewList(_select, 0, ChangeType.GoToHome);
+        }
+
+        private void KeyLeft_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_select.CanExpandLeft)
             {
-                Focus(FocusState.Keyboard);
+                PostRefreshViewList(_select, 0, ChangeType.ToggleLeft);
+            }
+        }
+        private void KeyRight_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_select.CanExpandRight)
+            {
+                PostRefreshViewList(_select, 0, ChangeType.ToggleRight);
             }
         }
 
-
-        void KeyButton_KeyUp(object sender, KeyRoutedEventArgs e)
+        private void KeyInsert_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (e.Key == Windows.System.VirtualKey.Shift)
+            if (_insertCommand != null)
             {
-                _isShiftDown = false;
-            }
-            else if (e.Key == Windows.System.VirtualKey.Control)
-            {
-                _isCtrlDown = false;
+                _insertCommand.Execute();
             }
         }
 
-        void KeyButton_KeyDown(object sender, KeyRoutedEventArgs e)
+        private void KeyDelete_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(KeyButton.DataContext is ItemModel m))
+            if (_removeCommand != null)
             {
-                return;
-            }
-
-            _select = m;            
-
-            if (e.Key == Windows.System.VirtualKey.Shift)
-            {
-                _isShiftDown = true;
-            }
-            else if (e.Key == Windows.System.VirtualKey.Control)
-            {
-                _isCtrlDown = true;
-            }
-            else if (e.Key == Windows.System.VirtualKey.End)
-            {
-                e.Handled = true;
-                PostRefreshViewList(_select, 0, ChangeType.GoToEnd);
-            }
-            else if (e.Key == Windows.System.VirtualKey.Home)
-            {
-                e.Handled = true;
-                PostRefreshViewList(_select, 0, ChangeType.GoToHome);
-            }
-            else if (e.Key == Windows.System.VirtualKey.PageDown)
-            {
-                ChangeScroll(Count - 2);
-                e.Handled = true;
-            }
-            else if (e.Key == Windows.System.VirtualKey.PageUp)
-            {
-                ChangeScroll(2 - Count);
-                e.Handled = true;
-            }
-            if (e.Key == Windows.System.VirtualKey.Down)
-            {
-                TryGetNextModel();
-                e.Handled = true; 
-            }
-            else if (e.Key == Windows.System.VirtualKey.Up)
-            {
-                TryGetPrevModel();
-                e.Handled = true;
-            }
-            else if (e.Key == Windows.System.VirtualKey.Left)
-            {
-                if (m.CanExpandLeft)
-                {
-                    PostRefreshViewList(_select, 0, ChangeType.ToggleLeft);
-                }
-            }
-            else if (e.Key == Windows.System.VirtualKey.Right)
-            {
-                if (m.CanExpandRight)
-                {
-                    PostRefreshViewList(_select, 0, ChangeType.ToggleRight);
-                }
-            }
-            else if (e.Key == Windows.System.VirtualKey.Insert)
-            {
-                if (_insertCommand != null)
-                {
-                    _insertCommand.Execute();
-                }
-            }
-            else if (e.Key == Windows.System.VirtualKey.Delete)
-            {
-                if (_removeCommand != null)
-                {
-                    _removeCommand.Execute();
-                }
-            }
-            else if (e.KeyStatus.IsMenuKeyDown)
-            {
-                if (e.Key != Windows.System.VirtualKey.Menu)
-                {
-                    foreach (var cmd in _buttonCommands)
-                    {
-                        if (IsFirstLetterOfCommandName(e.Key, cmd.Name))
-                        {
-                            cmd.Execute();
-                        }
-                    }
-                }
-            }
-            else if (e.Key == Windows.System.VirtualKey.S)
-            {
-                if (_sortControl != null)
-                {
-                    ExecuteSort(_sortControl);
-                }
-            }
-            else if (e.Key == Windows.System.VirtualKey.U)
-            {
-                if (_usageControl != null)
-                {
-                    ExecuteUsage(_usageControl);
-                }
-            }
-            else if (e.Key == Windows.System.VirtualKey.F)
-            {
-                if (_filterControl != null)
-                {
-                    ExecuteFilterMode(_filterControl);
-                }
-            }
-            else if (e.Key == Windows.System.VirtualKey.C)
-            {
-                if (m.CanDrag)
-                {
-                    m.DragStart();
-                }
-            }
-            else if (e.Key == Windows.System.VirtualKey.P)
-            {
-                if (m.DragEnter() != DropAction.None)
-                {
-                    m.DragDrop();
-                }
-            }
-            else if (e.Key == Windows.System.VirtualKey.I || e.Key == Windows.System.VirtualKey.A)
-            {
-                foreach (var cmd in _buttonCommands)
-                {
-                    if (IsFirstLetterOfCommandName(e.Key, cmd.Name))
-                    {
-                        cmd.Execute();
-                    }
-                }
+                _removeCommand.Execute();
             }
         }
-
-        #region VirtualKeys  ==================================================
-        bool IsFirstLetterOfCommandName(Windows.System.VirtualKey key, string commandName)
+        private void KeyMenu_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            var c = char.ToUpper(commandName[0]);
-            var i = _keyCodes.IndexOf(c);
-            if (i < 0)
-            {
-                return false;
-            }
-
-            return (key == _virtualKeys[i]);
         }
-        string _keyCodes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        Windows.System.VirtualKey[] _virtualKeys =
+        private void KeyEscape_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            Windows.System.VirtualKey.A,
-            Windows.System.VirtualKey.B,
-            Windows.System.VirtualKey.C,
-            Windows.System.VirtualKey.D,
-            Windows.System.VirtualKey.E,
-            Windows.System.VirtualKey.F,
-            Windows.System.VirtualKey.G,
-            Windows.System.VirtualKey.H,
-            Windows.System.VirtualKey.I,
-            Windows.System.VirtualKey.J,
-            Windows.System.VirtualKey.K,
-            Windows.System.VirtualKey.L,
-            Windows.System.VirtualKey.M,
-            Windows.System.VirtualKey.N,
-            Windows.System.VirtualKey.O,
-            Windows.System.VirtualKey.P,
-            Windows.System.VirtualKey.Q,
-            Windows.System.VirtualKey.R,
-            Windows.System.VirtualKey.S,
-            Windows.System.VirtualKey.T,
-            Windows.System.VirtualKey.U,
-            Windows.System.VirtualKey.V,
-            Windows.System.VirtualKey.W,
-            Windows.System.VirtualKey.X,
-            Windows.System.VirtualKey.Y,
-            Windows.System.VirtualKey.Z,
-        };
-        #endregion
+        }
 
         void TryGetPrevModel()
         {
@@ -601,7 +476,6 @@ namespace ModelGraph.Controls
         void TreeGrid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             _pointerPressModel = PointerModel(e);
-            KeyButton.Focus(FocusState.Keyboard);
             RefreshSelectionGrid();
         }
         ItemModel PointerModel(Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -610,52 +484,6 @@ namespace ModelGraph.Controls
             var i = (int)(p.Position.Y / _elementHieght);
 
             return (Count == 0 || i < 0 || i >= Count) ? null : _viewList[i];
-        }
-        #endregion
-
-
-        #region KeyboardFocus  ================================================
-        object _focusElement;
-        void SaveKeyboardFocus()
-        {
-            _focusElement = FocusManager.GetFocusedElement();
-        }
-        void RestoreKeyboardFocus()
-        {
-            if (_focusElement == null)
-            {
-                KeyButton.Focus(FocusState.Keyboard);
-            }
-            else
-            {
-                var type = _focusElement.GetType();
-                if (type == typeof(Button))
-                {
-                    (_focusElement as Button).Focus(FocusState.Keyboard);
-                }
-                else if (type == typeof(TextBox))
-                {
-                    (_focusElement as TextBox).Focus(FocusState.Keyboard);
-                }
-                else if (type == typeof(CheckBox))
-                {
-                    (_focusElement as CheckBox).Focus(FocusState.Keyboard);
-                }
-                else if (type == typeof(ComboBox))
-                {
-                    (_focusElement as ComboBox).Focus(FocusState.Keyboard);
-                }
-                else
-                {
-                    KeyButton.Focus(FocusState.Keyboard);
-                }
-            }
-
-            _focusElement = FocusManager.GetFocusedElement();
-            if (_focusElement == null)
-            {
-                KeyButton.Focus(FocusState.Keyboard);
-            }
         }
         #endregion
 
@@ -671,7 +499,7 @@ namespace ModelGraph.Controls
 
             _pointWheelEnabled = false;
 
-            SaveKeyboardFocus();
+//            SaveKeyboardFocus();
 
             var obj = _select;
 
@@ -684,7 +512,7 @@ namespace ModelGraph.Controls
             }
 
             RefreshSelectionGrid();
-            RestoreKeyboardFocus();
+ //           RestoreKeyboardFocus();
 
             _pointWheelEnabled = true;
         }
@@ -713,8 +541,6 @@ namespace ModelGraph.Controls
             SelectionGrid.Width = ActualWidth;
             Canvas.SetTop(SelectionGrid, (viewIndex * _elementHieght));
 
-            KeyButton.DataContext = _select;
-
             if (_sortModeCache[cacheIndex] != null && _sortModeCache[cacheIndex].DataContext != null)
             {
                 _sortControl = _sortModeCache[cacheIndex];
@@ -730,7 +556,7 @@ namespace ModelGraph.Controls
                 _filterControl = _filterModeCache[cacheIndex];
             }
 
-            if (_select.IsFilterFocus) { _select.IsFilterFocus = false; _focusElement = _filterTextCache[cacheIndex]; }
+//            if (_select.IsFilterFocus) { _select.IsFilterFocus = false; _focusElement = _filterTextCache[cacheIndex]; }
 
             if (_select.ModelDescription != null)
             {
@@ -1223,16 +1049,7 @@ namespace ModelGraph.Controls
                     return;
                 }
             }
-            KeyButton.Focus(FocusState.Keyboard);
         }
         #endregion
-
-
-        public async void Dispatch(UIRequest rq)
-        {
-            await ModelPageService.Current.Dispatch(rq, this);
-        }
-        public RootModel RootModel => _root;
-
     }
 }

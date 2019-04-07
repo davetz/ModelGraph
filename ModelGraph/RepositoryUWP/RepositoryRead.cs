@@ -31,7 +31,7 @@ namespace RepositoryUWP
             }
             catch (Exception ex)
             {
-                var msg = ex.Message;
+                chef.AddRepositorReadError(ex.Message);
             }
         }
         #endregion

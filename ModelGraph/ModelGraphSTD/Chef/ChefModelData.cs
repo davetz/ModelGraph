@@ -5556,7 +5556,7 @@ namespace ModelGraphSTD
             (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
         }
         #endregion
-
+        
         #region 684 MetaGraphNode_X  ==========================================
         ModelAction MetaGraphNode_X;
         void Initer_MetaGraphNode_X()

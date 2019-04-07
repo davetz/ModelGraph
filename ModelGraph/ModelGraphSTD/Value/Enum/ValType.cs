@@ -4,7 +4,7 @@ namespace ModelGraphSTD
     The current types and associated numeric values must never be modified 
     because the numeric value is (saved-to/loaded-from) model repositories.
 
-    However, if needed, a new type pair could be added as indicated below.
+    However if needed, a new type pair could be added as indicated below.
  */
     public enum ValType : byte
     {

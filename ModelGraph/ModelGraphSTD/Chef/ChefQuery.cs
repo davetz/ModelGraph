@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public partial class Chef
     {
         #region ValidateQueryXStore  ==========================================
@@ -64,50 +62,54 @@ namespace ModelGraphSTD
                     cx.Value = ValuesUnknown;
                 }
             }
+            CheckWhereSelectErrors();
         }
         #endregion
 
-        #region ValidateDependants  ===========================================
-        void ValidateDependants(QueryX qx)
+        #region CheckWhereSelectErrors  =======================================
+        private void CheckWhereSelectErrors()
         {
-            while (qx != null)
+            foreach (var qx in QueryXStore.Items)
             {
-                if (ValidateQueryX())
-                {
-                    if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
-                    {
-                        cx.Value.Clear();
-                        cx.Value = ValuesUnknown;
-                        AllocateValueCache(cx);
-                    }
-                }
-                else
-                {
-                    if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
-                    {
-                        cx.Value.Clear();
-                        cx.Value = ValuesUnknown;                        
-                    }
-                }
-                if (!QueryX_QueryX.TryGetParent(qx, out qx)) return;
-            }
-
-            bool ValidateQueryX()
-            {
-                qx.IsTail = (QueryX_QueryX.HasNoChildren(qx));
-
                 var sto = GetQueryXTarget(qx);
                 if (qx.Select != null)
                 {
-                    if (!qx.Select.TryValidate(sto)) return false;
-                    qx.Select.TryResolve();
+                    var error = TryGetError(qx, _queryXSelectProperty);
+                    if (qx.Select.IsValid)
+                        ClearError(qx, error);
+                    else
+                    {
+                        if (error is null)
+                        {
+                            error = new Error(ErrorStore, qx, _queryXSelectProperty, Trait.QueryInvalidSelectError);
+                            AddError(error);
+                        }
+                        else
+                        {
+                            error.Clear();
+                        }
+                        error.Add("Select clause is invalid");
+                    }
                 }
                 if (qx.Where != null)
                 {
-                    if (!qx.Where.TryValidate(sto)) return false;
-                    qx.Where.TryResolve();
+                    var error = TryGetError(qx, _queryXWhereProperty);
+                    if (qx.Select.IsValid)
+                        ClearError(qx, error);
+                    else
+                    {
+                        if (error is null)
+                        {
+                            error = new Error(ErrorStore, qx, _queryXWhereProperty, Trait.QueryInvalidWhereError);
+                            AddError(error);
+                        }
+                        else
+                        {
+                            error.Clear();
+                        }
+                        error.Add("Where clause is invalid");
+                    }
                 }
-                return true;
             }
         }
         #endregion
@@ -335,7 +337,7 @@ namespace ModelGraphSTD
         bool TrySetWhereProperty(QueryX qx, string val)
         {
             qx.WhereString = val;
-            ValidateDependants(qx);
+            ValidateQueryXStore();
             return qx.IsValid;
         }
 
@@ -344,7 +346,7 @@ namespace ModelGraphSTD
         bool TrySetSelectProperty(QueryX qx, string val)
         {
             qx.SelectString = val;
-            ValidateDependants(qx);
+            ValidateQueryXStore();
             return qx.IsValid;
         }
 
