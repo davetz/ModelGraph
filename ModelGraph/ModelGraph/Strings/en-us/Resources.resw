@@ -2377,25 +2377,70 @@ NEC – NWC – SEC - SWC</value>
   <data name="201N" xml:space="preserve">
     <value>Repository Export Error</value>
   </data>
-  <data name="202N" xml:space="preserve">
-    <value>Compute  Missing Select Clause</value>
-  </data>
   <data name="203N" xml:space="preserve">
-    <value>Compute Mising Related Select Clause</value>
+    <value>Compute  Missing Head Query</value>
   </data>
   <data name="204N" xml:space="preserve">
-    <value>Compute Invalid Select Clause</value>
+    <value>Compute Circular Dependancy</value>
   </data>
   <data name="205N" xml:space="preserve">
-    <value>Compute Invalid Related Select Clause</value>
+    <value>Compute  Missing Select Clause</value>
   </data>
   <data name="206N" xml:space="preserve">
-    <value>Compute Invalid Related Where Clause</value>
+    <value>Compute Invalid Select Clause</value>
   </data>
   <data name="207N" xml:space="preserve">
-    <value>Query Invalid Select Clause</value>
+    <value>Compute Unresolved Select Clause</value>
   </data>
   <data name="208N" xml:space="preserve">
+    <value>Compute Missing Related Select Clause</value>
+  </data>
+  <data name="209N" xml:space="preserve">
+    <value>Compute Problem With Related Where/Select Clause</value>
+  </data>
+  <data name="20AN" xml:space="preserve">
     <value>Query Invalid Where Clause</value>
+  </data>
+  <data name="20BN" xml:space="preserve">
+    <value>Query Invalid Select Clause</value>
+  </data>
+  <data name="202N" xml:space="preserve">
+    <value>Compute Value Overflow</value>
+  </data>
+  <data name="20CN" xml:space="preserve">
+    <value>Query Unresulved Where Clause</value>
+  </data>
+  <data name="20DN" xml:space="preserve">
+    <value>Query Unresolved Select Clause</value>
+  </data>
+  <data name="20EN" xml:space="preserve">
+    <value>Query Value Overflow Where Clause</value>
+  </data>
+  <data name="20FN" xml:space="preserve">
+    <value>Query Value Overflow Select Clause</value>
+  </data>
+  <data name="210N" xml:space="preserve">
+    <value>b</value>
+  </data>
+  <data name="211N" xml:space="preserve">
+    <value>c</value>
+  </data>
+  <data name="212N" xml:space="preserve">
+    <value>d</value>
+  </data>
+  <data name="213N" xml:space="preserve">
+    <value>e</value>
+  </data>
+  <data name="214N" xml:space="preserve">
+    <value>f</value>
+  </data>
+  <data name="215N" xml:space="preserve">
+    <value>g</value>
+  </data>
+  <data name="216N" xml:space="preserve">
+    <value>h</value>
+  </data>
+  <data name="217N" xml:space="preserve">
+    <value>i</value>
   </data>
 </root>

@@ -10,18 +10,18 @@ namespace ModelGraphSTD
         public void AddRepositorReadError(string text)
         {
             var error = new Error(ErrorStore, this, Trait.ImportError);
-            error.Item = this;
             error.Add(text);
             AddError(error);
         }
         public void AddRepositorWriteError(string text)
         {
             var error = new Error(ErrorStore, this, Trait.ExportError);
-            error.Item = this;
             error.Add(text);
             AddError(error);
         }
         #endregion
+
+
 
         #region ClearItemErrors  ==============================================
         void ClearItemErrors()
@@ -44,13 +44,73 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region GetError  =====================================================
+        internal Error GetError(Item item, Trait trait, Item aux1, Item aux2 = null, Trait[] remove = null)
+        {
+            Error error = null;
+            var errors = TryGetErrors(item);
+            if (errors != null)
+            {
+                for (int i = (errors.Count - 1); i >= 0; i--)
+                {
+                    var err = errors[i];
+                    if (err.Trait == trait) error = err; // error already exist
+                    if (remove != null)
+                    {
+                        foreach (var tr in remove)
+                        {
+                            if (tr == trait) continue;
+                            if (err.Trait != tr) continue;
+
+                            errors.RemoveAt(i);
+                            ErrorStore.Remove(err);
+                        }
+                    }
+                }
+                if (error is null)
+                {
+                    error = new Error(ErrorStore, item, aux1, aux2, trait);
+                    errors.Add(error);
+                }
+            }
+            else
+            {
+                error = new Error(ErrorStore, item, aux1, aux2, trait);
+                errors = new List<Error>(2) { error };
+
+                _itemError.Add(item, errors);
+            }
+
+            item.HasError = true;
+            return error;
+        }
+        #endregion
+
         #region TryGetError  ==================================================
+        internal List<Error> TryGetErrors(Item item)
+        {
+            if (item.HasError && _itemError.TryGetValue(item, out List<Error> errors))
+            {               
+                if (errors.Count > 0) return errors;
+
+                item.HasError = false;
+                _itemError.Remove(item);
+            }
+            return null;
+        }
         internal Error TryGetError(Item item)
         {
-            if (_itemError.TryGetValue(item, out List<Error> errors))
+            var errors = TryGetErrors(item);
+            return errors?[0];
+        }
+        internal Error TryGetError(Item item, Trait trait)
+        {
+            var errors = TryGetErrors(item);
+            if (errors is null) return null;
+
+            foreach (var error in errors)
             {
-                if (errors.Count > 0) return errors[0];
-                _itemError.Remove(item);
+                if (error.Trait == trait) return error;
             }
             return null;
         }
@@ -58,12 +118,12 @@ namespace ModelGraphSTD
         {
             if (aux1 is null) return TryGetError(item);
 
-            if (_itemError.TryGetValue(item, out List<Error> errors))
+            var errors = TryGetErrors(item);
+            if (errors is null) return null;
+
+            foreach (var error in errors)
             {
-                foreach (var error in errors)
-                {
-                    if (error.Aux1 == aux1) return error;
-                }
+                if (error.Aux1 == aux1) return error;
             }
             return null;
         }
@@ -72,12 +132,13 @@ namespace ModelGraphSTD
             if (aux1 is null) return TryGetError(item);
             if (aux2 is null) return TryGetError(item, aux1);
 
-            if (_itemError.TryGetValue(item, out List<Error> errors))
+
+            var errors = TryGetErrors(item);
+            if (errors is null) return null;
+
+            foreach (var error in errors)
             {
-                foreach (var error in errors)
-                {
-                    if (error.Aux1 == aux1 && error.Aux2 == aux2) return error;
-                }
+                if (error.Aux1 == aux1 && error.Aux2 == aux2) return error;
             }
             return null;
         }
@@ -86,7 +147,12 @@ namespace ModelGraphSTD
         #region ClearError  ===================================================
         internal void ClearError(Item item, Error error)
         {
-            if (_itemError.TryGetValue(item, out List<Error> errors))
+            var errors = TryGetErrors(item);
+            if (errors is null)
+            {
+                if (error != null) throw new System.Exception("Corrupted itemError dictionary");
+            }
+            else
             {
                 if (error != null)
                 {
@@ -95,8 +161,29 @@ namespace ModelGraphSTD
                     item.HasError = errors.Count > 0;
                 }
             }
-            else
-                item.HasError = false;
+        }
+        internal void ClearErrors(Item item, Trait[] traits)
+        {
+            var errors = TryGetErrors(item);
+            if (errors != null)
+            {
+                for (int i = (errors.Count - 1); i >= 0; i--)
+                {
+                    var err = errors[i];
+                    foreach (var tr in traits)
+                    {
+                        if (err.Trait != tr) continue;
+
+                        errors.RemoveAt(i);
+                        ErrorStore.Remove(err);
+                    }
+                }
+                if (errors.Count == 0)
+                {
+                    _itemError.Remove(item);
+                    item.HasError = false;
+                }
+            }
         }
         #endregion
     }

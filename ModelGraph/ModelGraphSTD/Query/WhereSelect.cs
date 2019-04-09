@@ -20,7 +20,10 @@ namespace ModelGraphSTD
         #region Property  =====================================================
         internal bool IsValid { get; private set; }
 
+        internal bool AnyError => _root != null && _root.AnyError;
         internal bool AnyChange => _root != null && _root.AnyChange;
+        internal bool AnyOverflow => _root != null && _root.AnyOverflow;
+        internal bool AnyUnresolved => _root != null && _root.AnyUnresolved;
         internal string InputString => GetText();
         internal ValType ValueType => (IsValid) ? _root.ValueType : ValType.IsInvalid;
 
@@ -60,21 +63,14 @@ namespace ModelGraphSTD
         internal bool TryResolve()
         {
             if (!IsValid) return false;
-
-            var failedToResolve = true;
-            var anyChange = false;
             for (int i = 0; i < maxResolveLoopCount; i++)
             {
                 var change = _root.TryResolve();
-                anyChange |= change;
                 if (change) continue;
 
-                failedToResolve = false;
-                break;
+                return false;
             }
-            if (failedToResolve) throw new System.Exception($"Failed to resolve Where/Select clause: {InputString}");
-
-            return anyChange;
+            return true;
         }
 
         #endregion

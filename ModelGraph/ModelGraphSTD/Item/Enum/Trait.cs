@@ -189,13 +189,20 @@ namespace ModelGraphSTD
 
         ImportError = 0x200,
         ExportError = 0x201,
-        ComputeMissingSelectError = 0x202,
-        ComputeMissingRelatedSelectError = 0x203,
-        ComputeInvalidSelectError = 0x204,
-        ComputeInvalidRelatedSelectError = 0x205,
-        ComputeInvalidRelatedWhereError = 0x206,
-        QueryInvalidSelectError = 0x207,
-        QueryInvalidWhereError = 0x208,
+        ComputeValueOverflowError = 0x202,
+        ComputeCircularDependanceError = 0x203,
+        ComputeMissingHeadQueryError = 0x204,
+        ComputeMissingSelectError = 0x205,
+        ComputeInvalidSelectError = 0x206,
+        ComputeUnresolvedSelectError = 0x207,
+        ComputeMissingRelatedSelectError = 0x208,
+        ComputeProblemRelatedWhereSelectError = 0x209,
+        QueryInvalidWhereError = 0x20A,
+        QueryInvalidSelectError = 0x20B,
+        QueryUnresolvedWhereError = 0x20C,
+        QueryUnresolvedSelectError = 0x20D,
+        QueryValueOverflowdWhereError = 0x20E,
+        QueryValueOverflowSelectError = 0x20F,
 
         #endregion
 
