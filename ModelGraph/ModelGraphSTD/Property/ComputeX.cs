@@ -15,8 +15,6 @@ namespace ModelGraphSTD
         internal string Separator = DefaultSeparator;
 
         internal CompuType CompuType; // type of computation
-        internal Results Results; //specify scalar or array results
-        internal Sorting Sorting; //specify results sorting mode
 
         #region Constructors  =================================================
         internal ComputeX(StoreOf<ComputeX> owner)

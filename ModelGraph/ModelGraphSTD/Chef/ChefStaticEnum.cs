@@ -20,9 +20,6 @@
         EnumZ _attatchEnum;
         EnumZ _lineStyleEnum;
         EnumZ _dashStyleEnum;
-        EnumZ _computeResultsEnum;
-        EnumZ _computeSortingEnum;
-        EnumZ _computeTakeSetEnum;
 
         private void InitializeEnums()
         {
@@ -160,21 +157,6 @@
             new PairZ(_computeTypeEnum, Trait.CompuType_RelatedValue);
             new PairZ(_computeTypeEnum, Trait.CompuType_CompositeString);
             new PairZ(_computeTypeEnum, Trait.CompuType_CompositeReversed);
-
-            _computeResultsEnum = new EnumZ(EnumZStore, Trait.ResultsEnum);
-            new PairZ(_computeResultsEnum, Trait.Results_OneValue);
-            new PairZ(_computeResultsEnum, Trait.Results_AllValues);
-            new PairZ(_computeResultsEnum, Trait.Results_LimitedSet);
-
-            _computeSortingEnum = new EnumZ(EnumZStore, Trait.SortingEnum);
-            new PairZ(_computeSortingEnum, Trait.Sorting_Unsorted);
-            new PairZ(_computeSortingEnum, Trait.Sorting_Ascending);
-            new PairZ(_computeSortingEnum, Trait.Sorting_Descending);
-
-            _computeTakeSetEnum = new EnumZ(EnumZStore, Trait.TakeSetEnum);
-            new PairZ(_computeTakeSetEnum, Trait.TakeSet_First);
-            new PairZ(_computeTakeSetEnum, Trait.TakeSet_Last);
-            new PairZ(_computeTakeSetEnum, Trait.TakeSet_Both);
         }
 
         private void ReleaseEnums()
@@ -195,9 +177,6 @@
             _attatchEnum = null;
             _lineStyleEnum = null;
             _dashStyleEnum = null;
-            _computeResultsEnum = null;
-            _computeSortingEnum = null;
-            _computeTakeSetEnum = null;
         }
     }
 }

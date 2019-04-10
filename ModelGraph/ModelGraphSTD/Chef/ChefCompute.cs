@@ -62,26 +62,6 @@ namespace ModelGraphSTD
             }
             return true;
         }
-        private bool TrySetResultsProperty(ComputeX cx, int val)
-        {
-            var type = (Results)val;
-            if (cx.Results != type)
-            {
-                cx.Results = type;
-                cx.Value.Clear();
-            }
-            return true;
-        }
-        private bool TrySetSortingProperty(ComputeX cx, int val)
-        {
-            var type = (Sorting)val;
-            if (cx.Sorting != type)
-            {
-                cx.Sorting = type;
-                cx.Value.Clear();
-            }
-            return true;
-        }
         #endregion
 
         #region TryGetComputedValue  ==========================================
