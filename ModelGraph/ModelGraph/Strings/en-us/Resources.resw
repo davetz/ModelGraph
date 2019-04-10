@@ -1100,7 +1100,7 @@ NEC – NWC – SEC - SWC</value>
     <value>Separate the composite value parts with this string</value>
   </data>
   <data name="4B7N" xml:space="preserve">
-    <value>Result Type</value>
+    <value>Resulting Value Type</value>
   </data>
   <data name="4B7S" xml:space="preserve">
     <value>Resulting value type</value>
@@ -2378,7 +2378,7 @@ NEC – NWC – SEC - SWC</value>
     <value>Repository Export Error</value>
   </data>
   <data name="203N" xml:space="preserve">
-    <value>Compute  Missing Head Query</value>
+    <value>Compute  Missing Root Query</value>
   </data>
   <data name="204N" xml:space="preserve">
     <value>Compute Circular Dependancy</value>

@@ -191,7 +191,7 @@ namespace ModelGraphSTD
         ExportError = 0x201,
         ComputeValueOverflowError = 0x202,
         ComputeCircularDependanceError = 0x203,
-        ComputeMissingHeadQueryError = 0x204,
+        ComputeMissingRootQueryError = 0x204,
         ComputeMissingSelectError = 0x205,
         ComputeInvalidSelectError = 0x206,
         ComputeUnresolvedSelectError = 0x207,

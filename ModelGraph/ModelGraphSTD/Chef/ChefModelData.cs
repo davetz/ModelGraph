@@ -4476,14 +4476,6 @@ namespace ModelGraphSTD
                                 AddProperyModel(prev, m, _computeXValueTypeProperty);
                                 break;
 
-                            case CompuType.NumericValueSet:
-                                AddProperyModel(prev, m, _computeXNameProperty);
-                                AddProperyModel(prev, m, _computeXSummaryProperty);
-                                AddProperyModel(prev, m, _computeXCompuTypeProperty);
-                                AddProperyModel(prev, m, _computeXNumericSetProperty);
-                                AddProperyModel(prev, m, _computeXValueTypeProperty);
-                                break;
-
                             case CompuType.CompositeString:
                             case CompuType.CompositeReversed:
                                 AddProperyModel(prev, m, _computeXNameProperty);

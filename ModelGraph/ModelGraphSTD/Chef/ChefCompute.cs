@@ -99,8 +99,6 @@ namespace ModelGraphSTD
 
                 case CompuType.RelatedValue: return TryGetRelated();
 
-                case CompuType.NumericValueSet: return TryGetNumericSet();
-
                 case CompuType.CompositeString: return TryGetCompositeString();
 
                 case CompuType.CompositeReversed: return TryGetCompositeReversed();
@@ -126,15 +124,10 @@ namespace ModelGraphSTD
                 return cx.Value.LoadCache(cx, key, selectors);
             }
 
-            bool TryGetNumericSet()
-            {
-                return cx.Value.SetValue(key, "0, 1, 0, 1");
-            }
-
             bool TryGetCompositeString(bool reverse = false)
             {
                 var selectors = new List<Query>();
-                if (!TryGetForest(cx, key, selectors, out Query[] forest) || selectors.Count == 0) return false;
+                if (!TryGetForest(cx, key, selectors, out _) || selectors.Count == 0) return false;
 
                 var sb = new StringBuilder(128);
 
@@ -189,11 +182,6 @@ namespace ModelGraphSTD
                     cx.Value = Value.Create(GetRelatedValueType(cx));
                     break;
 
-                case CompuType.NumericValueSet:
-
-                    cx.Value = Value.Create(ValType.DoubleArray);
-                    break;
-
                 case CompuType.CompositeString:
 
                     cx.Value = Value.Create(ValType.String);
@@ -229,11 +217,11 @@ namespace ModelGraphSTD
             if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
                 return ValType.IsInvalid; //computeX must have a root queryX reference
 
-            if (!QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> ls1))
+            if (!QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> list1))
                 return ValType.IsInvalid; //computeX must have atleast one queryX reference
 
-            var workQueue = new Queue<QueryX>(ls1);
-            var isMultiple = ls1.Count > 1;
+            var workQueue = new Queue<QueryX>(list1);
+            var isMultiple = list1.Count > 1;
 
             var vTypes = new HashSet<ValType>();
 
@@ -251,15 +239,15 @@ namespace ModelGraphSTD
                     vTypes.Add(qt.Select.ValueType);
                 }
 
-                if (QueryX_QueryX.TryGetChildren(qt, out IList<QueryX> ls2))
+                if (QueryX_QueryX.TryGetChildren(qt, out IList<QueryX> list2))
                 {
-                    isMultiple |= ls2.Count > 1;
-                    foreach (var child in ls2) { workQueue.Enqueue(child); }
+                    isMultiple |= list2.Count > 1;
+                    foreach (var child in list2) { workQueue.Enqueue(child); }
                 }                
             }
 
             if (vTypes.Count == 0)
-                return ValType.IsInvalid; //computeX must have atleast valid related value
+                return ValType.IsInvalid; //computeX must have atleast one valid related value
 
             var vType = ValType.IsInvalid;
             var vGroup = ValGroup.None;
@@ -269,7 +257,7 @@ namespace ModelGraphSTD
                 if (vType == ValType.IsInvalid) vType = vt; // get the first valType
             }
             if (vGroup == ValGroup.None)
-                return ValType.IsInvalid; //computeX must have atleast valid related value
+                return ValType.IsInvalid; //computeX must have atleast one valid related value
 
             if (vGroup.HasFlag(ValGroup.ArrayGroup))
                 isMultiple = true;

@@ -43,8 +43,8 @@ namespace ModelGraphSTD
             selecting graphic symbols, and compute values. These various used cases can 
             overlap and have interdependancies. 
             
-            This method will preform a comprehensive validation all cases. Because of 
-            posible interdependicies, it's necessary to persist until all unresolved
+            This method will preform a comprehensive validation all cases. 
+            Because of posible interdependicies, it's necessary to persist until all unresolved
             queryX's have been delt with.
             
             Circular dependanies and invalid where/select clauses will be identified.
@@ -144,7 +144,7 @@ namespace ModelGraphSTD
         }
         private static Trait[] _queryWhereErrors = { Trait.QueryInvalidWhereError, Trait.QueryUnresolvedWhereError };
         private static Trait[] _querySelectErrors = { Trait.QueryInvalidSelectError, Trait.QueryUnresolvedSelectError };
-        private static Trait[] _computeErrors = { Trait.ComputeMissingHeadQueryError, Trait.ComputeMissingSelectError, Trait.ComputeInvalidSelectError, Trait.ComputeMissingRelatedSelectError, Trait.ComputeProblemRelatedWhereSelectError };
+        private static Trait[] _computeErrors = { Trait.ComputeMissingRootQueryError, Trait.ComputeMissingSelectError, Trait.ComputeInvalidSelectError, Trait.ComputeMissingRelatedSelectError, Trait.ComputeProblemRelatedWhereSelectError };
         #endregion
 
 
