@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace ModelGraphSTD
@@ -33,6 +34,13 @@ namespace ModelGraphSTD
             _root.GetText(sb);
             return sb.ToString();
         }
+
+        internal void GetTree(List<string> list)
+        {
+            list.Clear();
+            var sb = new StringBuilder();
+            _root.GetTree(sb, 0, list);
+        }
         #endregion
 
         #region TryValidate  ==================================================
@@ -66,11 +74,9 @@ namespace ModelGraphSTD
             for (int i = 0; i < maxResolveLoopCount; i++)
             {
                 var change = _root.TryResolve();
-                if (change) continue;
-
-                return false;
+                if (!change) break;
             }
-            return true;
+            return _root.AnyUnresolved;
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace ModelGraphSTD
@@ -175,11 +176,11 @@ namespace ModelGraphSTD
             var N = Count;
             if (N == 0)
             {
-                sb.Append(Evaluate.Text);
+                AppendText(StepType, Evaluate, sb);
             }
             else if (N == 1)
             {
-                sb.Append(Evaluate.Text);
+                AppendText(StepType, Evaluate, sb);
                 Input[0].GetText(sb); //<- - - - - recursive call
             }
             else
@@ -187,7 +188,7 @@ namespace ModelGraphSTD
                 Input[0].GetText(sb); //<- - - - - recursive call
                 for (int i = 1; i < N; i++)
                 {
-                    sb.Append(Evaluate.Text);
+                    AppendText(StepType, Evaluate, sb);
                     Input[i].GetText(sb); //<- - - recursive call
                 }
             }
@@ -197,6 +198,83 @@ namespace ModelGraphSTD
             if (HasParens) sb.Append(')');
         }
 
+        #endregion
+
+        #region GetTree  ======================================================
+        internal void GetTree(StringBuilder sb, int level, List<string> list)
+        {
+            sb.Clear();
+            var lvl = level + 1;
+            // Prefix  ========================================================
+            for (int i = 0; i < level; i++) { sb.Append("     "); }
+
+            const string sep = " }       ";
+            sb.Append("step-{ ");
+            sb.Append(StepType);
+            sb.Append(sep);
+
+            sb.Append("type-{ ");
+            sb.Append(ValueType);
+            sb.Append(sep);
+
+            sb.Append("flags-{ ");
+            sb.Append(_flags1);
+            sb.Append(sep);
+
+            sb.Append("error-{ ");
+            sb.Append(Error);
+            sb.Append(sep);
+
+            sb.Append("text: ");
+            AppendText(StepType, Evaluate, sb);
+
+            list.Add(sb.ToString());
+
+            for (int i = 0; i < Count; i++)
+            {
+                Input[i].GetTree(sb, lvl, list); //<- - - - - recursive call
+            }
+        }
+
+        #endregion
+
+        #region AppendText  ==================================================
+        private static void AppendText(StepType type, EvaluateStep eval, StringBuilder sb)
+        {
+            if (eval.ValType != ValType.IsUnresolved)
+                sb.Append(eval.Text);
+            else
+                sb.Append(_defaultText.TryGetValue(type, out string txt) ? txt : " ?? ");
+        }
+
+        private static readonly Dictionary<StepType, string> _defaultText = new Dictionary<StepType, string>()
+        {
+            [StepType.Or1] = " | ",
+            [StepType.And1] = " & ",
+            [StepType.Or2] = " || ",
+            [StepType.And2] = " && ",
+            [StepType.Not] = " ! ",
+            [StepType.Min] = " Min ",
+            [StepType.Max] = " Max ",
+            [StepType.Sum] = " Sum ",
+            [StepType.Ave] = " Ave ",
+            [StepType.Count] = " Count ",
+            [StepType.Length] = " Length ",
+            [StepType.Ascend] = " Ascend ",
+            [StepType.Descend] = " Descend ",
+            [StepType.Plus] = " + ",
+            [StepType.Minus] = " - ",
+            [StepType.Negate] = " | ",
+            [StepType.Equal] = " = ",
+            [StepType.NotEqual] = " != ",
+            [StepType.LessThan] = " < ",
+            [StepType.LessEqual] = " <= ",
+            [StepType.GreaterThan] = " > ",
+            [StepType.GreaterEqual] = " >= ",
+            [StepType.EndsWith] = " EndsWith ",
+            [StepType.Contains] = " Contains ",
+            [StepType.StartsWith] = " StartsWith ",
+        };
         #endregion
     }
 }

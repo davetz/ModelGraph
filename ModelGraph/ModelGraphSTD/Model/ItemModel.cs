@@ -22,7 +22,7 @@ namespace ModelGraphSTD
         internal byte ChildDelta;  // version of child model list
         private Flags _flags;
         public byte Depth;
-        public bool HasError => Item.HasError;
+        public bool HasError => Item.HasError && (!IsProperty || (Item.GetChef().TryGetError(Item, Aux1) != null));
 
         #region Constructor  ==================================================
         internal ItemModel() { } // supports RootModel constructor

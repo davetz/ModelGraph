@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {
@@ -26,5 +27,6 @@ namespace ModelGraphSTD
         internal virtual DateTime[] AsDateTimeArray() => throw new NotImplementedException(); // failed type check
 
         internal ValGroup ValGroup => Value.GetValGroup(ValType);
+
     }
 }

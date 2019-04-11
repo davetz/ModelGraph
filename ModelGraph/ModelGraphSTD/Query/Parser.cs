@@ -104,7 +104,7 @@ namespace ModelGraphSTD
             #region TryAddLiteralNumber  ==========================================
             bool TryAddLiteralNumber()
             {
-                (bool ok, bool isDouble, Int64 v, double d) = Value.ParseNumber(Evaluate.Text);
+                var (ok, isDouble, v, d) = Value.ParseNumber(Evaluate.Text);
 
                 if (ok)
                 {

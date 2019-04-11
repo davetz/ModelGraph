@@ -93,7 +93,6 @@ namespace ModelGraphSTD
         {
             var type = step.Evaluate.GetType();
             var group = step.Input[0].Evaluate.ValGroup;
-            var composite = step.ScanInputsAndReturnCompositeValueGroup();
 
             switch (group)
             {
