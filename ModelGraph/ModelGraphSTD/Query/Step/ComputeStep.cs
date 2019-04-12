@@ -213,20 +213,21 @@ namespace ModelGraphSTD
             sb.Append(StepType);
             sb.Append(sep);
 
-            sb.Append("type-{ ");
-            sb.Append(ValueType);
+            sb.Append("error-{ ");
+            sb.Append(Error);
             sb.Append(sep);
 
             sb.Append("flags-{ ");
             sb.Append(_flags1);
             sb.Append(sep);
 
-            sb.Append("error-{ ");
-            sb.Append(Error);
+            sb.Append("type-{ ");
+            sb.Append(ValueType);
             sb.Append(sep);
 
-            sb.Append("text: ");
+            sb.Append("text-{ ");
             AppendText(StepType, Evaluate, sb);
+            sb.Append(" }");
 
             list.Add(sb.ToString());
 
@@ -238,15 +239,14 @@ namespace ModelGraphSTD
 
         #endregion
 
-        #region AppendText  ==================================================
+        #region AppendText  ===================================================
         private static void AppendText(StepType type, EvaluateStep eval, StringBuilder sb)
         {
-            if (eval.ValType != ValType.IsUnresolved)
-                sb.Append(eval.Text);
-            else
+            if (eval.ValType == ValType.IsUnresolved)
                 sb.Append(_defaultText.TryGetValue(type, out string txt) ? txt : " ?? ");
+            else
+                sb.Append(eval.Text);
         }
-
         private static readonly Dictionary<StepType, string> _defaultText = new Dictionary<StepType, string>()
         {
             [StepType.Or1] = " | ",

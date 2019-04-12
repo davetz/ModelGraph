@@ -145,7 +145,7 @@ namespace ModelGraphSTD
 
         #region AllocateValueCache  ===========================================
         // called when the computeX needs to produce a value, but its ValueCache is null
-        internal void AllocateValueCache(ComputeX cx)
+        internal ValType AllocateValueCache(ComputeX cx)
         {
             switch (cx.CompuType)
             {
@@ -159,7 +159,7 @@ namespace ModelGraphSTD
 
                 case CompuType.RelatedValue:
 
-                    cx.Value = Value.Create(cx.ExpectedValueType);
+                    cx.Value = Value.Create(GetRelatedValueType(cx));
                     break;
 
                 case CompuType.CompositeString:
@@ -173,6 +173,7 @@ namespace ModelGraphSTD
                     break;
             }
             cx.Value.SetOwner(cx);
+            return cx.Value.ValType;
 
             void AllocateCache(QueryX vx)
             {
@@ -187,37 +188,6 @@ namespace ModelGraphSTD
                     cx.Value = ValuesUnresolved;
                 else
                     cx.Value = ValuesInvalid;
-            }
-        }
-        #endregion
-
-        #region SetComputeExpectedValueType  ==========================================
-        private void SetComputeExpectedValueType(ComputeX cx)
-        {
-            switch (cx.CompuType)
-            {
-                case CompuType.RowValue:
-
-                    if (!ComputeX_QueryX.TryGetChild(cx, out QueryX vx) || vx.Select == null || vx.Select.ValueType == ValType.IsInvalid)
-                        cx.ExpectedValueType = ValType.IsInvalid;
-                    else
-                        cx.ExpectedValueType = vx.Select.ValueType;
-                    break;
-
-                case CompuType.RelatedValue:
-
-                    cx.ExpectedValueType = GetRelatedValueType(cx);
-                    break;
-
-                case CompuType.CompositeString:
-
-                    cx.ExpectedValueType = ValType.String;
-                    break;
-
-                case CompuType.CompositeReversed:
-
-                    cx.ExpectedValueType = ValType.String;
-                    break;
             }
         }
         #endregion

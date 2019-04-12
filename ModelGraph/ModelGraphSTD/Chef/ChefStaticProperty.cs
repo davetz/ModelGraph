@@ -32,7 +32,6 @@ namespace ModelGraphSTD
         private PropertyOf<ComputeX, string> _computeXSelectProperty;
         private PropertyOf<ComputeX, string> _computeXSeparatorProperty;
         private PropertyOf<ComputeX, string> _computeXCompuTypeProperty;
-        private PropertyOf<ComputeX, string> _computeXNumericSetProperty;
         private PropertyOf<ComputeX, string> _computeXValueTypeProperty;
 
         private PropertyOf<RelationX, string> _relationXNameProperty;
@@ -567,7 +566,6 @@ namespace ModelGraphSTD
             _computeXSelectProperty = null;
             _computeXSeparatorProperty = null;
             _computeXCompuTypeProperty = null;
-            _computeXNumericSetProperty = null;
             _computeXValueTypeProperty = null;
 
             _relationXNameProperty = null;

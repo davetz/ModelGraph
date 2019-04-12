@@ -7,6 +7,7 @@ namespace ModelGraphSTD
         internal Item Item;
         internal Item Aux1;
         internal Item Aux2;
+        internal Item Parent; // parent item associated with this error
         internal List<string> Errors = new List<string>(1);
 
         #region Constructor  ==================================================

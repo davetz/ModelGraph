@@ -15,7 +15,6 @@ namespace ModelGraphSTD
         internal string Separator = DefaultSeparator;
 
         internal CompuType CompuType; // type of computation
-        internal ValType ExpectedValueType = ValType.IsUnknown;
 
         #region Constructors  =================================================
         internal ComputeX(StoreOf<ComputeX> owner)

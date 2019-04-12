@@ -4,7 +4,8 @@ namespace ModelGraphSTD
 {
     public partial class Chef
     {
-        private Dictionary<Item, List<Error>> _itemError = new Dictionary<Item, List<Error>>();
+        private readonly Dictionary<Item, List<Error>> _itemErrors = new Dictionary<Item, List<Error>>();
+        private readonly Dictionary<Item, List<Error>> _relatedErrors = new Dictionary<Item, List<Error>>();
 
         #region RepositoryError  ==============================================
         public void AddRepositorReadError(string text)
@@ -26,7 +27,7 @@ namespace ModelGraphSTD
         #region ClearItemErrors  ==============================================
         void ClearItemErrors()
         {
-            _itemError.Clear();
+            _itemErrors.Clear();
         }
         #endregion
 
@@ -34,10 +35,10 @@ namespace ModelGraphSTD
         internal void AddError(Error error)
         {
             var item = error.Item;
-            if (!_itemError.TryGetValue(item, out List<Error> errors))
+            if (!_itemErrors.TryGetValue(item, out List<Error> errors))
             {
                 errors = new List<Error>(2);
-                _itemError.Add(item, errors);
+                _itemErrors.Add(item, errors);
             }
             errors.Add(error);
             item.HasError = true;
@@ -78,7 +79,7 @@ namespace ModelGraphSTD
                 error = new Error(ErrorStore, item, aux1, aux2, trait);
                 errors = new List<Error>(2) { error };
 
-                _itemError.Add(item, errors);
+                _itemErrors.Add(item, errors);
             }
 
             item.HasError = true;
@@ -89,12 +90,12 @@ namespace ModelGraphSTD
         #region TryGetError  ==================================================
         internal List<Error> TryGetErrors(Item item)
         {
-            if (item.HasError && _itemError.TryGetValue(item, out List<Error> errors))
+            if (item.HasError && _itemErrors.TryGetValue(item, out List<Error> errors))
             {               
                 if (errors.Count > 0) return errors;
 
                 item.HasError = false;
-                _itemError.Remove(item);
+                _itemErrors.Remove(item);
             }
             return null;
         }
@@ -180,7 +181,7 @@ namespace ModelGraphSTD
                 }
                 if (errors.Count == 0)
                 {
-                    _itemError.Remove(item);
+                    _itemErrors.Remove(item);
                     item.HasError = false;
                 }
             }

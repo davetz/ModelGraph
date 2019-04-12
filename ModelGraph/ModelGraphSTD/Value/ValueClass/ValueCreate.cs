@@ -116,6 +116,5 @@ namespace ModelGraphSTD
             (c,s) => new StringValue(new ValueDictionary<string>(c, s)), // 28 String
             (c,s) => new StringArrayValue(new ValueDictionary<string[]>(c, null)), // 29 StringArray
         };
-        static bool ToBool(string s) => (bool.TryParse(s, out bool v)) ? v : false;
     }
 }

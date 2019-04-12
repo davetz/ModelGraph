@@ -25,14 +25,9 @@ namespace ModelGraphSTD
             cx.Value = ValuesUnknown;
 
             if (ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
-            {
-                if ((qx.Where != null && qx.Where.AnyUnresolved) || (qx.Select != null && qx.Select.AnyUnresolved))
-                {
                     ValidateQueryX(qx);
-                }
-            }
 
-            SetComputeExpectedValueType(cx);
+            AllocateValueCache(cx);
         }
         private void ValidateGraphQuery(GraphX gx)
         {
@@ -46,7 +41,7 @@ namespace ModelGraphSTD
 
                 foreach (var cx in ComputeXStore.Items)
                 {
-                    if (cx.ExpectedValueType == ValType.IsUnresolved)
+                    if (cx.Value.ValType == ValType.IsUnresolved)
                     {
                         anyUnresolved = true;
                         ValidateComputeQuery(cx);

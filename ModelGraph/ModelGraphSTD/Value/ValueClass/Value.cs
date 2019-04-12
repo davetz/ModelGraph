@@ -38,7 +38,7 @@ namespace ModelGraphSTD
         internal virtual bool GetValue(Item key, out bool value) => NoValue(out value);
 
         internal virtual bool GetValue(Item key, out int value) => NoValue(out value);
-        internal virtual bool GetValue(Item key, out Int64 value) => NoValue(out value);
+        internal virtual bool GetValue(Item key, out long value) => NoValue(out value);
         internal virtual bool GetValue(Item key, out double value) => NoValue(out value);
 
         internal virtual bool GetValue(Item key, out DateTime value) => NoValue(out value);
@@ -49,7 +49,7 @@ namespace ModelGraphSTD
         internal virtual bool GetValueAt(Item key, out bool value, int index) => NoValue(out value);
 
         internal virtual bool GetValueAt(Item key, out int value, int index) => NoValue(out value);
-        internal virtual bool GetValueAt(Item key, out Int64 value, int index) => NoValue(out value);
+        internal virtual bool GetValueAt(Item key, out long value, int index) => NoValue(out value);
         internal virtual bool GetValueAt(Item key, out double value, int index) => NoValue(out value);
 
         internal virtual bool GetValueAt(Item key, out DateTime value, int index) => NoValue(out value);
@@ -60,7 +60,7 @@ namespace ModelGraphSTD
         internal virtual bool GetValue(Item key, out bool[] value) => NoValue(out value);
 
         internal virtual bool GetValue(Item key, out int[] value) => NoValue(out value);
-        internal virtual bool GetValue(Item key, out Int64[] value) => NoValue(out value);
+        internal virtual bool GetValue(Item key, out long[] value) => NoValue(out value);
         internal virtual bool GetValue(Item key, out double[] value) => NoValue(out value);
 
         internal virtual bool GetValue(Item key, out DateTime[] value) => NoValue(out value);
@@ -73,7 +73,7 @@ namespace ModelGraphSTD
         internal virtual bool SetValue(Item key, bool value) => false;
 
         internal virtual bool SetValue(Item key, int value) => false;
-        internal virtual bool SetValue(Item key, Int64 value) => false;
+        internal virtual bool SetValue(Item key, long value) => false;
         internal virtual bool SetValue(Item key, double value) => false;
 
         internal virtual bool SetValue(Item key, DateTime value) => false;
@@ -84,12 +84,12 @@ namespace ModelGraphSTD
         internal virtual bool SetValue(Item key, bool[] value) => false;
 
         internal virtual bool SetValue(Item key, int[] value) => false;
-        internal virtual bool SetValue(Item key, Int64[] value) => false;
+        internal virtual bool SetValue(Item key, long[] value) => false;
         internal virtual bool SetValue(Item key, double[] value) => false;
 
         internal virtual bool SetValue(Item key, DateTime[] value) => false;
         internal virtual bool SetValue(Item key, string[] value) => false;
 
-        internal bool NoValue<T>(out T value) { value = default(T); return false; }
+        internal bool NoValue<T>(out T value) { value = default; return false; }
     }
 }

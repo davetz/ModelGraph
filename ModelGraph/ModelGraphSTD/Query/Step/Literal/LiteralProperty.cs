@@ -15,7 +15,7 @@ namespace ModelGraphSTD
         }
         internal Property Property { get; }
 
-        internal override ValType ValType => (Property is ColumnX co) ? co.Value.ValType : (Property is ComputeX cx) ? cx.ExpectedValueType : ValType.IsInvalid;
+        internal override ValType ValType => (Property is ComputeX cx && cx.Value == Chef.ValuesUnknown) ? cx.GetChef().AllocateValueCache(cx) : Property.Value.ValType;
         internal override string Text => (Property is ColumnX col) ? col.Name : ((Property is ComputeX cx) ? cx.Name : Property.GetChef().GetIdentity(Property, IdentityStyle.Single));
 
         internal override bool AsBool()
