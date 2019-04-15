@@ -24,10 +24,27 @@ namespace ModelGraphSTD
             cx.Value.Clear();
             cx.Value = ValuesUnknown;
 
-            if (ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
-                    ValidateQueryX(qx);
-
-            AllocateValueCache(cx);
+            if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
+            {
+                cx.Value = ValuesInvalid;
+                TryAddErrorNone(cx, Trait.ComputeMissingRootQueryError);
+            }
+            else
+            {
+                ValidateQueryHierarchy(qx);
+                if (cx.CompuType == CompuType.RowValue)
+                {
+                    if (qx.Select == null)
+                        TryAddErrorNone(cx, Trait.ComputeMissingSelectError);
+                    else if (!qx.Select.IsValid)
+                        TryAddErrorNone(cx, Trait.ComputeInvalidSelectError);
+                    else if (qx.Select.AnyUnresolved)
+                        TryAddErrorNone(cx, Trait.ComputeUnresolvedSelectError);
+                    else
+                        ClearError(cx);
+                }
+                AllocateValueCache(cx);
+            }
         }
         private void ValidateGraphQuery(GraphX gx)
         {
@@ -51,11 +68,10 @@ namespace ModelGraphSTD
             }
         }
 
-        private void ValidateQueryX(QueryX qp)
+        private void ValidateQueryHierarchy(QueryX qr)
         {
-            if (qp is null) return;
             var queryQueue = new Queue<QueryX>();
-            queryQueue.Enqueue(qp);
+            queryQueue.Enqueue(qr);
 
             while (queryQueue.Count > 0)
             {
@@ -73,7 +89,6 @@ namespace ModelGraphSTD
 
             void ValidateWhereSelect(QueryX qx)
             {
-                qx.IsTail = QueryX_QueryX.HasNoChildren(qx);
                 var sto = GetQueryXTarget(qx);
                 if (qx.Select != null)
                 {
@@ -81,33 +96,40 @@ namespace ModelGraphSTD
                     {
                         qx.Select.TryResolve();
                         if (qx.Select.AnyUnresolved)
-                            qx.Select.GetTree(GetError(qx, Trait.QueryUnresolvedSelectError, _queryXSelectProperty, null, _querySelectErrors).Errors);
+                        {
+                            var error = TryAddErrorMany(qx, _queryXSelectProperty, Trait.QueryUnresolvedSelectError);
+                            if (error != null) qx.Select.GetTree(error.List);
+                        }
                         else
-                            //                            ClearErrors(qx, _querySelectErrors);
-                            qx.Select.GetTree(GetError(qx, Trait.QueryInvalidSelectError, _queryXSelectProperty, null, _querySelectErrors).Errors);
+                            ClearError(qx);
                     }
                     else
-                        qx.Select.GetTree(GetError(qx, Trait.QueryInvalidSelectError, _queryXSelectProperty, null, _querySelectErrors).Errors);
+                    {
+                        var error = TryAddErrorMany(qx, _queryXSelectProperty, Trait.QueryInvalidSelectError);
+                        if (error != null) qx.Select.GetTree(error.List);
+                    }
                 }
                 if (qx.Where != null)
                 {
                     if (qx.Where.TryValidate(sto))
                     {
-                        qx.Where.TryResolve();
+                        qx.Select.TryResolve();
                         if (qx.Where.AnyUnresolved)
-                            qx.Where.GetTree(GetError(qx, Trait.QueryUnresolvedWhereError, _queryXWhereProperty, null, _queryWhereErrors).Errors);
+                        {
+                            var error = TryAddErrorMany(qx, _queryXWhereProperty, Trait.QueryUnresolvedWhereError);
+                            if (error != null) qx.Where.GetTree(error.List);
+                        }
                         else
-                            //                            ClearErrors(qx, _queryWhereErrors);
-                            qx.Where.GetTree(GetError(qx, Trait.QueryInvalidWhereError, _queryXWhereProperty, null, _queryWhereErrors).Errors);
+                            ClearError(qx);
                     }
                     else
-                        qx.Where.GetTree(GetError(qx, Trait.QueryInvalidWhereError, _queryXWhereProperty, null, _queryWhereErrors).Errors);
+                    {
+                        var error = TryAddErrorMany(qx, _queryXWhereProperty, Trait.QueryInvalidWhereError);
+                        if (error != null) qx.Where.GetTree(error.List);
+                    }
                 }
             }
         }
-        private static Trait[] _queryWhereErrors = { Trait.QueryInvalidWhereError, Trait.QueryUnresolvedWhereError };
-        private static Trait[] _querySelectErrors = { Trait.QueryInvalidSelectError, Trait.QueryUnresolvedSelectError };
-        private static Trait[] _computeErrors = { Trait.ComputeMissingRootQueryError, Trait.ComputeMissingSelectError, Trait.ComputeInvalidSelectError, Trait.ComputeMissingRelatedSelectError, Trait.ComputeProblemRelatedWhereSelectError };
         #endregion
 
 

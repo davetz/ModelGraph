@@ -2466,7 +2466,7 @@ namespace ModelGraphSTD
             {
                 var e = m.Error;
                 var i = m.ParentModel.GetChildlIndex(m);
-                return (i < 0 || e.Count <= i) ? InvalidItem : e.Errors[i];
+                return (i < 0 || e.Count <= i) ? InvalidItem : e.GetError(i);
             }
         }
         #endregion

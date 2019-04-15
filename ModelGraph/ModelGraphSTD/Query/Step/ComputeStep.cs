@@ -264,6 +264,8 @@ namespace ModelGraphSTD
             [StepType.Descend] = " Descend ",
             [StepType.Plus] = " + ",
             [StepType.Minus] = " - ",
+            [StepType.Divide] = " / ",
+            [StepType.Multiply] = " * ",
             [StepType.Negate] = " | ",
             [StepType.Equal] = " = ",
             [StepType.NotEqual] = " != ",

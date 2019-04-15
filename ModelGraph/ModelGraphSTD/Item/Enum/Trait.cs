@@ -24,6 +24,10 @@ namespace ModelGraphSTD
 
         GetStorageFile = 0x1000, // Command
 
+        IsErrorAux1 = 0x1000, // Error, Model looks up errors using its Aux1 item
+        IsErrorAux2 = 0x2000, // Error, Model looks up errors using both its Aux1 and Aux2 items
+        IsErrorAux  = 0x3000, // Error, Model looks up errors using one or both of its Aux items
+
 
         KeyMask = 0xFFF,
         FlagMask = 0xF000,
@@ -106,6 +110,8 @@ namespace ModelGraphSTD
         //=========================================
         Dummy = 0x100,
         NodeParm = 0x101,
+        ImportBinaryReader = 0x102,
+        ExportBinaryWriter = 0x103,
 
         DataChef = 0x112,
 
@@ -187,22 +193,27 @@ namespace ModelGraphSTD
 
         #region Error  ===============================================(200-2FF)
 
-        ImportError = 0x200,
-        ExportError = 0x201,
-        ComputeValueOverflowError = 0x202,
-        ComputeCircularDependanceError = 0x203,
-        ComputeMissingRootQueryError = 0x204,
-        ComputeMissingSelectError = 0x205,
-        ComputeInvalidSelectError = 0x206,
-        ComputeUnresolvedSelectError = 0x207,
-        ComputeMissingRelatedSelectError = 0x208,
-        ComputeProblemRelatedWhereSelectError = 0x209,
-        QueryInvalidWhereError = 0x20A,
-        QueryInvalidSelectError = 0x20B,
-        QueryUnresolvedWhereError = 0x20C,
-        QueryUnresolvedSelectError = 0x20D,
-        QueryValueOverflowdWhereError = 0x20E,
-        QueryValueOverflowSelectError = 0x20F,
+        ExportError = 0x200,
+        ImportError = 0x201,
+
+        ComputeProblemRelatedWhereSelectError = 0x210,
+        ComputeMissingRelatedSelectError = 0x211,
+        ComputeUnresolvedSelectError = 0x212 | IsErrorAux1,
+        ComputeInvalidSelectError = 0x213 | IsErrorAux1,
+        ComputeCircularDependanceError = 0x214,
+        ComputeMissingSelectError = 0x215 | IsErrorAux1,
+
+        ComputeMissingRootQueryError = 0x216,
+        ComputeValueOverflowError = 0x217,
+
+        QueryUnresolvedWhereError = 0x220 | IsErrorAux1,
+        QueryInvalidWhereError = 0x221 | IsErrorAux1,
+
+        QueryUnresolvedSelectError = 0x222 | IsErrorAux1,
+        QueryInvalidSelectError = 0x223 | IsErrorAux1,
+
+        QueryValueOverflowdWhereError = 0x224,
+        QueryValueOverflowSelectError = 0x225,
 
         #endregion
 
@@ -390,13 +401,13 @@ namespace ModelGraphSTD
         S_611_M = 0x611,
         DataChef_M = 0x612,
         S_613_M = 0x613,
-        TextColumn_M = 0x614,
-        CheckColumn_M = 0x615,
-        ComboColumn_M = 0x616,
-        TextProperty_M = 0x617,
-        CheckProperty_M = 0x618,
-        ComboProperty_M = 0x619,
-        TextCompute_M = 0x61A,
+        TextColumn_M = 0x614 | IsErrorAux1,
+        CheckColumn_M = 0x615 | IsErrorAux1,
+        ComboColumn_M = 0x616 | IsErrorAux1,
+        TextProperty_M = 0x617 | IsErrorAux1,
+        CheckProperty_M = 0x618 | IsErrorAux1,
+        ComboProperty_M = 0x619 | IsErrorAux1,
+        TextCompute_M = 0x61A | IsErrorAux1,
         S_61B_M = 0x61B,
         S_61C_M = 0x61C,
         S_61D_M = 0x61D,

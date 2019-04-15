@@ -9,9 +9,9 @@ namespace ModelGraphSTD
         internal Trait Trait;       //identity, static flags, and resource string key
         private State _state;       //bit flags specific to each item type
 
-        private byte _flags;         //IsNew, IsDeleted, AutoExpandLeft, AutoExpandRight,..
-        internal byte ModelDelta; //incremented when a property or relation is changed
-        internal byte ChildDelta; //incremented when list of child items is changed 
+        private byte _flags;        //IsNew, IsDeleted, AutoExpandLeft, AutoExpandRight,..
+        internal byte ModelDelta;   //incremented when a property or relation is changed
+        internal byte ChildDelta;   //incremented when list of child items is changed 
 
         #region Trait  ========================================================
         internal bool IsExternal => (Trait & Trait.IsExternal) != 0;
@@ -46,6 +46,10 @@ namespace ModelGraphSTD
         internal bool CanMultiline => (Trait & Trait.CanMultiline) != 0;
 
         internal byte TraitIndex => (byte)(Trait & Trait.IndexMask);
+        internal byte TraitIndexOf(Trait trait) => (byte)(trait & Trait.IndexMask);
+        internal bool IsErrorAux => (Trait & Trait.IsErrorAux) != 0;
+        internal bool IsErrorAux1 => (Trait & Trait.IsErrorAux1) != 0;
+        internal bool IsErrorAux2 => (Trait & Trait.IsErrorAux2) != 0;
         #endregion
 
         #region State  ========================================================
@@ -101,9 +105,11 @@ namespace ModelGraphSTD
         const byte B3 = 0x4;
         internal bool AutoExpandRight { get { return (_flags & B4) != 0; } set { _flags = value ? (byte)(_flags | B4) : (byte)(_flags & ~B4); } }
         const byte B4 = 0x8;
-        internal bool InDebugMode { get { return (_flags & B7) != 0; } set { _flags = value ? (byte)(_flags | B7) : (byte)(_flags & ~B7); } }
+        internal bool HasError { get { return (_flags & B6) != 0; } set { _flags = value ? (byte)(_flags | B6) : (byte)(_flags & ~B6); } }
+        const byte B6 = 0x20;
+        internal bool HasErrorAux1 { get { return (_flags & B7) != 0; } set { _flags = value ? (byte)(_flags | B7) : (byte)(_flags & ~B7); } }
         const byte B7 = 0x40;
-        internal bool HasError { get { return (_flags & B8) != 0; } set { _flags = value ? (byte)(_flags | B8) : (byte)(_flags & ~B8); } }
+        internal bool HasErrorAux2 { get { return (_flags & B8) != 0; } set { _flags = value ? (byte)(_flags | B8) : (byte)(_flags & ~B8); } }
         const byte B8 = 0x80;
         #endregion
 

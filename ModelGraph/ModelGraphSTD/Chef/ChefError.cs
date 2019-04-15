@@ -4,188 +4,274 @@ namespace ModelGraphSTD
 {
     public partial class Chef
     {
-        private readonly Dictionary<Item, List<Error>> _itemErrors = new Dictionary<Item, List<Error>>();
-        private readonly Dictionary<Item, List<Error>> _relatedErrors = new Dictionary<Item, List<Error>>();
+        private readonly Dictionary<Item, Error> _itemError = new Dictionary<Item, Error>(); //the most serious item error
+        private readonly Dictionary<(Item, Item), Error> _itemErrorAux1 = new Dictionary<(Item, Item), Error>(); //the most serious item error
+        private readonly Dictionary<(Item, Item, Item), Error> _itemErrorAux2 = new Dictionary<(Item, Item, Item), Error>(); //the most serious item error
 
         #region RepositoryError  ==============================================
         public void AddRepositorReadError(string text)
         {
-            var error = new Error(ErrorStore, this, Trait.ImportError);
-            error.Add(text);
-            AddError(error);
+            _itemError[ImportBinaryReader] = new ErrorOne(ErrorStore, this, Trait.ImportError);
         }
         public void AddRepositorWriteError(string text)
         {
-            var error = new Error(ErrorStore, this, Trait.ExportError);
-            error.Add(text);
-            AddError(error);
+            _itemError[ExportBinaryWriter] = new ErrorOne(ErrorStore, this, Trait.ExportError);
         }
         #endregion
-
-
 
         #region ClearItemErrors  ==============================================
         void ClearItemErrors()
         {
-            _itemErrors.Clear();
+            _itemError.Clear();
         }
         #endregion
 
-        #region AddError  =====================================================
-        internal void AddError(Error error)
+        #region TryAddError  ==================================================
+        internal ErrorNone TryAddErrorNone(Item item, Trait trait)
         {
-            var item = error.Item;
-            if (!_itemErrors.TryGetValue(item, out List<Error> errors))
+            var prevError = TryGetError(item);
+            if (prevError != null)
             {
-                errors = new List<Error>(2);
-                _itemErrors.Add(item, errors);
+                if (prevError is ErrorNone error && error.Trait == trait)
+                    return error; // this error already exists
+
+                if (prevError.TraitIndex > TraitIndexOf(trait))
+                    return null; // prevError has hight traitIndex and will not be replace
+
+                ErrorStore.Remove(prevError);
+                _itemError.Remove(item);
             }
-            errors.Add(error);
-            item.HasError = true;
+
+            var newError = new ErrorNone(ErrorStore, item, trait);
+            _itemError[item] = newError;
+            item.HasError = true; ;
+            return newError;
         }
+        internal ErrorNoneAux TryAddErrorNone(Item item, Item aux1, Trait trait)
+        {
+            var prevError = TryGetError(item, aux1);
+            if (prevError != null)
+            {
+                if (prevError is ErrorNoneAux error && error.Trait == trait)
+                    return error; // this error already exists
+
+                if (prevError.TraitIndex > TraitIndexOf(trait))
+                    return null; // prevError has hight traitIndex and will not be replace
+
+                ErrorStore.Remove(prevError);
+                _itemErrorAux1.Remove((item, aux1));
+            }
+
+            var newError = new ErrorNoneAux(ErrorStore, item, aux1,  trait);
+            _itemErrorAux1[(item, aux1)] = newError;
+            item.HasErrorAux1 = true;
+            return newError;
+        }
+        internal ErrorNoneAux2 TryAddErrorNone(Item item, Item aux1, Item aux2, Trait trait)
+        {
+            var prevError = TryGetError(item, aux1, aux2);
+            if (prevError != null)
+            {
+                if (prevError is ErrorNoneAux2 error && error.Trait == trait)
+                    return error; // this error already exists
+
+                if (prevError.TraitIndex > TraitIndexOf(trait))
+                    return null; // prevError has hight traitIndex and will not be replace
+
+                ErrorStore.Remove(prevError);
+                _itemErrorAux2.Remove((item, aux1, aux2));
+            }
+
+            var newError = new ErrorNoneAux2(ErrorStore, item, aux1, aux2, trait);
+            _itemErrorAux2[(item, aux1, aux2)] = newError;
+            item.HasErrorAux2 = true;
+            return newError;
+        }
+        internal ErrorOne TryAddErrorOne(Item item, Trait trait)
+        {
+            var prevError = TryGetError(item);
+            if (prevError != null)
+            {
+                if (prevError is ErrorOne error && error.Trait == trait)
+                    return error; // this error already exists
+
+                if (prevError.TraitIndex > TraitIndexOf(trait))
+                    return null; // prevError has hight traitIndex and will not be replace
+
+                ErrorStore.Remove(prevError);
+                _itemError.Remove(item);
+            }
+
+            var newError = new ErrorOne(ErrorStore, item, trait);
+            _itemError[item] = newError;
+            item.HasError = true;
+            return newError;
+        }
+        internal ErrorOneAux TryAddErrorOne(Item item, Item aux1, Trait trait)
+        {
+            var prevError = TryGetError(item, aux1);
+            if (prevError != null)
+            {
+                if (prevError is ErrorOneAux error && error.Trait == trait)
+                    return error; // this error already exists
+
+                if (prevError.TraitIndex > TraitIndexOf(trait))
+                    return null; // prevError has hight traitIndex and will not be replace
+
+                ErrorStore.Remove(prevError);
+                _itemErrorAux1.Remove((item, aux1));
+            }
+
+            var newError = new ErrorOneAux(ErrorStore, item, aux1, trait);
+            _itemErrorAux1[(item, aux1)] = newError;
+            item.HasErrorAux1 = true;
+            return newError;
+        }
+        internal ErrorOneAux2 TryAddErrorOne(Item item, Item aux1, Item aux2, Trait trait)
+        {
+            var prevError = TryGetError(item, aux1, aux2);
+            if (prevError != null)
+            {
+                if (prevError is ErrorOneAux2 error && error.Trait == trait)
+                    return error; // this error already exists
+
+                if (prevError.TraitIndex > TraitIndexOf(trait))
+                    return null; // prevError has hight traitIndex and will not be replace
+
+                ErrorStore.Remove(prevError);
+                _itemErrorAux2.Remove((item, aux1, aux2));
+            }
+
+            var newError = new ErrorOneAux2(ErrorStore, item, aux1, aux2, trait);
+            _itemErrorAux2[(item, aux1, aux2)] = newError;
+            item.HasErrorAux2 = true;
+            return newError;
+        }
+        internal ErrorMany TryAddErrorMany(Item item, Trait trait)
+        {
+            var prevError = TryGetError(item);
+            if (prevError != null)
+            {
+                if (prevError is ErrorMany error && error.Trait == trait)
+                    return error; // this error already exists
+
+                if (prevError.TraitIndex > TraitIndexOf(trait))
+                    return null; // prevError has hight traitIndex and will not be replace
+
+                ErrorStore.Remove(prevError);
+                _itemError.Remove(item);
+            }
+
+            var newError = new ErrorMany(ErrorStore, item, trait);
+            _itemError[item] = newError;
+            item.HasError = true;
+            return newError;
+        }
+        internal ErrorManyAux TryAddErrorMany(Item item, Item aux1, Trait trait)
+        {
+            var prevError = TryGetError(item, aux1);
+            if (prevError != null)
+            {
+                if (prevError is ErrorManyAux error && error.Trait == trait)
+                    return error; // this error already exists
+
+                if (prevError.TraitIndex > TraitIndexOf(trait))
+                    return null; // prevError has hight traitIndex and will not be replace
+
+                ErrorStore.Remove(prevError);
+                _itemErrorAux1.Remove((item, aux1));
+            }
+
+            var newError = new ErrorManyAux(ErrorStore, item, aux1, trait);
+            _itemErrorAux1[(item, aux1)] = newError;
+            item.HasErrorAux1 = true;
+            return newError;
+        }
+        internal ErrorManyAux2 TryAddErrorMany(Item item, Item aux1, Item aux2, Trait trait)
+        {
+            var prevError = TryGetError(item, aux1, aux2);
+            if (prevError != null)
+            {
+                if (prevError is ErrorManyAux2 error && error.Trait == trait)
+                    return error; // this error already exists
+
+                if (prevError.TraitIndex > TraitIndexOf(trait))
+                    return null; // prevError has hight traitIndex and will not be replace
+
+                ErrorStore.Remove(prevError);
+                _itemErrorAux2.Remove((item, aux1, aux2));
+            }
+
+            var newError = new ErrorManyAux2(ErrorStore, item, aux1, aux2, trait);
+            _itemErrorAux2[(item, aux1, aux2)] = newError;
+            item.HasErrorAux2 = true;
+            return newError;
+        }
+
         #endregion
 
-        #region GetError  =====================================================
-        internal Error GetError(Item item, Trait trait, Item aux1, Item aux2 = null, Trait[] remove = null)
+        #region ClearError  ===================================================
+        internal void ClearError(Item item)
         {
-            Error error = null;
-            var errors = TryGetErrors(item);
-            if (errors != null)
+            if (item.HasError && _itemError.TryGetValue(item, out Error error))
             {
-                for (int i = (errors.Count - 1); i >= 0; i--)
-                {
-                    var err = errors[i];
-                    if (err.Trait == trait) error = err; // error already exist
-                    if (remove != null)
-                    {
-                        foreach (var tr in remove)
-                        {
-                            if (tr == trait) continue;
-                            if (err.Trait != tr) continue;
-
-                            errors.RemoveAt(i);
-                            ErrorStore.Remove(err);
-                        }
-                    }
-                }
-                if (error is null)
-                {
-                    error = new Error(ErrorStore, item, aux1, aux2, trait);
-                    errors.Add(error);
-                }
+                ErrorStore.Remove(error);
+                _itemError.Remove(item);
             }
-            else
+            item.HasError = false;
+        }
+        internal void ClearError(Item item, Item aux1)
+        {
+            if (item.HasErrorAux1 && _itemErrorAux1.TryGetValue((item, aux1), out Error error))
             {
-                error = new Error(ErrorStore, item, aux1, aux2, trait);
-                errors = new List<Error>(2) { error };
-
-                _itemErrors.Add(item, errors);
+                ErrorStore.Remove(error);
+                _itemErrorAux1.Remove((item, aux1));
             }
-
-            item.HasError = true;
-            return error;
+            item.HasErrorAux1 = false;
+        }
+        internal void ClearError(Item item, Item aux1, Item aux2)
+        {
+            if (item.HasErrorAux2 && _itemErrorAux2.TryGetValue((item, aux1, aux2), out Error error))
+            {
+                ErrorStore.Remove(error);
+                _itemErrorAux2.Remove((item, aux1, aux2));
+            }
+            item.HasErrorAux2 = false;
         }
         #endregion
 
         #region TryGetError  ==================================================
-        internal List<Error> TryGetErrors(Item item)
-        {
-            if (item.HasError && _itemErrors.TryGetValue(item, out List<Error> errors))
-            {               
-                if (errors.Count > 0) return errors;
-
-                item.HasError = false;
-                _itemErrors.Remove(item);
-            }
-            return null;
-        }
         internal Error TryGetError(Item item)
         {
-            var errors = TryGetErrors(item);
-            return errors?[0];
-        }
-        internal Error TryGetError(Item item, Trait trait)
-        {
-            var errors = TryGetErrors(item);
-            if (errors is null) return null;
-
-            foreach (var error in errors)
+            if (item.HasError)
             {
-                if (error.Trait == trait) return error;
+                if (_itemError.TryGetValue(item, out Error error)) return error;
+                item.HasError = false;
             }
             return null;
         }
         internal Error TryGetError(Item item, Item aux1)
         {
-            if (aux1 is null) return TryGetError(item);
-
-            var errors = TryGetErrors(item);
-            if (errors is null) return null;
-
-            foreach (var error in errors)
+            if (item.HasErrorAux1)
             {
-                if (error.Aux1 == aux1) return error;
+                if (_itemErrorAux1.TryGetValue((item, aux1), out Error error)) return error;
+                item.HasErrorAux1 = false;
             }
             return null;
         }
         internal Error TryGetError(Item item, Item aux1, Item aux2)
         {
-            if (aux1 is null) return TryGetError(item);
-            if (aux2 is null) return TryGetError(item, aux1);
-
-
-            var errors = TryGetErrors(item);
-            if (errors is null) return null;
-
-            foreach (var error in errors)
+            if (item.HasErrorAux2)
             {
-                if (error.Aux1 == aux1 && error.Aux2 == aux2) return error;
+                if (_itemErrorAux2.TryGetValue((item, aux1, aux2), out Error error)) return error;
+                item.HasErrorAux2 = false;
             }
             return null;
         }
-        #endregion
 
-        #region ClearError  ===================================================
-        internal void ClearError(Item item, Error error)
-        {
-            var errors = TryGetErrors(item);
-            if (errors is null)
-            {
-                if (error != null) throw new System.Exception("Corrupted itemError dictionary");
-            }
-            else
-            {
-                if (error != null)
-                {
-                    errors.Remove(error);
-                    ErrorStore.Remove(error);
-                    item.HasError = errors.Count > 0;
-                }
-            }
-        }
-        internal void ClearErrors(Item item, Trait[] traits)
-        {
-            var errors = TryGetErrors(item);
-            if (errors != null)
-            {
-                for (int i = (errors.Count - 1); i >= 0; i--)
-                {
-                    var err = errors[i];
-                    foreach (var tr in traits)
-                    {
-                        if (err.Trait != tr) continue;
-
-                        errors.RemoveAt(i);
-                        ErrorStore.Remove(err);
-                    }
-                }
-                if (errors.Count == 0)
-                {
-                    _itemErrors.Remove(item);
-                    item.HasError = false;
-                }
-            }
-        }
+        internal bool TestError(Item item) => (TryGetError(item) is null) ? false : true;
+        internal bool TestError(Item item, Item aux1) => (TryGetError(item, aux1) is null) ? false : true;
+        internal bool TestError(Item item, Item aux1, Item aux2) => (TryGetError(item, aux1, aux2) is null) ? false : true;
         #endregion
     }
 }

@@ -22,7 +22,22 @@ namespace ModelGraphSTD
         internal byte ChildDelta;  // version of child model list
         private Flags _flags;
         public byte Depth;
-        public bool HasError => Item.HasError && (!IsProperty || (Item.GetChef().TryGetError(Item, Aux1) != null));
+        public bool HasError
+        {
+            get
+            {
+                if (Item.HasError || Item.HasErrorAux1 || Item.HasErrorAux2)
+                {
+                    if (IsErrorAux2)
+                        return Item.IsErrorAux2 && Item.GetChef().TestError(Item, Aux1, Aux2);
+                    else if (IsErrorAux1)
+                        return Item.HasErrorAux1 && Item.GetChef().TestError(Item, Aux1);
+                    else
+                        return Item.HasError && Item.GetChef().TestError(Item);
+                }
+                return false;
+            }
+        }
 
         #region Constructor  ==================================================
         internal ItemModel() { } // supports RootModel constructor
@@ -92,6 +107,9 @@ namespace ModelGraphSTD
 
         public bool IsRowChildRelationModel => Trait == Trait.RowChildRelation_M;
         public bool IsRowParentRelationModel => Trait == Trait.RowParentRelation_M;
+        public bool IsErrorAux => (Trait & Trait.IsErrorAux) != 0;
+        public bool IsErrorAux1 => (Trait & Trait.IsErrorAux1) != 0;
+        public bool IsErrorAux2 => (Trait & Trait.IsErrorAux2) != 0;
         #endregion
 
         #region State  ========================================================

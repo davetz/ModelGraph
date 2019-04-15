@@ -10,6 +10,8 @@ namespace ModelGraphSTD
         internal static IList<Item> EmptyItemList = new List<Item>(0).AsReadOnly();
         internal Dummy Dummy { get; private set; }
 
+        internal ImportBinaryReader ImportBinaryReader { get; private set; }
+        internal ExportBinaryWriter ExportBinaryWriter { get; private set; }
         internal QueryX QueryXNode { get; private set; }
 
         internal ChangeSet ChangeSet { get; private set; }
@@ -52,6 +54,9 @@ namespace ModelGraphSTD
         private void InitializeStores()
         {
             Dummy = new Dummy(this);
+            ImportBinaryReader = new ImportBinaryReader(this);
+            ExportBinaryWriter = new ExportBinaryWriter(this);
+
             QueryXNode = new QueryX(this);
             ChangeRoot = new ChangeRoot(this);
             ChangeSequence = 1;
@@ -95,6 +100,9 @@ namespace ModelGraphSTD
         private void ReleaseStores()
         {
             Dummy = null;
+            ImportBinaryReader = null;
+            ExportBinaryWriter = null;
+
             QueryXNode = null;
             ChangeRoot = null;
             ChangeSet = null;

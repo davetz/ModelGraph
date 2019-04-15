@@ -919,10 +919,8 @@ namespace ModelGraph.Controls
                     //=========================================================
                     AddItemKind(index, kind, m);
                     AddItemName(index, name, m);
-                    if (m.CanExpandRight)
-                    {
-                        AddExpandRight(index, m);
-                    }
+                    if (m.CanExpandRight) AddExpandRight(index, m);
+                    if (m.HasError) AddItemHasError(index, m);
 
                     if (count > 0)
                     {
