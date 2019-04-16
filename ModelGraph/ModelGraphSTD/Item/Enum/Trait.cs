@@ -211,9 +211,10 @@ namespace ModelGraphSTD
 
         QueryUnresolvedSelectError = 0x222 | IsErrorAux1,
         QueryInvalidSelectError = 0x223 | IsErrorAux1,
+        QueryMissingSelectError = 0x224 | IsErrorAux1,
 
-        QueryValueOverflowdWhereError = 0x224,
-        QueryValueOverflowSelectError = 0x225,
+        QueryValueOverflowdWhereError = 0x225,
+        QueryValueOverflowSelectError = 0x226,
 
         #endregion
 

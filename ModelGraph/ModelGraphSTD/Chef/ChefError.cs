@@ -26,6 +26,111 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region AddError  =====================================================
+        private ErrorNone AddError(Item item, ErrorNone error)
+        {
+            _itemError[item] = error;
+            item.HasError = true;
+            return error;
+        }
+        private ErrorOne AddError(Item item, ErrorOne error)
+        {
+            _itemError[item] = error;
+            item.HasError = true;
+            return error;
+        }
+        private ErrorMany AddError(Item item, ErrorMany error)
+        {
+            _itemError[item] = error;
+            item.HasError = true;
+            return error;
+        }
+
+        private ErrorNoneAux AddError(Item item, Item aux1, ErrorNoneAux error)
+        {
+            _itemErrorAux1[(item, aux1)] = error;
+            item.HasErrorAux1 = true;
+            return error;
+        }
+        private ErrorOneAux AddError(Item item, Item aux1, ErrorOneAux error)
+        {
+            _itemErrorAux1[(item, aux1)] = error;
+            item.HasErrorAux1 = true;
+            return error;
+        }
+        private ErrorManyAux AddError(Item item, Item aux1, ErrorManyAux error)
+        {
+            _itemErrorAux1[(item, aux1)] = error;
+            item.HasErrorAux1 = true;
+            return error;
+        }
+
+        private ErrorNoneAux2 AddError(Item item, Item aux1, Item aux2, ErrorNoneAux2 error)
+        {
+            _itemErrorAux2[(item, aux1, aux2)] = error;
+            item.HasErrorAux2 = true;
+            return error;
+        }
+        private ErrorOneAux2 AddError(Item item, Item aux1, Item aux2, ErrorOneAux2 error)
+        {
+            _itemErrorAux2[(item, aux1, aux2)] = error;
+            item.HasErrorAux2 = true;
+            return error;
+        }
+        private ErrorManyAux2 AddError(Item item, Item aux1, Item aux2, ErrorManyAux2 error)
+        {
+            _itemErrorAux2[(item, aux1, aux2)] = error;
+            item.HasErrorAux2 = true;
+            return error;
+        }
+        #endregion
+
+        #region ClearError  ===================================================
+        internal void ClearError(Item item)
+        {
+            if (_itemError.TryGetValue(item, out Error error))
+                ClearError(item, error);
+            else
+                item.HasError = false;
+        }
+        internal void ClearError(Item item, Item aux1)
+        {
+            if (_itemErrorAux1.TryGetValue((item, aux1), out Error error))
+                ClearError(item, aux1, error);
+            else
+                item.HasErrorAux1 = false;
+        }
+        internal void ClearError(Item item, Item aux1, Item aux2)
+        {
+            if (_itemErrorAux2.TryGetValue((item, aux1, aux2), out Error error))
+                ClearError(item, aux1, aux2, error);
+            else
+                item.HasErrorAux2 = false;
+        }
+
+        internal void ClearError(Item item, Error error)
+        {
+            if (error.IsErrorAux) throw new System.Exception("Corrupt Error Hierarcy");
+            ErrorStore.Remove(error);
+            _itemError.Remove(item);
+            item.HasError = false;
+        }
+        internal void ClearError(Item item, Item aux1, Error error)
+        {
+            if (!error.IsErrorAux1) throw new System.Exception("Corrupt Error Hierarcy");
+            ErrorStore.Remove(error);
+            _itemErrorAux1.Remove((item, aux1));
+            item.HasErrorAux1 = false;
+        }
+        internal void ClearError(Item item, Item aux1, Item aux2, Error error)
+        {
+            if (!error.IsErrorAux1) throw new System.Exception("Corrupt Error Hierarcy");
+            ErrorStore.Remove(error);
+            _itemErrorAux2.Remove((item, aux1, aux2));
+            item.HasErrorAux2 = false;
+        }
+        #endregion
+
         #region TryAddError  ==================================================
         internal ErrorNone TryAddErrorNone(Item item, Trait trait)
         {
@@ -38,14 +143,9 @@ namespace ModelGraphSTD
                 if (prevError.TraitIndex > TraitIndexOf(trait))
                     return null; // prevError has hight traitIndex and will not be replace
 
-                ErrorStore.Remove(prevError);
-                _itemError.Remove(item);
+                ClearError(item, prevError);
             }
-
-            var newError = new ErrorNone(ErrorStore, item, trait);
-            _itemError[item] = newError;
-            item.HasError = true; ;
-            return newError;
+            return AddError(item, new ErrorNone(ErrorStore, item, trait));
         }
         internal ErrorNoneAux TryAddErrorNone(Item item, Item aux1, Trait trait)
         {
@@ -58,14 +158,9 @@ namespace ModelGraphSTD
                 if (prevError.TraitIndex > TraitIndexOf(trait))
                     return null; // prevError has hight traitIndex and will not be replace
 
-                ErrorStore.Remove(prevError);
-                _itemErrorAux1.Remove((item, aux1));
+                ClearError(item, aux1, prevError);
             }
-
-            var newError = new ErrorNoneAux(ErrorStore, item, aux1,  trait);
-            _itemErrorAux1[(item, aux1)] = newError;
-            item.HasErrorAux1 = true;
-            return newError;
+            return AddError(item, aux1, new ErrorNoneAux(ErrorStore, item, aux1, trait));
         }
         internal ErrorNoneAux2 TryAddErrorNone(Item item, Item aux1, Item aux2, Trait trait)
         {
@@ -78,16 +173,12 @@ namespace ModelGraphSTD
                 if (prevError.TraitIndex > TraitIndexOf(trait))
                     return null; // prevError has hight traitIndex and will not be replace
 
-                ErrorStore.Remove(prevError);
-                _itemErrorAux2.Remove((item, aux1, aux2));
+                ClearError(item, aux1, aux2, prevError);
             }
-
-            var newError = new ErrorNoneAux2(ErrorStore, item, aux1, aux2, trait);
-            _itemErrorAux2[(item, aux1, aux2)] = newError;
-            item.HasErrorAux2 = true;
-            return newError;
+            return AddError(item, aux1, aux2, new ErrorNoneAux2(ErrorStore, item, aux1, aux2, trait));
         }
-        internal ErrorOne TryAddErrorOne(Item item, Trait trait)
+
+        internal ErrorOne TryAddErrorOne(Item item, Trait trait, string text = null)
         {
             var prevError = TryGetError(item);
             if (prevError != null)
@@ -98,16 +189,11 @@ namespace ModelGraphSTD
                 if (prevError.TraitIndex > TraitIndexOf(trait))
                     return null; // prevError has hight traitIndex and will not be replace
 
-                ErrorStore.Remove(prevError);
-                _itemError.Remove(item);
+                ClearError(item, prevError);
             }
-
-            var newError = new ErrorOne(ErrorStore, item, trait);
-            _itemError[item] = newError;
-            item.HasError = true;
-            return newError;
+            return AddError(item, new ErrorOne(ErrorStore, item, trait, text));
         }
-        internal ErrorOneAux TryAddErrorOne(Item item, Item aux1, Trait trait)
+        internal ErrorOneAux TryAddErrorOne(Item item, Item aux1, Trait trait, string text = null)
         {
             var prevError = TryGetError(item, aux1);
             if (prevError != null)
@@ -118,16 +204,11 @@ namespace ModelGraphSTD
                 if (prevError.TraitIndex > TraitIndexOf(trait))
                     return null; // prevError has hight traitIndex and will not be replace
 
-                ErrorStore.Remove(prevError);
-                _itemErrorAux1.Remove((item, aux1));
+                ClearError(item, aux1, prevError);
             }
-
-            var newError = new ErrorOneAux(ErrorStore, item, aux1, trait);
-            _itemErrorAux1[(item, aux1)] = newError;
-            item.HasErrorAux1 = true;
-            return newError;
+            return AddError(item, aux1, new ErrorOneAux(ErrorStore, item, aux1, trait, text));
         }
-        internal ErrorOneAux2 TryAddErrorOne(Item item, Item aux1, Item aux2, Trait trait)
+        internal ErrorOneAux2 TryAddErrorOne(Item item, Item aux1, Item aux2, Trait trait, string text = null)
         {
             var prevError = TryGetError(item, aux1, aux2);
             if (prevError != null)
@@ -138,16 +219,12 @@ namespace ModelGraphSTD
                 if (prevError.TraitIndex > TraitIndexOf(trait))
                     return null; // prevError has hight traitIndex and will not be replace
 
-                ErrorStore.Remove(prevError);
-                _itemErrorAux2.Remove((item, aux1, aux2));
+                ClearError(item, aux1, aux2, prevError);
             }
-
-            var newError = new ErrorOneAux2(ErrorStore, item, aux1, aux2, trait);
-            _itemErrorAux2[(item, aux1, aux2)] = newError;
-            item.HasErrorAux2 = true;
-            return newError;
+            return AddError(item, aux1, aux2, new ErrorOneAux2(ErrorStore, item, aux1, aux2, trait, text));
         }
-        internal ErrorMany TryAddErrorMany(Item item, Trait trait)
+
+        internal ErrorMany TryAddErrorMany(Item item, Trait trait, string text = null)
         {
             var prevError = TryGetError(item);
             if (prevError != null)
@@ -158,16 +235,11 @@ namespace ModelGraphSTD
                 if (prevError.TraitIndex > TraitIndexOf(trait))
                     return null; // prevError has hight traitIndex and will not be replace
 
-                ErrorStore.Remove(prevError);
-                _itemError.Remove(item);
+                ClearError(item, prevError);
             }
-
-            var newError = new ErrorMany(ErrorStore, item, trait);
-            _itemError[item] = newError;
-            item.HasError = true;
-            return newError;
+            return AddError(item, new ErrorMany(ErrorStore, item, trait, text));
         }
-        internal ErrorManyAux TryAddErrorMany(Item item, Item aux1, Trait trait)
+        internal ErrorManyAux TryAddErrorMany(Item item, Item aux1, Trait trait, string text = null)
         {
             var prevError = TryGetError(item, aux1);
             if (prevError != null)
@@ -178,16 +250,11 @@ namespace ModelGraphSTD
                 if (prevError.TraitIndex > TraitIndexOf(trait))
                     return null; // prevError has hight traitIndex and will not be replace
 
-                ErrorStore.Remove(prevError);
-                _itemErrorAux1.Remove((item, aux1));
+                ClearError(item, aux1, prevError);
             }
-
-            var newError = new ErrorManyAux(ErrorStore, item, aux1, trait);
-            _itemErrorAux1[(item, aux1)] = newError;
-            item.HasErrorAux1 = true;
-            return newError;
+            return AddError(item, aux1, new ErrorManyAux(ErrorStore, item, aux1, trait, text));
         }
-        internal ErrorManyAux2 TryAddErrorMany(Item item, Item aux1, Item aux2, Trait trait)
+        internal ErrorManyAux2 TryAddErrorMany(Item item, Item aux1, Item aux2, Trait trait, string text = null)
         {
             var prevError = TryGetError(item, aux1, aux2);
             if (prevError != null)
@@ -198,45 +265,9 @@ namespace ModelGraphSTD
                 if (prevError.TraitIndex > TraitIndexOf(trait))
                     return null; // prevError has hight traitIndex and will not be replace
 
-                ErrorStore.Remove(prevError);
-                _itemErrorAux2.Remove((item, aux1, aux2));
+                ClearError(item, aux1, aux2, prevError);
             }
-
-            var newError = new ErrorManyAux2(ErrorStore, item, aux1, aux2, trait);
-            _itemErrorAux2[(item, aux1, aux2)] = newError;
-            item.HasErrorAux2 = true;
-            return newError;
-        }
-
-        #endregion
-
-        #region ClearError  ===================================================
-        internal void ClearError(Item item)
-        {
-            if (item.HasError && _itemError.TryGetValue(item, out Error error))
-            {
-                ErrorStore.Remove(error);
-                _itemError.Remove(item);
-            }
-            item.HasError = false;
-        }
-        internal void ClearError(Item item, Item aux1)
-        {
-            if (item.HasErrorAux1 && _itemErrorAux1.TryGetValue((item, aux1), out Error error))
-            {
-                ErrorStore.Remove(error);
-                _itemErrorAux1.Remove((item, aux1));
-            }
-            item.HasErrorAux1 = false;
-        }
-        internal void ClearError(Item item, Item aux1, Item aux2)
-        {
-            if (item.HasErrorAux2 && _itemErrorAux2.TryGetValue((item, aux1, aux2), out Error error))
-            {
-                ErrorStore.Remove(error);
-                _itemErrorAux2.Remove((item, aux1, aux2));
-            }
-            item.HasErrorAux2 = false;
+            return AddError(item, aux1, aux2, new ErrorManyAux2(ErrorStore, item, aux1, aux2, trait, text));
         }
         #endregion
 
@@ -246,7 +277,6 @@ namespace ModelGraphSTD
             if (item.HasError)
             {
                 if (_itemError.TryGetValue(item, out Error error)) return error;
-                item.HasError = false;
             }
             return null;
         }
@@ -255,7 +285,6 @@ namespace ModelGraphSTD
             if (item.HasErrorAux1)
             {
                 if (_itemErrorAux1.TryGetValue((item, aux1), out Error error)) return error;
-                item.HasErrorAux1 = false;
             }
             return null;
         }
@@ -264,7 +293,6 @@ namespace ModelGraphSTD
             if (item.HasErrorAux2)
             {
                 if (_itemErrorAux2.TryGetValue((item, aux1, aux2), out Error error)) return error;
-                item.HasErrorAux2 = false;
             }
             return null;
         }

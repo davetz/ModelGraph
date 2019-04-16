@@ -2413,10 +2413,10 @@ NEC – NWC – SEC - SWC</value>
   <data name="222N" xml:space="preserve">
     <value>Query Unresolved Select Clause</value>
   </data>
-  <data name="224N" xml:space="preserve">
+  <data name="225N" xml:space="preserve">
     <value>Query Value Overflow Where Clause</value>
   </data>
-  <data name="225N" xml:space="preserve">
+  <data name="226N" xml:space="preserve">
     <value>Query Value Overflow Select Clause</value>
   </data>
   <data name="2F0N" xml:space="preserve">
@@ -2442,5 +2442,8 @@ NEC – NWC – SEC - SWC</value>
   </data>
   <data name="2F7N" xml:space="preserve">
     <value>i</value>
+  </data>
+  <data name="224N" xml:space="preserve">
+    <value>Select claus is required</value>
   </data>
 </root>

@@ -26,16 +26,10 @@ namespace ModelGraphSTD
         {
             get
             {
-                if (Item.HasError || Item.HasErrorAux1 || Item.HasErrorAux2)
-                {
-                    if (IsErrorAux2)
-                        return Item.IsErrorAux2 && Item.GetChef().TestError(Item, Aux1, Aux2);
-                    else if (IsErrorAux1)
-                        return Item.HasErrorAux1 && Item.GetChef().TestError(Item, Aux1);
-                    else
-                        return Item.HasError && Item.GetChef().TestError(Item);
-                }
-                return false;
+                if (IsErrorAux2) return Item.IsErrorAux2 && Item.GetChef().TestError(Item, Aux1, Aux2);
+                if (IsErrorAux1) return Item.HasErrorAux1 && Item.GetChef().TestError(Item, Aux1);
+
+                return Item.HasError && Item.GetChef().TestError(Item);
             }
         }
 
