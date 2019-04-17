@@ -10,6 +10,7 @@ using Windows.Storage.Pickers;
 using RepositoryUWP;
 using Windows.Storage;
 using ModelGraph.Services;
+using System.Diagnostics;
 
 namespace ModelGraph.Controls
 {
@@ -29,28 +30,23 @@ namespace ModelGraph.Controls
         #region SetSize  ======================================================
         public void SetSize(double width, double height)
         {
-            if (_treeCanvas != null && height > 0)
+            if (_root is null || _treeCanvas is null) return;
+            if (height > 0)
             {
                 _treeCanvas.Width = Width = width;
                 _treeCanvas.Height = Height = height;
-
                 _root.ViewCapacity = (int)(Height / _elementHieght);
                 _root.PostRefreshViewList(_select);
             }
         }
-        bool ViewIsNotReady()
-        {
-            if (_viewIsReady) return false;
-            return true;
-        }
+        bool ViewIsNotReady() => !_viewIsReady;
         bool _viewIsReady;
 
         void TreeCanvas_Loaded(object sender, RoutedEventArgs e)
         {
+            _viewIsReady = true;
             _treeCanvas = sender as Canvas;
             _treeCanvas.Loaded -= TreeCanvas_Loaded;
-
-            _viewIsReady = true;
             _root.PostRefreshViewList(_select);
         }
         private Canvas _treeCanvas;

@@ -30,57 +30,48 @@ namespace ModelGraphSTD
         private ErrorNone AddError(Item item, ErrorNone error)
         {
             _itemError[item] = error;
-            item.HasError = true;
             return error;
         }
         private ErrorOne AddError(Item item, ErrorOne error)
         {
             _itemError[item] = error;
-            item.HasError = true;
             return error;
         }
         private ErrorMany AddError(Item item, ErrorMany error)
         {
             _itemError[item] = error;
-            item.HasError = true;
             return error;
         }
 
         private ErrorNoneAux AddError(Item item, Item aux1, ErrorNoneAux error)
         {
             _itemErrorAux1[(item, aux1)] = error;
-            item.HasErrorAux1 = true;
             return error;
         }
         private ErrorOneAux AddError(Item item, Item aux1, ErrorOneAux error)
         {
             _itemErrorAux1[(item, aux1)] = error;
-            item.HasErrorAux1 = true;
             return error;
         }
         private ErrorManyAux AddError(Item item, Item aux1, ErrorManyAux error)
         {
             _itemErrorAux1[(item, aux1)] = error;
-            item.HasErrorAux1 = true;
             return error;
         }
 
         private ErrorNoneAux2 AddError(Item item, Item aux1, Item aux2, ErrorNoneAux2 error)
         {
             _itemErrorAux2[(item, aux1, aux2)] = error;
-            item.HasErrorAux2 = true;
             return error;
         }
         private ErrorOneAux2 AddError(Item item, Item aux1, Item aux2, ErrorOneAux2 error)
         {
             _itemErrorAux2[(item, aux1, aux2)] = error;
-            item.HasErrorAux2 = true;
             return error;
         }
         private ErrorManyAux2 AddError(Item item, Item aux1, Item aux2, ErrorManyAux2 error)
         {
             _itemErrorAux2[(item, aux1, aux2)] = error;
-            item.HasErrorAux2 = true;
             return error;
         }
         #endregion
@@ -90,22 +81,32 @@ namespace ModelGraphSTD
         {
             if (_itemError.TryGetValue(item, out Error error))
                 ClearError(item, error);
-            else
-                item.HasError = false;
         }
         internal void ClearError(Item item, Item aux1)
         {
             if (_itemErrorAux1.TryGetValue((item, aux1), out Error error))
                 ClearError(item, aux1, error);
-            else
-                item.HasErrorAux1 = false;
         }
         internal void ClearError(Item item, Item aux1, Item aux2)
         {
             if (_itemErrorAux2.TryGetValue((item, aux1, aux2), out Error error))
                 ClearError(item, aux1, aux2, error);
-            else
-                item.HasErrorAux2 = false;
+        }
+
+        internal void ClearError(Item item, Trait trait)
+        {
+            if (_itemError.TryGetValue(item, out Error error) && error.Trait == trait)
+                ClearError(item, error);
+        }
+        internal void ClearError(Item item, Item aux1, Trait trait)
+        {
+            if (_itemErrorAux1.TryGetValue((item, aux1), out Error error) && error.Trait == trait)
+                ClearError(item, aux1, error);
+        }
+        internal void ClearError(Item item, Item aux1, Item aux2, Trait trait)
+        {
+            if (_itemErrorAux2.TryGetValue((item, aux1, aux2), out Error error) && error.Trait == trait)
+                ClearError(item, aux1, aux2, error);
         }
 
         internal void ClearError(Item item, Error error)
@@ -113,21 +114,18 @@ namespace ModelGraphSTD
             if (error.IsErrorAux) throw new System.Exception("Corrupt Error Hierarcy");
             ErrorStore.Remove(error);
             _itemError.Remove(item);
-            item.HasError = false;
         }
         internal void ClearError(Item item, Item aux1, Error error)
         {
             if (!error.IsErrorAux1) throw new System.Exception("Corrupt Error Hierarcy");
             ErrorStore.Remove(error);
             _itemErrorAux1.Remove((item, aux1));
-            item.HasErrorAux1 = false;
         }
         internal void ClearError(Item item, Item aux1, Item aux2, Error error)
         {
             if (!error.IsErrorAux1) throw new System.Exception("Corrupt Error Hierarcy");
             ErrorStore.Remove(error);
             _itemErrorAux2.Remove((item, aux1, aux2));
-            item.HasErrorAux2 = false;
         }
         #endregion
 
@@ -274,32 +272,16 @@ namespace ModelGraphSTD
         #region TryGetError  ==================================================
         internal Error TryGetError(Item item)
         {
-            if (item.HasError)
-            {
-                if (_itemError.TryGetValue(item, out Error error)) return error;
-            }
-            return null;
+            return (_itemError.TryGetValue(item, out Error error)) ? error : null;
         }
         internal Error TryGetError(Item item, Item aux1)
         {
-            if (item.HasErrorAux1)
-            {
-                if (_itemErrorAux1.TryGetValue((item, aux1), out Error error)) return error;
-            }
-            return null;
+            return (_itemErrorAux1.TryGetValue((item, aux1), out Error error)) ? error : null;
         }
         internal Error TryGetError(Item item, Item aux1, Item aux2)
         {
-            if (item.HasErrorAux2)
-            {
-                if (_itemErrorAux2.TryGetValue((item, aux1, aux2), out Error error)) return error;
-            }
-            return null;
+            return (_itemErrorAux2.TryGetValue((item, aux1, aux2), out Error error)) ? error :  null;
         }
-
-        internal bool TestError(Item item) => (TryGetError(item) is null) ? false : true;
-        internal bool TestError(Item item, Item aux1) => (TryGetError(item, aux1) is null) ? false : true;
-        internal bool TestError(Item item, Item aux1, Item aux2) => (TryGetError(item, aux1, aux2) is null) ? false : true;
         #endregion
     }
 }

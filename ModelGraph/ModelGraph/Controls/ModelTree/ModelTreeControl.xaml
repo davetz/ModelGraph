@@ -598,6 +598,8 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Width" Value="600" />
+            <Setter Property="Height" Value="600" />
         </Style>
 
     </Page.Resources>

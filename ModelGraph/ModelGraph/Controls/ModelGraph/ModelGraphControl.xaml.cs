@@ -130,7 +130,7 @@ namespace ModelGraph.Controls
 
 
         //===========================================================================================Debug
-        int? currentLevel, wantedLevel;
+        int? wantedLevel;
 
         // This implements requirement #1.
         Task levelLoadTask;
@@ -185,43 +185,6 @@ namespace ModelGraph.Controls
             {
                 LoadNewLevel(wantedLevel.Value);
             }
-        }
-
-        // Because of how this is designed to throw an exception, this must only 
-        // ever be called from a Win2D event handler.
-        bool IsLoadInProgress()
-        {
-            // No loading task?
-            if (levelLoadTask == null)
-            {
-                return false;
-            }
-
-            // Loading task is still running?
-            if (!levelLoadTask.IsCompleted)
-            {
-                return true;
-            }
-
-            // Query the load task results and re-throw any exceptions
-            // so Win2D can see them. This implements requirement #2.
-            try
-            {
-                levelLoadTask.Wait();
-            }
-            catch (AggregateException aggregateException)
-            {
-                // .NET async tasks wrap all errors in an AggregateException.
-                // We unpack this so Win2D can directly see any lost device errors.
-                aggregateException.Handle(exception => { throw exception; });
-            }
-            finally
-            {
-                levelLoadTask = null;
-            }
-
-            currentLevel = wantedLevel;
-            return false;
         }
 
         public async void Dispatch(UIRequest rq)

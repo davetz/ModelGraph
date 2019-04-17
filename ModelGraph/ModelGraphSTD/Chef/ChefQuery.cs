@@ -24,6 +24,9 @@ namespace ModelGraphSTD
             cx.Value.Clear();
             cx.Value = ValuesUnknown;
 
+            ClearError(cx);
+            ClearError(cx, _computeXSelectProperty);
+
             if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
             {
                 cx.Value = ValuesInvalid;
@@ -31,12 +34,12 @@ namespace ModelGraphSTD
             }
             else
             {
+                ClearError(cx, Trait.ComputeMissingRootQueryError);
                 if (qx.Select == null)
                 {
                     if (cx.CompuType == CompuType.RowValue)
                     {
-                        TryAddErrorNone(cx, Trait.ComputeMissingSelectError);
-                        TryAddErrorNone(cx, _computeXSelectProperty, Trait.QueryMissingSelectError);                        
+                        TryAddErrorNone(cx, _computeXSelectProperty, Trait.ComputeMissingSelectError);
                     }
                 }
                 else
@@ -44,12 +47,15 @@ namespace ModelGraphSTD
                     ValidatSelect(qx, cx, _computeXSelectProperty);
                 }
             }
-            ValidateQueryHierarchy(qx, false);
+            if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> children))
+                ValidateQueryHierarchy(children);
             AllocateValueCache(cx);
         }
         private void ValidateGraphQuery(GraphX gx)
         {
-
+            ClearError(gx);
+            if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> children))
+                ValidateQueryHierarchy(children);
         }
         private void RevalidateUnresolved()
         {
@@ -69,20 +75,17 @@ namespace ModelGraphSTD
             }
         }
 
-        private void ValidateQueryHierarchy(QueryX qroot, bool includeRoot = true)
+        private void ValidateQueryHierarchy(IList<QueryX> rootChildren)
         {
-            if (qroot is null) return;
-
             var queryQueue = new Queue<QueryX>();
-            if (includeRoot) queryQueue.Enqueue(qroot);
-            if (QueryX_QueryX.TryGetChildren(qroot, out IList<QueryX> rootChildren))
-            {
-                foreach (var qc in rootChildren) { queryQueue.Enqueue(qc); }
-            }
+            foreach (var qc in rootChildren) { queryQueue.Enqueue(qc); }
                 
             while (queryQueue.Count > 0)
             {
                 var qx = queryQueue.Dequeue();
+                ClearError(qx, _queryXWhereProperty);
+                ClearError(qx, _queryXSelectProperty);
+
                 if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> children))
                 {
                     qx.IsTail = false;
@@ -107,8 +110,6 @@ namespace ModelGraphSTD
                             var error = TryAddErrorMany(qx, _queryXSelectProperty, Trait.QueryUnresolvedSelectError);
                             if (error != null) qx.Select.GetTree(error.List);
                         }
-                        else
-                            ClearError(qx);
                     }
                     else
                     {
@@ -126,8 +127,6 @@ namespace ModelGraphSTD
                             var error = TryAddErrorMany(qx, _queryXWhereProperty, Trait.QueryUnresolvedWhereError);
                             if (error != null) qx.Where.GetTree(error.List);
                         }
-                        else
-                            ClearError(qx);
                     }
                     else
                     {
@@ -139,6 +138,7 @@ namespace ModelGraphSTD
         }
         void ValidatSelect(QueryX qx, Item item, Property prop)
         {
+            ClearError(item, prop);
             var sto = GetQueryXTarget(qx);
             if (qx.Select != null)
             {
@@ -150,8 +150,6 @@ namespace ModelGraphSTD
                         var error = TryAddErrorMany(item, prop, Trait.QueryUnresolvedSelectError);
                         if (error != null) qx.Select.GetTree(error.List);
                     }
-                    else
-                        ClearError(item, prop);
                 }
                 else
                 {
@@ -164,7 +162,7 @@ namespace ModelGraphSTD
 
 
         #region CanDropQueryXRelation  ========================================
-            private bool CanDropQueryXRelation(QueryX sx, Relation re)
+        private bool CanDropQueryXRelation(QueryX sx, Relation re)
         {
             GetHeadTail(sx, out Store p1, out Store c1);
             GetHeadTail(re, out Store p2, out Store c2);

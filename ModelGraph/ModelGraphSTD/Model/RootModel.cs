@@ -9,7 +9,7 @@ namespace ModelGraphSTD
         public IPageControl PageControl { get; set; } // reference the UI PageControl
 
         // used by the ModelTreeControl
-        public int ViewCapacity = 10; // updated when the view screen size changes
+        public int ViewCapacity = 25; // updated when the view screen size changes
         public ItemModel SelectModel;   // the user selected model
         public List<ItemModel> ViewFlatList = new List<ItemModel>(); // flat list of models visible to the user 
         internal bool HasFlatList => ControlType == ControlType.PrimaryTree || ControlType == ControlType.PartialTree;

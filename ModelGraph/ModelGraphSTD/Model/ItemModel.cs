@@ -22,16 +22,6 @@ namespace ModelGraphSTD
         internal byte ChildDelta;  // version of child model list
         private Flags _flags;
         public byte Depth;
-        public bool HasError
-        {
-            get
-            {
-                if (IsErrorAux2) return Item.IsErrorAux2 && Item.GetChef().TestError(Item, Aux1, Aux2);
-                if (IsErrorAux1) return Item.HasErrorAux1 && Item.GetChef().TestError(Item, Aux1);
-
-                return Item.HasError && Item.GetChef().TestError(Item);
-            }
-        }
 
         #region Constructor  ==================================================
         internal ItemModel() { } // supports RootModel constructor

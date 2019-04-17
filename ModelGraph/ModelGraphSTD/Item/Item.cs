@@ -105,16 +105,6 @@ namespace ModelGraphSTD
         const byte B3 = 0x4;
         internal bool AutoExpandRight { get { return (_flags & B4) != 0; } set { _flags = value ? (byte)(_flags | B4) : (byte)(_flags & ~B4); } }
         const byte B4 = 0x8;
-        internal bool HasError { get { return (_flags & B6) != 0; } set { _flags = value ? (byte)(_flags | B6) : (byte)(_flags & ~B6); } }
-        const byte B6 = 0x20;
-        internal bool HasErrorAux1
-        {
-            get { return (_flags & B7) != 0; }
-            set { _flags = value ? (byte)(_flags | B7) : (byte)(_flags & ~B7); }
-        }
-        const byte B7 = 0x40;
-        internal bool HasErrorAux2 { get { return (_flags & B8) != 0; } set { _flags = value ? (byte)(_flags | B8) : (byte)(_flags & ~B8); } }
-        const byte B8 = 0x80;
         #endregion
 
         #region StringKeys  ===================================================

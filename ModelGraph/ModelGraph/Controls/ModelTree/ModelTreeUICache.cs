@@ -796,6 +796,7 @@ namespace ModelGraph.Controls
         #endregion
 
         #region AddItemHasError  ==============================================
+        // this feature is discontined 4-16-2019
         private void AddItemHasError(int index, ItemModel model)
         {
             var obj = _itemHasErrorCache[index];
@@ -898,21 +899,18 @@ namespace ModelGraph.Controls
                     //=========================================================
                     AddPropertyName(index, name, m);
                     AddTextProperty(index, m);
-                    if (m.HasError) AddItemHasError(index, m);
                     break;
 
                 case ModelType.CheckProperty:
                     //=========================================================
                     AddPropertyName(index, name, m);
                     AddCheckProperty(index, m);
-                    if (m.HasError) AddItemHasError(index, m);
                     break;
 
                 case ModelType.ComboProperty:
                     //=========================================================
                     AddPropertyName(index, name, m);
                     AddComboProperty(index, m);
-                    if (m.HasError) AddItemHasError(index, m);
                     break;
 
                 default:
@@ -920,7 +918,6 @@ namespace ModelGraph.Controls
                     AddItemKind(index, kind, m);
                     AddItemName(index, name, m);
                     if (m.CanExpandRight) AddExpandRight(index, m);
-                    if (m.HasError) AddItemHasError(index, m);
 
                     if (count > 0)
                     {

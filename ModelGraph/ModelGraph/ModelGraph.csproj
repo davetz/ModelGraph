@@ -273,7 +273,7 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include=".editorconfig" />
+    <None Include="Views\.editorconfig" />
     <None Include="ModelGraph_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

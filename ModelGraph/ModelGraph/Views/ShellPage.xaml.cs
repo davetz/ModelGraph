@@ -29,6 +29,9 @@ namespace ModelGraph.Views
         public ShellPage()
         {
             InitializeComponent();
+            ApplicationView.PreferredLaunchViewSize = _desiredSize;
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+
             HideNavViewBackButton();
             DataContext = this;
             Initialize();
@@ -41,8 +44,6 @@ namespace ModelGraph.Views
             ModelPageService.InsertModelPage = InsertModelPage;
             ModelPageService.RemoveModelPage = RemoveModelPage;
             ApplicationView.GetForCurrentView().TryResizeView(_desiredSize);
-            //KeyboardAccelerators.Add(ActivationService.AltLeftKeyboardAccelerator);
-            //KeyboardAccelerators.Add(ActivationService.BackKeyboardAccelerator);
         }
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
