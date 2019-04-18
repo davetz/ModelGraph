@@ -12,6 +12,7 @@ namespace ModelGraphSTD
         private byte _flags;        //IsNew, IsDeleted, AutoExpandLeft, AutoExpandRight,..
         internal byte ModelDelta;   //incremented when a property or relation is changed
         internal byte ChildDelta;   //incremented when list of child items is changed 
+        internal byte ErrorDelta;   //incremented when item's error state has changed 
 
         #region Trait  ========================================================
         internal bool IsExternal => (Trait & Trait.IsExternal) != 0;

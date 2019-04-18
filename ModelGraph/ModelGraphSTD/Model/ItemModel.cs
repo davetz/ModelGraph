@@ -20,6 +20,7 @@ namespace ModelGraphSTD
         private State _state;
 
         internal byte ChildDelta;  // version of child model list
+        internal byte ErrorDelta;  // version of item's error state
         private Flags _flags;
         public byte Depth;
 
@@ -114,6 +115,7 @@ namespace ModelGraphSTD
             IsFilterFocus = 0x20,
             IsFilterVisible = 0x10,
 
+            HasNoError = 0x8,
             ChangedSort = 0x4,
             ChangedFilter = 0x2,
             IsChanged = 0x1,
@@ -133,6 +135,7 @@ namespace ModelGraphSTD
         public bool IsReadOnly { get { return GetState(State.IsReadOnly); } set { SetState(State.IsReadOnly, !value); } }
         public bool IsMultiline { get { return GetState(State.IsMultiline); } set { SetState(State.IsMultiline, !value); } }
         public bool IsFilterFocus { get { return GetState(State.IsFilterFocus); } set { SetState(State.IsFilterFocus, value); } }
+        internal bool HasNoError { get { return GetState(State.HasNoError); } set { SetState(State.HasNoError, value); } }
 
         public bool IsUsedFilter { get { return GetState(State.IsUsedFilter); } set { SetState(State.IsUsedFilter, State.ChangedFilter, value); } }
         public bool IsNotUsedFilter { get { return GetState(State.IsNotUsedFilter); } set { SetState(State.IsNotUsedFilter, State.ChangedFilter, value); } }
@@ -183,6 +186,35 @@ namespace ModelGraphSTD
         public bool CanExpandRight { get { return GetFlag(Flags.CanExpandRight); } set { SetFlag(Flags.CanExpandRight, value); } }
         public bool CanFilterUsage { get { return GetFlag(Flags.CanFilterUsage); } set { SetFlag(Flags.CanFilterUsage, value); } }
 
+        #endregion
+
+        #region HasError  =====================================================
+        //don't do an error lookup if we already know there are no errors 
+        public Error TryGetError()
+        {
+            if (NoErrorChange() && HasNoError) return null;
+
+            var error = TryGetSpecificError(); //check to see if there is an error
+            if (error is null) HasNoError = true; //until Item.ErrorDelta changes
+            return error;
+
+            Error TryGetSpecificError()
+            {
+                if (IsErrorAux2)
+                    return Item.GetChef().TryGetError(Item, Aux1, Aux2);
+                else if (IsErrorAux1)
+                    return Item.GetChef().TryGetError(Item, Aux1);
+                else
+                    return Item.GetChef().TryGetError(Item);
+            }
+
+            bool NoErrorChange()
+            {
+                if (ErrorDelta == Item.ErrorDelta) return true;
+                ErrorDelta = Item.ErrorDelta;
+                return false;
+            }
+        }
         #endregion
 
         #region Auxiliary Items  ==============================================
@@ -364,7 +396,7 @@ namespace ModelGraphSTD
         public bool IsModified { get { return false; } }
         public string ModelIdentity => GetModelIdentity();
 
-        public byte ModelDelta => IsComboProperty ? (byte)(Aux2.ChildDelta + Item.ModelDelta) : Item.ModelDelta;
+        public short ModelDelta => (short)(Item.ErrorDelta + (IsComboProperty ? (short)(Aux2.ChildDelta + Item.ModelDelta) : Item.ModelDelta));
 
         internal void SetIsSelected() => GetRootModel().SelectModel = this;
 

@@ -19,14 +19,31 @@ namespace ModelGraphSTD
             }
         }
 
-        private void ValidateComputeQuery(ComputeX cx)
+        private void ValidateQueryDependants(QueryX qx)
+        {
+            while (QueryX_QueryX.TryGetParent(qx, out QueryX qp)) { qx = qp; }
+
+            if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
+                ValidateComputeQuery(cx, true);
+            else if (GraphX_QueryX.TryGetParent(qx, out GraphX gx))
+            {
+                ValidateGraphQuery(gx, true);
+            }
+            else if (SymbolX_QueryX.TryGetParent(qx, out SymbolX sx))
+            {
+                ValidateWhere(qx, qx, _queryXWhereProperty, true);
+            }
+        }
+
+        private void ValidateComputeQuery(ComputeX cx, bool clearError = false)
         {
             cx.Value.Clear();
             cx.Value = ValuesUnknown;
-
-            ClearError(cx);
-            ClearError(cx, _computeXSelectProperty);
-
+            if (clearError)
+            {
+                ClearError(cx);
+                ClearError(cx, _computeXSelectProperty);
+            }
             if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
             {
                 cx.Value = ValuesInvalid;
@@ -34,7 +51,6 @@ namespace ModelGraphSTD
             }
             else
             {
-                ClearError(cx, Trait.ComputeMissingRootQueryError);
                 if (qx.Select == null)
                 {
                     if (cx.CompuType == CompuType.RowValue)
@@ -44,18 +60,27 @@ namespace ModelGraphSTD
                 }
                 else
                 {
-                    ValidatSelect(qx, cx, _computeXSelectProperty);
+                    ValidateSelect(qx, cx, _computeXSelectProperty, clearError);
                 }
             }
             if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> children))
-                ValidateQueryHierarchy(children);
+                ValidateQueryHierarchy(children, clearError);
             AllocateValueCache(cx);
         }
-        private void ValidateGraphQuery(GraphX gx)
+        private void ValidateGraphQuery(GraphX gx, bool clearError = false)
         {
             ClearError(gx);
-            if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> children))
-                ValidateQueryHierarchy(children);
+            if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> pathQuery))
+                ValidateQueryHierarchy(pathQuery, clearError);
+
+            if (GraphX_SymbolX.TryGetChildren(gx, out IList<SymbolX> symbols))
+            {
+                foreach (var sx in symbols)
+                {
+                    if (SymbolX_QueryX.TryGetChildren(sx, out IList<QueryX> list))
+                        ValidateQueryHierarchy(list, clearError);
+                }
+            }
         }
         private void RevalidateUnresolved()
         {
@@ -75,7 +100,7 @@ namespace ModelGraphSTD
             }
         }
 
-        private void ValidateQueryHierarchy(IList<QueryX> rootChildren)
+        private void ValidateQueryHierarchy(IList<QueryX> rootChildren, bool clearError = false)
         {
             var queryQueue = new Queue<QueryX>();
             foreach (var qc in rootChildren) { queryQueue.Enqueue(qc); }
@@ -83,8 +108,11 @@ namespace ModelGraphSTD
             while (queryQueue.Count > 0)
             {
                 var qx = queryQueue.Dequeue();
-                ClearError(qx, _queryXWhereProperty);
-                ClearError(qx, _queryXSelectProperty);
+                if (clearError)
+                {
+                    ClearError(qx, _queryXWhereProperty);
+                    ClearError(qx, _queryXSelectProperty);
+                }
 
                 if (QueryX_QueryX.TryGetChildren(qx, out IList<QueryX> children))
                 {
@@ -121,7 +149,7 @@ namespace ModelGraphSTD
                 {
                     if (qx.Where.TryValidate(sto))
                     {
-                        qx.Select.TryResolve();
+                        qx.Where.TryResolve();
                         if (qx.Where.AnyUnresolved)
                         {
                             var error = TryAddErrorMany(qx, _queryXWhereProperty, Trait.QueryUnresolvedWhereError);
@@ -136,9 +164,36 @@ namespace ModelGraphSTD
                 }
             }
         }
-        void ValidatSelect(QueryX qx, Item item, Property prop)
+        bool ValidateWhere(QueryX qx, Item item, Property prop, bool clearError)
         {
-            ClearError(item, prop);
+            if (clearError) ClearError(item, prop);
+
+            var sto = GetQueryXTarget(qx);
+            if (qx.Where != null)
+            {
+                if (qx.Where.TryValidate(sto))
+                {
+                    qx.Where.TryResolve();
+                    if (qx.Where.AnyUnresolved)
+                    {
+                        var error = TryAddErrorMany(item, prop, Trait.QueryUnresolvedWhereError);
+                        if (error != null) qx.Where.GetTree(error.List);
+                        return false;
+                    }
+                }
+                else
+                {
+                    var error = TryAddErrorMany(item, prop, Trait.QueryInvalidWhereError);
+                    if (error != null) qx.Where.GetTree(error.List);
+                    return false;
+                }
+            }
+            return true;
+        }
+        bool ValidateSelect(QueryX qx, Item item, Property prop, bool clearError)
+        {
+            if (clearError) ClearError(item, prop);
+
             var sto = GetQueryXTarget(qx);
             if (qx.Select != null)
             {
@@ -149,14 +204,17 @@ namespace ModelGraphSTD
                     {
                         var error = TryAddErrorMany(item, prop, Trait.QueryUnresolvedSelectError);
                         if (error != null) qx.Select.GetTree(error.List);
+                        return false;
                     }
                 }
                 else
                 {
                     var error = TryAddErrorMany(item, prop, Trait.QueryInvalidSelectError);
                     if (error != null) qx.Select.GetTree(error.List);
+                    return false;
                 }
             }
+            return true;
         }
         #endregion
 
@@ -379,18 +437,11 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
+        #region Legacy  =======================================================
         bool TrySetWhereProperty(QueryX qx, string val)
         {
             qx.WhereString = val;
-            while(QueryX_QueryX.TryGetParent(qx, out QueryX qp)) { qx = qp; }
-
-            if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
-            {
-                ValidateComputeQuery(cx);
-                RevalidateUnresolved();
-            }
+            ValidateQueryDependants(qx);
             return qx.IsValid;
         }
 
@@ -399,13 +450,7 @@ namespace ModelGraphSTD
         bool TrySetSelectProperty(QueryX qx, string val)
         {
             qx.SelectString = val;
-            while (QueryX_QueryX.TryGetParent(qx, out QueryX qp)) { qx = qp; }
-
-            if (ComputeX_QueryX.TryGetParent(qx, out ComputeX cx))
-            {
-                ValidateComputeQuery(cx);
-                RevalidateUnresolved();
-            }
+            ValidateQueryDependants(qx);
             return qx.IsValid;
         }
 
@@ -468,5 +513,6 @@ namespace ModelGraphSTD
             while (QueryX_QueryX.TryGetChild(qx, out QueryX qx2)) { qx = qx2; }
             return qx;
         }
+        #endregion
     }
 }

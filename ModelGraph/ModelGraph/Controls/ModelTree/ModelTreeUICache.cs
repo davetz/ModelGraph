@@ -14,7 +14,7 @@ namespace ModelGraph.Controls
         int[] _cacheIndex = new int[initialSize]; //indirect index into cache arrays for efficient scrolling
         Dictionary<ItemModel, int> _modelCacheIndex = new Dictionary<ItemModel, int>(initialSize); //find first index of reused cache
 
-        byte[] _modelDeltaCache = new byte[initialSize];
+        short[] _modelDeltaCache = new short[initialSize];
         TextBlock[] _itemKindCache = new TextBlock[initialSize];
         TextBlock[] _itemNameCache = new TextBlock[initialSize];
         TextBlock[] _itemInfoCache = new TextBlock[initialSize];
@@ -112,10 +112,10 @@ namespace ModelGraph.Controls
                 return;
 
                 #region ExpandElementArray   ==================================
-                byte[] ExpandModelDeltaCache(byte[] cache)
+                short[] ExpandModelDeltaCache(short[] cache)
                 {
                     var oldCache = cache;
-                    var newCache = new byte[size];
+                    var newCache = new short[size];
                     Array.Copy(oldCache, newCache, oldCache.Length);
                     return newCache;
                 }
@@ -795,10 +795,12 @@ namespace ModelGraph.Controls
         }
         #endregion
 
-        #region AddItemHasError  ==============================================
-        // this feature is discontined 4-16-2019
-        private void AddItemHasError(int index, ItemModel model)
+        #region CheckItemHasError  ============================================
+        private void CheckItemHasError(int index, ItemModel model)
         {
+            var error = model.TryGetError();
+            if (error is null) return;
+
             var obj = _itemHasErrorCache[index];
             if (obj == null)
             {
@@ -812,6 +814,7 @@ namespace ModelGraph.Controls
                 ToolTipService.SetToolTip(obj, _itemHasErrorTip);
             }
 
+            obj.Tag = error;
             obj.DataContext = model;
 
             _stackPanelCache[index].Children.Add(obj);
@@ -899,18 +902,21 @@ namespace ModelGraph.Controls
                     //=========================================================
                     AddPropertyName(index, name, m);
                     AddTextProperty(index, m);
+                    CheckItemHasError(index, m);
                     break;
 
                 case ModelType.CheckProperty:
                     //=========================================================
                     AddPropertyName(index, name, m);
                     AddCheckProperty(index, m);
+                    CheckItemHasError(index, m);
                     break;
 
                 case ModelType.ComboProperty:
                     //=========================================================
                     AddPropertyName(index, name, m);
                     AddComboProperty(index, m);
+                    CheckItemHasError(index, m);
                     break;
 
                 default:
@@ -918,6 +924,7 @@ namespace ModelGraph.Controls
                     AddItemKind(index, kind, m);
                     AddItemName(index, name, m);
                     if (m.CanExpandRight) AddExpandRight(index, m);
+                    CheckItemHasError(index, m);
 
                     if (count > 0)
                     {
