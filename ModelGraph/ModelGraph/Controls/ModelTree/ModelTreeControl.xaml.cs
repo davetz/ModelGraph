@@ -16,7 +16,7 @@ namespace ModelGraph.Controls
 {
     public sealed partial class ModelTreeControl : Page, IPageControl, IModelPageControl
     {
-        public Grid PrevOwner { get; set; }
+        //public Grid PrevOwner { get; set; }
 
         public ModelTreeControl(RootModel root)
         {
@@ -30,26 +30,19 @@ namespace ModelGraph.Controls
         #region SetSize  ======================================================
         public void SetSize(double width, double height)
         {
-            if (_root is null || _treeCanvas is null) return;
+            if (_root is null || TreeCanvas is null) return;
             if (height > 0)
             {
-                _treeCanvas.Width = Width = width;
-                _treeCanvas.Height = Height = height;
+                TreeCanvas.Width = Width = width;
+                TreeCanvas.Height = Height = height;
                 _root.ViewCapacity = (int)(Height / _elementHieght);
+                _viewIsReady = true;
                 _root.PostRefreshViewList(_select);
             }
         }
         bool ViewIsNotReady() => !_viewIsReady;
         bool _viewIsReady;
 
-        void TreeCanvas_Loaded(object sender, RoutedEventArgs e)
-        {
-            _viewIsReady = true;
-            _treeCanvas = sender as Canvas;
-            _treeCanvas.Loaded -= TreeCanvas_Loaded;
-            _root.PostRefreshViewList(_select);
-        }
-        private Canvas _treeCanvas;
         #endregion
 
         #region Fields  =======================================================

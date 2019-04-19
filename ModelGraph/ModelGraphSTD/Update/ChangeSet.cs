@@ -1,9 +1,7 @@
 ﻿using System;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public class ChangeSet : StoreOf<ItemChange>
     {
         internal DateTime DateTime;

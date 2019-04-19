@@ -51,6 +51,7 @@ namespace ModelGraphSTD
         #region Undefined  ====================================================
         private string Undefined_Identity(Item item, IdentityStyle style)
         {
+            if (item is null) return BlankName;
             //if (item.TraitKey == 0x1AD) item.SetTrait(Trait.QueryXNodeSymbol);
             return $"{BlankName} {item.Trait.ToString()}";
         }

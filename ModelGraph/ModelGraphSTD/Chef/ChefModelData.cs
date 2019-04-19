@@ -2151,6 +2151,13 @@ namespace ModelGraphSTD
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+                ButtonCommands = (m, bc) =>
+                {
+                    bc.Add(new ModelCommand(this, m, Trait.ViewCommand, CreateSecondaryMetadataTree));
+                },
+
+                //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
                 Validate = (m,prev) =>
                 {
                     if (ErrorStore.Count == 0) return (false, false);
@@ -2172,6 +2179,10 @@ namespace ModelGraphSTD
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            void CreateSecondaryMetadataTree(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.PartialTree, Trait.ErrorRoot_M, m.Item, ErrorRoot_X);
         }
         #endregion
 
@@ -2209,6 +2220,7 @@ namespace ModelGraphSTD
                 {
                     if (ChangeRoot.Count > 0 && m.IsExpandedLeft == false)
                         list.Add(new ModelCommand(this, m, Trait.ExpandAllCommand, ExpandAllChangeSets));
+                    list.Add(new ModelCommand(this, m, Trait.ViewCommand, CreateSecondaryMetadataTree));
                 },
 
                 //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -2234,6 +2246,10 @@ namespace ModelGraphSTD
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
             (string, string) GetKindName(ItemModel m) => (null, _localize(m.NameKey));
+
+            //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+            void CreateSecondaryMetadataTree(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.PartialTree, Trait.ChangeRoot_M, m.Item, ChangeRoot_X);
         }
         #endregion
 

@@ -1,7 +1,5 @@
 ﻿namespace ModelGraphSTD
-{/*
-
- */
+{
     public class ChangeRoot : StoreOf<ChangeSet>
     {
         #region Constructor  ==================================================

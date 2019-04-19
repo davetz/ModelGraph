@@ -69,17 +69,14 @@ namespace ModelGraphSTD
         }
         private void ValidateGraphQuery(GraphX gx, bool clearError = false)
         {
-            ClearError(gx);
+            if (clearError) ClearError(gx);
+
             if (GraphX_QueryX.TryGetChildren(gx, out IList<QueryX> pathQuery))
                 ValidateQueryHierarchy(pathQuery, clearError);
 
-            if (GraphX_SymbolX.TryGetChildren(gx, out IList<SymbolX> symbols))
+            if (GraphX_SymbolQueryX.TryGetChildren(gx, out IList<QueryX> list))
             {
-                foreach (var sx in symbols)
-                {
-                    if (SymbolX_QueryX.TryGetChildren(sx, out IList<QueryX> list))
-                        ValidateQueryHierarchy(list, clearError);
-                }
+                ValidateQueryHierarchy(list, clearError);
             }
         }
         private void RevalidateUnresolved()

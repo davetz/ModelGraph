@@ -22,7 +22,7 @@ namespace ModelGraph.Views
 
         private void ModelPage_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
         {
-            PageControl?.SetSize(ActualWidth, ActualHeight);
+            PageControl?.SetSize(ActualWidth, ActualHeight); // sets number of lines per page
         }
         #endregion
 
@@ -56,7 +56,11 @@ namespace ModelGraph.Views
                     switch (m.ControlType)
                     {
                         case ControlType.PrimaryTree:
-                        case ControlType.PartialTree: m.PageControl = new ModelTreeControl(m); break;
+                        case ControlType.PartialTree:
+                            var treeControl = new ModelTreeControl(m);
+                            treeControl.Loaded += TreeControll_Loaded;
+                            m.PageControl = treeControl;
+                            break;
 
                         case ControlType.SymbolEditor: m.PageControl = new SymbolEditControl(m); break;
 
@@ -69,6 +73,16 @@ namespace ModelGraph.Views
                 PageControl = m.PageControl as IModelPageControl;
             }
         }
+
+        private void TreeControll_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is ModelTreeControl treeControl && sender is IModelPageControl pageControl)
+            {
+                treeControl.Loaded -= TreeControll_Loaded;
+                pageControl.SetSize(ActualWidth, ActualHeight); // initializes number of lines per page
+            }
+        }
+
         internal void NavigatedFrom()
         {
             ControlGrid.Children.Clear();

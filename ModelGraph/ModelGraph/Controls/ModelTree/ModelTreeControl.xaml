@@ -621,7 +621,7 @@
         </Grid>
 
         <Grid Grid.Row="1" x:Name="ControlGrid" >
-            <Canvas x:Name="TreeCanvas" Style="{StaticResource TreeCanvasStyle}" Loaded="TreeCanvas_Loaded" PointerPressed="TreeGrid_PointerPressed" PointerWheelChanged="TreeCanvas_PointerWheelChanged">
+            <Canvas x:Name="TreeCanvas" Style="{StaticResource TreeCanvasStyle}" PointerPressed="TreeGrid_PointerPressed" PointerWheelChanged="TreeCanvas_PointerWheelChanged">
                 
                 <Canvas.KeyboardAccelerators>
                     <KeyboardAccelerator Key="PageUp" Invoked="KeyPageUp_Invoked"/>
