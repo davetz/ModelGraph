@@ -347,25 +347,43 @@ namespace ModelGraph.Controls
 
         void TryGetPrevModel()
         {
-            var i = _viewList.IndexOf(_select) - 1;
-            if (i >= 0 && i < _viewList.Count)
+            if (_select is null)
             {
-                _select = _viewList[i];
+                if (_viewList is null || _viewList.Count == 0) return;
+                _select = _viewList[0];
                 RefreshSelectionGrid();
             }
             else
-                ChangeScroll(-1);
+            {
+                var i = _viewList.IndexOf(_select) - 1;
+                if (i >= 0 && i < _viewList.Count)
+                {
+                    _select = _viewList[i];
+                    RefreshSelectionGrid();
+                }
+                else
+                    ChangeScroll(-1);
+            }
         }
         void TryGetNextModel()
         {
-            var i = _viewList.IndexOf(_select) + 1;
-            if (i > 0 && i < _viewList.Count)
+            if (_select is null)
             {
-                _select = _viewList[i];
+                if (_viewList is null || _viewList.Count == 0) return;
+                _select = _viewList[0];
                 RefreshSelectionGrid();
             }
             else
-                ChangeScroll(1);
+            {
+                var i = _viewList.IndexOf(_select) + 1;
+                if (i > 0 && i < _viewList.Count)
+                {
+                    _select = _viewList[i];
+                    RefreshSelectionGrid();
+                }
+                else
+                    ChangeScroll(1);
+            }
         }
         #endregion
 
