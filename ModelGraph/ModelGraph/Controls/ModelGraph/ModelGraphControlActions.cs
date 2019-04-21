@@ -306,7 +306,6 @@ namespace ModelGraph.Controls
         private async void Move((float X, float Y) delta)
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.Move(delta));
-            PostRefresh();
         }
         private async void RotateLeft45()
         {

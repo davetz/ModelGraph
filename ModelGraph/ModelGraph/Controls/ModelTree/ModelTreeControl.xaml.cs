@@ -26,7 +26,6 @@ namespace ModelGraph.Controls
             Initialize();
         }
 
-
         #region SetSize  ======================================================
         public void SetSize(double width, double height)
         {

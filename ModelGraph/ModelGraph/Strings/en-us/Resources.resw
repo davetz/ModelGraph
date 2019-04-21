@@ -1151,13 +1151,13 @@ NEC – NWC – SEC - SWC</value>
     <value>Model parameters</value>
   </data>
   <data name="621N" xml:space="preserve">
-    <value>Error</value>
+    <value>Errors</value>
   </data>
   <data name="621S" xml:space="preserve">
     <value>List of errors</value>
   </data>
   <data name="622N" xml:space="preserve">
-    <value>Change</value>
+    <value>Changes</value>
   </data>
   <data name="622S" xml:space="preserve">
     <value>List of changes</value>

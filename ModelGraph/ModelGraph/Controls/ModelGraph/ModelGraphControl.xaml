@@ -242,7 +242,7 @@
 
         <Grid x:Name="CanvasGrid"  Grid.Row="1" Background="DarkSlateGray">
 
-            <canvas:CanvasControl x:Name="EditorCanvas" Draw="EditorCanvas_Draw" IsTabStop="False" CreateResources="EditorCanvas_CreateResources" />
+            <canvas:CanvasControl x:Name="EditorCanvas" Draw="EditorCanvas_Draw" IsTabStop="False" Loaded="EditorCanvas_Loaded" />
 
             <Canvas x:Name="RootCanvas" Background="Transparent" DoubleTapped="RootCanvas_DoubleTapped"  >
                 <Border x:Name="ToolTipBorder" Style="{StaticResource ToolTipBorderStyle}" IsTapEnabled="False">

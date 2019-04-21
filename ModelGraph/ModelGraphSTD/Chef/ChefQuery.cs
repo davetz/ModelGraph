@@ -44,6 +44,7 @@ namespace ModelGraphSTD
                 ClearError(cx);
                 ClearError(cx, _computeXSelectProperty);
             }
+            cx.ModelDelta++;
             if (!ComputeX_QueryX.TryGetChild(cx, out QueryX qx))
             {
                 cx.Value = ValuesInvalid;
@@ -105,6 +106,7 @@ namespace ModelGraphSTD
             while (queryQueue.Count > 0)
             {
                 var qx = queryQueue.Dequeue();
+                qx.ModelDelta++;
                 if (clearError)
                 {
                     ClearError(qx, _queryXWhereProperty);
@@ -168,6 +170,7 @@ namespace ModelGraphSTD
             var sto = GetQueryXTarget(qx);
             if (qx.Where != null)
             {
+                qx.ModelDelta++;
                 if (qx.Where.TryValidate(sto))
                 {
                     qx.Where.TryResolve();
@@ -194,6 +197,7 @@ namespace ModelGraphSTD
             var sto = GetQueryXTarget(qx);
             if (qx.Select != null)
             {
+                qx.ModelDelta++;
                 if (qx.Select.TryValidate(sto))
                 {
                     qx.Select.TryResolve();
@@ -214,7 +218,6 @@ namespace ModelGraphSTD
             return true;
         }
         #endregion
-
 
         #region CanDropQueryXRelation  ========================================
         private bool CanDropQueryXRelation(QueryX sx, Relation re)

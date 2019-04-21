@@ -28,18 +28,20 @@ namespace ModelGraph.Controls
 
             InitializeComponent();
             InitializeControlPanel();
-            Loaded += ModelGraphControl_Loaded;
         }
-
-        private void ModelGraphControl_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void EditorCanvas_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            Loaded -= ModelGraphControl_Loaded;
+            Loaded -= EditorCanvas_Loaded;
+
+            //ApplicationView.GetForCurrentView().TryResizeView(_desiredSize); //problem: also resizes the shellPage window ???
+
             Focus(Windows.UI.Xaml.FocusState.Programmatic);
 
             CheckGraphSymbols();
 
             SetIdleOnVoid();
         }
+
 
         [Flags]
         private enum Modifier
@@ -49,6 +51,13 @@ namespace ModelGraph.Controls
             Ctrl = 2,
             Shift = 4,
         }
+
+        #region IPageControl  =================================================
+        public async void Dispatch(UIRequest rq)
+        {
+            await ModelPageService.Current.Dispatch(rq, this);
+        }
+        #endregion
 
         #region IModelControl  ================================================
         public void Save() { }
@@ -127,70 +136,6 @@ namespace ModelGraph.Controls
             CanvasGrid.Height = RootCanvas.Height = EditorCanvas.Height = this.Height = height;
         }
         #endregion
-
-
-        //===========================================================================================Debug
-        int? wantedLevel;
-
-        // This implements requirement #1.
-        Task levelLoadTask;
-
-
-        public void LoadNewLevel(int newLevel)
-        {
-            Debug.Assert(levelLoadTask == null);
-            wantedLevel = newLevel;
-//            levelLoadTask = LoadResourcesForLevelAsync(EditorCanvas, newLevel);
-        }
-
-        //async Task LoadResourcesForLevelAsync(EditorCanvas resourceCreator, int level)
-        //{
-        //    //levelBackground = await CanvasBitmap.LoadAsync(resourceCreator, ...);
-        //    //levelThingie = await CanvasBitmap.LoadAsync(resourceCreator, ...);
-        //    // etc.
-        //}
-
-        private void EditorCanvas_CreateResources(CanvasControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
-        {
-            {
-                // Synchronous resource creation, for globally-required resources goes here:
-                //x = new CanvasRenderTarget(sender, ...);
-                //y = new CanvasRadialGradientBrush(sender, ...);
-                // etc.
-
-                args.TrackAsyncAction(CreateResourcesAsync(sender).AsAsyncAction());
-            }
-        }
-        async Task CreateResourcesAsync(CanvasControl sender)
-        {
-            // If there is a previous load in progress, stop it, and
-            // swallow any stale errors. This implements requirement #3.
-            if (levelLoadTask != null)
-            {
-                levelLoadTask.AsAsyncAction().Cancel();
-                try { await levelLoadTask; } catch { }
-                levelLoadTask = null;
-            }
-
-            // Unload resources used by the previous level here.
-
-            // Asynchronous resource loading, for globally-required resources goes here:
-           // baz = await CanvasBitmap.LoadAsync(sender, ...);
-            //qux = await CanvasBitmap.LoadAsync(sender, ...);
-            // etc.
-
-            // If we are already in a level, reload its per-level resources.
-            // This implements requirement #4.
-            if (wantedLevel.HasValue)
-            {
-                LoadNewLevel(wantedLevel.Value);
-            }
-        }
-
-        public async void Dispatch(UIRequest rq)
-        {
-            await ModelPageService.Current.Dispatch(rq, this);
-        }
     }
 }
 
