@@ -129,7 +129,7 @@
     <Compile Include="Controls\Shapes\PolyPulse.cs" />
     <Compile Include="Controls\Shapes\PolySpline.cs" />
     <Compile Include="Controls\Shapes\PolyWave.cs" />
-    <Compile Include="Controls\Shapes\PolySplring.cs" />
+    <Compile Include="Controls\Shapes\PolySpring.cs" />
     <Compile Include="Controls\Shapes\Polyline.cs" />
     <Compile Include="Controls\Shapes\Central.cs" />
     <Compile Include="Controls\Shapes\PolyGear.cs" />

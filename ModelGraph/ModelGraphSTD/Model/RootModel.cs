@@ -15,7 +15,7 @@ namespace ModelGraphSTD
         internal bool HasFlatList => ControlType == ControlType.PrimaryTree || ControlType == ControlType.PartialTree;
 
         private ConcurrentQueue<UIRequest> _requestQueue = new ConcurrentQueue<UIRequest>();
-
+        private HashSet<RequestType> _requestTypeHash = new HashSet<RequestType>();
         public ControlType ControlType;
 
         #region Constructors  =================================================
@@ -92,10 +92,13 @@ namespace ModelGraphSTD
         #region PageDispatch  =================================================
         internal void PageDispatch()
         {
+            _requestTypeHash.Clear();
             if (PageControl != null)
             {
                 while (_requestQueue.TryDequeue(out UIRequest request))
                 {
+                    if (_requestTypeHash.Contains(request.RequestType)) continue;
+                    _requestTypeHash.Add(request.RequestType);
                     PageControl.Dispatch(request);
                 }
             }

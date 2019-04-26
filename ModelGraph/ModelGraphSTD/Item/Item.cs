@@ -118,6 +118,7 @@ namespace ModelGraphSTD
         internal string GetNameKey(Trait trait) => $"{(int)(trait & Trait.KeyMask):X3}N";
         internal string GetSummaryKey(Trait trait) => $"{(int)(trait & Trait.KeyMask):X3}S";
         internal string GetDescriptionKey(Trait trait) => $"{(int)(trait & Trait.KeyMask):X3}V";
+        internal string GetAcceleratorKey(Trait trait) => $"{(int)(trait & Trait.KeyMask):X3}A".ToUpper();
         #endregion
 
         #region Property/Methods ==============================================

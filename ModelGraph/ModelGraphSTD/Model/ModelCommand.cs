@@ -50,6 +50,7 @@ namespace ModelGraphSTD
         }
 
         #region Trait  ========================================================
+        public string AcceleratorKey => Chef.GetAcceleratorKey(Trait);
         public bool IsStorageFileParameter1 => (Trait & Trait.GetStorageFile) != 0;
         public bool IsSaveAsCommand => (Trait & Trait.KeyMask) == (Trait.SaveAsCommand & Trait.KeyMask);
         public bool IsInsertCommand => (Trait == Trait.InsertCommand);

@@ -690,6 +690,10 @@ namespace ModelGraphSTD
         {
             return _localize(GetDescriptionKey(trait));
         }
+        internal string GetAccelerator(Trait trait)
+        {
+            return _localize(GetAcceleratorKey(trait));
+        }
         #endregion
     }
 

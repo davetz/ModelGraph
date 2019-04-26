@@ -11,6 +11,7 @@ using RepositoryUWP;
 using Windows.Storage;
 using ModelGraph.Services;
 using System.Diagnostics;
+using Windows.System;
 
 namespace ModelGraph.Controls
 {
@@ -82,9 +83,6 @@ namespace ModelGraph.Controls
         Button[] _itemButtons;
         MenuFlyoutItem[] _menuItems;
         int _menuItemsCount;
-
-        ModelCommand _insertCommand;
-        ModelCommand _removeCommand;
 
         int Count => (_viewList == null) ? 0 : _viewList.Count;
 
@@ -353,24 +351,7 @@ namespace ModelGraph.Controls
         }
         private void KeyEscape_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-                FocusButton.Focus(FocusState.Keyboard);
-                args.Handled = true;
-        }
-        private void KeyInsert_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-        {
-            if (_insertCommand != null)
-            {
-                _insertCommand.Execute();
-            }
-            args.Handled = true;
-        }
-
-        private void KeyDelete_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-        {
-            if (_removeCommand != null)
-            {
-                _removeCommand.Execute();
-            }
+            FocusButton.Focus(FocusState.Keyboard);
             args.Handled = true;
         }
         private void KeyMenu_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -535,9 +516,15 @@ namespace ModelGraph.Controls
             _viewList.AddRange(_root.ViewFlatList);
             _selectModel = _root.SelectModel;
 
+            if (_focusModel != null && _viewList.Contains(_focusModel))
+            {
+                _selectModel = _focusModel;
+                _focusModel = null;
+            }
+
             _pointWheelEnabled = false;
 
-//            SaveKeyboardFocus();
+            //            SaveKeyboardFocus();
 
             var N = _viewList.Count;
             ValidateCache(N);
@@ -548,7 +535,7 @@ namespace ModelGraph.Controls
             }
 
             RefreshSelectGrid();
- //           RestoreKeyboardFocus();
+            //           RestoreKeyboardFocus();
 
             _pointWheelEnabled = true;
         }
@@ -558,7 +545,6 @@ namespace ModelGraph.Controls
         void RefreshSelectGrid()
         {
             _sortControl = _filterControl = null;
-            _insertCommand = _removeCommand = null;
 
             if (Count == 0 || _selectModel == null)
             {
@@ -601,10 +587,13 @@ namespace ModelGraph.Controls
 
             _selectModel.MenuComands(_menuCommands);
             _selectModel.PageButtonComands(_buttonCommands);
-            
+
             var cmds = _buttonCommands;
             var len1 = cmds.Count;
             var len2 = _itemButtons.Length;
+
+            TreeCanvas.KeyboardAccelerators.Clear();
+            _acceleratorKeyCommands.Clear();
 
             for (int i = 0; i < len2; i++)
             {
@@ -615,14 +604,27 @@ namespace ModelGraph.Controls
                     _itemButtons[i].Content = cmd.Name;
                     _itemButtonTips[i].Content = cmd.Summary;
                     _itemButtons[i].Visibility = Visibility.Visible;
+                    var key = cmd.AcceleratorKey;
                     if (cmd.IsInsertCommand)
                     {
-                        _insertCommand = cmd;
+                        var acc = new KeyboardAccelerator { Key = VirtualKey.Insert };
+                        acc.Invoked += Accelerator_Invoked;
+                        _acceleratorKeyCommands.Add(acc, cmd);
+                        TreeCanvas.KeyboardAccelerators.Add(acc);
                     }
-
-                    if (cmd.IsRemoveCommand)
+                    else if (cmd.IsRemoveCommand)
                     {
-                        _removeCommand = cmd;
+                        var acc = new KeyboardAccelerator { Key = VirtualKey.Delete };
+                        acc.Invoked += Accelerator_Invoked;
+                        _acceleratorKeyCommands.Add(acc, cmd);
+                        TreeCanvas.KeyboardAccelerators.Add(acc);
+                    }
+                    else if (_virtualKeys.TryGetValue(key, out VirtualKey vkey))
+                    {
+                        var acc = new KeyboardAccelerator { Key = vkey, Modifiers = VirtualKeyModifiers.Control};
+                        acc.Invoked += Accelerator_Invoked;
+                        _acceleratorKeyCommands.Add(acc, cmd);
+                        TreeCanvas.KeyboardAccelerators.Add(acc);
                     }
                 }
                 else
@@ -657,6 +659,44 @@ namespace ModelGraph.Controls
 
             FocusButton.Focus(FocusState.Keyboard);
         }
+        static readonly Dictionary<string, Windows.System.VirtualKey> _virtualKeys = new Dictionary<string, VirtualKey>
+        {
+            ["A"] = VirtualKey.A,
+            ["B"] = VirtualKey.B,
+            ["C"] = VirtualKey.C,
+            ["D"] = VirtualKey.D,
+            ["E"] = VirtualKey.E,
+            ["F"] = VirtualKey.F,
+            ["G"] = VirtualKey.G,
+            ["H"] = VirtualKey.H,
+            ["I"] = VirtualKey.I,
+            ["J"] = VirtualKey.J,
+            ["K"] = VirtualKey.K,
+            ["L"] = VirtualKey.L,
+            ["M"] = VirtualKey.M,
+            ["N"] = VirtualKey.N,
+            ["O"] = VirtualKey.O,
+            ["P"] = VirtualKey.P,
+            ["Q"] = VirtualKey.Q,
+            ["R"] = VirtualKey.R,
+            ["S"] = VirtualKey.S,
+            ["T"] = VirtualKey.T,
+            ["U"] = VirtualKey.U,
+            ["V"] = VirtualKey.V,
+            ["W"] = VirtualKey.W,
+            ["X"] = VirtualKey.X,
+            ["Y"] = VirtualKey.Y,
+            ["Z"] = VirtualKey.Z,
+        };
+        Dictionary<KeyboardAccelerator, ModelCommand> _acceleratorKeyCommands = new Dictionary<KeyboardAccelerator, ModelCommand>();
+        private void Accelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_acceleratorKeyCommands.TryGetValue(sender, out ModelCommand cmd)) cmd.Execute();
+            args.Handled = true;
+        }
+
+        List<KeyboardAccelerator> menuCommandAccelerators = new List<KeyboardAccelerator>(4);
+        List<KeyboardAccelerator> buttonCommandAccelerators = new List<KeyboardAccelerator>(4);
         void PopulateItemHelp(string input)
         {
             var strings = SplitOnNewLines(input);
@@ -728,6 +768,7 @@ namespace ModelGraph.Controls
 
             return cacheIndex;
         }
+        ItemModel _focusModel;
         #endregion
 
         #region ItemName  =====================================================
@@ -978,6 +1019,7 @@ namespace ModelGraph.Controls
             var mdl = obj.DataContext as ItemModel;
             if ((string)obj.Tag != obj.Text)
             {
+                _focusModel = mdl;
                 mdl.PostSetValue(obj.Text);
             }
         }
@@ -989,6 +1031,7 @@ namespace ModelGraph.Controls
                 var mdl = obj.DataContext as ItemModel;
                 if ((string)obj.Tag != obj.Text)
                 {
+                    _focusModel = mdl;
                     mdl.PostSetValue(obj.Text);
                 }
                 e.Handled = true;
@@ -1019,6 +1062,7 @@ namespace ModelGraph.Controls
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
                 _ignoreNextCheckBoxEvent = true;
+                _focusModel = mdl;
                 mdl.PostSetValue(!val);
             }
             e.Handled = true;
@@ -1039,6 +1083,7 @@ namespace ModelGraph.Controls
                 var obj = sender as CheckBox;
                 var mdl = obj.DataContext as ItemModel;
                 var val = obj.IsChecked ?? false;
+                _focusModel = mdl;
                 mdl.PostSetValue(val);
             }
         }
@@ -1049,6 +1094,7 @@ namespace ModelGraph.Controls
         {
             var obj = sender as ComboBox;
             var mdl = obj.DataContext as ItemModel;
+            _focusModel = mdl;
             mdl.PostSetValue(obj.SelectedIndex);
         }
         void ComboProperty_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)

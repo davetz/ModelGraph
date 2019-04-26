@@ -648,11 +648,6 @@
 
                             <KeyboardAccelerator Key="Enter" Invoked="KeyEnter_Invoked"/>
                             <KeyboardAccelerator Key="Escape" Invoked="KeyEscape_Invoked"/>
-
-                            <KeyboardAccelerator Key="Insert" Invoked="KeyInsert_Invoked"/>
-                            <KeyboardAccelerator Key="Delete" Invoked="KeyDelete_Invoked"/>
-
-                            <KeyboardAccelerator Key="Menu" Invoked="KeyMenu_Invoked"/>
                         </Button.KeyboardAccelerators>
                     </Button>
                     <StackPanel x:Name="ButtonStack" Orientation="Horizontal" HorizontalAlignment="Right">
