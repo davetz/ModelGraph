@@ -691,6 +691,7 @@ namespace ModelGraph.Controls
                 obj.Style = _textPropertyStyle;
                 obj.KeyDown += TextProperty_KeyDown;
                 obj.LostFocus += TextProperty_LostFocus;
+                obj.GotFocus += TextProperty_GotFocus;
             }
 
             obj.DataContext = model;
@@ -701,12 +702,14 @@ namespace ModelGraph.Controls
 
             _stackPanelCache[index].Children.Add(obj);
         }
+
         private void ClearTextProperty(int index)
         {
             var obj = _textPropertyCache[index];
             if (obj != null)
             {
                 obj.KeyDown -= TextProperty_KeyDown;
+                obj.GotFocus -= TextProperty_GotFocus;
                 obj.LostFocus -= TextProperty_LostFocus;
                 obj.Tag = null;
                 obj.DataContext = null;
@@ -725,6 +728,7 @@ namespace ModelGraph.Controls
                 obj = _checkPropertyCache[index] = new CheckBox();
 
                 obj.Style = _checkPropertyStyle;
+                obj.GotFocus += CheckProperty_GotFocus;
                 obj.Checked += CheckProperty_Checked;
                 obj.Unchecked += CheckProperty_Checked;
                 obj.KeyDown += Check_KeyDown;
@@ -740,6 +744,7 @@ namespace ModelGraph.Controls
             var obj = _checkPropertyCache[index];
             if (obj != null)
             {
+                obj.GotFocus -= CheckProperty_GotFocus;
                 obj.Checked -= CheckProperty_Checked;
                 obj.Unchecked -= CheckProperty_Checked;
                 obj.KeyDown -= Check_KeyDown;
@@ -759,6 +764,7 @@ namespace ModelGraph.Controls
                 obj = _comboPropertyCache[index] = new ComboBox();
 
                 obj.Style = _comboPropertyStyle;
+                obj.GotFocus += ComboProperty_GotFocus;
                 obj.SelectionChanged += ComboProperty_SelectionChanged;
                 obj.KeyDown += ComboProperty_KeyDown;
             }
@@ -775,6 +781,7 @@ namespace ModelGraph.Controls
             if (obj != null)
             {
                 obj.SelectionChanged -= ComboProperty_SelectionChanged;
+                obj.GotFocus -= ComboProperty_GotFocus;
                 obj.KeyDown -= ComboProperty_KeyDown;
                 obj.DataContext = null;
                 obj.ItemsSource = null;

@@ -657,8 +657,15 @@ namespace ModelGraph.Controls
                 }
             }
 
-            FocusButton.Focus(FocusState.Keyboard);
+            if (_focusElement is null)
+                FocusButton.Focus(FocusState.Keyboard);
+            else
+            {
+                _focusElement.Focus(FocusState.Keyboard);
+                _focusElement = null;
+            }
         }
+        Control _focusElement;
         static readonly Dictionary<string, Windows.System.VirtualKey> _virtualKeys = new Dictionary<string, VirtualKey>
         {
             ["A"] = VirtualKey.A,
@@ -1013,6 +1020,18 @@ namespace ModelGraph.Controls
         #endregion
 
         #region TextProperty  =================================================
+        private void TextProperty_GotFocus(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            var obj = sender as TextBox;
+            var mdl = obj.DataContext as ItemModel;
+            if (_selectModel != mdl)
+            {
+                _selectModel = mdl;
+                _focusModel = mdl;
+                _focusElement = obj;
+                RefreshSelectGrid();
+            }
+        }
         void TextProperty_LostFocus(object sender, RoutedEventArgs e)
         {
             var obj = sender as TextBox;
@@ -1054,7 +1073,19 @@ namespace ModelGraph.Controls
         #endregion
 
         #region CheckProperty  ================================================
-            void Check_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        private void CheckProperty_GotFocus(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            var obj = sender as CheckBox;
+            var mdl = obj.DataContext as ItemModel;
+            if (_selectModel != mdl)
+            {
+                _selectModel = mdl;
+                _focusModel = mdl;
+                _focusElement = obj;
+                RefreshSelectGrid();
+            }
+        }
+        void Check_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             var obj = sender as CheckBox;
             var mdl = obj.DataContext as ItemModel;
@@ -1090,6 +1121,18 @@ namespace ModelGraph.Controls
         #endregion
 
         #region ComboProperty  ================================================
+        private void ComboProperty_GotFocus(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            var obj = sender as ComboBox;
+            var mdl = obj.DataContext as ItemModel;
+            if (_selectModel != mdl)
+            {
+                _selectModel = mdl;
+                _focusModel = mdl;
+                _focusElement = obj;
+                RefreshSelectGrid();
+            }
+        }
         void ComboProperty_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var obj = sender as ComboBox;
