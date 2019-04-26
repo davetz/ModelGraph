@@ -221,8 +221,6 @@ namespace ModelGraph.Controls
 
                 obj.Style = _itemKindStyle;
                 obj.DragStarting += ItemName_DragStarting;
-                obj.PointerPressed += ItemName_PointerPressed;
-                obj.PointerReleased += ItemName_PointerReleased;
                 obj.DragOver += ItemName_DragOver;
                 obj.Drop += ItemName_Drop;
                 obj.PointerEntered += ItemName_PointerEntered;
@@ -242,8 +240,6 @@ namespace ModelGraph.Controls
             if (obj != null)
             {
                 obj.DragStarting -= ItemName_DragStarting;
-                obj.PointerPressed -= ItemName_PointerPressed;
-                obj.PointerReleased -= ItemName_PointerReleased;
                 obj.DragOver -= ItemName_DragOver;
                 obj.Drop -= ItemName_Drop;
                 obj.PointerEntered -= ItemName_PointerEntered;
@@ -264,8 +260,6 @@ namespace ModelGraph.Controls
 
                 obj.Style = _itemNameStyle;
                 obj.DragStarting += ItemName_DragStarting;
-                obj.PointerPressed += ItemName_PointerPressed;
-                obj.PointerReleased += ItemName_PointerReleased;
                 obj.DragOver += ItemName_DragOver;
                 obj.Drop += ItemName_Drop;
                 obj.PointerEntered += ItemName_PointerEntered;
@@ -284,8 +278,6 @@ namespace ModelGraph.Controls
             if (obj != null)
             {
                 obj.DragStarting -= ItemName_DragStarting;
-                obj.PointerPressed -= ItemName_PointerPressed;
-                obj.PointerReleased -= ItemName_PointerReleased;
                 obj.DragOver -= ItemName_DragOver;
                 obj.Drop -= ItemName_Drop;
                 obj.PointerEntered -= ItemName_PointerEntered;
@@ -357,9 +349,7 @@ namespace ModelGraph.Controls
             if (obj == null)
             {
                 obj = _indentTreeCache[index] = new TextBlock();
-
                 obj.Style = _indentTreeStyle;
-                obj.PointerReleased += ExpandTree_PointerReleased;
             }
 
             obj.Text = " ";
@@ -373,7 +363,6 @@ namespace ModelGraph.Controls
             var obj = _indentTreeCache[index];
             if (obj != null)
             {
-                obj.PointerReleased -= ExpandTree_PointerReleased;
                 obj.DataContext = null;
 
                 _indentTreeCache[index] = null;

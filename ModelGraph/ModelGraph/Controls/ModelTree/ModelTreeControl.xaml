@@ -10,6 +10,8 @@
     KeyboardAcceleratorPlacementMode="Hidden">
 
     <Page.Resources>
+        <x:Double x:Key="LevelIndent">20</x:Double>
+        <x:Double x:Key="ElementHieght">24</x:Double>
 
         <Style x:Key="TitleStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="16" />
@@ -27,6 +29,17 @@
             <Setter Property="Margin" Value="4,0,0,0" />
         </Style>
 
+        <Style x:Key="FocusButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="IsTabStop" Value="True" />
+            <Setter Property="Width" Value="1"/>
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Background" Value="DarkBlue" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+
+
         <Style x:Key="ButtonStyle" TargetType="Button">
             <Setter Property="IsTabStop" Value="False" />
             <Setter Property="Padding" Value="2,2,2,2" />
@@ -35,10 +48,6 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
         </Style>
-
-
-        <x:Double x:Key="LevelIndent">20</x:Double>
-        <x:Double x:Key="ElementHieght">24</x:Double>
 
         <Style x:Key="ModelIdentityStyle" TargetType="TextBlock">
             <Setter Property="Text" Value="-" />
@@ -535,8 +544,8 @@
         <Style x:Key="ItemHasErrorStyle" TargetType="TextBlock">
             <Setter Property="MinWidth" Value="20" />
             <Setter Property="Margin" Value="16,0,0,0" />
-            <Setter Property="Padding" Value="0,4,0,0" />
-            <Setter Property="Foreground" Value="Firebrick" />
+            <Setter Property="Padding" Value="0,2,0,0" />
+            <Setter Property="Foreground" Value="Red" />
             <Setter Property="FontSize" Value="20" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="TextAlignment" Value="Center" />
@@ -622,29 +631,31 @@
 
         <Grid Grid.Row="1" x:Name="ControlGrid" >
             <Canvas x:Name="TreeCanvas" Style="{StaticResource TreeCanvasStyle}" PointerPressed="TreeGrid_PointerPressed" PointerWheelChanged="TreeCanvas_PointerWheelChanged">
-                
-                <Canvas.KeyboardAccelerators>
-                    <KeyboardAccelerator Key="PageUp" Invoked="KeyPageUp_Invoked"/>
-                    <KeyboardAccelerator Key="PageDown" Invoked="KeyPageDown_Invoked"/>
-                    
-                    <KeyboardAccelerator Key="Up" Invoked="KeyUp_Invoked"/>
-                    <KeyboardAccelerator Key="Down" Invoked="KeyDown_Invoked"/>
+                <Grid x:Name="SelectGrid" Width="{Binding ElementName=TreeCanvas, Path=ActualWidth}" Height="{StaticResource ElementHieght}" Background="#FFD8EFF9" >
+                    <Button x:Name="FocusButton" Style="{StaticResource FocusButtonStyle}" >
+                        <Button.KeyboardAccelerators>
+                            <KeyboardAccelerator Key="PageUp" Invoked="KeyPageUp_Invoked"/>
+                            <KeyboardAccelerator Key="PageDown" Invoked="KeyPageDown_Invoked"/>
 
-                    <KeyboardAccelerator Key="Left" Invoked="KeyLeft_Invoked"/>
-                    <KeyboardAccelerator Key="Right" Invoked="KeyRight_Invoked"/>
+                            <KeyboardAccelerator Key="Up" Invoked="KeyUp_Invoked"/>
+                            <KeyboardAccelerator Key="Down" Invoked="KeyDown_Invoked"/>
 
-                    <KeyboardAccelerator Key="End" Invoked="KeyEnd_Invoked"/>
-                    <KeyboardAccelerator Key="Home" Invoked="KeyHome_Invoked"/>
-                    <KeyboardAccelerator Key="Escape" Invoked="KeyEscape_Invoked"/>
+                            <KeyboardAccelerator Key="Left" Invoked="KeyLeft_Invoked"/>
+                            <KeyboardAccelerator Key="Right" Invoked="KeyRight_Invoked"/>
 
-                    <KeyboardAccelerator Key="Insert" Invoked="KeyInsert_Invoked"/>
-                    <KeyboardAccelerator Key="Delete" Invoked="KeyDelete_Invoked"/>
+                            <KeyboardAccelerator Key="End" Invoked="KeyEnd_Invoked"/>
+                            <KeyboardAccelerator Key="Home" Invoked="KeyHome_Invoked"/>
 
-                    <KeyboardAccelerator Key="Menu" Invoked="KeyMenu_Invoked"/>
-                </Canvas.KeyboardAccelerators>
-                
-                <Grid x:Name="SelectionGrid" Width="{Binding ElementName=TreeCanvas, Path=ActualWidth}" Height="{StaticResource ElementHieght}" Background="#FFD8EFF9" >
-                        <StackPanel x:Name="ButtonStack" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <KeyboardAccelerator Key="Enter" Invoked="KeyEnter_Invoked"/>
+                            <KeyboardAccelerator Key="Escape" Invoked="KeyEscape_Invoked"/>
+
+                            <KeyboardAccelerator Key="Insert" Invoked="KeyInsert_Invoked"/>
+                            <KeyboardAccelerator Key="Delete" Invoked="KeyDelete_Invoked"/>
+
+                            <KeyboardAccelerator Key="Menu" Invoked="KeyMenu_Invoked"/>
+                        </Button.KeyboardAccelerators>
+                    </Button>
+                    <StackPanel x:Name="ButtonStack" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button x:Name="HelpButton" x:Uid="HelpButton" Style="{StaticResource HelpButtonStyle}" >
                                 <Button.Flyout>
                                     <Flyout>
@@ -668,7 +679,6 @@
                                 </Button.Flyout>
                                 <FontIcon  FontFamily="Segoe UI" Glyph="&#x22EF;" FontSize="20" />
                             </Button>
-                            <!--<Button x:Name="TailButton" Width="2" Margin="10,0,0,0"  Height="{StaticResource ElementHieght}" KeyDown="TailButton_KeyDown" KeyUp="TailButton_KeyUp" LostFocus="TailButton_LostFocus"/>-->
                         </StackPanel>
                 </Grid>
             </Canvas>

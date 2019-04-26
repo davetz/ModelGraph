@@ -118,10 +118,12 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+        #region PinButton_Click  ==============================================
         private void PinButton_Click(object sender, RoutedEventArgs e)
         {
             UpdateActionPinned(!_isActionPinned);
         }
+        #endregion
 
         #region KeyboardEvents  ===============================================
 

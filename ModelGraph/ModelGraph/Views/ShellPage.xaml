@@ -14,6 +14,8 @@
         Header="{x:Bind Selected.Content, Mode=OneWay}"
         ItemInvoked="OnItemInvoked"
         IsSettingsVisible="True"
+        IsTabStop="False"
+        IsTapEnabled="False"
         AlwaysShowHeader="False"
         CompactModeThresholdWidth="300"
         ExpandedModeThresholdWidth="800"
