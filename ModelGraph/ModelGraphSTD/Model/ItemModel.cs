@@ -89,6 +89,7 @@ namespace ModelGraphSTD
         public bool IsTextProperty => Trait == Trait.TextProperty_M;
         public bool IsComboProperty => Trait == Trait.ComboProperty_M;
         public bool IsCheckProperty => Trait == Trait.CheckProperty_M;
+        public bool IsForcedRefresh => Trait == Trait.ErrorRoot_M || Trait == Trait.ChangeRoot_M;
 
         public bool IsRowChildRelationModel => Trait == Trait.RowChildRelation_M;
         public bool IsRowParentRelationModel => Trait == Trait.RowParentRelation_M;

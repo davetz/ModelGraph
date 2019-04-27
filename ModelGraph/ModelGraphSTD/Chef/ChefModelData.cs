@@ -491,17 +491,23 @@ namespace ModelGraphSTD
                 var first = ItemModel.FirstValidModel(viewList);
                 var start = (first == null);
                 var previous = new List<ItemModel>();
+                var modelStack = new TreeModelStack();
 
                 UpdateSelectModel(select, change);
 
-                if (root.ChildModelCount == 0)
+                if (root.IsForcedRefresh)
                 {
-                    root.Validate(previous);
-                    root.ViewModels = root.ChildModels;
+                    modelStack.PushRoot(root);
                 }
-
-                var modelStack = new TreeModelStack();
-                modelStack.PushChildren(root);
+                else
+                {
+                    if (root.ChildModelCount == 0)
+                    {
+                        root.Validate(previous);
+                        root.ViewModels = root.ChildModels;
+                    }
+                    modelStack.PushChildren(root);
+                }
 
                 var S = (scroll < 0) ? -scroll : scroll;
                 var N = capacity;
@@ -618,6 +624,7 @@ namespace ModelGraphSTD
             private List<(List<ItemModel> Models, int Index)> _stack;
             internal TreeModelStack() { _stack = new List<(List<ItemModel> Models, int Index)>(); }
             internal bool IsNotEmpty => (_stack.Count > 0);
+            internal void PushRoot(ItemModel m) { _stack.Add((new List<ItemModel>(1) { m }, 0)); }
             internal void PushChildren(ItemModel m) { if (m.ViewModelCount > 0) _stack.Add((m.ViewModels, 0)); }
             internal ItemModel PopNext()
             {

@@ -44,7 +44,6 @@ namespace ModelGraphSTD
         InvalidItem = 0x002,
         ModelGraphTitle = 0x003,
         AppRootModelTab = 0x004,
-        SortMode = 0x005,
         ExpandLeft = 0x006,
         TotalCount = 0x007,
         FilterText = 0x008,
@@ -53,6 +52,7 @@ namespace ModelGraphSTD
         FilterExpand = 0x00B,
         NewModel = 0x00C,
         EditSymbol = 0x00D,
+        SortMode = 0x010,
 
         #endregion
 

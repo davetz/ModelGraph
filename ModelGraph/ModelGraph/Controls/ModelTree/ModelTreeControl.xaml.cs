@@ -171,7 +171,7 @@ namespace ModelGraph.Controls
             _modelIdentityStyle = Resources["ModelIdentityStyle"] as Style;
             _propertyBorderStyle = Resources["PropertyBorderStyle"] as Style;
 
-            _sortModeTip = "005S".GetLocalized();
+            _sortModeTip = "010S".GetLocalized();
             _usageModeTip = "00ES".GetLocalized();
             _leftExpandTip = "006S".GetLocalized();
             _totalCountTip = "007S".GetLocalized();
