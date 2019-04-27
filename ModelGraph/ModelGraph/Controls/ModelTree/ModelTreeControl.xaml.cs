@@ -213,31 +213,7 @@ namespace ModelGraph.Controls
                 ToolTipService.SetToolTip(_menuItems[i], tip);
             }
 
-
-            var buttonCommands = new List<ModelCommand>();
-            _root.PageButtonComands(buttonCommands);
-
-            var N = buttonCommands.Count;
-            var M = ControlPanel.Children.Count;
-            for (int i = 0; i < M; i++)
-            {
-                if (ControlPanel.Children[i] is Button btn)
-                {
-                    if (i < N)
-                    {
-                        var cmd = buttonCommands[i];
-                        btn.Tag = cmd;
-                        btn.Content = cmd.Name;
-                        btn.Visibility = Visibility.Visible;
-                        ToolTipService.SetToolTip(btn, cmd.Summary);
-                    }
-                    else
-                    {
-                        btn.Visibility = Visibility.Collapsed;
-                    }
-                }
-            }
-            ModelTitle.Text = _root.TitleName;
+            RefreshRoot();
         }
         #endregion
 
@@ -498,11 +474,13 @@ namespace ModelGraph.Controls
         }
         #endregion
 
+
         #region Refresh  ======================================================
         public void Refresh()
         {
             if (ViewIsNotReady()) return;
             if (_viewList is null) return;
+            if (_root.IsChanged) RefreshRoot();
 
             _viewList.Clear();
             _viewList.AddRange(_root.ViewFlatList);
@@ -522,6 +500,38 @@ namespace ModelGraph.Controls
 
             _pointWheelEnabled = true;
         }
+        #endregion
+
+        #region RefreshRoot  ==================================================
+        private void RefreshRoot()
+        {
+            var buttonCommands = new List<ModelCommand>();
+            _root.PageButtonComands(buttonCommands);
+
+            var N = buttonCommands.Count;
+            var M = ControlPanel.Children.Count;
+            for (int i = 0; i < M; i++)
+            {
+                if (ControlPanel.Children[i] is Button btn)
+                {
+                    if (i < N)
+                    {
+                        var cmd = buttonCommands[i];
+                        btn.Tag = cmd;
+                        btn.Content = cmd.Name;
+                        btn.Visibility = Visibility.Visible;
+                        ToolTipService.SetToolTip(btn, cmd.Summary);
+                    }
+                    else
+                    {
+                        btn.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+            ModelTitle.Text = _root.TitleName;
+            _root.IsChanged = false;
+        }
+
         #endregion
 
         #region RefreshSelect  ================================================

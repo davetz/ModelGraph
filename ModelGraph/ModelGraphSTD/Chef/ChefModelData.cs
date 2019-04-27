@@ -1606,6 +1606,7 @@ namespace ModelGraphSTD
                 var root = model as RootModel;
                 var dataChef = root.Chef;
                 dataChef.SaveToRepository(repo);
+                root.IsChanged = true;
             }
             void SaveModel(ItemModel model)
             {

@@ -132,9 +132,9 @@ namespace ModelGraphSTD
         private void SetState(State state, bool value) { if (value) _state |= state; else _state &= ~state; }
         private void SetState(State state, State changedState, bool value) { var prev = GetState(state);  if (value) _state |= state; else _state &= ~state; if (prev != value) _state |= changedState; }
 
-        public bool IsChanged { get { return GetState(State.IsChanged); } set { SetState(State.IsChanged, !value); } }
-        public bool IsReadOnly { get { return GetState(State.IsReadOnly); } set { SetState(State.IsReadOnly, !value); } }
-        public bool IsMultiline { get { return GetState(State.IsMultiline); } set { SetState(State.IsMultiline, !value); } }
+        public bool IsChanged { get { return GetState(State.IsChanged); } set { SetState(State.IsChanged, value); } }
+        public bool IsReadOnly { get { return GetState(State.IsReadOnly); } set { SetState(State.IsReadOnly, value); } }
+        public bool IsMultiline { get { return GetState(State.IsMultiline); } set { SetState(State.IsMultiline, value); } }
         public bool IsFilterFocus { get { return GetState(State.IsFilterFocus); } set { SetState(State.IsFilterFocus, value); } }
         internal bool HasNoError { get { return GetState(State.HasNoError); } set { SetState(State.HasNoError, value); } }
 
