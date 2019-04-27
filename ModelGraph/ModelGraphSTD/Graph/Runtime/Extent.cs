@@ -437,10 +437,7 @@ namespace ModelGraphSTD
             {
                 if (e.IsVertical)
                 {
-                    if (X1 != e.X1) return false;
-                    if (ContainsY(e.Y1)) return true;
-                    if (ContainsY(e.Y2)) return true;
-                    if (e.ContainsY(Y1)) return true;
+                    if (ContainsY(e.Y1) && ContainsY(e.Y2)) return true;
                 }
                 else if (e.IsHorizontal)
                 {
@@ -462,10 +459,7 @@ namespace ModelGraphSTD
                 }
                 else if (e.IsHorizontal)
                 {
-                    if (Y1 != e.Y1) return false;
-                    if (ContainsX(e.X1)) return true;
-                    if (ContainsX(e.X2)) return true;
-                    if (e.ContainsX(X1)) return true;
+                    if (ContainsX(e.X1) && ContainsX(e.X2)) return true;
                 }
                 else
                 {

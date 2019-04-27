@@ -173,12 +173,14 @@
 
         internal bool HitTest((float X, float Y) p, ref HitLocation hit, ref int hitBend, ref int hitIndex, ref (float X, float Y) hitPoint)
         {
-            (float X, float Y) p1 = (0, 0); // used for testing line segments
-            (float X, float Y) p2 = (0, 0); // used for testing line segments
+            var len = Points.Length;
+            if (len == 0) return false;
+
             var E = new Extent(p, _ds); // extent of hit point sensitivity
 
+            var p1 = Points[0]; // used for testing line segments
+
             var gotHit = false;
-            var len = Points.Length;
             var sp2 = len - 1;
             for (int i = 0; i < len; i++)
             {
@@ -199,7 +201,7 @@
                     break;
                 }
 
-                p2 = Points[i];
+                var p2 = Points[i];
                 if (i == Tm1)
                 {
                     var t1 = new Extent(Points[0], p2);
