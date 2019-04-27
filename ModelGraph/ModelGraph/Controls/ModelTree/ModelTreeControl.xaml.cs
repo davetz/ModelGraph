@@ -327,31 +327,19 @@ namespace ModelGraph.Controls
         }
         private void KeyEnter_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            var cacheIndex = TryGetCacheIndex();
-            if (cacheIndex < 0) return;
-
-            if (_selectModel.CanFilter)
-            {
-                if (_selectModel.IsFilterVisible)
-                {
-                    _selectModel.IsFilterFocus = false;
-                    _filterTextCache[cacheIndex].Focus(FocusState.Keyboard);
-                }
-                else
-                    PostRefreshViewList(_selectModel, 0, ChangeType.ToggleFilter);
-            }
-            else if (_selectModel.IsProperty)
-            {
-                if (_selectModel.IsTextProperty) _textPropertyCache[cacheIndex].Focus(FocusState.Keyboard);
-                else if (_selectModel.IsCheckProperty) _checkPropertyCache[cacheIndex].Focus(FocusState.Keyboard);
-                else if (_selectModel.IsComboProperty) _comboPropertyCache[cacheIndex].Focus(FocusState.Keyboard);
-
-                args.Handled = true;
-            }
+            TrySetControlFocus();
+            args.Handled = true;
         }
+
         private void KeyEscape_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            FocusButton.Focus(FocusState.Keyboard);
+            SetDefaultFocus();
+            if (_selectModel != null)
+            {
+                _selectModel.IsFilterVisible = false;
+                _selectModel.IsExpandedLeft = false;
+                PostRefreshViewList(_selectModel, 0, ChangeType.FilterSortChanged);
+            }
             args.Handled = true;
         }
         private void KeyMenu_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -360,11 +348,12 @@ namespace ModelGraph.Controls
         }
         void TryGetPrevModel()
         {
+            SetDefaultFocus();
             if (_selectModel is null)
             {
                 if (_viewList is null || _viewList.Count == 0) return;
                 _selectModel = _viewList[0];
-                RefreshSelectGrid();
+                RefreshSelect();
             }
             else
             {
@@ -372,7 +361,7 @@ namespace ModelGraph.Controls
                 if (i >= 0 && i < _viewList.Count)
                 {
                     _selectModel = _viewList[i];
-                    RefreshSelectGrid();
+                    RefreshSelect();
                 }
                 else
                     ChangeScroll(-1);
@@ -380,11 +369,12 @@ namespace ModelGraph.Controls
         }
         void TryGetNextModel()
         {
+            SetDefaultFocus();
             if (_selectModel is null)
             {
                 if (_viewList is null || _viewList.Count == 0) return;
                 _selectModel = _viewList[0];
-                RefreshSelectGrid();
+                RefreshSelect();
             }
             else
             {
@@ -392,7 +382,7 @@ namespace ModelGraph.Controls
                 if (i > 0 && i < _viewList.Count)
                 {
                     _selectModel = _viewList[i];
-                    RefreshSelectGrid();
+                    RefreshSelect();
                 }
                 else
                     ChangeScroll(1);
@@ -496,7 +486,9 @@ namespace ModelGraph.Controls
         void TreeGrid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             _selectModel = PointerModel(e);
-            RefreshSelectGrid();
+            SetDefaultFocus();
+            RefreshSelect();
+            e.Handled = true;
         }
         ItemModel PointerModel(Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
@@ -516,15 +508,7 @@ namespace ModelGraph.Controls
             _viewList.AddRange(_root.ViewFlatList);
             _selectModel = _root.SelectModel;
 
-            if (_focusModel != null && _viewList.Contains(_focusModel))
-            {
-                _selectModel = _focusModel;
-                _focusModel = null;
-            }
-
             _pointWheelEnabled = false;
-
-            //            SaveKeyboardFocus();
 
             var N = _viewList.Count;
             ValidateCache(N);
@@ -534,25 +518,24 @@ namespace ModelGraph.Controls
                 AddStackPanel(i, _viewList[i]);
             }
 
-            RefreshSelectGrid();
-            //           RestoreKeyboardFocus();
+            RefreshSelect();
 
             _pointWheelEnabled = true;
         }
         #endregion
 
-        #region RefreshSelectGrid  ============================================
-        void RefreshSelectGrid()
+        #region RefreshSelect  ================================================
+        void RefreshSelect()
         {
+            TreeCanvas.KeyboardAccelerators.Clear();
+            _acceleratorKeyCommands.Clear();
+
             _sortControl = _filterControl = null;
 
             if (Count == 0 || _selectModel == null)
             {
-                // hide leftover buttons
-                foreach (var btn in _itemButtons)
-                {
-                    btn.Visibility = Visibility.Collapsed;
-                }
+                foreach (var btn in _itemButtons) { btn.Visibility = Visibility.Collapsed; }
+
                 return;
             }
 
@@ -562,11 +545,17 @@ namespace ModelGraph.Controls
             if (_sortModeCache[cacheIndex] != null && _sortModeCache[cacheIndex].DataContext != null)
             {
                 _sortControl = _sortModeCache[cacheIndex];
+                var acc = new KeyboardAccelerator { Key = VirtualKey.S };
+                acc.Invoked += Accelerator_SortMode_Invoked;
+                TreeCanvas.KeyboardAccelerators.Add(acc);
             }
 
             if (_usageModeCache[cacheIndex] != null && _usageModeCache[cacheIndex].DataContext != null)
             {
                 _usageControl = _usageModeCache[cacheIndex];
+                var acc = new KeyboardAccelerator { Key = VirtualKey.U };
+                acc.Invoked += Accelerator_UsageMode_Invoked;
+                TreeCanvas.KeyboardAccelerators.Add(acc);
             }
 
             if (_filterModeCache[cacheIndex] != null && _filterModeCache[cacheIndex].DataContext != null)
@@ -591,9 +580,6 @@ namespace ModelGraph.Controls
             var cmds = _buttonCommands;
             var len1 = cmds.Count;
             var len2 = _itemButtons.Length;
-
-            TreeCanvas.KeyboardAccelerators.Clear();
-            _acceleratorKeyCommands.Clear();
 
             for (int i = 0; i < len2; i++)
             {
@@ -621,7 +607,7 @@ namespace ModelGraph.Controls
                     }
                     else if (_virtualKeys.TryGetValue(key, out VirtualKey vkey))
                     {
-                        var acc = new KeyboardAccelerator { Key = vkey, Modifiers = VirtualKeyModifiers.Control};
+                        var acc = new KeyboardAccelerator { Key = vkey, Modifiers = VirtualKeyModifiers.Control };
                         acc.Invoked += Accelerator_Invoked;
                         _acceleratorKeyCommands.Add(acc, cmd);
                         TreeCanvas.KeyboardAccelerators.Add(acc);
@@ -657,15 +643,112 @@ namespace ModelGraph.Controls
                 }
             }
 
-            if (_focusElement is null)
-                FocusButton.Focus(FocusState.Keyboard);
-            else
+            TryRestoreFocus();
+        }
+        #endregion
+
+        #region RefreshHelpers  ===============================================
+        //
+        #region TryGetCacheIndex  =============================================
+        int TryGetCacheIndex()
+        {
+            if (Count < 0) return -1;
+
+            var viewIndex = _viewList.IndexOf(_selectModel);
+            if (viewIndex < 0)
             {
-                _focusElement.Focus(FocusState.Keyboard);
-                _focusElement = null;
+                _selectModel = _viewList[0];
+                viewIndex = 0;
+            }
+            _root.SelectModel = _selectModel;
+            var cacheIndex = _cacheIndex[viewIndex];
+
+            SelectGrid.Width = ActualWidth;
+            Canvas.SetTop(SelectGrid, (viewIndex * _elementHieght));
+
+            return cacheIndex;
+        }
+        #endregion
+        //
+        #region TrySetControlFocus  ===========================================
+        // given the focusModel try to determine what is the most
+        // logical text box to enter, then set the keyboard focus to it,
+        // otherwise set focus to our reliable dummy FocusButton
+        private void TrySetControlFocus(ItemModel focusModel = null)
+        {
+            if (focusModel != null) _selectModel = focusModel;
+
+            var cacheIndex = TryGetCacheIndex();
+            if (cacheIndex < 0) return;
+
+            if (_selectModel.CanFilter)
+            {
+                if (_selectModel.IsFilterVisible)
+                {
+                    _selectModel.IsFilterFocus = false;
+                    SetFocus(_filterTextCache[cacheIndex]);
+                }
+                else
+                {
+                    _tryAfterRefresh = true;
+                    PostRefreshViewList(_selectModel, 0, ChangeType.ToggleFilter);
+                }
+            }
+            else if (_selectModel.IsProperty)
+            {
+                if (_selectModel.IsTextProperty) SetFocus(_textPropertyCache[cacheIndex]);
+                else if (_selectModel.IsCheckProperty) SetFocus(_checkPropertyCache[cacheIndex]);
+                else if (_selectModel.IsComboProperty) SetFocus(_comboPropertyCache[cacheIndex]);
+            }
+            else
+                SetFocus(FocusButton);
+
+
+            void SetFocus(Control ctrl)
+            {
+                _focusControl = ctrl;
+                _tryAfterRefresh = false;
+                ctrl.Focus(FocusState.Keyboard);
             }
         }
-        Control _focusElement;
+        private void TryRestoreFocus()
+        {
+            if (_tryAfterRefresh || _focusControl != FocusButton)
+                TrySetControlFocus();
+            else
+                SetDefaultFocus();
+        }
+        private void SetDefaultFocus()
+        {
+            _focusControl = FocusButton;
+            _tryAfterRefresh = false;
+            FocusButton.Focus(FocusState.Keyboard);
+        }
+        bool _tryAfterRefresh;
+        Control _focusControl;
+        #endregion
+        //
+        #region AcceleratorKeyCommands  =======================================
+        private void Accelerator_SortMode_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_sortControl != null) ExecuteSort(_sortControl);
+            args.Handled = true;
+        }
+        private void Accelerator_UsageMode_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_usageControl != null) ExecuteUsage(_usageControl);
+            args.Handled = true;
+        }
+        private void Accelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_acceleratorKeyCommands.TryGetValue(sender, out ModelCommand cmd)) cmd.Execute();
+            args.Handled = true;
+        }
+        private readonly Dictionary<KeyboardAccelerator, ModelCommand> _acceleratorKeyCommands = new Dictionary<KeyboardAccelerator, ModelCommand>();
+
+        private readonly List<KeyboardAccelerator> menuCommandAccelerators = new List<KeyboardAccelerator>(4);
+        private readonly List<KeyboardAccelerator> buttonCommandAccelerators = new List<KeyboardAccelerator>(4);
+
         static readonly Dictionary<string, Windows.System.VirtualKey> _virtualKeys = new Dictionary<string, VirtualKey>
         {
             ["A"] = VirtualKey.A,
@@ -695,38 +778,29 @@ namespace ModelGraph.Controls
             ["Y"] = VirtualKey.Y,
             ["Z"] = VirtualKey.Z,
         };
-        Dictionary<KeyboardAccelerator, ModelCommand> _acceleratorKeyCommands = new Dictionary<KeyboardAccelerator, ModelCommand>();
-        private void Accelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-        {
-            if (_acceleratorKeyCommands.TryGetValue(sender, out ModelCommand cmd)) cmd.Execute();
-            args.Handled = true;
-        }
-
-        List<KeyboardAccelerator> menuCommandAccelerators = new List<KeyboardAccelerator>(4);
-        List<KeyboardAccelerator> buttonCommandAccelerators = new List<KeyboardAccelerator>(4);
+        #endregion
+        //
+        #region PopulateItemHelp  =============================================
         void PopulateItemHelp(string input)
         {
-            var strings = SplitOnNewLines(input);
             ItemHelp.Blocks.Clear();
-            if (strings.Length == 0)
-            {
-                return;
-            }
 
-            var spacing = new Thickness(0, 0, 0, 6);
+            var strings = SplitOnNewLines(input);
+            if (strings.Length == 0) return;
 
             foreach (var str in strings)
             {
-                var run = new Run
-                {
-                    Text = str
-                };
+                var run = new Run { Text = str };
                 var para = new Paragraph();
+
                 para.Inlines.Add(run);
-                para.Margin = spacing;
+                para.Margin = _spacing;
+
                 ItemHelp.Blocks.Add(para);
             }
         }
+        static readonly Thickness _spacing = new Thickness(0, 0, 0, 6);
+
         string[] SplitOnNewLines(string input)
         {
             var chars = input.ToCharArray();
@@ -735,13 +809,11 @@ namespace ModelGraph.Controls
             int j, i = 0;
             while (i < len)
             {
-                if (chars[i] < ' ') { i += 1; continue; }
+                if (chars[i] < ' ') { i++; continue; }
+
                 for (j = i; j < len; j++)
                 {
-                    if (chars[j] >= ' ')
-                    {
-                        continue;
-                    }
+                    if (chars[j] >= ' ') continue;
 
                     output.Add(input.Substring(i, (j - i)));
                     i = j;
@@ -756,27 +828,9 @@ namespace ModelGraph.Controls
             return output.ToArray();
         }
         #endregion
-
-        #region TryGetCacheIndex  =============================================
-        int TryGetCacheIndex()
-        {
-            if (Count < 0) return -1;
-
-            var viewIndex = _viewList.IndexOf(_selectModel);
-            if (viewIndex < 0)
-            {
-                _selectModel = _viewList[0];
-                viewIndex = 0;
-            }
-            var cacheIndex = _cacheIndex[viewIndex];
-
-            SelectGrid.Width = ActualWidth;
-            Canvas.SetTop(SelectGrid, (viewIndex * _elementHieght));
-
-            return cacheIndex;
-        }
-        ItemModel _focusModel;
+        //
         #endregion
+
 
         #region ItemName  =====================================================
         void ItemName_PointerEntered(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -996,24 +1050,30 @@ namespace ModelGraph.Controls
 
             if (e.Key == Windows.System.VirtualKey.Enter || e.Key == Windows.System.VirtualKey.Tab)
             {
+                e.Handled = true;
+
                 var str = string.IsNullOrWhiteSpace(obj.Text) ? string.Empty : obj.Text;
-                if (string.Compare(str, (string)obj.Tag, true) == 0) return;
+                if (string.Compare(str, (string)obj.Tag, true) == 0)
+                {
+                    SetDefaultFocus();
+                    return;
+                }
 
                 obj.Tag = str;
                 mdl.UpdateViewFilter(str);
                 mdl.IsExpandedLeft = true;
                 
-                e.Handled = true;
-
-                FindNextItemModel(mdl);
+                _tryAfterRefresh = true;
                 PostRefreshViewList(_selectModel, 0, ChangeType.FilterSortChanged);
             }
             if (e.Key == Windows.System.VirtualKey.Escape)
             {
+                e.Handled = true;
+
                 mdl.ViewFilter = null;
                 mdl.IsFilterVisible = false;
-
-                //FindNextItemModel(mdl);
+                mdl.IsExpandedLeft = false;
+                SetDefaultFocus();
                 PostRefreshViewList(_selectModel, 0, ChangeType.FilterSortChanged);
             }
         }
@@ -1023,14 +1083,9 @@ namespace ModelGraph.Controls
         private void TextProperty_GotFocus(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             var obj = sender as TextBox;
-            var mdl = obj.DataContext as ItemModel;
-            if (_selectModel != mdl)
-            {
-                _selectModel = mdl;
-                _focusModel = mdl;
-                _focusElement = obj;
-                RefreshSelectGrid();
-            }
+            _focusControl = obj;
+            _selectModel = obj.DataContext as ItemModel;
+            RefreshSelect();
         }
         void TextProperty_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -1038,7 +1093,6 @@ namespace ModelGraph.Controls
             var mdl = obj.DataContext as ItemModel;
             if ((string)obj.Tag != obj.Text)
             {
-                _focusModel = mdl;
                 mdl.PostSetValue(obj.Text);
             }
         }
@@ -1050,7 +1104,6 @@ namespace ModelGraph.Controls
                 var mdl = obj.DataContext as ItemModel;
                 if ((string)obj.Tag != obj.Text)
                 {
-                    _focusModel = mdl;
                     mdl.PostSetValue(obj.Text);
                 }
                 e.Handled = true;
@@ -1067,7 +1120,7 @@ namespace ModelGraph.Controls
                 {
                     obj.Text = mdl.TextValue ?? string.Empty;
                 }
-                FocusButton.Focus(FocusState.Keyboard);
+                SetDefaultFocus();
             }
         }
         #endregion
@@ -1076,31 +1129,32 @@ namespace ModelGraph.Controls
         private void CheckProperty_GotFocus(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             var obj = sender as CheckBox;
-            var mdl = obj.DataContext as ItemModel;
-            if (_selectModel != mdl)
-            {
-                _selectModel = mdl;
-                _focusModel = mdl;
-                _focusElement = obj;
-                RefreshSelectGrid();
-            }
+            _focusControl = obj;
+            _selectModel = obj.DataContext as ItemModel;
+            RefreshSelect();
         }
         void Check_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             var obj = sender as CheckBox;
             var mdl = obj.DataContext as ItemModel;
             var val = obj.IsChecked ?? false;
-            if (e.Key == Windows.System.VirtualKey.Enter)
+
+            if (e.Key == VirtualKey.Escape)
+            {
+                SetDefaultFocus();
+                e.Handled = true;
+            }
+            else if (e.Key == Windows.System.VirtualKey.Enter)
             {
                 _ignoreNextCheckBoxEvent = true;
-                _focusModel = mdl;
                 mdl.PostSetValue(!val);
+                e.Handled = true;
             }
-            e.Handled = true;
-            if (e.Key == Windows.System.VirtualKey.Tab)
+            else if (e.Key == Windows.System.VirtualKey.Tab)
+            {
                 FindNextItemModel(mdl);
-            else if (e.Key == Windows.System.VirtualKey.Escape)
-                FocusButton.Focus(FocusState.Keyboard);
+                e.Handled = true;
+            }
         }
         bool _ignoreNextCheckBoxEvent;
         void CheckProperty_Checked(object sender, RoutedEventArgs e)
@@ -1114,7 +1168,6 @@ namespace ModelGraph.Controls
                 var obj = sender as CheckBox;
                 var mdl = obj.DataContext as ItemModel;
                 var val = obj.IsChecked ?? false;
-                _focusModel = mdl;
                 mdl.PostSetValue(val);
             }
         }
@@ -1124,30 +1177,29 @@ namespace ModelGraph.Controls
         private void ComboProperty_GotFocus(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             var obj = sender as ComboBox;
-            var mdl = obj.DataContext as ItemModel;
-            if (_selectModel != mdl)
-            {
-                _selectModel = mdl;
-                _focusModel = mdl;
-                _focusElement = obj;
-                RefreshSelectGrid();
-            }
+            _focusControl = obj;
+            _selectModel = obj.DataContext as ItemModel;
+            RefreshSelect();
         }
         void ComboProperty_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var obj = sender as ComboBox;
             var mdl = obj.DataContext as ItemModel;
-            _focusModel = mdl;
             mdl.PostSetValue(obj.SelectedIndex);
         }
         void ComboProperty_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             var obj = sender as ComboBox;
             var mdl = obj.DataContext as ItemModel;
-            if (e.Key == Windows.System.VirtualKey.Tab)
+            if (e.Key == VirtualKey.Escape)
             {
+                SetDefaultFocus();
                 e.Handled = true;
-                if (e.Key == Windows.System.VirtualKey.Tab) FindNextItemModel(mdl);
+            }
+            else if (e.Key == VirtualKey.Tab)
+            {
+                FindNextItemModel(mdl);
+                e.Handled = true;
             }
         }
         #endregion
@@ -1161,29 +1213,17 @@ namespace ModelGraph.Controls
         #endregion
 
         #region FindNextItemModel  ============================================
-        bool FindNextItemModel(ItemModel m)
+        void FindNextItemModel(ItemModel m)
         {
             var k = _viewList.IndexOf(m) + 1;
             for (int i = k; i < _viewList.Count; i++)
             {
                 var mdl = _viewList[i];
-                if (mdl.IsTextProperty)
-                    return SetNextFocus(mdl, _textPropertyCache[_cacheIndex[i]]);
-                else if (mdl.IsCheckProperty)
-                    return SetNextFocus(mdl, _checkPropertyCache[_cacheIndex[i]]);
-                else if (mdl.IsComboProperty)
-                    return SetNextFocus(mdl, _comboPropertyCache[_cacheIndex[i]]);
+                if (!mdl.IsProperty) continue;
+                TrySetControlFocus(mdl);
+                return;
             }
-            FocusButton.Focus(FocusState.Keyboard);
-            return false;
-
-            bool SetNextFocus(ItemModel mdl, Control ctrl)
-            {
-                _selectModel = mdl;
-                RefreshSelectGrid();
-                ctrl.Focus(FocusState.Keyboard);
-                return true;
-            }
+            SetDefaultFocus();
         }
         #endregion
 

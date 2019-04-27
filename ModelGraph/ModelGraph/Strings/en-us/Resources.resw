@@ -2446,4 +2446,10 @@ NEC – NWC – SEC - SWC</value>
   <data name="224N" xml:space="preserve">
     <value>Select claus is required</value>
   </data>
+  <data name="032A" xml:space="preserve">
+    <value>U</value>
+  </data>
+  <data name="033A" xml:space="preserve">
+    <value>R</value>
+  </data>
 </root>
