@@ -439,60 +439,69 @@ namespace ModelGraphSTD
             else if (node.Sizing == Sizing.Manual)
             {
                 #region AdjustManualNode  =====================================
+                var (x, y, w, h) = node.Values();
+
                 if (node.Aspect == Aspect.Vertical)
                 {
                     #region Vertical  =============================================
+                    w = barSize;
+                    node.SetSize(w, h);
+
+                    var nL = y - h;
+                    var sL = y + h;
                     for (int i = 0; i < N; i++)
                     {
-                        var s = F[i].slice;
-                        if (s < 2 || s > 13)
+                        var (x2, y2) = E[i].bend;
+
+                        if (y2 < nL)
                         {
-                            F[i].tdir = Direction.E;
+                            edges[i].SetFace(node, (0, -h), (0, -h - tmLen), Direction.N);
                         }
-                        else if (s > 5 && s < 10)
+                        else if (y2 > sL) 
                         {
-                            F[i].tdir = Direction.W;
+                            edges[i].SetFace(node, (0, h), (0, h + tmLen), Direction.S);
                         }
-                        else if (s > 1 && s < 6)
+                        else if (x2 > x)
                         {
-                            F[i].tdir = Direction.S;
+                            edges[i].SetFace(node, (w, y2 - y), (w + tmLen, y2 - y), Direction.E);
                         }
-                        else if (s > 9 && s < 14)
+                        else
                         {
-                            F[i].tdir = Direction.N;
+                            edges[i].SetFace(node, (-w, y2 - y), (-w - tmLen, y2 - y), Direction.W);
                         }
                     }
-                    node.SetSize(barSize, node.DY);
-
-                    SetFaceOffset();
                     #endregion
                 }
                 else //-------- restricted to either vertical or horizontal
                 {
                     #region Horizontal  ===========================================
+                    h = barSize;
+                    node.SetSize(w, h);
+
+                    var eL = x + w;
+                    var wL = x + w;
+
                     for (int i = 0; i < N; i++)
                     {
-                        var s = F[i].slice;
-                        if (s < 2 || s > 13)
+                        var (x2, y2) = E[i].bend;
+
+                        if (x2 < wL)
                         {
-                            F[i].tdir = Direction.E;
+                            edges[i].SetFace(node, (-w, 0), (-w - tmLen, 0), Direction.W);
                         }
-                        else if (s > 5 && s < 10)
+                        else if (x2 > eL)
                         {
-                            F[i].tdir = Direction.W;
+                            edges[i].SetFace(node, (w, 0), (w + tmLen, 0), Direction.E);
                         }
-                        else if (s > 1 && s < 6)
+                        else if (y2 > y)
                         {
-                            F[i].tdir = Direction.S;
+                            edges[i].SetFace(node, (x2 - x, h), (x2 - x, h + tmLen), Direction.S);
                         }
-                        else if (s > 9 && s < 14)
+                        else
                         {
-                            F[i].tdir = Direction.N;
+                            edges[i].SetFace(node, (x2 - x, -h), (x2 - x, -h - tmLen), Direction.N);
                         }
                     }
-                    node.SetSize(node.DX, barSize);
-
-                    SetFaceOffset();
                     #endregion
                 }
                 #endregion
