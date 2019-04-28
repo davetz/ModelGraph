@@ -535,7 +535,7 @@ namespace ModelGraph.Controls
         #endregion
 
         #region RefreshSelect  ================================================
-        void RefreshSelect()
+        void RefreshSelect(bool restoreFocus = true)
         {
             TreeCanvas.KeyboardAccelerators.Clear();
             _acceleratorKeyCommands.Clear();
@@ -653,7 +653,7 @@ namespace ModelGraph.Controls
                 }
             }
 
-            TryRestoreFocus();
+            if (restoreFocus) TryRestoreFocus();
         }
         #endregion
 
@@ -1095,7 +1095,7 @@ namespace ModelGraph.Controls
             var obj = sender as TextBox;
             _focusControl = obj;
             _selectModel = obj.DataContext as ItemModel;
-            RefreshSelect();
+            RefreshSelect(false);
         }
         void TextProperty_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -1110,13 +1110,13 @@ namespace ModelGraph.Controls
         {
             if (e.Key == Windows.System.VirtualKey.Enter || e.Key == Windows.System.VirtualKey.Tab)
             {
+                e.Handled = true;
                 var obj = sender as TextBox;
                 var mdl = obj.DataContext as ItemModel;
                 if ((string)obj.Tag != obj.Text)
                 {
                     mdl.PostSetValue(obj.Text);
-                }
-                e.Handled = true;
+                }                
                 if (e.Key == Windows.System.VirtualKey.Enter)
                     FocusButton.Focus(FocusState.Keyboard);
                 else
@@ -1124,6 +1124,7 @@ namespace ModelGraph.Controls
             }
             else if (e.Key == Windows.System.VirtualKey.Escape)
             {
+                e.Handled = true;
                 var obj = sender as TextBox;
                 var mdl = obj.DataContext as ItemModel;
                 if ((string)obj.Tag != obj.Text)
@@ -1141,7 +1142,7 @@ namespace ModelGraph.Controls
             var obj = sender as CheckBox;
             _focusControl = obj;
             _selectModel = obj.DataContext as ItemModel;
-            RefreshSelect();
+            RefreshSelect(false);
         }
         void Check_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
@@ -1151,19 +1152,19 @@ namespace ModelGraph.Controls
 
             if (e.Key == VirtualKey.Escape)
             {
-                SetDefaultFocus();
                 e.Handled = true;
+                SetDefaultFocus();
             }
             else if (e.Key == Windows.System.VirtualKey.Enter)
             {
+                e.Handled = true;
                 _ignoreNextCheckBoxEvent = true;
                 mdl.PostSetValue(!val);
-                e.Handled = true;
             }
             else if (e.Key == Windows.System.VirtualKey.Tab)
             {
-                FindNextItemModel(mdl);
                 e.Handled = true;
+                FindNextItemModel(mdl);
             }
         }
         bool _ignoreNextCheckBoxEvent;
@@ -1189,7 +1190,7 @@ namespace ModelGraph.Controls
             var obj = sender as ComboBox;
             _focusControl = obj;
             _selectModel = obj.DataContext as ItemModel;
-            RefreshSelect();
+            RefreshSelect(false);
         }
         void ComboProperty_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1203,13 +1204,13 @@ namespace ModelGraph.Controls
             var mdl = obj.DataContext as ItemModel;
             if (e.Key == VirtualKey.Escape)
             {
-                SetDefaultFocus();
                 e.Handled = true;
+                SetDefaultFocus();
             }
             else if (e.Key == VirtualKey.Tab)
             {
-                FindNextItemModel(mdl);
                 e.Handled = true;
+                FindNextItemModel(mdl);
             }
         }
         #endregion

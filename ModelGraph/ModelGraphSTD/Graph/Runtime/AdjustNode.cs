@@ -436,9 +436,70 @@ namespace ModelGraphSTD
                 }
                 #endregion
             }
-            else
+            else if (node.Sizing == Sizing.Manual)
             {
                 #region AdjustManualNode  =====================================
+                if (node.Aspect == Aspect.Vertical)
+                {
+                    #region Vertical  =============================================
+                    for (int i = 0; i < N; i++)
+                    {
+                        var s = F[i].slice;
+                        if (s < 2 || s > 13)
+                        {
+                            F[i].tdir = Direction.E;
+                        }
+                        else if (s > 5 && s < 10)
+                        {
+                            F[i].tdir = Direction.W;
+                        }
+                        else if (s > 1 && s < 6)
+                        {
+                            F[i].tdir = Direction.S;
+                        }
+                        else if (s > 9 && s < 14)
+                        {
+                            F[i].tdir = Direction.N;
+                        }
+                    }
+                    node.SetSize(barSize, node.DY);
+
+                    SetFaceOffset();
+                    #endregion
+                }
+                else //-------- restricted to either vertical or horizontal
+                {
+                    #region Horizontal  ===========================================
+                    for (int i = 0; i < N; i++)
+                    {
+                        var s = F[i].slice;
+                        if (s < 2 || s > 13)
+                        {
+                            F[i].tdir = Direction.E;
+                        }
+                        else if (s > 5 && s < 10)
+                        {
+                            F[i].tdir = Direction.W;
+                        }
+                        else if (s > 1 && s < 6)
+                        {
+                            F[i].tdir = Direction.S;
+                        }
+                        else if (s > 9 && s < 14)
+                        {
+                            F[i].tdir = Direction.N;
+                        }
+                    }
+                    node.SetSize(node.DX, barSize);
+
+                    SetFaceOffset();
+                    #endregion
+                }
+                #endregion
+            }
+            else if (node.Sizing == Sizing.Fixed) //this needs work - crazy stuff happens
+            {
+                #region AdjustFixedNode  ======================================
                 var (x, y, w, h) = node.Values();
                 var d0 = 2;
                 var xE = x + w - d0; // east side
@@ -782,7 +843,7 @@ namespace ModelGraphSTD
             }
             #endregion
 
-            #region SetFacePoints  ==========================================
+            #region SetFacePoints  ============================================
             void SetFacePoints()
             {
                 I.Sort(ComapreEdgeData); // sort the edge index list
