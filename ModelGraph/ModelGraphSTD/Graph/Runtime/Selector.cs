@@ -403,8 +403,16 @@ namespace ModelGraphSTD
         }
         #endregion
 
-        #region Move  =========================================================
-        public void Move((float X, float Y) delta)
+        #region Resize  =======================================================
+        public void Resize((float X, float Y) delta, ResizerType resizer)
+        {
+            if (resizer == ResizerType.None) return;
+            HitNode.Resize(delta, resizer);
+        }
+        #endregion
+
+            #region Move  =========================================================
+            public void Move((float X, float Y) delta)
         {
             if (IsRegionHit || IsNodeHit)
             {

@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics;
 using System.Numerics;
 
 namespace ModelGraphSTD
@@ -147,12 +148,47 @@ namespace ModelGraphSTD
         #endregion
 
         #region Move, Resize  =================================================
-        internal void Resize((float X, float Y) delta)
+        internal void Resize((float X, float Y) delta, ResizerType resizer)
         {
-            var dx = DX + delta.X;
-            var dy = DY + delta.Y;
-            DX = (byte)((dx < _min) ? _min : ((dx > _max) ? _max : dx));
-            DY = (byte)((dy < _min) ? _min : ((dy > _max) ? _max : dx));
+            var x1 = X - DX;
+            var x2 = X + DX;
+            var y1 = Y - DY;
+            var y2 = Y + DY;
+          
+            switch (resizer)
+            {
+                case ResizerType.None:
+                    return;
+                case ResizerType.Top:
+                    y1 += delta.Y;
+                    TryResize (); 
+                    break;
+                case ResizerType.Left:
+                    x1 += delta.X;
+                    TryResize();
+                    break;
+                case ResizerType.Right:
+                    x2 += delta.X;
+                    TryResize();
+                    break;
+                case ResizerType.Bottom:
+                    y2 += delta.Y;
+                    TryResize();
+                    break;
+            }
+            void TryResize()
+            {
+                var dy = (y2 - y1) / 2;
+                if (dy < _min || dy > _max) return;
+
+                var dx = (x2 - x1) / 2;
+                if (dx < _min || dx > _max) return;
+
+                DX = (byte)dx;
+                DY = (byte)dy;
+                X = (x1 + x2) / 2;
+                Y = (y1 + y2) / 2;
+            }
         }
         internal void Move((float X, float Y) delta)
         {

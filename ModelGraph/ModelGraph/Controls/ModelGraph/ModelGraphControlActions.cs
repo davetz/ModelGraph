@@ -33,6 +33,7 @@ namespace ModelGraph.Controls
 
             IdleOnNode,
             MovingNode,
+
             ResizingNode,
             IdleOnNodeResize,
 
@@ -166,16 +167,17 @@ namespace ModelGraph.Controls
 
             //HideTootlip();
             _enableHitTest = true;
-            var type = _selector.Resizer;
-            if (type == ResizerType.Left || type == ResizerType.Right)
+            var resizer = _selector.Resizer;
+
+            if (resizer == ResizerType.Left || resizer == ResizerType.Right)
                 TrySetNewCursor(CoreCursorType.SizeWestEast);
-            else if (type == ResizerType.Top || type == ResizerType.Bottom)
+            else if (resizer == ResizerType.Top || resizer == ResizerType.Bottom)
                 TrySetNewCursor(CoreCursorType.SizeNorthSouth);
             else
-                TrySetNewCursor(CoreCursorType.Hand);
+                SetIdleOnNode();
 
+            _eventAction[EventId.End] = () => { SetIdleOnVoid(); };
             _eventAction[EventId.Hover] = IdleHitTest;
-            //ArrowAction = () => { NodeResize(_arrowDelta * 2); };
             _eventAction[EventId.Begin1] = SetResizingNode;
         }
         #endregion
@@ -183,15 +185,38 @@ namespace ModelGraph.Controls
         #region SetResizingNode  ==============================================
         private void SetResizingNode()
         {
-            SetActionState(ActionState.ResizingNode);
+            if (!SetActionState(ActionState.ResizingNode)) return;
+            var resizer = _selector.Resizer;
+            if (resizer == ResizerType.None)
+            {
+                SetIdleOnNode();
+                return;
+            }
+
+            double dx = 0, dy = 0;
 
             //HideTootlip();
             _enableHitTest = false;
 
-            _eventAction[EventId.End] = () => { IdleHitTest(); };
-            //DragAction = () => { if (NodeResize(_moveDelta)) _prevMovePoint = _moveViewPoint; };
+            _eventAction[EventId.End] = () => { PostRefresh(); SetIdleOnVoid(); };
+            _eventAction[EventId.Hover] = () => { SetIdleOnVoid(); };
+            _eventAction[EventId.Drag] = () => { TryResize(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
+            //_eventAction[EventId.Arrow] = () => { TryResize(_arrowDelta); PostRefresh(); };
+
+            void TryResize((float X, float Y) delta)
+            {
+                dx += _dragDelta.Delta.X;
+                dy += _dragDelta.Delta.Y;
+                var x = (int)dx;
+                var y = (int)dy;
+                if (x > 1 || x < -1 || y > 1 || y < -1)
+                {
+                    dx -= x;
+                    dy -= y;
+                    Resize((x, y), resizer);
+                }
+            }
         }
-        //private bool NodeResize(Vector d) { var anyChange = _hitNode.Node.AddLength(d.X, d.Y, HitTop, HitLeft); if (anyChange) Model.PostRefreshGraph(); return anyChange; }
         #endregion
 
         #region SetMovingNode  ================================================
@@ -207,7 +232,7 @@ namespace ModelGraph.Controls
             _enableHitTest = false;
 
             _eventAction[EventId.End] = () => { SetIdleOnNode(); PostRefresh(); };
-            _eventAction[EventId.Drag] = () => { Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
+            _eventAction[EventId.Drag] = () => {  Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
             _eventAction[EventId.Arrow] = () => { Move(_arrowDelta); PostRefresh(); };
         }
         #endregion
@@ -310,6 +335,11 @@ namespace ModelGraph.Controls
         #endregion
 
         #region SelectorAction  ===============================================
+        private async void Resize((float X, float Y) delta, ResizerType resizer)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.Resize(delta, resizer));
+        }
+
         private async void Move((float X, float Y) delta)
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => _selector.Move(delta));
