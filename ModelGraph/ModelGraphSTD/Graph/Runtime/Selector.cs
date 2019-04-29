@@ -32,7 +32,7 @@ namespace ModelGraphSTD
 
         public List<Extent> Regions = new List<Extent>();  // extents of included nodes
         public List<Extent> Occluded = new List<Extent>();  // extents of occluded nodes
-        
+
         private bool _enableSnapshot = true;
 
         #region Constructor  ==================================================
@@ -52,7 +52,7 @@ namespace ModelGraphSTD
 
         public bool IsTopHit => ((HitLocation & HitLocation.Top) != 0);
         public bool IsLeftHit => ((HitLocation & HitLocation.Left) != 0);
-        public bool IsRigntHit => ((HitLocation & HitLocation.Right) != 0);
+        public bool IsRightHit => ((HitLocation & HitLocation.Right) != 0);
         public bool IsBottomHit => ((HitLocation & HitLocation.Bottom) != 0);
         public bool IsCenterHit => ((HitLocation & HitLocation.Center) != 0);
         public bool IsSideHit => ((HitLocation & HitLocation.SideOf) != 0);
@@ -60,6 +60,18 @@ namespace ModelGraphSTD
         public bool IsEnd1Hit => ((HitLocation & HitLocation.End1) != 0);
         public bool IsEnd2Hit => ((HitLocation & HitLocation.End2) != 0);
         public bool IsBendHit => ((HitLocation & HitLocation.Bend) != 0);
+        public ResizerType Resizer => GetResizer();
+        ResizerType GetResizer()
+        {
+            if (IsNodeHit && HitNode.IsGraphNode && HitNode.Sizing == Sizing.Manual)
+            {
+                if (IsTopHit && (HitNode.Aspect == Aspect.Square || HitNode.Aspect == Aspect.Vertical)) return ResizerType.Top;
+                if (IsLeftHit && (HitNode.Aspect == Aspect.Square || HitNode.Aspect == Aspect.Horizontal)) return ResizerType.Left;
+                if (IsRightHit && (HitNode.Aspect == Aspect.Square || HitNode.Aspect == Aspect.Horizontal)) return ResizerType.Right;
+                if (IsBottomHit && (HitNode.Aspect == Aspect.Square || HitNode.Aspect == Aspect.Vertical)) return ResizerType.Bottom;
+            }
+            return ResizerType.None;
+        }
         #endregion
 
         #region SelectorRectangle  ============================================

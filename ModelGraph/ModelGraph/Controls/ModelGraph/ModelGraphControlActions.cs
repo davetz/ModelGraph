@@ -3,7 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
-using System.Threading.Tasks;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
 
 namespace ModelGraph.Controls
 {
@@ -80,8 +81,8 @@ namespace ModelGraph.Controls
 
             HideTootlip();
             //DisableAutoPan();
-            //Cursor = Cursors.Arrow;
             _enableHitTest = true;
+            RestorePointerCursor();
 
             _eventAction[EventId.End] = () => { RemoveSelectors(); };
             _eventAction[EventId.Drag] = () => { if (_drawRef.Length > 3) { _enableHitTest = false; _selector.StartPoint(_drawRef.Point1); SetTracingRegion(); } };
@@ -102,9 +103,9 @@ namespace ModelGraph.Controls
             }
 
             //HideTootlip();
-            //Cursor = Cursors.Arrow;
             _enableHitTest = false;
             //EnableAutoPan();
+            RestorePointerCursor();
 
             _eventAction[EventId.End] = SetIdleOnVoid;
             //DragAction = PositionAutoPan;
@@ -149,7 +150,7 @@ namespace ModelGraph.Controls
             _enableHitTest = true;
 
             ShowNodeTooltip(_selector.HitNode);
-            //Cursor = Cursors.Hand;
+            TrySetNewCursor(CoreCursorType.Hand);
 
             _eventAction[EventId.Hover] = IdleHitTest;
             _eventAction[EventId.Arrow] = () => { Move(_arrowDelta); PostRefresh(); };
@@ -164,8 +165,14 @@ namespace ModelGraph.Controls
             SetActionState(ActionState.IdleOnNodeResize);
 
             //HideTootlip();
-            //Cursor = (_hitNode.Node.IsHorizontal) ? Cursors.SizeWE : Cursors.SizeNS;
             _enableHitTest = true;
+            var type = _selector.Resizer;
+            if (type == ResizerType.Left || type == ResizerType.Right)
+                TrySetNewCursor(CoreCursorType.SizeWestEast);
+            else if (type == ResizerType.Top || type == ResizerType.Bottom)
+                TrySetNewCursor(CoreCursorType.SizeNorthSouth);
+            else
+                TrySetNewCursor(CoreCursorType.Hand);
 
             _eventAction[EventId.Hover] = IdleHitTest;
             //ArrowAction = () => { NodeResize(_arrowDelta * 2); };
@@ -196,7 +203,7 @@ namespace ModelGraph.Controls
             }
 
             HideTootlip();
-            //Cursor = Cursors.ScrollAll;
+            TrySetNewCursor(CoreCursorType.SizeAll);
             _enableHitTest = false;
 
             _eventAction[EventId.End] = () => { SetIdleOnNode(); PostRefresh(); };
@@ -218,7 +225,7 @@ namespace ModelGraph.Controls
             }
 
             ShowEdgeTooltip(_selector.HitEdge);
-            //Cursor = Cursors.Hand;
+            TrySetNewCursor(CoreCursorType.Hand);
             _enableHitTest = true;
 
             _eventAction[EventId.Hover] = IdleHitTest;
@@ -238,7 +245,7 @@ namespace ModelGraph.Controls
             }
 
             HideTootlip();
-            //Cursor = Cursors.Hand;
+            TrySetNewCursor(CoreCursorType.Hand);
             _enableHitTest = true;
 
             _eventAction[EventId.Hover] = IdleHitTest;
@@ -257,8 +264,8 @@ namespace ModelGraph.Controls
                 return;
             }
 
-            //Cursor = Cursors.ScrollAll;
             _enableHitTest = false;
+            TrySetNewCursor(CoreCursorType.SizeAll);
 
             _eventAction[EventId.End] = () => { UpdateRegionExtents(); SetIdleOnRegion(); PostRefresh(); };
             _eventAction[EventId.Drag] = () => { Move(_dragDelta.Delta); _dragDelta.Record(_drawRef.Point2); };
@@ -391,10 +398,9 @@ namespace ModelGraph.Controls
             }
             else if (_selector.IsNodeHit)
             {
-                //if (_hitNode.Node.IsNode && ((_hitNode.Node.IsVertical && (HitTop || HitBottom)) || (_hitNode.Node.IsHorizontal && (HitLeft || HitRignt))))
-                //    IdleOnNodeResize();
-
-                //else
+                if (_selector.Resizer != ResizerType.None)
+                    SetIdleOnNodeResize();
+                else
                     SetIdleOnNode();
             }
 
@@ -403,6 +409,38 @@ namespace ModelGraph.Controls
                 SetIdleOnEdge();
             }
         }
+        #endregion
+
+        #region PointerCursor  ================================================
+        private void RestorePointerCursor() =>  TrySetNewCursor(CoreCursorType.Arrow);
+        private void TrySetNewCursor(CoreCursorType cursorType)
+        {
+            if (_currentCusorType == cursorType) return;
+            if (_cursors.TryGetValue(cursorType, out CoreCursor newCursor))
+            {
+                _currentCusorType = cursorType;
+                Window.Current.CoreWindow.PointerCursor = newCursor;
+            }
+        }
+        private CoreCursorType _currentCusorType;
+        readonly Dictionary<CoreCursorType, CoreCursor> _cursors = new Dictionary<CoreCursorType, CoreCursor>()
+        {
+            [CoreCursorType.Pin] = new CoreCursor(CoreCursorType.Pin, 0),
+            [CoreCursorType.Hand] = new CoreCursor(CoreCursorType.Hand, 0),
+            [CoreCursorType.Wait] = new CoreCursor(CoreCursorType.Wait, 0),
+            [CoreCursorType.Help] = new CoreCursor(CoreCursorType.Help, 0),
+            [CoreCursorType.Arrow] = new CoreCursor(CoreCursorType.Arrow, 0),
+            [CoreCursorType.IBeam] = new CoreCursor(CoreCursorType.IBeam, 0),
+            [CoreCursorType.Cross] = new CoreCursor(CoreCursorType.Cross, 0),
+            [CoreCursorType.Person] = new CoreCursor(CoreCursorType.Person, 0),
+            [CoreCursorType.UpArrow] = new CoreCursor(CoreCursorType.UpArrow, 0),
+            [CoreCursorType.SizeAll] = new CoreCursor(CoreCursorType.SizeAll, 0),
+            [CoreCursorType.UniversalNo] = new CoreCursor(CoreCursorType.UniversalNo, 0),
+            [CoreCursorType.SizeWestEast] = new CoreCursor(CoreCursorType.SizeWestEast, 0),
+            [CoreCursorType.SizeNorthSouth] = new CoreCursor(CoreCursorType.SizeNorthSouth, 0),
+            [CoreCursorType.SizeNorthSouth] = new CoreCursor(CoreCursorType.SizeNortheastSouthwest, 0),
+            [CoreCursorType.SizeNorthSouth] = new CoreCursor(CoreCursorType.SizeNorthwestSoutheast, 0),
+        }; 
         #endregion
 
         #region Commands  =====================================================
