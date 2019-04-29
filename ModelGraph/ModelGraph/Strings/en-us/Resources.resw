@@ -1685,7 +1685,7 @@ NEC – NWC – SEC - SWC</value>
     <value>Point</value>
   </data>
   <data name="8C1N" xml:space="preserve">
-    <value>Central</value>
+    <value>Square</value>
   </data>
   <data name="8C2N" xml:space="preserve">
     <value>Vertical</value>

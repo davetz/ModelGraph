@@ -339,7 +339,7 @@ namespace ModelGraphSTD
                     if (i == symbols.Count) continue;
 
                     node.Symbol = (byte)(i + 2);
-                    node.Aspect = Aspect.Central;
+                    node.Aspect = Aspect.Square;
                     if (node.FlipState < FlipState.LeftRotate)
                     {
                         node.DX = (byte)(sx.Width * gx.SymbolScale / 2);

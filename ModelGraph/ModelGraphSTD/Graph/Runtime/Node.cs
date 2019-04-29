@@ -61,7 +61,7 @@ namespace ModelGraphSTD
 
         public bool IsAutoResizing => Sizing == Sizing.Auto;
 
-        public bool IsMasked { get { return (IsGraphNode && Aspect != Aspect.Central && Sizing == Sizing.Manual); } }
+        public bool IsMasked { get { return (IsGraphNode && Aspect != Aspect.Square && Sizing == Sizing.Manual); } }
 
         public bool IsNodePoint => IsGraphNode && Aspect == Aspect.Point; 
         public bool IsAutoSizing { get { return (Sizing == Sizing.Auto && Aspect != Aspect.Point); } }

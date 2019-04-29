@@ -645,7 +645,7 @@ namespace ModelGraphSTD
         PairingEnum = 0x8BF,
 
         Aspect_Point = 0x8C0,
-        Aspect_Central = 0x8C1,
+        Aspect_Square = 0x8C1,
         Aspect_Vertical = 0x8C2,
         Aspect_Horizontal = 0x8C3,
         AspectEnum = 0x8FF,

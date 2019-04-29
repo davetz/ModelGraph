@@ -44,7 +44,6 @@ namespace ModelGraphSTD
             #endregion
 
             var gx = node.Graph.GraphX;
-            var spSkew = 8;// gx.SurfaceSkew;
             var tpSkew = gx.TerminalSkew;
             var tmLen = gx.TerminalLength;
             var tmSpc = gx.TerminalSpacing / 2f;
@@ -355,7 +354,7 @@ namespace ModelGraphSTD
                     SetFaceOffset();
                     #endregion
                 }
-                else if (node.Aspect == Aspect.Central)
+                else if (node.Aspect == Aspect.Square)
                 {
                     #region Central  ==============================================
                     int nN = 0, nS = 0, nE = 0, nW = 0;
@@ -436,7 +435,7 @@ namespace ModelGraphSTD
                 }
                 #endregion
             }
-            else if (node.Sizing == Sizing.Manual)
+            else
             {
                 #region AdjustManualNode  =====================================
                 var (x, y, w, h) = node.Values();
@@ -447,17 +446,18 @@ namespace ModelGraphSTD
                     w = barSize;
                     node.SetSize(w, h);
 
-                    var nL = y - h;
-                    var sL = y + h;
+                    var yS = y + h;
+                    var yN = y - h;
+
                     for (int i = 0; i < N; i++)
                     {
                         var (x2, y2) = E[i].bend;
 
-                        if (y2 < nL)
+                        if (y2 < yN)
                         {
                             edges[i].SetFace(node, (0, -h), (0, -h - tmLen), Direction.N);
                         }
-                        else if (y2 > sL) 
+                        else if (y2 > yS) 
                         {
                             edges[i].SetFace(node, (0, h), (0, h + tmLen), Direction.S);
                         }
@@ -472,24 +472,24 @@ namespace ModelGraphSTD
                     }
                     #endregion
                 }
-                else //-------- restricted to either vertical or horizontal
+                else if (node.Aspect == Aspect.Horizontal)
                 {
                     #region Horizontal  ===========================================
                     h = barSize;
                     node.SetSize(w, h);
 
-                    var eL = x + w;
-                    var wL = x + w;
+                    var xE = x + w;
+                    var xW = x - w;
 
                     for (int i = 0; i < N; i++)
                     {
                         var (x2, y2) = E[i].bend;
 
-                        if (x2 < wL)
+                        if (x2 < xW)
                         {
                             edges[i].SetFace(node, (-w, 0), (-w - tmLen, 0), Direction.W);
                         }
-                        else if (x2 > eL)
+                        else if (x2 > xE)
                         {
                             edges[i].SetFace(node, (w, 0), (w + tmLen, 0), Direction.E);
                         }
@@ -504,325 +504,43 @@ namespace ModelGraphSTD
                     }
                     #endregion
                 }
-                #endregion
-            }
-            else if (node.Sizing == Sizing.Fixed) //this needs work - crazy stuff happens
-            {
-                #region AdjustFixedNode  ======================================
-                var (x, y, w, h) = node.Values();
-                var d0 = 2;
-                var xE = x + w - d0; // east side
-                var xW = x - w + d0; // west side
-                var yS = y + h - d0; // south side
-                var yN = y - h + d0; // north side
-
-                var dx0 = w - d0;
-                var dx1 = w;
-                var dx2 = dx1 + spSkew;
-                var dx3 = dx2 + tmLen;
-                var dx4 = dx3 + spSkew;
-
-                var dy0 = h - d0;
-                var dy1 = h;
-                var dy2 = dy1 + spSkew;
-                var dy3 = dy2 + tmLen;
-                var dy4 = dy3 + spSkew;
-                /*
-                 * delta dx1,dy1 determine the surface of the node
-                 * ================================================
-                    (-dx4, -dy4)  o             o  (+dx4, -dy4)
-                     (-dx3, -dy3)  o           o  (+dx3, -dy3)
-                      (-dx2, -dy2)  o         o  (+dx2, -dy2)
-                       (-dx1, -dy1)  o-------o  (+dx1, -dy1) <== upper left,right corner of node
-                        (-dx0, -dy0) |o     o| (+dx0, -dy0)
-                                     |       |
-                                     | (x,y) |  <== center of node (x,y)
-                                     |       |
-                        (-dx0, +dy0) |o     o| (+dx0, +dy0)
-                       (-dx1, +dy1)  o-------o  (+dx1, +dy1) <== lower left,right corner of node
-                      (-dx2, +dy2)  o         o  (+dx2, +dy2)
-                     (-dx3, +dy3)  o           o  (+dx3, +dy3)
-                    (-dx4, +dy4)  o             o  (+dx4, +dy4)                          
-                 * ================================================
-                 */
-                for (int i = 0; i < N; i++)
+                else
                 {
-                    var (x2, y2) = E[i].bend; // closest edge bend point towards the destination node
+                    #region Rectangular  ======================================
+                    var xE = x + w;
+                    var yS = y + h;
+                    var xW = x - w;
+                    var yN = y - h;
 
-                    var dx = x2 - x;
-                    var dy = y2 - y;
+                    var h2 = (byte)(h * 2);
+                    var w2 = (byte)(w * 2);
 
-                    var dxE = (double)(xE - x2);
-                    var dxW = (double)(xW - x2);
-                    var dyS = (double)(yS - y2);
-                    var dyN = (double)(yN - y2);
-
-                    if (node.Aspect == Aspect.Vertical)
+                    for (int i = 0; i < N; i++)
                     {
-                        #region Vertical  =========================================
-                        if (x2 > xE)
-                        {//========================== on the east side of major axis
-                            if (y2 > yS)
-                            {//========================== going south
-                                if (dyS / dxE < 1)
-                                {
-                                    F[i].delta = (dx1, dy0);
-                                    F[i].tdir = Direction.E;
-                                }
-                                else
-                                {
-                                    F[i].delta = (0, dy1);
-                                    F[i].tdir = Direction.S;
-                                }
-                            }
-                            else if (y2 < yN)
-                            {//========================== going north
-                                if (dyN / dxE > -1)
-                                {
-                                    F[i].delta = (dx1, dy0);
-                                    F[i].tdir = Direction.E;
-                                }
-                                else
-                                {
-                                    F[i].delta = (0, -dy1);
-                                    F[i].tdir = Direction.N;
-                                }
-                            }
-                            else
-                            {
-                                F[i].delta = (dx, dy1);
-                                F[i].tdir = Direction.E;
-                            }
-                        }
+                        var (x2, y2) = E[i].bend;
+                        var (dx, dy, slope, slice) = XYTuple.SlopeSlice((x, y), E[i].bend);
+
+                        if (x2 > xE && y2 < yN)
+                            edges[i].SetFace(node, (w, -h), (w + tmLen, -h - tmLen), Direction.NEC);
+                        else if (x2 > xE && y2 > yS)
+                            edges[i].SetFace(node, (w, h), (w + tmLen, h + tmLen), Direction.SEC);
+                        else if (x2 < xW && y2 < yN)
+                            edges[i].SetFace(node, (-w, -h), (-w - tmLen, -h - tmLen), Direction.NWC);
+                        else if (x2 < xW && y2 > yS)
+                            edges[i].SetFace(node, (-w, h), (-w - tmLen, h + tmLen), Direction.SWC);
+                        else if (x2 > xE)
+                            edges[i].SetFace(node, (w, dy), (w + tmLen, dy), Direction.E);
                         else if (x2 < xW)
-                        {//========================== on the west side of major axis
-                            if (y2 > yS)
-                            {//========================== going south
-                                if (dyS / dxW > -1)
-                                {
-                                    F[i].delta = (-dx, dy0);
-                                    F[i].tdir = Direction.W;
-                                }
-                                else
-                                {
-                                    F[i].delta = (0, dy1);
-                                    F[i].tdir = Direction.S;
-                                }
-                            }
-                            else if (y2 < yN)
-                            {//========================== going north
-                                if (dyN / dxW < 1)
-                                {
-                                    F[i].delta = (-dx1, dy0);
-                                    F[i].tdir = Direction.W;
-                                }
-                                else
-                                {
-                                    F[i].delta = (0, -dy1);
-                                    F[i].tdir = Direction.N;
-                                }
-                            }
-                            else
-                            {
-                                F[i].delta = (-dx1, dy);
-                                F[i].tdir = Direction.W;
-                            }
-                        }
-                        else
-                        {//========================== directly on the major axis
-                            if (y2 > yS)
-                            {
-                                F[i].delta = (0, dy1);
-                                F[i].tdir = Direction.S;
-                            }
-                            else
-                            {
-                                F[i].delta = (0, -dy1);
-                                F[i].tdir = Direction.N;
-                            }
-                        }
-                        #endregion
-                    }
-                    else if (node.Aspect == Aspect.Horizontal)
-                    {
-                        #region Horizontal  =======================================
-                        if (y2 > yS)
-                        {//========================== on the south side of major axis
-                            if (x2 > xE)
-                            {//========================== heading east
-                                if (dyS / dxE < 1)
-                                {
-                                    F[i].delta = (dx1, 0);
-                                    F[i].tdir = Direction.E;
-                                }
-                                else
-                                {
-                                    F[i].delta = (dx0, dy1);
-                                    F[i].tdir = Direction.S;
-                                }
-                            }
-                            else if (x2 < xW)
-                            {//========================== heading west
-                                if (dyN / dxE > -1)
-                                {
-                                    F[i].delta = (-dx1, 0);
-                                    F[i].tdir = Direction.W;
-                                }
-                                else
-                                {
-                                    F[i].delta = (-dx0, dy1);
-                                    F[i].tdir = Direction.S;
-                                }
-                            }
-                            else
-                            {
-                                F[i].delta = (dx, dy1);
-                                F[i].tdir = Direction.S;
-                            }
-                        }
+                            edges[i].SetFace(node, (-w, dy), (-w - tmLen, dy), Direction.W);
+                        else if (y2 > yS)
+                            edges[i].SetFace(node, (dx, h), (dx, h + tmLen), Direction.S);
                         else if (y2 < yN)
-                        {//========================== on the north side of major axis
-                            if (x2 > xE)
-                            {//========================== heading east
-                                if (dyN / dxE < -1)
-                                {
-                                    F[i].delta = (dx0, -dy1);
-                                    F[i].tdir = Direction.N;
-                                }
-                                else
-                                {
-                                    F[i].delta = (dx1, 0);
-                                    F[i].tdir = Direction.E;
-                                }
-                            }
-                            else if (x2 < xW)
-                            {//========================== heading west
-                                if (dyN / dxW < 1)
-                                {
-                                    F[i].delta = (-dx1, 0);
-                                    F[i].tdir = Direction.W;
-                                }
-                                else
-                                {
-                                    F[i].delta = (-dx0, -dy1);
-                                    F[i].tdir = Direction.N;
-                                }
-                            }
-                            else
-                            {
-                                F[i].delta = (dx, -dy1);
-                                F[i].tdir = Direction.N;
-                            }
-                        }
+                            edges[i].SetFace(node, (dx, -h), (dx, -h - tmLen), Direction.N);
                         else
-                        {//========================== directly on the major axis
-                            if (x2 > xE)
-                            {
-                                F[i].delta = (dx1, 0);
-                                F[i].tdir = Direction.E;
-                            }
-                            else
-                            {
-                                F[i].delta = (-dx1, 0);
-                                F[i].tdir = Direction.W;
-                            }
-                        }
-                        #endregion
+                            edges[i].SetFace(node, (0, 0), Direction.Any);
                     }
-                    else if (node.Aspect == Aspect.Central)
-                    {
-                        #region Central  ==========================================
-                        if (x2 > xE)
-                        {//========================== on the east side of major axis
-                            if (y2 > yS)
-                            {//========================== going south
-                                if (dyS / dxE < 1)
-                                {
-                                    F[i].delta = (dx1, dy0);
-                                    F[i].tdir = Direction.E;
-                                }
-                                else
-                                {
-                                    F[i].delta = (dx0, dy1);
-                                    F[i].tdir = Direction.S;
-                                }
-                            }
-                            else if (y2 < yN)
-                            {//========================== going north
-                                if (dyN / dxE > -1)
-                                {
-                                    F[i].delta = (dx1, -dy0);
-                                    F[i].tdir = Direction.E;
-                                }
-                                else
-                                {
-                                    F[i].delta = (dx0, -dy1);
-                                    F[i].tdir = Direction.N;
-                                }
-                            }
-                            else
-                            {
-                                F[i].delta = (dx1, dy);
-                                F[i].tdir = Direction.E;
-                            }
-                        }
-                        else if (x2 < xW)
-                        {//========================== on the west side of major axis
-                            if (y2 > yS)
-                            {//========================== going south
-                                if (dyS / dxW < -1)
-                                {
-                                    F[i].delta = (-dx0, dy1);
-                                    F[i].tdir = Direction.S;
-                                }
-                                else
-                                {
-                                    F[i].delta = (-dx1, dy0);
-                                    F[i].tdir = Direction.W;
-                                }
-                            }
-                            else if (y2 < yN)
-                            {//========================== going north
-                                if (dyN / dxW < 1)
-                                {
-                                    F[i].delta = (-dx1, dy0);
-                                    F[i].tdir = Direction.W;
-                                }
-                                else
-                                {
-                                    F[i].delta = (-dx0, -dy1);
-                                    F[i].tdir = Direction.N;
-                                }
-                            }
-                            else
-                            {
-                                F[i].delta = (-dx1, dy);
-                                F[i].tdir = Direction.W;
-                            }
-                        }
-                        else
-                        {//========================== directly on the major axis
-                            if (y2 > yS)
-                            {
-                                F[i].delta = (dx, dy1);
-                                F[i].tdir = Direction.S;
-                            }
-                            else
-                                {
-                                F[i].delta = (dx, -dy1);
-                                F[i].tdir = Direction.N;
-                            }
-                        }
-                        #endregion
-                    }
-                    else
-                    {
-                        F[i].delta = (0, 0);
-                        F[i].tdir = Direction.Any;
-                    }
+                    #endregion
                 }
-
-                SetFacePoints();
                 #endregion
             }
 

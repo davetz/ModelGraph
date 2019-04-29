@@ -61,7 +61,7 @@
 
             _orientationEnum = new EnumZ(EnumZStore, Trait.AspectEnum);
             new PairZ(_orientationEnum, Trait.Aspect_Point);
-            new PairZ(_orientationEnum, Trait.Aspect_Central);
+            new PairZ(_orientationEnum, Trait.Aspect_Square);
             new PairZ(_orientationEnum, Trait.Aspect_Vertical);
             new PairZ(_orientationEnum, Trait.Aspect_Horizontal);
 
