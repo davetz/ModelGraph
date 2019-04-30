@@ -48,7 +48,7 @@ namespace ModelGraphSTD
         public float SymbolScale => SymbolSize;
         internal bool TryGetGraph(Item root, out Graph graph)
         {
-            if (Count < 0)
+            if (Count > 0)
             {
                 foreach (var item in Items)
                 {

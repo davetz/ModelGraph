@@ -38,8 +38,31 @@ namespace ModelGraphSTD
             if (_rootModels is null) return;
 
             _rootModels.Remove(root);
+            if (root.Item is Graph g)
+            {
+                if (_graphRefereceCount.TryGetValue(g, out int count))
+                {
+                    if (count - 1 > 0)
+                        _graphRefereceCount[g] = count - 1;
+                    else
+                    {
+                        _graphRefereceCount.Remove(g);
+                        var gx = g.GraphX;
+                        gx.Remove(g);
+                        PostRefresh(PrimaryRootModel);
+                    }
+                }
+            }
             if (_rootModels.Count == 0) Release();
         }
+        private void RegisterGraphInstance(Graph g)
+        {
+            if (_graphRefereceCount.TryGetValue(g, out int count))
+                _graphRefereceCount[g] = count + 1;
+            else
+                _graphRefereceCount.Add(g, 1);
+        }
+        private Dictionary<Graph, int> _graphRefereceCount = new Dictionary<Graph, int>(4);
         #endregion
 
         #region Initialize  ===================================================
@@ -70,6 +93,7 @@ namespace ModelGraphSTD
             _itemIdentity = null;
             _localize = null;
             _rootModels = null;
+            _graphRefereceCount.Clear();
 
             ReleaseEnums();
             ReleaseStores();

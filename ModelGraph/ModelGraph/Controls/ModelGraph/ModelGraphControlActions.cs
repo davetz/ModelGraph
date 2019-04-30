@@ -468,8 +468,8 @@ namespace ModelGraph.Controls
             [CoreCursorType.UniversalNo] = new CoreCursor(CoreCursorType.UniversalNo, 0),
             [CoreCursorType.SizeWestEast] = new CoreCursor(CoreCursorType.SizeWestEast, 0),
             [CoreCursorType.SizeNorthSouth] = new CoreCursor(CoreCursorType.SizeNorthSouth, 0),
-            [CoreCursorType.SizeNorthSouth] = new CoreCursor(CoreCursorType.SizeNortheastSouthwest, 0),
-            [CoreCursorType.SizeNorthSouth] = new CoreCursor(CoreCursorType.SizeNorthwestSoutheast, 0),
+            [CoreCursorType.SizeNortheastSouthwest] = new CoreCursor(CoreCursorType.SizeNortheastSouthwest, 0),
+            [CoreCursorType.SizeNorthwestSoutheast] = new CoreCursor(CoreCursorType.SizeNorthwestSoutheast, 0),
         }; 
         #endregion
 

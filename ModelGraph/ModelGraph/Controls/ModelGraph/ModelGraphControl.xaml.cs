@@ -69,6 +69,7 @@ namespace ModelGraph.Controls
 
             EditorCanvas.RemoveFromVisualTree();
             EditorCanvas = null;
+            RootModel?.Release();
         }
         public void Reload() { }
         public void Refresh()

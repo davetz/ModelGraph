@@ -117,7 +117,7 @@ namespace ModelGraph.Services
         }
         #endregion
 
-        public static Action<RootModel> InsertModelPage;
-        public static Action<RootModel> RemoveModelPage;
+        public static Action<RootModel> InsertModelPage; //coordination with ShellPage NavigationView
+        public static Action<RootModel> RemoveModelPage; //coordination with ShellPage NavigationView
     }
 }

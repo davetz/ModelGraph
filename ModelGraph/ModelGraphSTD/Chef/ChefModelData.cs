@@ -6939,7 +6939,13 @@ namespace ModelGraphSTD
 
             //= = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-            void CreateSecondaryModelGraph(ItemModel m) => m.GetRootModel().UIRequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, m.Graph, GraphRef_X);
+            void CreateSecondaryModelGraph(ItemModel m)
+            {
+                var g = m.Graph;
+                RegisterGraphInstance(g);
+
+                m.GetRootModel().UIRequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, g, GraphRef_X);
+            }
         }
         #endregion
 
@@ -8129,6 +8135,7 @@ namespace ModelGraphSTD
                     if (doDrop)
                     {
                         CreateGraph(gx, out Graph g, d.Item);
+                        RegisterGraphInstance(g);
 
                         m.IsExpandedLeft = true;
 
@@ -8167,9 +8174,9 @@ namespace ModelGraphSTD
         void CreateGraph(ItemModel m)
         {
             CreateGraph(m.GraphX, out Graph g);
+            RegisterGraphInstance(g);
 
             m.IsExpandedLeft = true;
-
             var root = m.GetRootModel();
             root.UIRequestCreatePage(ControlType.GraphDisplay, Trait.GraphRef_M, g, GraphRef_X);
         }
