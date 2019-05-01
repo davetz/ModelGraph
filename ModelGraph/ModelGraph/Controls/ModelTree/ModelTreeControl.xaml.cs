@@ -555,7 +555,7 @@ namespace ModelGraph.Controls
             if (_sortModeCache[cacheIndex] != null && _sortModeCache[cacheIndex].DataContext != null)
             {
                 _sortControl = _sortModeCache[cacheIndex];
-                var acc = new KeyboardAccelerator { Key = VirtualKey.S };
+                var acc = new KeyboardAccelerator { Key = VirtualKey.S, Modifiers = VirtualKeyModifiers.Control};
                 acc.Invoked += Accelerator_SortMode_Invoked;
                 TreeCanvas.KeyboardAccelerators.Add(acc);
             }
@@ -563,8 +563,22 @@ namespace ModelGraph.Controls
             if (_usageModeCache[cacheIndex] != null && _usageModeCache[cacheIndex].DataContext != null)
             {
                 _usageControl = _usageModeCache[cacheIndex];
-                var acc = new KeyboardAccelerator { Key = VirtualKey.U };
+                var acc = new KeyboardAccelerator { Key = VirtualKey.U, Modifiers = VirtualKeyModifiers.Control };
                 acc.Invoked += Accelerator_UsageMode_Invoked;
+                TreeCanvas.KeyboardAccelerators.Add(acc);
+            }
+
+            if (_selectModel.CanDrag)
+            {
+                var acc = new KeyboardAccelerator { Key = VirtualKey.C, Modifiers = VirtualKeyModifiers.Control };
+                acc.Invoked += Accelerator_ModelCopy_Invoked;
+                TreeCanvas.KeyboardAccelerators.Add(acc);
+            }
+
+            if (_selectModel.DragEnter() != DropAction.None)
+            {
+                var acc = new KeyboardAccelerator { Key = VirtualKey.V, Modifiers = VirtualKeyModifiers.Control };
+                acc.Invoked += Accelerator_ModelPaste_Invoked;
                 TreeCanvas.KeyboardAccelerators.Add(acc);
             }
 
@@ -739,6 +753,18 @@ namespace ModelGraph.Controls
         #endregion
         //
         #region AcceleratorKeyCommands  =======================================
+        private void Accelerator_ModelCopy_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_selectModel.CanDrag)
+                _selectModel.DragStart();
+            args.Handled = true;
+        }
+        private void Accelerator_ModelPaste_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (_selectModel.DragEnter() != DropAction.None)
+            _selectModel.DragDrop();
+            args.Handled = true;
+        }
         private void Accelerator_SortMode_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             if (_sortControl != null) ExecuteSort(_sortControl);

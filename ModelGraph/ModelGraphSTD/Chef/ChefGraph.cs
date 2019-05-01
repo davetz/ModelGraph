@@ -2,9 +2,7 @@
 using System.Linq;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public partial class Chef
     {
         private void InitializeGraphParams() { GraphParms.Clear(); }
@@ -20,9 +18,8 @@ namespace ModelGraphSTD
             var anyChange = false;
 
             #region Build validPathPairs dictionary  ==========================
-
-            List<(Item, Item)> validItemPair = null;
             var validPathPairs = new Dictionary<QueryX, List<(Item, Item)>>();
+            List<(Item, Item)> validItemPair;
 
             foreach (var (q1, q2) in g.PathQuerys)
             {

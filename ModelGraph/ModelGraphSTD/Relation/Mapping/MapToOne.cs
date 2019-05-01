@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public class MapToOne<T> : Dictionary<Item, T> where T : Item
     {
         internal MapToOne(int capacity = 0) : base(capacity) { }

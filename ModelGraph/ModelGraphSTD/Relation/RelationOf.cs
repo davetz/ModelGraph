@@ -463,7 +463,7 @@ namespace ModelGraphSTD
 
         #region HasKey<1,2>  ==================================================
         /// <summary>
-        /// Dose the key item have at least one child item?
+        /// Does the key item have at least one child item?
         /// </summary>
         internal override bool HasKey1(Item key)
         {
@@ -474,7 +474,7 @@ namespace ModelGraphSTD
         }
 
         /// <summary>
-        /// Dose the key item have at least one parent item?
+        /// Does the key item have at least one parent item?
         /// </summary>
         internal override bool HasKey2(Item key)
         {

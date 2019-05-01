@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 
 namespace ModelGraphSTD
-{/*
- */
+{
     public class GraphX : StoreOf<Graph>
     {
         internal Color Color = new Color();
@@ -60,7 +59,7 @@ namespace ModelGraphSTD
             }
             graph = null;
             return false;
-        }
+        } 
         #endregion
     }
 }

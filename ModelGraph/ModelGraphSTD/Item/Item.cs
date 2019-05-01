@@ -4,7 +4,7 @@ namespace ModelGraphSTD
 {
     public class Item
     {
-        internal Item Owner;        //each item has an owner, this=> ... dataChef=> rootChef
+        internal Item Owner;        //each item has an owner, this-> owner-> ... -> dataChef
 
         internal Trait Trait;       //identity, static flags, and resource string key
         private State _state;       //bit flags specific to each item type
