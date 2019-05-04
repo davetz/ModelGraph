@@ -7,7 +7,7 @@ namespace ModelGraphSTD
  */
     public partial class Chef
     {
-        public IRepository Repository { get; set; }
+        internal IRepository Repository;
 
         private void SaveToRepository()
         {

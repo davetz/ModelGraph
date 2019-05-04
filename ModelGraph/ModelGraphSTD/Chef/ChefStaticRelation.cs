@@ -1,9 +1,7 @@
 ﻿using System;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public partial class Chef
     {
         internal RelationOf<Store, Property> Store_Property { get; private set; }
