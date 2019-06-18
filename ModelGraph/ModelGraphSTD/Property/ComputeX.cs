@@ -1,9 +1,7 @@
 ﻿using System;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public class ComputeX : Property
     {
         internal const string DefaultSeparator = " : ";

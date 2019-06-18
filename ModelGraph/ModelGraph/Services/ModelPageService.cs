@@ -75,7 +75,7 @@ namespace ModelGraph.Services
             }
         }
         #endregion
-
+        
         #region CreateNewModel  ===============================================
         public async Task<bool> CreateNewModelAsync(CoreDispatcher dispatcher)
         {
@@ -91,7 +91,7 @@ namespace ModelGraph.Services
             return true;
         }
         #endregion
-
+        
         #region OpenModelDataFile  ============================================\
         public async Task<bool> OpenModelDataFileAsync(CoreDispatcher dispatcher)
         {

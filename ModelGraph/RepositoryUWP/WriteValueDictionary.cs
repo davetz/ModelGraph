@@ -277,7 +277,7 @@ namespace RepositoryUWP
         #region WriteInt64ValueDictionary  ====================================
         static void WriteInt64ValueDictionary(DataWriter w, ColumnX cx, Dictionary<Item, int> itemIndex)
         {
-            var d = ((Int32Value)cx.Value).ValueDictionary;
+            var d = ((Int64Value)cx.Value).ValueDictionary;
             var N = d.Count;
             w.WriteInt32(N);
 

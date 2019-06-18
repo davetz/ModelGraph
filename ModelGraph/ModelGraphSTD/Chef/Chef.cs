@@ -23,6 +23,12 @@ namespace ModelGraphSTD
             else
                 Repository.Read(this);
         }
+        internal Chef(bool createTestModel) : base(null, Trait.DataChef, Guid.Empty, 0)
+        {
+            Initialize();
+
+            if (createTestModel) CreateTestModel();
+        }
         #endregion
 
         #region RootModels  ===================================================

@@ -1,9 +1,7 @@
 ﻿using System;
 
 namespace ModelGraphSTD
-{/*
-
- */
+{
     public class PropertyOf<T1, T2> : Property, IValueStore<T2> where T1 : Item
     {
         internal EnumZ EnumZ;
@@ -48,7 +46,7 @@ namespace ModelGraphSTD
         public void Remove(Item key) { }
         public void SetOwner(ComputeX cx) { }
 
-        public bool GetVal(Item key, out T2 val) { if (GetValFunc == null) return Value.NoValue(out val); val = GetValFunc(key); return true; }
+        public bool GetVal(Item key, out T2 val) { if (GetValFunc is null) return Value.NoValue(out val); val = GetValFunc(key); return true; }
         public bool SetVal(Item key, T2 value) => (SetValFunc is null) ? false : SetValFunc(key, value);
         #endregion
     }
