@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ModelGraphSTD
 {
@@ -8,6 +9,35 @@ namespace ModelGraphSTD
 
         internal int KeyCount => Count;
         internal int ValueCount { get { var n = 0; foreach (var e in this) { n += e.Value.Count; } return n; } }
+
+
+        #region Serializer  ===================================================
+        internal (int, int[])[] GetItems(Dictionary<Item, int> itemIndex)
+        {
+            var items = new (int, int[])[Count];
+            var i = 0;
+            foreach (var e in this)
+            {
+                if (!itemIndex.TryGetValue(e.Key, out int ix1))
+                    throw new Exception("MaptoMany GetItems: item not in itemIndex dictionary");
+
+                if (e.Value != null && e.Value.Count > 0)
+                {
+                    var ix2List = new int[e.Value.Count];
+                    var j = 0;
+                    foreach (var item in e.Value)
+                    {
+                        if (!itemIndex.TryGetValue(item, out int ix2))
+                            throw new Exception("MaptoMany GetItems: item not in itemIndex dictionary");
+
+                        ix2List[j++] = ix2;
+                    }
+                    items[i++] = (ix1, ix2List);
+                }
+            }
+            return items;
+        }
+        #endregion
 
 
         internal int GetLinksCount()

@@ -138,6 +138,38 @@ namespace ModelGraphSTD
         }
         #endregion
 
+        #region Serializer  ===================================================
+        internal override (int, int)[] GetChildren1Items(Dictionary<Item, int> itemIndex)
+        {
+            if (_children1 is null)
+                throw new Exception("RelationOf GetChildren1Items() _children1 is null");
+
+            return _children1.GetItems(itemIndex);
+        }
+        internal override (int, int)[] GetParent1Items(Dictionary<Item, int> itemIndex)
+        {
+            if (_parents1 is null)
+                throw new Exception("RelationOf GetChildren1Items() _parents1 is null");
+
+            return _parents1.GetItems(itemIndex);
+        }
+        internal override (int, int[])[] GetChildren2Items(Dictionary<Item, int> itemIndex)
+        {
+            if (_children2 is null)
+                throw new Exception("RelationOf GetChildren1Items() _children2 is null");
+
+            return _children2.GetItems(itemIndex);
+        }
+
+        internal override (int, int[])[] GetParents2Items(Dictionary<Item, int> itemIndex)
+        {
+            if (_parents2 is null)
+                throw new Exception("RelationOf GetChildren1Items() _parents2 is null");
+
+            return _parents2.GetItems(itemIndex);
+        }
+
+        #endregion
 
         #region <Get,TryGet><Child,Parent,Children,Parents>  ==================
         internal bool TryGetChild(Item key, out T2 child)
@@ -526,7 +558,8 @@ namespace ModelGraphSTD
             return 0;
         }
 
-        internal bool HasLinks => GetHasLinks();
+        internal override bool HasLinks => GetHasLinks();
+
         private bool GetHasLinks()
         {
             if (Pairing == Pairing.OneToOne &&

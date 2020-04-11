@@ -18,7 +18,7 @@ namespace RepositoryUWP
                     using (var w = new DataWriter(tran.Stream))
                     {
                         w.ByteOrder = ByteOrder.LittleEndian;
-                        Write(chef, w);
+                        Write2(chef, w);
                         tran.Stream.Size = await w.StoreAsync(); // reset stream size to override the file
                         await tran.CommitAsync();
                     }

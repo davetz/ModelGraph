@@ -100,7 +100,7 @@ namespace ModelGraph.Services
                 ViewMode = PickerViewMode.List,
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary
             };
-            openPicker.FileTypeFilter.Add(".mgdf");
+            openPicker.FileTypeFilter.Add(".mgd");
             StorageFile file = await openPicker.PickSingleFileAsync();
             if (file != null)
             {

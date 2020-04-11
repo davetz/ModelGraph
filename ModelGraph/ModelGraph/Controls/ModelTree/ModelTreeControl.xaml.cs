@@ -380,7 +380,7 @@ namespace ModelGraph.Controls
                         SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
                         SuggestedFileName = string.Empty
                     };
-                    savePicker.FileTypeChoices.Add("DataFile", new List<string>() { ".mgdf" });
+                    savePicker.FileTypeChoices.Add("DataFile", new List<string>() { ".mgd" });
                     StorageFile file = await savePicker.PickSaveFileAsync();
                     if (file != null)
                     {
